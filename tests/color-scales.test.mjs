@@ -182,11 +182,13 @@ const ON_A_STEP = {
 	"--rux-warning-subtle": "--rux-amber-100",
 	"--rux-success-subtle": "--rux-green-100",
 	"--rux-info-subtle": "--rux-blue-100",
-	"--rux-danger-fill": "--rux-red-700",
-	"--rux-warning-fill": "--rux-amber-700",
-	"--rux-success-fill": "--rux-green-700",
-	"--rux-info-fill": "--rux-blue-700",
-	"--rux-danger-on-fill": "--rux-red-1000",
+	// Fills are 800, not 700 — chosen by rule 2.11's contrast floor rather than
+	// by the step's name (color.md §5 step 9). White on a 700 fill measures
+	// 4.44 for blue and 3.91 for red; both fail, and 800 clears at 5.73/4.74.
+	"--rux-danger-fill": "--rux-red-800",
+	"--rux-warning-fill": "--rux-amber-800",
+	"--rux-success-fill": "--rux-green-800",
+	"--rux-info-fill": "--rux-blue-800",
 	"--rux-accent-700": "--rux-blue-700",
 	"--rux-accent-800": "--rux-blue-800",
 	"--rux-accent-900": "--rux-blue-900",

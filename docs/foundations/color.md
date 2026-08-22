@@ -1,30 +1,30 @@
 # Rux UI Foundations — Color
 
-**Contract version: 1.2.1** · Stamped at the top so a downstream document can state the
+**Contract version: 1.3.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 10 steps: **7 done · 3 open**
+**Status** · 10 steps: **8 done · 2 open**
 This document is canonical for colour in Rux UI. **Tier 0 is the catalog** (steps 2, 3) and
-**Tier 1 now reads it** (steps 4–6): every surface, border, list state, control overlay,
-text level, status and accent role resolves to one scale step per theme. 164 catalog values
-published, 31 roles repointed, ~30 light-theme overrides deleted as redundant. The headline
-is **D6 — light-theme status text went from 1.19–1.85:1 to 5.09–5.34:1**, from three times
-under AA to comfortably over it.
+**Tier 1 reads it** (steps 4–6): every surface, border, list state, control overlay, text
+level, status and accent role resolves to one scale step per theme. 164 catalog values
+published, 31 roles repointed, ~30 light-theme overrides deleted as redundant. **Every text
+colour this system publishes now clears AA in both themes** — the two headlines are D6
+(light-theme status text, **1.19–1.85:1 → 5.09–5.34:1**) and D14 (text on a fill, **3.44 →
+4.74–9.25**, step 9).
 
-**Where to pick up.** One decision is open — **Q8**, whether the AA floor covers text on a
-fill — and it gates **step 9**. Two more steps need no decision: **7** makes rules 2.1, 2.8,
-2.9 and 2.11 executable — most of what it needs now exists, since steps 2–6 added seven
-tests — and **8** consolidates `README.md`, the audit's R6, the skill and the component docs
-into pointers. Both are Class A.
+**Where to pick up.** No decision is open. Two steps remain, both Class A: **7** makes rules
+2.1, 2.8, 2.9 and 2.11 executable — most of what it needs now exists, since steps 2–9 added
+nine tests — and **8** consolidates `README.md`, the audit's R6, the skill and the component
+docs into pointers.
 
-**What is still not conformant, measured rather than assumed.** **D5**: 30 tokens in dark
-and 21 in light still resolve outside sRGB — but not one of them is a role on a step. They
-are `--rux-white` (chroma 0.004 at L 100), the eight legacy hue bases, and the ~20 component
-tokens derived from those; closing it is the **Class C** removal the bases need. **D14**:
-text on a status or accent fill measures **3.44–4.43:1** — below AA. The pairing was step 5's
-inference, not a measurement, and the catalog's foundation publishes none, so **Q8** decides
-it. **D9, D10, D12** likewise stay open. §4 carries all of them.
+**What is still not conformant, measured rather than assumed.** **D5**: 30 tokens in dark and
+21 in light resolve outside sRGB — not one of them a role on a step. They are the legacy
+Tier 0 (`--rux-white` at chroma 0.004, the eight hue bases) and the ~20 component tokens
+behind it; closing it is the **Class C** removal those bases need. **D15**: a fill's hover and
+active are `calc()` derivations rather than steps — step 9 fixed the direction, not the
+mechanism, and the catalog has no 800-hover to adopt. **D9, D10, D12** likewise stay open.
+§4 carries all of them.
 
 Derived from §5; `tests/foundations-contract.test.mjs` fails if this line disagrees with
 the log.
@@ -225,12 +225,35 @@ neutrals measure 8.0:1 and 17.9:1 (dark) and 8.5:1 and 17.9:1 (light); its statu
 measure 5.3–5.6:1 in light. *(D6, fixed at step 5, was Rux light-theme status text at
 1.19–1.85:1.)*
 
-**This rule does not cover text on a fill, and that gap is deliberate until Q8 settles it.**
-The floor above is stated against the two *backgrounds*, because those are the pairings the
-catalog's foundation actually publishes. A label on a `700` fill is a pairing it does not
-publish, so extending the floor there would be this system originating a rule rather than
-adopting one — which it may well decide to do (D14 is the reason), but as an amendment with
-its own step, not as a reading of this sentence.
+**The floor also covers text on a fill, and that half is originated here** (Q8, step 9). The
+catalog's foundation publishes no on-fill pairing, so this is Rux stating a rule rather than
+adopting one — the second time this document set has done that, after `layout.md`'s
+breakpoints.
+
+**A published fill and its label MUST clear 4.5:1. The fill is the lightest step whose label
+clears it; the label is `--rux-fg-on-fill` (pure white) or `--rux-fg-on-fill-inverse`
+(near-black), whichever does.** Measured across every hue, which is what makes it a rule
+rather than a preference:
+
+| Scale | 700 + white | 800 + white | 800 + inverse | Published |
+|---|---|---|---|---|
+| `blue` | 4.44 ✗ | **5.73 ✓** | 3.46 | 800 + white |
+| `red` | 3.91 ✗ | **4.74 ✓** | 4.17 | 800 + white |
+| `amber` | 1.80 ✗ | 2.14 ✗ | **9.25 ✓** | 800 + inverse |
+| `green` | 3.10 ✗ | 4.08 ✗ | **4.85 ✓** | 800 + inverse |
+| `teal` | 3.07 ✗ | 4.15 ✗ | **4.77 ✓** | 800 + inverse |
+| `purple` | 5.18 ✓ | 6.98 ✓ | — | 700 clears |
+| `pink` | 3.81 ✗ | 4.52 ✓ | — | 800 + white |
+
+**No fill clears at 700 except purple**, which is why rule 2.5's "fills are 700" holds for the
+*step's meaning* and not for what a fill carrying a label may use. Both label colours are
+theme-invariant literals because the 700/800 steps are: a label reading `background-100`
+would look correct and flip to near-black on a dark blue button the moment the theme changed.
+
+**This is also the rule Geist's own buttons follow**, which is corroboration and not the
+source — its error button is `red-800` + white and its warning is `amber-800` + near-black,
+exactly where the table says they must be. See the source note in §'s preamble for why a
+component page cannot be cited as authority here even when it agrees.
 
 **2.12 Accent is a scale selection.** `--rux-accent` is a chromatic scale's 700, its hover
 that scale's 800, its tint that scale's 100, its ring the catalog's focus colour. Switching
@@ -419,7 +442,8 @@ resolved by a step in §5.
 | **D11** | **Fixed (step 6).** Verified live: `[data-rux-accent="violet"|"green"|"amber"]` each resolve the accent, hover and ring to their own scale. Original text: `Rux.setAccent()` sets `data-rux-accent` and persists it; **no CSS reads the attribute**, so switching the accent does nothing visible. Recorded in `README.md` and held as accepted debt by `tests/state-contract.test.mjs`. Rule 2.12 makes it expressible: an accent is a scale selection, and that needs the scales. | `rux-ui/js/utilities.js`, `README.md` § Swappable accent |
 | **D12** | **Half addressed (step 4).** A role on a step can no longer drift per theme — `tests/color-scales.test.mjs` fails a role that reads a step *and* carries a light override, which is what caught the ~30 now-redundant overrides. The original gap stands for the roles that are **not** on a step (rule 1.1a's four) and is step 7's. Original text: rule 2.1's second half — every absolute-lightness token has a light override — is enforced by nothing. The `tokens.css` light block itself records three cases found by eye ("without these overrides the dark 32%/36% leak into light theme … renders as a near-black block"). | `tests/tokens-contract.test.mjs` checks resolution only |
 | **D13** | **Found and fixed inside step 6.** `a:hover` read `--rux-accent-hover`, which step 6 made the **800** step — and 800 is *darker* than 700 in both themes. A link therefore got dimmer on hover in dark theme, **4.73:1 → 3.67:1**, under AA. The token was behaving correctly for a *fill*; the link was inheriting a fill role for text. Links now read `--rux-link-fg` / `-hover`, the accent scale's **900 → 1000** text steps, which move the right way in both themes because the scale inverts around the fills: dark **8.40 → 19.16**, light **5.09 → 14.70**. | measured on `gallery.html` during step 6's contrast pass |
-| **D14** | **Text on a status or accent fill is below AA.** `--rux-danger-on-fill` (`red-1000`) on `--rux-danger-fill` (`red-700`) measures **3.44:1 in dark and 4.19:1 in light**; white on `--rux-accent` (`blue-700`) measures **4.43:1** in both. The destructive button and the primary button are the visible cases. **The 1000 step was step 5's inference, not the catalog's instruction** — rule 2.2 calls 1000 "primary text and icons", and step 5 read that as covering text on a fill. It does not: `red-1000` is a *tinted* near-white (`#ffeaed`) for coloured text on a neutral or tinted ground, and the tint is what costs the contrast. **What the catalog's foundation says about on-fill text: nothing.** The colors page publishes no pairing for it, which is why this needs a decision rather than a lookup — see **Q8**. Rule 2.11 does not currently catch it either: it scopes the AA floor to the 900/1000 steps against the two **backgrounds**, not against fills. | measured on `gallery.html` after step 5; before the step it was ~3.95:1, so the batch moved it slightly worse |
+| **D14** | **Fixed (step 9).** Text on a status or accent fill was below AA: `red-1000` on `red-700` measured **3.44:1** dark / 4.19:1 light, and white on `blue-700` **4.43:1**. Two causes, both this system's: the label was the **1000** step — a *tinted* near-white (`#feecee`) meant for coloured text on a neutral ground, inferred by step 5 from rule 2.2 — and the fill was **700**, which no hue except purple can carry a label on. Rule 2.11's second half now decides both by measurement. **After: danger 4.74 / 4.73, accent 5.73 both themes, warning 9.25, success 4.85, info 5.73**, and the accent's hover and active go *up* to 7.36 and 9.10 rather than down. | measured on `gallery.html`, both themes, before and after |
+| **D15** | **A fill's hover and active are `calc()` derivations, not steps.** `--rux-button-accent-hover-background` is `oklch(from … calc(l - 0.06) c h)`, which puts the hover colour nowhere the scale names and violates rule 1.2's spirit (a component token reads a role; it does not do arithmetic on one). **The catalog cannot supply the answer**: it publishes 800 as *700's* hover and nothing as 800's, and step 9 moved the fills to 800 — so the four `--rux-*-fill-hover` roles now name the step they are the hover for and are degenerate. Step 9 fixed the *direction* (hover darkens, so contrast rises rather than falls) and left the mechanism. Needs either a published fill-hover overlay or an admission that fills hover by composite. | `tokens.css` button-accent block; the four `-fill-hover` roles |
 
 ---
 
@@ -439,7 +463,7 @@ reversible and execute under standing authority.
 | 4 | Map the neutral roles onto the scale (D1, D2, D3, D4, D10) | **done · Class B** | **Executed 2026-08-21, batched with 5 and 6 per §2.3.4.** **Repointed:** `surface-0` → `background-200`, `surface-1` → `background-100`, `surface-2` → `gray-100`, `input-bg-disabled` → `surface-2` (rule 1.2 — one consumer, no purpose of its own), `bg-hover` / `-active` → `gray-200` / `-300`, `grid-guide` and `card-border` → `gray-400`, `-hover` → `gray-500`, `-active` → `gray-600`, `text-secondary` → `gray-900`, `text-primary` → `gray-1000`, `state-hover-overlay` / `-active` → `gray-alpha-200` / `-300`. **Before → after, OKLCH L, dark then light:** surface-1 **18 → 14.57** / 100 → 100; surface-2 24 → 21.56 / 94 → 96.19; bg-hover **32 → 23.76** / 88 → 93.89; bg-active **36 → 28.01** / 84 → 92.34; grid-guide **24 → 30.08** / 88 → 93.89 (a grid line is a border at rest, so the step it was lighter by is the distinction that goes); card-border 30 → 30.08 / **88 → 93.89**; -hover 39 → 38.99 / **70 → 83.73**; -active 62 → 62.39 / **50 → 73.26**; text-primary 94 → 94.66 / **14 → 20.44**; text-secondary 70 → 70.79 / **38 → 41.84**; hover overlay white 10% → 9.02% / black 9% → 7.84%; active overlay **white 20% → 12.94%** / **black 16% → 10.2%**. **The dark neutrals barely moved and the light ones moved a lot**, which is exactly what §3.3 predicted: someone had measured the dark anchors against the catalog once and derived light by mirroring, and the catalog is not symmetric. **D4 closed as a side effect**, visible in the diff as chroma `0.004 → 0` on every repointed role. **The press state is meaningfully weaker** — 20% → 12.94% white is the largest single perceptual change in this batch and the one most worth an eyeball. **~30 light-theme overrides deleted**, not edited: a role reading a step is correct in both themes by construction, and leaving the override would have given it two sources of truth with the light one silently winning. A new test fails exactly that. **Deliberately not done:** `--rux-text-disabled`, `--rux-thumb-bg` and `--rux-overlay-scrim` stay off the scale and are recorded in `tokens.css` with the reason (rule 1.1a) — the catalog has no step for any of them, and the nearest by value means something else; forcing them would make a step serve two purposes. `--rux-gray` (**D10**) and the legacy bases are untouched — Class C. Contract 1.1.0 → **1.2.0**, shared with 5 and 6. |
 | 5 | Map the status roles onto the hue scales; close D6 | **done · Class B** | **Rule 2.7 made real, and D6 with it.** **Text → `{scale}-900`:** danger red, warning **amber** (moved off `--rux-yellow` at hue 85 to the hue the catalog calls warning, 30–44), success green, info blue. **Before → after contrast, light theme, against the canvas: 1.85 / 1.30 / 1.19 / 1.37 → 5.14 / 5.34 / 5.10 / 5.09.** Three times under AA to comfortably over, which is the single most valuable thing in this document. Dark went the other way and stayed fine: 8.27 / 13.86 / 15.80 / 12.69 → 7.15 / 9.95 / 9.39 / 8.40 — less contrast, and on the catalog. **Tint → `{scale}-100`, and now opaque** (it was the base at 14% alpha, which rendered differently over a card than over the canvas; a tint is a background, so it composites once). **Fill → 700, fill-hover → 800, on-fill → 1000**, and published for all four statuses rather than danger alone — the other three were missing only because nobody had hand-tuned them. **Two tiers converged and are kept published:** `-strong` now resolves to the base (it existed to be readable where the base was not, which was D6) and `-vivid` to the fill (same purpose — a solid colour carrying a label). Both are Class C to retire and are recorded as candidates. **The trip bar's own tone recipes are untouched** (rule 1.3 — the application owns its mapping). **Found, not fixed — D14:** `red-1000` on `red-700` measures **3.44:1** dark, 4.19:1 light, below AA. It was ~3.95:1 before, so this step moved it slightly worse. **This row first recorded the pairing as "the catalog's own", which was wrong — it was this step's inference from rule 2.2's "1000 = primary text", and the catalog's foundation publishes no on-fill pairing at all.** The correction is left visible rather than rewritten, because the mistake is instructive: a step number applied by analogy is not a measurement. What the right pairing is turns on **Q8**. Contract shared. |
 | 6 | Accent as a scale selection; focus ring onto the catalog (D7, D11, D13) | **done · Class B** | **`--rux-accent` is now a selection of four steps**, not a colour: `accent-100/700/800/900/1000` name which scale is the accent, and `accent`, `-hover`, `-subtle`, `-ring` read those. **Before → after:** accent L 60 C 0.28 → **57.91 C 0.2141** (`blue-700`); hover **70 → 51.64** (`blue-800`) — the hover now *darkens*, which is D7 and is the most visible single change for buttons, links and active tabs; subtle 14% alpha → opaque `blue-100`; ring 70 C 0.28 → **71.78 C 0.1521** dark and **57.91** light, the catalog's focus colour, which is the one accent role that is not theme-invariant and so keeps a one-line light override that every accent inherits. `accent-fill` converges on the accent and is a Class C candidate. **D11 closed:** `[data-rux-accent="violet"|"green"|"amber"]` published, four lines each, repointing the same steps; verified live that all three resolve their accent, hover and ring to their own scale. `tests/state-contract.test.mjs` no longer carries the attribute as accepted debt. The gap was never really CSS — an accent cannot be *switched* while it is a hand-tuned recipe, because there is no second palette to switch to. **D13, found by this step's own contrast pass and fixed in it:** `a:hover` read `--rux-accent-hover`, so when that became the 800 step a link got **dimmer** on hover in dark theme, 4.73:1 → **3.67:1**, under AA. A fill role behaving correctly, inherited by text. Links now read `--rux-link-fg` / `-hover` = the accent scale's **900 → 1000** text steps, which move the right way in both themes because the scale inverts around the fills: dark **8.40 → 19.16**, light **5.09 → 14.70**. **Verification for the whole batch.** The first attempt was wrong and is recorded because the error is instructive: flipping `data-theme` and reading computed styles immediately samples elements **mid-transition**, returning interpolated `oklab()` values — it reported `.rux-input` at white-on-white 1.12:1, which does not exist. Redone with transitions disabled and the previous cascade **replayed at matched specificity** (the technique `typography.md` step 27 had to learn): on `gallery.html`, **310 of 312 elements move in each theme, 106 distinct changes**, every one matching the intended mapping; on `index.html`, 4,625 of 5,288. Page overflow 0. **Eyeballed:** `gallery.html` dark at 1280, top of page only — screenshots after scrolling returned blank frames because the Browser pane was not compositing, so the rest of the gallery and **all of light theme are measured but not seen**. That is the largest gap in this batch. Also unseen: every interaction-gated surface, and the trip bar, whose tone recipes read status roles that moved. Contract shared. |
-| 9 | Put text on a fill over the AA floor (D14) | **[open]** | **Turns on Q8.** Class B, small: four `-on-fill` tokens, `--rux-fg-on-accent`, and the fill steps they sit on. **Under branch (a)** the shape is a `800` fill with a **true white** label for the dark hues and a near-black label for amber — measured on Geist's own error button at 4.79:1, though as an observation rather than a citation (see §'s source note). **Before → after, expected:** `danger-fill` `red-700` → `red-800`, `danger-on-fill` `red-1000` → white, contrast **3.44 → ~4.79**; `--rux-fg-on-accent` currently reads `--rux-white`, which is `oklch(1 0.004 255)` — tinted, out of gamut, and clipping to a hair off pure white, which is why Rux measures 4.43 where the same `blue-700` fill measures 4.50 under a true white. **So this step also takes a bite out of D5** and needs a genuinely achromatic white, which the `gray` scale does not contain (its 1000 is `#ededed`). Whether that is a new named token or `background-100` read theme-invariantly is the executor's call, and it must be recorded — a fill is theme-invariant, so its label must be too, and a label reading a theme-dependent token would flip to black on red in dark mode. **States to eyeball:** the destructive button, the accent button, solid badges, both themes. **Deliberately not in scope:** the trip bar's tone recipes (rule 1.3). Contract bump: minor. |
+| 9 | Put text on a fill over the AA floor (D14, Q8) | **done · Class B** | **Executed 2026-08-22 under branch (a).** Rule 2.11 gains its fill half — the first rule this document originates rather than adopts — and every published fill moves to the step that satisfies it. **Two label roles added**, both theme-invariant literals under rule 1.1a because no scale step is a true white or near-black (`gray-1000` is `#ededed` dark and `#171717` light): `--rux-fg-on-fill` `oklch(100% 0 0)` and `--rux-fg-on-fill-inverse` `oklch(14.57% 0 0)`. They are literals *on purpose* — a fill is the 700/800 step and so is the same colour in both themes, so a label reading `background-100` would flip to near-black on a dark blue button when the theme changed. **Before → after, resolved:** `danger-fill` `red-700` → `red-800` and its label `red-1000` → white, **3.44 → 4.74** dark / 4.19 → 4.73 light; `warning-fill` → `amber-800` + inverse **9.25**; `success-fill` → `green-800` + inverse **4.85**; `info-fill` → `blue-800` + white **5.73**; `--rux-button-accent-background` `--rux-accent` → `--rux-accent-800`, **4.43 → 5.73** both themes. `-on-vivid` follows `-on-fill` (same pairing, other name), which reaches the trip bar. **`--rux-accent` itself stays at 700** — it is the identity colour for borders, icons and focus, none of which carries a label, and links already go through the 900 text step. **`--rux-fg-on-accent` moved off `--rux-white`** to the true white: worth 0.01 of contrast, but it was one of D5's 30 out-of-gamut tokens and this was the step with reason to touch it. **The accent button's hover now darkens** (`calc(l - 0.06)`, was `l + 0.05`): a lighter hover on an 800 fill lands back at 700's contrast and drops the label under AA under the pointer, which is worse than failing at rest. Contrast now *rises* on interaction — 5.73 → 7.36 → 9.10. That leaves the mechanism wrong even though the direction is right, recorded as **D15**. **Solid badges were checked and not touched** — their own lightness arithmetic already clears (7.64 dark / 5.52 light). **Verified:** every fill measured in both themes on `gallery.html`; **eyeballed in both themes** on the live dev server, buttons/badges/alerts, which is the first visual check this document has managed — screenshots composite only at scroll 0, so the sections were hidden rather than scrolled past. `tests/color-scales.test.mjs` failed on the fill move and its expectation was updated, which is the ratchet working. 348/348. Contract 1.2.1 → **1.3.0**. |
 | 7 | Enforce rules 2.1 (second half), 2.8, 2.9, 2.11 | **[open]** | **After steps 2–6**, because the checks fail today and a test that fails on the state it was written in is a todo, not a ratchet. Extends `tests/tokens-contract.test.mjs` or adds `tests/color-contract.test.mjs`: every absolute-lightness token in `:root` has a light override (D12); the gray scale has chroma 0; every token parses to an in-gamut sRGB value; the 900/1000 steps of every scale meet 4.5:1 against both backgrounds in both themes. Class A. |
 | 8 | **Consolidate** — strip duplicated colour rules elsewhere; convert them to pointers | **[open]** | The closing step, last by construction (`CLAUDE.md` § One home per rule). **In scope:** `README.md` § Backgrounds (the two-surface rule and token table), § Color (the accent sentence, the `oklch` sentence), § Reference: Vercel Geist colors (the step table — now §2.2 — and the alignment list — now §3.3), § Swappable accent (D11's record); `../audit/design-system-audit.md` §5 R6, which keeps its duration/easing half for `motion.md` and points here for colour; the `rux-design` skill's colour paragraph; the literal `oklch()` values in `../trip-bar.md` and `../cards.md`, which become token names or are recorded as the trip bar's own tokens. **Before stripping anything,** each rule is checked to exist here first. Contract bump: patch. |
 | 10 | Correct D14's framing and record what a component page is worth | **done** | Class A, and a **patch** — wording, evidence and a corrected citation; no token, rule or value moves. **What was wrong.** Step 5 recorded D14 as *"the catalog's own text-on-fill pairing, so changing it is a departure rather than a correction"*. The pairing was **step 5's own inference** from rule 2.2's "1000 = primary text", applied by analogy to a surface rule 2.2 never mentions. The catalog's foundation publishes no on-fill pairing at all, so there was nothing to depart from. **What was then wrong in the other direction.** Measuring `vercel.com/geist/button` produced a confident correction — "Geist's standard is 800 + white, D14 is my mapping error, no decision needed" — which overshot twice. **(1)** The blue fill cited as "Geist's primary at 4.50:1" is in that page's **Custom** section, which demonstrates `CustomButton` *overriding* the system's colours; the page states "primary, success, ghost, and violet are not valid type values". It was the one button there that is by construction not the standard. **(2)** Even the genuine specimens are a **component mapping**, which this document's own precedence rule reserves to a downstream — and `typography.md` already paid for that confusion: Q7 set the type floor at 11px on the Badge's authority and Q11 reversed it, at the cost of two releases and a Class C removal. **What survives, and it is the useful part:** the button page can *falsify* an inference without *establishing* a rule. It shows a white label rather than the 1000 step, which is enough to retire step 5's guess and not enough to replace it. **Recorded:** D14 rewritten; step 5's sentence corrected in place with the error left visible; rule 2.11 gains an explicit note that its floor stops at the two backgrounds and why; **Q8** opened to decide whether it should; **step 9** drafted against it; a source note added to §'s preamble stating that component pages are observations, never authority, with the Q7→Q11 precedent and the three Button measurements as evidence. `../README.md`'s source table corrected likewise. **Deliberately not done:** amending rule 2.11 — that is Q8's to decide and step 9's to execute; and touching any token, which is why the destructive button still measures 3.44:1 today. Contract 1.2.0 → **1.2.1**. |
@@ -451,24 +475,29 @@ reversible and execute under standing authority.
 These are design decisions, not engineering ones. Each blocks at least one §5 step. Answer
 them **in this document** — an answer recorded anywhere else does not authorize anything.
 
+**Q8 — Does the AA floor cover text on a fill? — ANSWERED (step 9): yes, and it decides the
+step.** Branch (a), by the owner, 2026-08-22. Rule 2.11 gains a second half: a published fill
+and its label clear 4.5:1, the fill is the lightest step that manages it, and the label is
+white or near-black by measurement. Every fill moved 700 → 800 and D14 closed.
+
+**How the question got here is worth keeping, because two of its framings were wrong.** It
+began as "correcting D14 is a departure from the catalog" — false; the 1000-step label was
+step 5's inference and the catalog publishes no on-fill pairing at all. It was then briefly
+recorded as "Geist's button page has the answer, no decision needed" — also false, for two
+reasons: the blue fill cited there is in that page's **Custom** section, which demonstrates
+overriding the system's colours, and component pages are not authority here regardless
+(`typography.md` Q7→Q11). **The proposal that finally settled it was to copy the blue from
+that Custom demo, and measuring killed it:** the demo renders `blue-700` — the step
+`--rux-accent` already was — so copying it would have changed nothing, and `blue-700` with a
+white label measures **4.44**, which fails. What the measurement did produce was the *rule*
+above, which explains every Geist button without citing one. *Original text follows.*
+
 **Q8 — Does the AA floor cover text on a fill?** Rule 2.11 puts a 4.5:1 floor under the 900
 and 1000 steps against the two backgrounds. It says nothing about a label on a `700` or `800`
 fill, and D14 is what lives in that silence: `red-1000` on `red-700` at **3.44:1**, white on
-`blue-700` at **4.43:1**. **The catalog cannot answer this** — its foundation publishes no
-on-fill pairing, and its Button component's choices are a mapping this document does not
-inherit (see the source note above). So it is Rux's rule to make or decline.
-
-**Three branches.** *(a)* **Extend rule 2.11 to any text-on-fill pairing this system
-publishes**, then pick steps that satisfy it — mechanically, a darker fill (`800`) with a true
-white label clears 4.5:1, which is also what Geist's error button happens to do. *(b)* **Scope
-the floor to large text only** on fills — WCAG allows 3:1 at 18.66px/bold, which most button
-labels are not, so this mostly declines the problem. *(c)* **Record the fills as a named
-exception** and leave them, on the grounds that a button label is a control rather than
-content. **Recommendation: (a).** A destructive button is the one control where being read
-correctly matters most, and the change is four tokens. The cost is honest and worth stating:
-it makes this system's fills *not* the catalog's, and §2 gains its first originated rule —
-which is exactly what `layout.md` already does for breakpoints, so there is precedent for the
-shape. *Blocks step 9.*
+`blue-700` at **4.43:1**. **Three branches.** *(a)* Extend rule 2.11 to any text-on-fill
+pairing this system publishes, then pick steps that satisfy it. *(b)* Scope the floor to large
+text only on fills. *(c)* Record the fills as a named exception. **Recommendation: (a).**
 
 **Q1 — Adopt the catalog's ten-step scales as Tier 0, literally? — ANSWERED (steps 2, 3):
 yes.** By the owner, 2026-08-21. 164 values published, both themes, nothing reading them

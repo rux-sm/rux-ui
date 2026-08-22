@@ -476,9 +476,30 @@
 	--rux-text-default:  var(--rux-text-primary);
 	--rux-text-heading:  var(--rux-text-primary);
 
-	--rux-fg-on-accent:        var(--rux-white);
-	--rux-fg-on-accent-muted:  oklch(from var(--rux-white) l c h / 75%);
-	--rux-fg-on-accent-subtle: oklch(from var(--rux-white) l c h / 55%);
+	/* The label on a solid coloured fill. Two of them, because no single colour
+	   clears 4.5:1 on every fill: white carries the dark hues, near-black
+	   carries the bright ones (amber, green, teal). Rule 2.11 picks between
+	   them by measurement, not by taste.
+
+	   BOTH ARE THEME-INVARIANT LITERALS, and that is the point: a fill is the
+	   700/800 step, which is the same colour in both themes, so its label must
+	   be too. Reading --rux-background-100 here would look right — it is
+	   #0a0a0a in dark and white in light — and would flip the label to
+	   near-black on a dark blue button the moment the theme changed.
+
+	   Neither is a scale step: the gray scale's 1000 is #ededed in dark and
+	   #171717 in light, and neither is a true white or a true near-black. So
+	   these are named Rux roles under rule 1.1a, not forced onto a step.
+	   docs/foundations/color.md rule 2.11, §5 step 9. */
+	--rux-fg-on-fill:         oklch(100% 0 0);    /* pure white, in gamut */
+	--rux-fg-on-fill-inverse: oklch(14.57% 0 0);  /* near-black, the catalog's own on-fill dark */
+
+	/* Was var(--rux-white), which is oklch(1 0.004 255) — tinted, out of gamut,
+	   and clipping to #fdffff. Worth 0.01 of contrast, but it is one of D5's
+	   30 out-of-gamut tokens and this is the step that had reason to touch it. */
+	--rux-fg-on-accent:        var(--rux-fg-on-fill);
+	--rux-fg-on-accent-muted:  oklch(from var(--rux-fg-on-fill) l c h / 75%);
+	--rux-fg-on-accent-subtle: oklch(from var(--rux-fg-on-fill) l c h / 55%);
 
 	/* ─── COLOR · status roles ───────────────────────────────────────────── */
 	/* A status is a SCALE, not a colour (rule 2.7). Danger is the red scale,
@@ -528,15 +549,29 @@
 	   the scale's own near-white — as the text on it. Published for all four
 	   now rather than danger alone: a step is a step, and the reason the other
 	   three were missing was that nobody had hand-tuned them. */
-	--rux-danger-fill:    var(--rux-red-700);
-	--rux-warning-fill:   var(--rux-amber-700);
-	--rux-success-fill:   var(--rux-green-700);
-	--rux-info-fill:      var(--rux-blue-700);
-	--rux-danger-fill-hover:  var(--rux-red-800);
-	--rux-warning-fill-hover: var(--rux-amber-800);
-	--rux-success-fill-hover: var(--rux-green-800);
-	--rux-info-fill-hover:    var(--rux-blue-800);
-	--rux-danger-on-fill: var(--rux-red-1000);
+	/* 800, not 700 — chosen by rule 2.11's floor rather than by the step's
+	   name. Measured with a true white label: blue 700 gives 4.44 and 800 gives
+	   5.73; red 700 gives 3.91 and 800 gives 4.74. 700 fails for both, which is
+	   why Geist's own error button is 800 too. Amber, green and teal clear at
+	   no step with white and take the inverse label instead (9.25 / 4.85 /
+	   4.77). docs/foundations/color.md rule 2.11, §5 step 9. */
+	--rux-danger-fill:    var(--rux-red-800);
+	--rux-warning-fill:   var(--rux-amber-800);
+	--rux-success-fill:   var(--rux-green-800);
+	--rux-info-fill:      var(--rux-blue-800);
+	--rux-danger-on-fill:  var(--rux-fg-on-fill);
+	--rux-info-on-fill:    var(--rux-fg-on-fill);
+	--rux-warning-on-fill: var(--rux-fg-on-fill-inverse);
+	--rux-success-on-fill: var(--rux-fg-on-fill-inverse);
+
+	/* Degenerate since the fills moved to 800: the catalog publishes 800 as
+	   700's hover and nothing as 800's, so these now name the step they were
+	   the hover for. Kept published because removing a name is Class C; they
+	   have no consumer. What a fill's hover should be is D15. */
+	--rux-danger-fill-hover:  var(--rux-danger-fill);
+	--rux-warning-fill-hover: var(--rux-warning-fill);
+	--rux-success-fill-hover: var(--rux-success-fill);
+	--rux-info-fill-hover:    var(--rux-info-fill);
 
 	/* Vivid was the maximum-chroma tier for data surfaces (trip bars). It is
 	   the same purpose as fill — a solid colour carrying a label — so it takes
@@ -546,9 +581,13 @@
 	--rux-danger-vivid:  var(--rux-danger-fill);
 	--rux-warning-vivid: var(--rux-warning-fill);
 	--rux-info-vivid:    var(--rux-info-fill);
-	--rux-danger-on-vivid:  var(--rux-red-1000);
-	--rux-warning-on-vivid: var(--rux-amber-1000);
-	--rux-success-on-vivid: var(--rux-green-1000);
+	/* Same pairing as -on-fill, since -vivid resolves to the fill. The 1000 step
+	   these read until step 9 is a TINTED near-white (#feecee) for coloured text
+	   on a neutral ground, not a label on a saturated fill — the tint is what
+	   cost the contrast. */
+	--rux-danger-on-vivid:  var(--rux-danger-on-fill);
+	--rux-warning-on-vivid: var(--rux-warning-on-fill);
+	--rux-success-on-vivid: var(--rux-success-on-fill);
 
 	/* Compatibility alias for existing consumers. */
 	--rux-danger-bright:  var(--rux-danger-on-vivid);
@@ -1396,11 +1435,23 @@
 
 	/* ─── COMPONENT · button accent ─────────────────────────────────────────────── */
 
-	--rux-button-accent-background:   		var(--rux-accent);
+	/* The fill is the accent scale's 800, not its 700: white on 700 measures
+	   4.44 and fails rule 2.11's floor, where 800 measures 5.73. --rux-accent
+	   itself stays at 700 — it is the identity colour for borders, icons and
+	   focus, none of which carries a label, and links go through the 900 text
+	   step. docs/foundations/color.md §5 step 9. */
+	--rux-button-accent-background:   		var(--rux-accent-800);
 	--rux-button-accent-text:         		var(--rux-fg-on-accent);
 	--rux-button-accent-border:       		none;
-	--rux-button-accent-hover-background: 	oklch(from var(--rux-button-accent-background) calc(l + 0.05) c h);
-	--rux-button-accent-active-background:	oklch(from var(--rux-button-accent-background) calc(l - 0.05) c h);
+	/* Hover DARKENS, where it lightened until step 9. Two reasons: rule 2.5
+	   already has fills hovering to a darker step (700 -> 800), and a lighter
+	   hover on an 800 fill lands back at 700's contrast and drops the label
+	   under AA on hover — passing at rest and failing under the pointer is
+	   worse than either. These are still calc() derivations off a role rather
+	   than steps, which is D15; the direction is fixed here, the mechanism is
+	   not. */
+	--rux-button-accent-hover-background: 	oklch(from var(--rux-button-accent-background) calc(l - 0.06) c h);
+	--rux-button-accent-active-background:	oklch(from var(--rux-button-accent-background) calc(l - 0.11) c h);
 
 	/* ─── COMPONENT · button ghost ─────────────────────────────────────────────── */
 
