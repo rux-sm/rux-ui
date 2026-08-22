@@ -39,6 +39,9 @@ sheets["tokens.css (component tier)"] = tokens;
 const AXES = ["size", "weight", "line-height", "tracking", "color"];
 const ROLES = [
 	"--rux-text-heading-40",
+	"--rux-text-heading-32",
+	"--rux-text-heading-20",
+	"--rux-text-heading-14",
 	"--rux-text-heading-24",
 	"--rux-text-heading-16",
 	"--rux-text-copy-16",

@@ -101,25 +101,24 @@ h1, h2, h3, h4, h5, h6 {
    previously set tracking-normal, which is off the curve — a 16px heading
    tracks -0.02em, the same as any other heading at 16. */
 h1 { font-size: var(--rux-text-heading-40-size); font-weight: var(--rux-text-heading-40-weight); letter-spacing: var(--rux-text-heading-40-tracking); line-height: var(--rux-text-heading-40-line-height); }
-h2 { font-size: var(--rux-size-32); letter-spacing: var(--rux-tracking-tighter); line-height: var(--rux-line-height-40); }
-h3 { font-size: var(--rux-size-24); letter-spacing: var(--rux-tracking-tighter); line-height: var(--rux-line-height-32); }
-h4 { font-size: var(--rux-size-18); letter-spacing: var(--rux-tracking-tight); line-height: var(--rux-line-height-28); }
-h5 { font-size: var(--rux-size-16); letter-spacing: var(--rux-tracking-tight); line-height: var(--rux-line-height-24); }
-h6 {
-  font-size: var(--rux-size-12);
-  letter-spacing: var(--rux-tracking-normal);
-  color: var(--rux-text-secondary);
-  font-weight: var(--rux-weight-400);
-  line-height: var(--rux-line-height-16);
-}
+h2 { font-size: var(--rux-text-heading-32-size); font-weight: var(--rux-text-heading-32-weight); letter-spacing: var(--rux-text-heading-32-tracking); line-height: var(--rux-text-heading-32-line-height); }
+h3 { font-size: var(--rux-text-heading-24-size); font-weight: var(--rux-text-heading-24-weight); letter-spacing: var(--rux-text-heading-24-tracking); line-height: var(--rux-text-heading-24-line-height); }
+h4 { font-size: var(--rux-text-heading-20-size); font-weight: var(--rux-text-heading-20-weight); letter-spacing: var(--rux-text-heading-20-tracking); line-height: var(--rux-text-heading-20-line-height); }
+h5 { font-size: var(--rux-text-heading-16-size); font-weight: var(--rux-text-heading-16-weight); letter-spacing: var(--rux-text-heading-16-tracking); line-height: var(--rux-text-heading-16-line-height); }
+h6 { font-size: var(--rux-text-heading-14-size); font-weight: var(--rux-text-heading-14-weight); letter-spacing: var(--rux-text-heading-14-tracking); line-height: var(--rux-text-heading-14-line-height); }
+/* h6 read 12/16/400 in secondary until step 7 — styled as a Label rather than a
+   Heading (step 6). The catalog's Heading family publishes exactly six rungs and
+   HTML has exactly six heading levels, so the ladder is now 1:1 and h6 is a
+   Heading like the rest. Reversing step 6's call costs nothing to verify: h6 has
+   ZERO occurrences in this repository, so nothing renders either way. */
 
 /* ─── Body copy ─────────────────────────────────────────────────────────── */
 
-/* A bare paragraph keeps the 24px leading rather than the base's 20: it is
-   prose, not chrome, and 14/20 is tight for multi-line reading. That makes
-   `p` the one place the base's size and leading are not a matched pair —
-   named here so it is an exception rather than an accident, and revisited
-   when the portal and export surfaces (S3/S4) get their own treatment. */
+/* This read "a bare paragraph keeps the 24px leading rather than the base's 20
+   … the one place the base's size and leading are not a matched pair" until
+   step 7. Step 41 put `p` on copy-14's own leading, so it IS a matched pair now
+   and the exception it named no longer exists. Corrected rather than deleted:
+   the exception was real for as long as it stood. */
 p {
   margin: 0;
   /* copy-14's leading, not copy-16's. The ladder pairs 14 with 20; this read

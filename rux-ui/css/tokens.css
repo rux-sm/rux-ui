@@ -82,6 +82,7 @@
 	--rux-line-height-16:	1rem;		/* pairs with size-12 */
 	--rux-line-height-20:	1.25rem;	/* pairs with size-14 */
 	--rux-line-height-24:	1.5rem;		/* pairs with size-16 */
+	--rux-line-height-26:	1.625rem;	/* pairs with size-20 — the catalog's Heading rung is 20/26 (step 7) */
 	--rux-line-height-28:	1.75rem;	/* pairs with size-18 and size-20 */
 	--rux-line-height-32:	2rem;		/* pairs with size-24 */
 	--rux-line-height-40:	2.5rem;		/* pairs with size-32 */
@@ -418,6 +419,24 @@
 	   sits in a 40px band and stays 16px so the box reads as dense UI chrome,
 	   while a section heading is page copy and can afford the larger step. Pairs
 	   with the lead role below for its optional second line. */
+	--rux-text-heading-32-size:        var(--rux-size-32);
+	--rux-text-heading-32-weight:      var(--rux-weight-600);       /* 600 */
+	--rux-text-heading-32-line-height: var(--rux-line-height-40);
+	--rux-text-heading-32-tracking:    var(--rux-tracking-tighter); /* -0.04em */
+	--rux-text-heading-32-color:       var(--rux-text-primary);
+
+	--rux-text-heading-20-size:        var(--rux-size-20);
+	--rux-text-heading-20-weight:      var(--rux-weight-600);       /* 600 */
+	--rux-text-heading-20-line-height: var(--rux-line-height-26);
+	--rux-text-heading-20-tracking:    var(--rux-tracking-tight);   /* -0.02em */
+	--rux-text-heading-20-color:       var(--rux-text-primary);
+
+	--rux-text-heading-14-size:        var(--rux-size-14);
+	--rux-text-heading-14-weight:      var(--rux-weight-600);       /* 600 */
+	--rux-text-heading-14-line-height: var(--rux-line-height-20);
+	--rux-text-heading-14-tracking:    var(--rux-tracking-tight);   /* -0.02em */
+	--rux-text-heading-14-color:       var(--rux-text-primary);
+
 	--rux-text-heading-24-size:        var(--rux-size-24);
 	--rux-text-heading-24-weight:      var(--rux-weight-600);      /* 600 */
 	--rux-text-heading-24-line-height: var(--rux-line-height-32);
