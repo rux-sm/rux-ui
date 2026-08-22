@@ -12,10 +12,12 @@
 	gap: var(--rux-space-3);
 }
 
-/* The 14px/default/400 label recipe, published as .rux-text-label-14 so
-   callers opt in rather than being named here. .rux-preferences__heading and
-   .rux-preferences__label were byte-for-byte duplicates of it. */
-.rux-text-label-14,
+/* The 14px/default/400 label recipe — text-label-14. .rux-preferences__heading
+   and .rux-preferences__label were byte-for-byte duplicates of it, and the
+   utility that publishes it, .rux-text-label-14, shared this rule until step
+   51 moved it to base/text.css with every other .rux-text-* class. These two
+   read the same role here; nothing resolves differently.
+   docs/foundations/typography.md §5 step 51. */
 .rux-preferences__heading,
 .rux-preferences__label {
 	color: var(--rux-text-label-14-color);

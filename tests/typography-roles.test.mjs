@@ -5,9 +5,19 @@ import { readdir, readFile } from "node:fs/promises";
 const base = new URL("../rux-ui/css/", import.meta.url);
 const tokens = await readFile(new URL("tokens.css", base), "utf8");
 
-const baseFiles = (await readdir(new URL("base/", base))).filter((f) =>
-	f.endsWith(".css"),
+// base/text.css is excluded from the consumer corpus on purpose. It holds the
+// .rux-text-* utilities — one per role, each reading its role and nothing
+// else — and a utility is the role's own PUBLICATION, not a consumer of it.
+// Counting it would make every role "used" the moment it is published and
+// blind both the used-check and the PENDING honesty test below, which is the
+// same failure step 41 fixed in the other direction (a real consumer the
+// corpus could not see). Rule 1.3 wants every role to have a utility; §7.3
+// wants every role to have a consumer; these are different things, and the
+// corpus has to know which one it is measuring. Step 51.
+const baseFiles = (await readdir(new URL("base/", base))).filter(
+	(f) => f.endsWith(".css") && f !== "text.css",
 );
+const utilities = await readFile(new URL("base/text.css", base), "utf8");
 const sheets = Object.fromEntries(
 	await Promise.all(
 		baseFiles.map(async (f) => [
@@ -37,6 +47,13 @@ sheets["tokens.css (component tier)"] = tokens;
 // Every role carries the same axes; a call site should never have to drop to
 // the raw scale for one of them.
 const AXES = ["size", "weight", "line-height", "tracking", "color"];
+
+// A read of a role is `var(--rux-text-copy-13-size)` — the role name, a dash,
+// an axis. Matching on the name-plus-dash alone made --rux-text-copy-13 look
+// read wherever --rux-text-copy-13-mono-* was, which is how step 52 tripped
+// the PENDING honesty test on the wrong role. Step 52.
+const READ = (role) =>
+	new RegExp(`var\\(${role}-(?:${[...AXES, "family"].join("|")})\\)`);
 const ROLES = [
 	"--rux-text-heading-40",
 	"--rux-text-heading-32",
@@ -50,6 +67,9 @@ const ROLES = [
 	"--rux-text-label-14",
 	"--rux-text-button-14",
 	"--rux-text-button-12",
+	// Promoted from PENDING by step 52: the `code, kbd, samp, pre` element
+	// default in colors_and_type.css reads it whole.
+	"--rux-text-copy-13-mono",
 ];
 
 // Roles published ahead of their consumers (typography.md §5 step 38). §2.1
@@ -75,7 +95,33 @@ const PENDING = [
 	// adopted them on .rux-button. --rux-text-label-18 stays: its only consumer
 	// is .driver-share-header__label in scheduler/css, outside this corpus.
 	"--rux-text-label-18",
+	// The rest of the catalog, published by step 50 once Q12 settled that the
+	// adopted catalog is itself the named consumer §7.3 asks for. Every one is
+	// complete and, by design, read by nothing but its own utility in
+	// base/text.css — which the corpus excludes for exactly that reason.
+	"--rux-text-heading-48",
+	"--rux-text-heading-56",
+	"--rux-text-heading-64",
+	"--rux-text-heading-72",
+	"--rux-text-button-16",
+	"--rux-text-label-20",
+	"--rux-text-label-16",
+	"--rux-text-label-13",
+	"--rux-text-label-14-mono",
+	"--rux-text-label-13-mono",
+	"--rux-text-label-12-mono",
+	"--rux-text-copy-24",
+	"--rux-text-copy-20",
+	"--rux-text-copy-18",
+	"--rux-text-copy-13",
+	// --rux-text-copy-13-mono left this list at step 52, when `code` adopted it.
 ];
+
+// Rule 1.3: every published role SHOULD have a Tier 2 utility, and since step
+// 51 every one does, in one file. The utility must apply the role's axes by
+// reading the role's own tokens — not a primitive, not a literal — and a mono
+// role's utility must also set its family, the sixth axis rule 1.1 gives it.
+const PUBLISHED = [...ROLES, ...PENDING];
 
 // The intent-named roles step 31 replaced, kept published for one release so a
 // vendored consumer has somewhere to go. Each forwards to its shape-named
@@ -148,8 +194,44 @@ test("no role is defined but unused", () => {
 	for (const role of ROLES) {
 		assert.match(
 			consumers,
-			new RegExp(`var\\(${role}-`),
+			READ(role),
 			`${role} is defined but nothing reads it`,
+		);
+	}
+});
+
+test("every published role has a utility that applies it whole (rule 1.3)", () => {
+	const PROPERTY = {
+		size: "font-size",
+		weight: "font-weight",
+		"line-height": "line-height",
+		tracking: "letter-spacing",
+		color: "color",
+		family: "font-family",
+	};
+	for (const role of PUBLISHED) {
+		const cls = role.replace(/^--rux-/, ".rux-");
+		const rule = utilities.match(
+			new RegExp(`${cls.replace(".", "\\.")}\\s*\\{([^}]*)\\}`),
+		);
+		assert.ok(rule, `${cls} has no rule in base/text.css`);
+		const axes = role.endsWith("-mono") ? [...AXES, "family"] : AXES;
+		for (const axis of axes) {
+			assert.match(
+				rule[1],
+				new RegExp(`${PROPERTY[axis]}:\\s*var\\(${role}-${axis}\\)`),
+				`${cls} does not read ${role}-${axis} for its ${PROPERTY[axis]}`,
+			);
+		}
+	}
+});
+
+test("a mono role carries its family as a sixth axis (rule 1.1)", () => {
+	for (const role of PUBLISHED.filter((r) => r.endsWith("-mono"))) {
+		assert.match(
+			tokens,
+			new RegExp(`${role}-family:\\s*var\\(--rux-font-mono\\)`),
+			`${role}-family must read --rux-font-mono`,
 		);
 	}
 });
@@ -171,7 +253,7 @@ test("a pending role that gained a consumer is promoted, not left pending", () =
 	for (const role of PENDING) {
 		assert.doesNotMatch(
 			consumers,
-			new RegExp(`var\\(${role}-`),
+			READ(role),
 			`${role} is read by a stylesheet — move it from PENDING into ROLES ` +
 				`and record the migration step (typography.md §5)`,
 		);
@@ -196,7 +278,7 @@ test("recurring type recipes go through a role, not the raw scale", () => {
 		assert.ok(rule, `rule for ${role} not found: ${pattern}`);
 		assert.match(
 			rule[0],
-			new RegExp(`var\\(${role}-`),
+			READ(role),
 			`${pattern} should read ${role}-*`,
 		);
 	}

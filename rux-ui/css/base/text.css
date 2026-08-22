@@ -1,0 +1,274 @@
+/* ==========================================================================
+   TEXT  ·  .rux-text-{family}-{size}
+   --------------------------------------------------------------------------
+   One class per published type role, applying that role and nothing else —
+   the Tier 2 utilities of docs/foundations/typography.md §3.3. The names are
+   the Geist catalog's own (text-heading-72 … text-copy-13-mono) under this
+   system's prefix, so a call site that knows the catalog knows these.
+
+   A class here sets exactly the role's axes — size, weight, line-height,
+   tracking, colour, and family for the mono roles — by reading the role's
+   tokens, never a primitive and never a literal. Anything beyond that (a
+   transform, a divider, a different colour) is an object, not a role, and
+   keeps an object name elsewhere: .rux-u-section-label, .rux-u-subtitle.
+
+   Imported last by rux.css, so a utility placed on a component element wins
+   over the component's own type rule at equal specificity — which is what a
+   call site reaching for a utility is asking for.
+
+   Until step 51 the three that existed lived beside whichever component
+   first needed them (card.css, form.css, preferences.css), which is why §3.3
+   needed an index. Component classes that share a role's recipe keep reading
+   the role's tokens in their own file; only the utility moved.
+   docs/foundations/typography.md §5 steps 50 and 51.
+   ========================================================================== */
+
+/* ─── Heading · 600, tracking on the 2.13 curve ─────────────────────────── */
+
+.rux-text-heading-72 {
+	font-size: var(--rux-text-heading-72-size);
+	font-weight: var(--rux-text-heading-72-weight);
+	line-height: var(--rux-text-heading-72-line-height);
+	letter-spacing: var(--rux-text-heading-72-tracking);
+	color: var(--rux-text-heading-72-color);
+}
+
+.rux-text-heading-64 {
+	font-size: var(--rux-text-heading-64-size);
+	font-weight: var(--rux-text-heading-64-weight);
+	line-height: var(--rux-text-heading-64-line-height);
+	letter-spacing: var(--rux-text-heading-64-tracking);
+	color: var(--rux-text-heading-64-color);
+}
+
+.rux-text-heading-56 {
+	font-size: var(--rux-text-heading-56-size);
+	font-weight: var(--rux-text-heading-56-weight);
+	line-height: var(--rux-text-heading-56-line-height);
+	letter-spacing: var(--rux-text-heading-56-tracking);
+	color: var(--rux-text-heading-56-color);
+}
+
+.rux-text-heading-48 {
+	font-size: var(--rux-text-heading-48-size);
+	font-weight: var(--rux-text-heading-48-weight);
+	line-height: var(--rux-text-heading-48-line-height);
+	letter-spacing: var(--rux-text-heading-48-tracking);
+	color: var(--rux-text-heading-48-color);
+}
+
+.rux-text-heading-40 {
+	font-size: var(--rux-text-heading-40-size);
+	font-weight: var(--rux-text-heading-40-weight);
+	line-height: var(--rux-text-heading-40-line-height);
+	letter-spacing: var(--rux-text-heading-40-tracking);
+	color: var(--rux-text-heading-40-color);
+}
+
+.rux-text-heading-32 {
+	font-size: var(--rux-text-heading-32-size);
+	font-weight: var(--rux-text-heading-32-weight);
+	line-height: var(--rux-text-heading-32-line-height);
+	letter-spacing: var(--rux-text-heading-32-tracking);
+	color: var(--rux-text-heading-32-color);
+}
+
+.rux-text-heading-24 {
+	font-size: var(--rux-text-heading-24-size);
+	font-weight: var(--rux-text-heading-24-weight);
+	line-height: var(--rux-text-heading-24-line-height);
+	letter-spacing: var(--rux-text-heading-24-tracking);
+	color: var(--rux-text-heading-24-color);
+}
+
+.rux-text-heading-20 {
+	font-size: var(--rux-text-heading-20-size);
+	font-weight: var(--rux-text-heading-20-weight);
+	line-height: var(--rux-text-heading-20-line-height);
+	letter-spacing: var(--rux-text-heading-20-tracking);
+	color: var(--rux-text-heading-20-color);
+}
+
+/* Moved here from card.css at step 51. .rux-card__title, .rux-panel__title
+   and .rux-workspace__title still read the same role there. */
+.rux-text-heading-16 {
+	font-size: var(--rux-text-heading-16-size);
+	font-weight: var(--rux-text-heading-16-weight);
+	line-height: var(--rux-text-heading-16-line-height);
+	letter-spacing: var(--rux-text-heading-16-tracking);
+	color: var(--rux-text-heading-16-color);
+}
+
+.rux-text-heading-14 {
+	font-size: var(--rux-text-heading-14-size);
+	font-weight: var(--rux-text-heading-14-weight);
+	line-height: var(--rux-text-heading-14-line-height);
+	letter-spacing: var(--rux-text-heading-14-tracking);
+	color: var(--rux-text-heading-14-color);
+}
+
+/* ─── Button · 500, tracking 0 — for components that render buttons ─────── */
+
+.rux-text-button-16 {
+	font-size: var(--rux-text-button-16-size);
+	font-weight: var(--rux-text-button-16-weight);
+	line-height: var(--rux-text-button-16-line-height);
+	letter-spacing: var(--rux-text-button-16-tracking);
+	color: var(--rux-text-button-16-color);
+}
+
+.rux-text-button-14 {
+	font-size: var(--rux-text-button-14-size);
+	font-weight: var(--rux-text-button-14-weight);
+	line-height: var(--rux-text-button-14-line-height);
+	letter-spacing: var(--rux-text-button-14-tracking);
+	color: var(--rux-text-button-14-color);
+}
+
+.rux-text-button-12 {
+	font-size: var(--rux-text-button-12-size);
+	font-weight: var(--rux-text-button-12-weight);
+	line-height: var(--rux-text-button-12-line-height);
+	letter-spacing: var(--rux-text-button-12-tracking);
+	color: var(--rux-text-button-12-color);
+}
+
+/* ─── Label · 400, tracking 0, flat leading — single-line UI text ───────── */
+
+.rux-text-label-20 {
+	font-size: var(--rux-text-label-20-size);
+	font-weight: var(--rux-text-label-20-weight);
+	line-height: var(--rux-text-label-20-line-height);
+	letter-spacing: var(--rux-text-label-20-tracking);
+	color: var(--rux-text-label-20-color);
+}
+
+.rux-text-label-18 {
+	font-size: var(--rux-text-label-18-size);
+	font-weight: var(--rux-text-label-18-weight);
+	line-height: var(--rux-text-label-18-line-height);
+	letter-spacing: var(--rux-text-label-18-tracking);
+	color: var(--rux-text-label-18-color);
+}
+
+.rux-text-label-16 {
+	font-size: var(--rux-text-label-16-size);
+	font-weight: var(--rux-text-label-16-weight);
+	line-height: var(--rux-text-label-16-line-height);
+	letter-spacing: var(--rux-text-label-16-tracking);
+	color: var(--rux-text-label-16-color);
+}
+
+/* Moved here from preferences.css at step 51. .rux-preferences__heading and
+   .rux-preferences__label still read the same role there. */
+.rux-text-label-14 {
+	font-size: var(--rux-text-label-14-size);
+	font-weight: var(--rux-text-label-14-weight);
+	line-height: var(--rux-text-label-14-line-height);
+	letter-spacing: var(--rux-text-label-14-tracking);
+	color: var(--rux-text-label-14-color);
+}
+
+.rux-text-label-14-mono {
+	font-family: var(--rux-text-label-14-mono-family);
+	font-size: var(--rux-text-label-14-mono-size);
+	font-weight: var(--rux-text-label-14-mono-weight);
+	line-height: var(--rux-text-label-14-mono-line-height);
+	letter-spacing: var(--rux-text-label-14-mono-tracking);
+	color: var(--rux-text-label-14-mono-color);
+}
+
+.rux-text-label-13 {
+	font-size: var(--rux-text-label-13-size);
+	font-weight: var(--rux-text-label-13-weight);
+	line-height: var(--rux-text-label-13-line-height);
+	letter-spacing: var(--rux-text-label-13-tracking);
+	color: var(--rux-text-label-13-color);
+}
+
+.rux-text-label-13-mono {
+	font-family: var(--rux-text-label-13-mono-family);
+	font-size: var(--rux-text-label-13-mono-size);
+	font-weight: var(--rux-text-label-13-mono-weight);
+	line-height: var(--rux-text-label-13-mono-line-height);
+	letter-spacing: var(--rux-text-label-13-mono-tracking);
+	color: var(--rux-text-label-13-mono-color);
+}
+
+/* Moved here from form.css at step 51 — where it had absorbed .rux-u-caption,
+   .rux-u-hint (step 31) and .rux-u-eyebrow (step 47). */
+.rux-text-label-12 {
+	font-size: var(--rux-text-label-12-size);
+	font-weight: var(--rux-text-label-12-weight);
+	line-height: var(--rux-text-label-12-line-height);
+	letter-spacing: var(--rux-text-label-12-tracking);
+	color: var(--rux-text-label-12-color);
+}
+
+.rux-text-label-12-mono {
+	font-family: var(--rux-text-label-12-mono-family);
+	font-size: var(--rux-text-label-12-mono-size);
+	font-weight: var(--rux-text-label-12-mono-weight);
+	line-height: var(--rux-text-label-12-mono-line-height);
+	letter-spacing: var(--rux-text-label-12-mono-tracking);
+	color: var(--rux-text-label-12-mono-color);
+}
+
+/* ─── Copy · 400, tracking 0, leading grows with size — prose that wraps ── */
+
+.rux-text-copy-24 {
+	font-size: var(--rux-text-copy-24-size);
+	font-weight: var(--rux-text-copy-24-weight);
+	line-height: var(--rux-text-copy-24-line-height);
+	letter-spacing: var(--rux-text-copy-24-tracking);
+	color: var(--rux-text-copy-24-color);
+}
+
+.rux-text-copy-20 {
+	font-size: var(--rux-text-copy-20-size);
+	font-weight: var(--rux-text-copy-20-weight);
+	line-height: var(--rux-text-copy-20-line-height);
+	letter-spacing: var(--rux-text-copy-20-tracking);
+	color: var(--rux-text-copy-20-color);
+}
+
+.rux-text-copy-18 {
+	font-size: var(--rux-text-copy-18-size);
+	font-weight: var(--rux-text-copy-18-weight);
+	line-height: var(--rux-text-copy-18-line-height);
+	letter-spacing: var(--rux-text-copy-18-tracking);
+	color: var(--rux-text-copy-18-color);
+}
+
+.rux-text-copy-16 {
+	font-size: var(--rux-text-copy-16-size);
+	font-weight: var(--rux-text-copy-16-weight);
+	line-height: var(--rux-text-copy-16-line-height);
+	letter-spacing: var(--rux-text-copy-16-tracking);
+	color: var(--rux-text-copy-16-color);
+}
+
+.rux-text-copy-14 {
+	font-size: var(--rux-text-copy-14-size);
+	font-weight: var(--rux-text-copy-14-weight);
+	line-height: var(--rux-text-copy-14-line-height);
+	letter-spacing: var(--rux-text-copy-14-tracking);
+	color: var(--rux-text-copy-14-color);
+}
+
+.rux-text-copy-13 {
+	font-size: var(--rux-text-copy-13-size);
+	font-weight: var(--rux-text-copy-13-weight);
+	line-height: var(--rux-text-copy-13-line-height);
+	letter-spacing: var(--rux-text-copy-13-tracking);
+	color: var(--rux-text-copy-13-color);
+}
+
+.rux-text-copy-13-mono {
+	font-family: var(--rux-text-copy-13-mono-family);
+	font-size: var(--rux-text-copy-13-mono-size);
+	font-weight: var(--rux-text-copy-13-mono-weight);
+	line-height: var(--rux-text-copy-13-mono-line-height);
+	letter-spacing: var(--rux-text-copy-13-mono-tracking);
+	color: var(--rux-text-copy-13-mono-color);
+}

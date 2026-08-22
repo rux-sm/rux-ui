@@ -197,8 +197,12 @@
    scheduler/css/features/maintenance-share.css, trip-history.css,
    comp-settings-app.css); grouped here so there's one place to change the
    role instead of six. Each class below keeps its own rule for structural
-   properties only (margin, padding, flex, overflow handling). */
-.rux-text-heading-16,
+   properties only (margin, padding, flex, overflow handling).
+
+   The utility that applies this role, .rux-text-heading-16, shared this rule
+   until step 51 moved it to base/text.css with every other .rux-text-* class.
+   The three component classes stay here and read the same role, so nothing
+   resolves differently. docs/foundations/typography.md §5 step 51. */
 /* The 16/24 semibold heading recipe, shared with .rux-ui-header__title.
    Tracking is negative rather than zeroed: at this size the tighter setting
    is what keeps a title reading as a heading instead of as body copy. */

@@ -17,27 +17,30 @@
    tokens.css, colors_and_type.css, and base/ for maintainability.
    ========================================================================== */
 
-@import "./tokens.css?v=26";
-@import "./colors_and_type.css?v=4";
+@import "./tokens.css?v=28";
+@import "./colors_and_type.css?v=5";
 @import "./base/icons.css";
 @import "./base/controls.css?v=5";
 @import "./base/ui-header.css?v=16";
 @import "./base/side-nav.css?v=5";
 @import "./base/app-shell.css?v=5";
 @import "./base/badges.css?v=2";
-@import "./base/form.css?v=5";
+@import "./base/form.css?v=6";
 @import "./base/workspace.css?v=6";
 @import "./base/panel.css?v=2";
 @import "./base/drawer.css";
 @import "./base/menu.css?v=4";
 @import "./base/popover.css?v=9";
 @import "./base/suggestions.css?v=3";
-@import "./base/card.css?v=6";
+@import "./base/card.css?v=7";
 @import "./base/table.css?v=5";
 @import "./base/content.css?v=4";
 @import "./base/notifications.css?v=5";
-@import "./base/preferences.css?v=3";
+@import "./base/preferences.css?v=4";
 @import "./base/profile-picker.css?v=2";
 @import "./base/feedback.css?v=3";
 @import "./base/navigation.css";
 @import "./base/utils.css";
+/* Type utilities last, so .rux-text-* wins over a component's own type rule
+   at equal specificity. docs/foundations/typography.md §5 step 51. */
+@import "./base/text.css";

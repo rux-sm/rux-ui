@@ -39,7 +39,7 @@ happened) and before `npm test`.
 .
 ├── README.md              ← you are here
 ├── gallery.html           ← component specimens, both themes, no app boot required
-│                            (9 of 22 base components so far — tests/gallery-coverage
+│                            (10 of 23 base files so far — tests/gallery-coverage
 │                             records the gaps and stops new ones appearing)
 ├── .claude/skills/        ← Claude Code skills: rux-design, vendor-rux-ui, verify
 ├── CLAUDE.md              ← concise Claude Code repository policy
@@ -50,7 +50,8 @@ happened) and before `npm test`.
 │   │   ├── tokens.css         ← all design tokens: color, type, space, radius, motion
 │   │   ├── colors_and_type.css ← webfonts (text + icon faces) + global element styles
 │   │   ├── rux-core.css       ← compatibility alias, forwards to rux.css
-│   │   └── base/              ← 21 reusable BEM components
+│   │   └── base/              ← 21 reusable BEM components, utils.css, and
+│   │                             text.css (the .rux-text-* type utilities)
 │   └── js/                    ← the JS engine behind rux-ui/css/base/* components:
 │                                 utilities.js (toast/modal/copy/accent), theme.js,
 │                                 menu.js, popover.js, drawer.js, floating-window.js,

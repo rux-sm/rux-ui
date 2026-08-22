@@ -1,10 +1,10 @@
 # Rux UI Foundations — Typography
 
-**Contract version: 4.2.0** · Stamped at the top so a downstream document can state the
+**Contract version: 4.5.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 48 steps: **43 done · 5 deferred**
+**Status** · 54 steps: **49 done · 5 deferred**
 The type system conforms to the measured Geist catalog end to end, in its **values** and now
 in its **names**: the ladder sits on the catalog (24), roles own their leading and carry a
 family (25, 26), tracking follows the curve (27), every overridden heading is paired (29),
@@ -14,7 +14,15 @@ this system's prefix. That closed **D2, D3, D4, D6, D7, D12, D13, D14** and two 
 three halves; step 9 retired the third emphasis tier that was only ever documented, closing
 **D5**. **Q1–Q5 and Q7–Q9 are answered** (§6).
 
-**Where to pick up.** One decision is open. Everything else waits on a consumer.
+**Where to pick up.** Nothing is open or ready. **The system is the catalog under its
+prefix:** all 29 styles published with a utility each (50, 51; Q12), the element defaults on
+catalog rungs — `code` on `copy-13-mono`, lists on the base leading (52, 53) — and both of
+the catalog's modifiers, Strong at 550 in Copy and Subtle in Heading (54), on a webfont
+import that declares Geist's variable range. Every value was measured off the rendered
+specimens on 2026-08-21 (49). **What is left is not conformance:** D19 (the trip-bar pill's
+12/12 default tier, app tier) and D22 (a literal `12px` in `maintenance-share.css`) are
+app-tier defects awaiting their owner; steps 4, 23, 32, 34 and 46 wait on a consumer.
+**Next: `color.md`**, by the same method.
 
 1. **Q6 — Is there a responsive story? — ANSWERED (step 7): no.** The census behind steps
 39–43 measured every rendered element across seven surfaces at 375px and 500px and found
@@ -37,15 +45,17 @@ mapping fix, not a responsive one. *Original text follows.*
    `tests/breakpoint-contract.test.mjs`, with **500** the standing candidate. What they lack
    is a canonical home — now provided by [`layout.md`](layout.md) §1.1, which publishes the
    set and makes **500** citable (steps 35, 36). *Gates step 7.*
-2. **The rename is live but not finished, and now unblocked.** Every superseded name — 18
-   primitives, 40 role tokens, 3 classes — is still published as an alias. **Step 33**
-   deletes them and was gated on step 34's consumer migration; **step 48 released that
-   gate**, so it is executable whenever someone runs it. 61 names.
+2. **The rename is finished.** Step 33 removed every superseded name — 52 declarations and
+   4 selectors — at contract 4.0.0; `tests/typography-roles.test.mjs` holds the twelve
+   retired names as a ratchet. *(This item said the aliases were still published until
+   step 49 corrected it.)*
 3. **The consumer-migration steps are deferred, not done.** Steps 32, 34 and 46 record what
    a consumer would have to do; step 48 took consumers out of scope. They stay on the log
    because the obligation is real if anything is ever re-vendored from an older tag.
-4. **The rest is not blocked on a decision**: step 11 needs external verification, step 16
-   needs everything else first, and steps 4 and 23 are deferred for want of a consumer.
+4. **Deferred for want of a consumer:** steps 4 and 23. Step 23's three rungs now have
+   consumers waiting in the log — `13` and `18` land with step 52 (`code` is the named
+   consumer), `36` with step 50 — so it closes through them rather than on its own.
+   Steps 11 and 16 are **done** (this item said otherwise until step 49).
 
 **Next foundation documents.** `colors.md`, `materials.md` and the component specs are the
 stated direction, with the catalog's own pages as the source — see `README.md` §1. Derived from
@@ -98,8 +108,8 @@ Type is expressed in three tiers, and a call site MUST consume the highest one t
 | Tier | What it is | Named by | Lives in |
 |---|---|---|---|
 | **0 · Primitives** | `--rux-size-*`, `--rux-line-height-*`, `--rux-weight-*`, `--rux-tracking-*` | its **value** (`14`, `24`, `400`) | `rux-ui/css/tokens.css` |
-| **1 · Roles** | `--rux-text-copy-14-*`, `--rux-text-heading-16-*` — a complete five-axis recipe | its **family and size** (`copy-14`, `label-12-wide`) | `rux-ui/css/tokens.css` |
-| **2 · Utilities** | `.rux-text-label-12`, `.rux-u-eyebrow` — one class that applies a whole role | its role, or its **object** where it adds anything beyond the role | `rux-ui/css/` |
+| **1 · Roles** | `--rux-text-copy-14-*`, `--rux-text-heading-16-*` — a complete five-axis recipe | its **family and size** (`copy-14`, `label-13-mono`) | `rux-ui/css/tokens.css` |
+| **2 · Utilities** | `.rux-text-label-12`, `.rux-u-section-label` — one class that applies a whole role | its role, or its **object** where it adds anything beyond the role | `rux-ui/css/` |
 
 **Both tiers are named by number, and the tiers are still distinct** (step 31; before it,
 Tier 1 was named by intent — `body`, `caption`, `eyebrow`). What separates them is not the
@@ -124,6 +134,18 @@ rather than choosing blind.
 **Rule 1.1** — A role MUST carry all five axes: size, weight, line-height, tracking,
 color. A call site that has to reach past a role to Tier 0 for one axis is a defect in
 the role, not in the call site.
+
+**The fifth axis is this system's extension, not the catalog's** (step 49). A Geist text
+style sets exactly four properties — size, leading, tracking, weight — and its colour comes
+from the page. Re-measured 2026-08-21: the grey on the catalog's specimens is demo
+scaffolding, not a property of the style — every row carrying a Strong renders its base in
+`gray-900` so the modifier reads, while `copy-13` and `label-18` render `gray-1000`. The
+colours in §3.2 are therefore **this system's mappings** — `copy-16` and `label-12` are
+secondary because they were the lead and the caption before the rename — and a reader
+comparing against Geist must not take them as measured. Kept, because the rule's reason
+stands on its own: a role a call site has to leave for its colour is half a role. A mono
+role additionally carries a **sixth axis, `-family`**, because the catalog's `-mono` styles
+differ from their sans siblings in nothing else (steps 50, 52).
 
 **Rule 1.2** — A recipe used by exactly one component is not a role. It belongs in that
 component's own token block, beside `--rux-field-label-*` and `--rux-button-font-*`.
@@ -161,15 +183,21 @@ exist: `--rux-font-sans` (Geist), `--rux-font-sans-condensed` (aliases sans; Gei
 condensed cut), `--rux-font-mono` (Geist Mono). There is no fourth. No display serif, no
 script.
 
-**2.4 Inline mono steps down one rung from the sans around it; standalone mono holds its
-size.** At matched nominal size a monospace face reads larger and heavier, so inline code
-**inside** 14px copy is 12px mono — the surrounding text is the reference, and matching it
-would make the code read larger than the sentence carrying it. A **standalone** mono role,
-with no sans beside it to be measured against, takes its sibling's size instead: the
-catalog's `label-14-mono` is 14px and `copy-13-mono` is 13px (Q9). The pairing is fixed;
-the numbers move with the base. Mono size MUST come from `--rux-size-*`, never from a
-proportional `em` — a proportional shrink lands off the scale at every call site and
-produces fractional pixels.
+**2.4 Mono holds its size, and inline code is `copy-13-mono`.** A mono role takes its
+sans sibling's size: the catalog's `label-14-mono` is 14px, `copy-13-mono` is 13px (Q9).
+Inline code — `code`, `kbd`, `samp` — and block code — `pre` — read **`text-copy-13-mono`
+whole**, 13/18 mono 400, which is the catalog's inline-code style by its own usage line
+(*"Used for inline code mentions"*). Inside a line of 14px copy the 18px leading is inert —
+the line box is the copy's — and `pre` takes it as a block. Mono size MUST come from a role
+or `--rux-size-*`, never from a proportional `em` — a proportional shrink lands off the
+scale at every call site and produces fractional pixels.
+
+*History.* Until step 52 this rule said inline mono **steps down one rung** from the sans
+around it, on the reasoning that a monospace face reads larger at matched nominal size, and
+`code` rendered 12px — with Q9 recording that the catalog had no inline-code style to
+compare against. Step 49 found that it has one (D20), and step 52 adopted it. The
+step-down was a departure, not a gap; it is recorded here because a reader who remembers
+"code is one rung down" should find where that went.
 
 **2.5 Emphasis is a modifier, not a role.** Weight and color modifiers MUST NOT change
 size. A modifier that also sets `font-size` is a token wearing a modifier's name, and MUST
@@ -206,9 +234,15 @@ tabular figures to prose, where they are wrong.
 them is the error. Absolutism here is false comfort: every real system accumulates two or
 three principled exceptions, and the useful rule is that each one is *named*.
 
-**2.11 Weight is a property of the role, not of the size.** Three weights are published
-for application use: **400** for copy and labels, **500** for controls and inline emphasis,
-**600** for headings. **A badge is a Label and takes 400**, per 2.12's tree, which lists it
+**2.11 Weight is a property of the role, not of the size.** Four weights are published
+for application use: **400** for copy and labels, **500** for controls and for inline
+emphasis inside a Label, **550** for inline emphasis inside Copy, **600** for headings.
+**Two modifiers, both the catalog's** (step 54): **Strong** — a `<strong>` — is 550 inside
+Copy and 500 inside Label; **Subtle** — a `<strong>` inside a Heading — is 500 at the
+secondary colour. 500 is the element default because a dense UI's strings are Labels by
+rule 2.12; `p` and the `text-copy-*` and `text-heading-*` utilities opt their `<strong>`
+into the other two. A component that reads a Copy role through its own class and wants
+550 sets it, the way six components pin 400 today (step 6). **A badge is a Label and takes 400**, per 2.12's tree, which lists it
 there — this clause read "controls, badges, and inline emphasis" until step 41 and so put
 badges at 500 while 2.12 put them at 400 (D16). A heading takes 600 at every size it appears at — a 14px
 heading is 600 exactly as a 72px heading is — and copy takes 400 at every size. Weight MUST
@@ -219,8 +253,15 @@ needing its own answer rather than a louder version of this one.
 
 This follows the Geist catalog the system's face comes from, not an independent judgement —
 `text-heading-*` is 600 at all ten published sizes from 14 to 72, `text-button-*` is 500,
-`text-copy-*` and `text-label-*` are 400. Geist's own Strong modifier measures **550**,
-which a ladder stepping in 100s cannot say; 500 is the adopted rung for `strong` (D2, Q3).
+`text-copy-*` and `text-label-*` are 400, and its Strong measures **550** inside Copy.
+
+*History.* Until step 54 this paragraph said 550 was a value "a ladder stepping in 100s
+cannot say" and 500 was the adopted rung for `strong` (D2, Q3). Step 49 re-measured and
+found the 550 was only half the story — Strong is 550 inside Copy and 500 inside Label, and
+Geist has a second modifier, Subtle, that this system had never adopted (D21). Step 54
+adopted both: `--rux-weight-550` exists, and the webfont import declares Geist's variable
+range so it renders as a real instance. "Cannot say 550" was true of the names and of the
+`@font-face` the discrete import produced, not of the face.
 
 **2.14 Twelve is the floor.** Nothing below 12px is published, and no call site may mint
 one. That is the Geist type catalog's own floor. The curve is therefore **0 at 12–20 for
@@ -260,16 +301,30 @@ The published sizes per family, and the leading each takes:
 |---|---|---|---|
 | `heading` | 600 | 2.13 curve | 14/20 · 16/24 · 20/26 · 24/32 · 32/40 · 40/48 |
 | `button` | 500 | 0 | 12/16 · 14/20 · 16/20 |
-| `label` | 400 | 0 | 12/16 · 13/16 · 14/20 · 16/20 · 18/20 · 20/24 |
-| `copy` | 400 | 0 | 13/18 · 14/20 · 16/24 · 18/28 · 20/36 · 24/36 |
+| `label` | 400 | 0 | 12/16 · 13/16 · 14/20 · 16/20 · 18/20 · 20/32 — mono: 12/16 · 13/**20** · 14/20 |
+| `copy` | 400 | 0 | 13/18 · 14/20 · 16/24 · 18/28 · 20/36 · 24/36 — mono: 13/18 |
 
-Two deliberate departures from the catalog, both recorded rather than silent. **Heading
-stops at 40**: Geist publishes 48/56/64/72 and this system has no surface that uses them,
-so they are not published here — §7.3's named-consumer rule applies to rungs the catalog
-offers as much as to ones invented locally. **`label-20` takes 24, not Geist's 32**: 32 is
-1.6 leading on a role defined as one line, which buys nothing but box height, and it breaks
-the flat-leading pattern every smaller Label rung follows. It is the one place this system
-judges the catalog inconsistent with itself; overturn it here if that reads wrong.
+The table is the catalog, re-measured in full on 2026-08-21 (step 49): 29 styles, and since
+step 50 this system publishes **all 29** (§3.2). The heading family also runs to **48/56 ·
+56/56 · 64/64 · 72/72**, all 600 at −0.06em. Mono styles hold their sans sibling's size and
+weight and differ only in family — except `label-13-mono`, which takes 20 where `label-13`
+takes 16 (Q9).
+
+**No departure stands.** Until step 50 one did — heading stopped at 40, button at 14, label
+lacked 20/16/13 and every mono rung, copy lacked 24/20/18/13 — because §7.3's named-consumer
+rule kept out every rung no call site read. Q12 settled that the adopted catalog is itself
+that consumer, and step 50 published the sixteen. What remains between this system and the
+catalog is behavioral, not vocabulary: inline `code` (D20, step 52) and the emphasis
+modifiers (D21, step 54).
+
+**A second departure is withdrawn.** Until step 49 this paragraph read *"`label-20` takes
+24, not Geist's 32 … the one place this system judges the catalog inconsistent with
+itself."* The specimen re-measured **20/32** on 2026-08-21, the judgement was this system's
+taste set against its source, and the program's stated goal is to conform exactly — so the
+rung is recorded at the catalog's 32 and nothing moves, because `label-20` is unpublished
+until step 50. The objection is kept on record: 32 is 1.6 leading on a one-line role and
+breaks the flat-leading pattern every smaller Label rung follows. It is still the catalog's
+number.
 
 **2.13 Only Heading tracks, and it tracks on a curve.** Optical tracking tightens as size
 grows, but it is not a property of size alone — measured on the Geist specimens, **Button,
@@ -280,18 +335,22 @@ carries a curve:
 |---|---|---|---|---|---|---|
 | Tracking | −0.02em | −0.02em | −0.02em | −0.04em | −0.04em | −0.06em |
 
-A single flat token cannot serve both ends: at `text-heading-40` the current −0.02em is two
-steps too loose, which is D7. **The named exception is uppercase.** `text-label-12-wide` sets
-positive tracking because uppercase at small sizes needs it, and that stays — it is a
-property of the transform, not of the family, and rule 2.10's "every exception is named"
-covers it.
+A single flat token cannot serve both ends: at `text-heading-40` the −0.02em that served it
+until step 27 was two steps too loose, which was D7. **There is no named exception any
+more.** Until step 40 this paragraph named one — `text-label-12-wide`, positive tracking for
+uppercase labels. Step 40 dropped the uppercase and step 47 retired the role, so Label
+tracks 0 everywhere it renders. *Re-measured 2026-08-21 (step 49):* the catalog's own
+`label-12` specimen carries capitals from its data — *"AND CAPS"* — at tracking **0** with
+no transform, which is the evidence Q10 recorded as missing.
 
 ---
 
 ## 3. Current state
 
-Verified against `rux-ui/css/tokens.css` and `rux-ui/css/colors_and_type.css` at the date
-of this document. Values are px equivalents at a 16px root.
+Re-verified against `rux-ui/css/tokens.css` and `rux-ui/css/colors_and_type.css` on
+**2026-08-21** (step 49), after eight steps had moved the code without moving this section,
+and measured live on `index.html` where a value depends on the cascade. Values are px
+equivalents at a 16px root.
 
 ### 3.1 Tier 0 — primitives
 
@@ -301,29 +360,41 @@ position on the 2.13 curve.
 
 | Size | Line-height | Tracking | |
 |---|---|---|---|
-| `11` | `12` | `dense` | 0.02em |
-| `12` | `16` | `tight` | −0.02em |
-| `14` | `20` | `tighter` | −0.04em |
-| `16` | `24` | `tightest` | −0.06em |
-| `18` | `28` | `normal` | 0 |
-| `20` | `32` | `wide` | 0.04em |
-| `24` | `40` | `widest` | 0.1em |
-| `32` | `48` | | |
-| `40` | | | |
+| `12` | `12` | `tight` | −0.02em |
+| `13` | `16` | `tighter` | −0.04em |
+| `14` | `18` | `tightest` | −0.06em |
+| `16` | `20` | `normal` | 0 |
+| `18` | `24` | `wide` | 0.04em — print only |
+| `20` | `26` | `widest` | 0.1em — print only |
+| `24` | `28` | | |
+| `32` | `32` | | |
+| `40` | `36` | | |
+| `48` | `40` | | |
+| `56` | `48` | | |
+| `64` | `56` | | |
+| `72` | `64` | | |
+| | `72` | | |
 
-Nine sizes, **eight** line-heights: the rename collapsed `lg` and `xl`, which were both
-1.75rem. A ladder cannot name one length twice and still say which rung a role meant.
+**Thirteen** sizes, **fourteen** line-heights — every size the catalog uses and every
+leading it pairs one with, since step 50 (`13`, `48`–`72`, and leadings `18`, `36`,
+`56`–`72`). `18` is off the 4px grid the way `26` is: both are catalog values, named per
+rule 2.10. Earlier history: the rename collapsed `lg` and `xl`, which were both 1.75rem — a
+ladder cannot name one length twice and still say which rung a role meant; step 7 minted
+`26` for `heading-20`; step 45 retired `11` and its `dense` tracking. That left `12` with no
+size to pair with and **one reader**, the trip-bar pill's default tier, which is D19. `wide`
+and `widest` survive only as print vocabulary (`trip-envelope.css`, step 44); no screen role
+reads either. *(This table listed `11` and `dense` until step 49, and stopped at 40 until
+step 50.)*
 
 Weights `--rux-weight-100` … `--rux-weight-900` exist as a complete ladder; rule 2.11
 publishes 400, 500 and 600 for application use and nothing above. (Before step 6 this
 paragraph cited a §2 rule that did not exist — 2.11 is now that rule.)
 
-**What still separates this ladder from the one rule 2.12 publishes** (step 24 closed the
-heading end; step 27 added the tracking rungs; step 30 put the small end on the catalog and
-step 31 removed the duplicate leading). Sizes: the ladder still lacks **13** — step 23,
-deferred for want of a consumer rather than for want of a name, since Q8 settled that it
-would be called `13`. Leadings: the set still needs **18** and **36**, which no rung names,
-and step 23 records that no role sits where they would apply.
+**Nothing separates this ladder from the catalog's** (step 24 closed the heading end at 40;
+step 27 added the tracking rungs; step 30 put the small end on the catalog and step 31
+removed the duplicate leading; step 45 put the floor at 12; step 50 published the rest).
+Every rung is a catalog value, named by its number per Q8. The one rung the catalog does
+not have is `12` on the leading ladder, which D19 will orphan.
 
 ### 3.2 Tier 1 — roles
 
@@ -341,45 +412,74 @@ answer made a numeric Tier 0 and an intent-named Tier 1 read as two systems.
 | `text-copy-14` | `text-body` | copy | 14 | 400 | 20 | normal | primary |
 | `text-label-12` | `text-caption` | label | 12 | 400 | 16 | normal | secondary |
 | `text-label-14` | `label-control` | label | 14 | 400 | 20 | normal | primary |
-| `text-label-12-wide` | `label-eyebrow` | label | 12 | 400 | 16 | wide | secondary |
 | `text-button-14` | — *new (38)* | button | 14 | 500 | 20 | normal | primary |
 | `text-button-12` | — *new (38)* | button | 12 | 500 | 16 | normal | primary |
 | `text-label-18` | — *new (38)* | label | 18 | 400 | 20 | normal | primary |
+| `text-heading-32` | — *new (7)* | heading | 32 | 600 | 40 | tighter | primary |
+| `text-heading-20` | — *new (7)* | heading | 20 | 600 | 26 | tight | primary |
+| `text-heading-14` | — *new (7)* | heading | 14 | 600 | 20 | tight | primary |
+| `text-heading-48` | — *new (50)* | heading | 48 | 600 | 56 | tightest | primary |
+| `text-heading-56` | — *new (50)* | heading | 56 | 600 | 56 | tightest | primary |
+| `text-heading-64` | — *new (50)* | heading | 64 | 600 | 64 | tightest | primary |
+| `text-heading-72` | — *new (50)* | heading | 72 | 600 | 72 | tightest | primary |
+| `text-button-16` | — *new (50)* | button | 16 | 500 | 20 | normal | primary |
+| `text-label-20` | — *new (50)* | label | 20 | 400 | 32 | normal | primary |
+| `text-label-16` | — *new (50)* | label | 16 | 400 | 20 | normal | primary |
+| `text-label-13` | — *new (50)* | label | 13 | 400 | 16 | normal | primary |
+| `text-label-14-mono` | — *new (50)* | label · mono | 14 | 400 | 20 | normal | primary |
+| `text-label-13-mono` | — *new (50)* | label · mono | 13 | 400 | 20 | normal | primary |
+| `text-label-12-mono` | — *new (50)* | label · mono | 12 | 400 | 16 | normal | primary |
+| `text-copy-24` | — *new (50)* | copy | 24 | 400 | 36 | normal | primary |
+| `text-copy-20` | — *new (50)* | copy | 20 | 400 | 36 | normal | primary |
+| `text-copy-18` | — *new (50)* | copy | 18 | 400 | 28 | normal | primary |
+| `text-copy-13` | — *new (50)* | copy | 13 | 400 | 18 | normal | primary |
+| `text-copy-13-mono` | — *new (50)* | copy · mono | 13 | 400 | 18 | normal | primary |
 
-**No metric moved in the rename** — the Was column is the whole diff, and every superseded
-name is still published as an alias until step 33.
+**Twenty-nine roles — the catalog entire — every one byte-identical to its Geist specimen
+on the four axes the catalog sets**, re-measured 2026-08-21 (steps 49, 50). The Color column
+is this system's own (rule 1.1); the sixteen published by step 50 take primary throughout.
+Mono roles carry a sixth axis, `-family`, reading `--rux-font-mono`. **No metric moved in
+the rename**; the Was column is the whole diff, and step 33 removed the aliases. The
+sixteen are held in `tests/typography-roles.test.mjs`'s `PENDING` list until a component
+adopts one — published, complete, and provably read by nothing but their own utility.
 
-**Two roles are label at 12**, and family-plus-size cannot tell them apart: caption and
-eyebrow differ only in tracking. The axis that separates them is suffixed, following the
-catalog's own `label-13-mono` — so `text-label-12-wide` is the eyebrow. Deliberately not
-done: keeping `eyebrow` as a semantic exception, which is the mixed convention Q8 rejected
-one tier down and would leave a reader guessing which roles are numeric.
+**`text-label-12-wide` is gone** (step 47). It was the eyebrow — label at 12 with open
+tracking, suffixed the way the catalog suffixes `label-13-mono` — until step 40 zeroed the
+tracking and left two names for one recipe. *(Listed here as live until step 49.)*
 
 ### 3.3 Tier 2 — published utilities
 
-Six carry type — seven until step 31 merged two of them. Each is defined beside whichever
-component first needed it, which is why this index exists: a call site cannot discover them
-otherwise.
+**Every role has a utility, and they live in one file** (steps 50, 51): `.rux-text-{family}-
+{size}` in `rux-ui/css/base/text.css`, 29 classes, each applying its role's axes by reading
+the role's tokens and nothing else, imported **last** by `rux.css` so a utility placed on a
+component element wins over the component's own type rule at equal specificity. Rule 1.3 is
+satisfied in full. Until step 51 the three that existed lived beside whichever component
+first needed them, which is why this section was an index; it is now a rule.
 
 **Which utilities took a shape name.** A class takes its role's name only when it applies
 **that role and nothing else**. Add anything — a transform, a divider, a colour that
 differs from the role's — and it is describing an *object*, not a role, so it keeps an
-object name. A `.rux-text-label-12-wide` that also uppercased would be a class doing
-something its name does not say, which is the defect this rename exists to remove.
+object name. A `.rux-text-label-12` that also uppercased would be a class doing something
+its name does not say, which is the defect this rename exists to remove.
 
 | Utility | Defined in | Applies | Beyond the role |
 |---|---|---|---|
-| `.rux-text-heading-16` *(was `.rux-u-panel-title`)* | `base/card.css` | `--rux-text-heading-16-*`, **all five** | — |
-| `.rux-text-label-14` *(was `.rux-u-label`)* | `base/preferences.css` | `--rux-text-label-14-*`, **all five** | — |
-| `.rux-text-label-12` *(was `.rux-u-caption`, and absorbs `.rux-u-hint`)* | `base/form.css` | `--rux-text-label-12-*`, **all five** | — |
-| `.rux-u-eyebrow` | `base/utils.css` | `--rux-text-label-12-wide-*`, **all five** | `text-transform: uppercase` |
-| `.rux-u-section-label` | `base/utils.css` | `--rux-text-label-12-wide-*`, **all five** | uppercase, plus a padded bottom divider |
+| `.rux-text-{family}-{size}` × 29 | `base/text.css` | the role's five axes, six for `-mono` | — |
+| `.rux-u-section-label` | `base/utils.css` | `--rux-text-label-12-*`, **all five** | a padded bottom divider |
 | `.rux-u-subtitle` | `base/card.css` | `--rux-text-copy-14-*`, four axes | colour is `--rux-text-secondary`, **not** the role's primary |
 
-`.rux-u-caption` and `.rux-u-hint` **merged**: once step 22 completed both, the two rules
-were byte-identical, so the system published two names for one recipe and neither name said
-which to reach for. All three superseded class names remain as extra selectors on their
-rules until step 33.
+History of the three that predate `text.css`: `.rux-text-heading-16` was `.rux-u-panel-title`
+and shared a rule in `card.css` with the card, panel and workspace titles, which still read
+the role there; `.rux-text-label-14` was `.rux-u-label` in `preferences.css`, likewise;
+`.rux-text-label-12` was `.rux-u-caption`, and merged `.rux-u-hint` (step 31) and
+`.rux-u-eyebrow` (step 47), in `form.css`. Step 33 removed the superseded selectors; step
+51 moved the three rules, and measured that nothing resolved differently. *(This table
+listed `.rux-u-eyebrow` and an uppercase section label until step 49.)*
+
+`gallery.html` carries one specimen per class, in the catalog's own four families and with
+its modifiers (`<strong>` is Subtle inside a heading and Strong elsewhere), so the whole
+ramp can be eyeballed in both themes — `tests/gallery-coverage.test.mjs` required it, as it
+requires a specimen of every base file.
 
 Two more carry a single property and are not role applications: `.rux-u-mono`
 (family) and `.rux-u-muted` (colour), both in `colors_and_type.css`. Five are layout, not
@@ -388,19 +488,30 @@ type, and are out of scope here: `.rux-u-cluster`, `.rux-u-row`, `.rux-u-stack`,
 
 ### 3.4 Element defaults
 
-`body` is 14/20/400 at tracking 0 (step 8). `h1`–`h6` default to weight **600** (step 6),
-and each level now states **its own tracking**, because the 2.13 curve makes one shared value
-impossible — `h1` at 40px and `h5` at 16px are three steps apart on it (step 27). `h1` reads
-the `text-heading-40` role (40/48, tightest), `h2` is **32/40 tighter**, `h3` is **24/32
-tighter**, `h4` is **18/28 tight**, `h5` is **16/24 tight**, and `h6` is 12/16 uppercase wide
-secondary at **400** — it opts out of the heading weight because it is styled as a label.
-`h4` and `h5` previously set tracking `normal`, which was off the curve.
-`code` is `--rux-size-12` mono (step 10). A bare `p` keeps the 24px leading (Q2), the one
-place the base's size and leading are not a matched pair.
+Measured on bare probes injected into `index.html`, 2026-08-21, so the element default is
+read rather than a class override.
 
-*This section was stale until step 6: it still described the 16/24 body and the `0.92em`
-code that steps 8 and 10 had already replaced. §3 is verified against source, so a stale
-line here is the same defect class as a stale comment (D3).*
+- `body` is **14/20/400** at tracking 0 (step 8); `p` is **14/20** (step 41 — the 24px
+  exception Q2 named is gone).
+- `h1`–`h6` read the six heading roles one for one (step 7): **40/48 · 32/40 · 24/32 ·
+  20/26 · 16/24 · 14/20**, all 600, each level stating its own tracking from the 2.13 curve
+  because `h1` and `h5` are three steps apart on it (step 27). `h6` is a Heading like the
+  rest; `<h6>` has zero occurrences in the repository.
+- `strong, b` is **500 at primary** by default — a Label's Strong. Inside `p` or a
+  `text-copy-*` utility it is **550** (Copy's Strong); inside `h1`–`h6` or a
+  `text-heading-*` utility it is **500 at secondary** (Subtle). Step 54.
+- `small` is 12px secondary and inherits its context's leading: **12/20** in body.
+- `code, kbd, samp, pre` read `text-copy-13-mono` whole: **13/18** mono 400 (step 52).
+  Inline, the 18 is inert and the line box stays the copy's; `pre` takes it as a block.
+- `ul, ol` inherit the base leading, so list items render **14/20** (step 53).
+- Nothing renders below 12px (steps 42–45).
+
+*This section was stale twice: until step 6 it described the 16/24 body and `0.92em` code
+that steps 8 and 10 had replaced, and until step 49 it described `h4` at 18/28, `h6` as a
+12px uppercase label and `p` at 14/24, all of which steps 7 and 41 had moved. §3 is
+verified against source, so a stale line here is the same defect class as a stale comment
+(D3) — and the second lapse is the evidence that "verified at the date of this document"
+was never a standing guarantee. Step 49 dates the verification instead.*
 
 ---
 
@@ -428,6 +539,11 @@ step in §5.
 | **D17** | `.sched-scheduler__time-ticks` sets `display: none` in its base rule and `display: none` **again** under `.sched-scheduler--time-aligned` — the selector whose whole purpose is to reveal it. No JS overrides either. The result is **42 DOM nodes unreachable in every state**, carrying markup, three `nth-child` position rules and, until step 42, a hardcoded 9px font size. Found by toggling Time-aligned mode in a live browser to verify D15 and finding every span still `0×0`. Not a type defect and not fixed by step 42: flipping that `none` would reveal 42 elements nobody has seen, which is a behavior change. Belongs to whoever owns the time-aligned feature. |
 | **D16** | **Fixed (step 41).** Rule 2.11 put badges at weight **500** while rule 2.12's own decision tree lists "badge, cell, chip, field label, eyebrow" under **Label**, which 2.11's second paragraph puts at **400** on the catalog's authority. A badge was therefore both 500 and 400 in the same section. `.rux-badge` rendered 500 and `tests/badges.test.mjs` asserted it, so the contradiction was executable in one direction only. Resolved toward the catalog: a badge is not interactive, so it is not a Button; it is a Label at 400. Same defect class as 2.14's threshold (step 37) and the unpublished Button family (step 38) — a rule disagreeing with the evidence or the table beside it. |
 | **D15** | **Fixed (step 42).** `.sched-scheduler__time-ticks > span` rendered at **9px** — below the 11px floor rule 2.14 records, below the catalog's own 12, and off the size ladder entirely, which publishes no 9 rung. Found by probing selectors for step 39 rather than by the census, which never sampled it. Its tracking is deliberately left at `+0.04em` there, because the correct value follows from whatever size it lands on and changing it twice is churn. Belongs to the size migration, not the tracking one. |
+| **D18** | **Fixed (steps 52, 53).** Two element defaults pair a published size with a leading no catalog rung gives it.** `ul, ol { line-height: var(--rux-line-height-24) }` renders every list item at **14/24** — 20 `li` on `index.html`, all at 24 — where the 14px rung is 20 in every family. `pre { line-height: var(--rux-line-height-28) }` renders block code at **12/28**, a leading the ladder pairs with 18 and 20. Both predate this document and survived steps 8 and 41 because those swept `body` and `p`, not the list and code blocks. Resolved by steps 53 and 52 respectively. | `colors_and_type.css` lists and `pre` blocks; measured live 2026-08-21 |
+| **D19** | **The trip-bar pill at the default density tier renders 12/12** — `--sched-trip-bar-bus-label-line-height` reads `--rux-line-height-12` in `scheduler/css/tokens.css` and only the XXS and SM tiers override it to 16. The catalog publishes one leading at 12 and it is 16. The glyphs sit in a 16px box (`--sched-trip-bar-bus-label-height` *is* 16) and centre by flex, so nothing clips — but step 43 recorded the default tier as "12/16" and that figure was the **row**, not the pill; the pill was never measured. This is also `--rux-line-height-12`'s **only reader** since step 45 retired `--rux-size-11`: fix the pill and the rung is dead, which makes its retirement a Class C candidate. | `scheduler/css/tokens.css` pill block; measured live 2026-08-21, 3 pills, `line-height: 12px`, box 16px |
+| **D20** | **Fixed (step 52).** Rule 2.4's inline step-down is a departure the catalog contradicts, recorded as though the catalog were silent.** Q9 says "the catalog has no inline-code style to compare against"; `text-copy-13-mono`'s usage line is *"Used for inline code mentions"*, at **13/18**. Inline `code` renders 12px here. Resolved by step 52. | vercel.com/geist/typography, Copy table, measured 2026-08-21 |
+| **D22** | `scheduler/css/features/maintenance-share.css:29` sets `font-size: 12px` as a literal on `.maintenance-trip :is(strong, span, small)` — a rule 2.1 defect in the app tier, found by step 52's grep for rules naming `strong`. One token swap (`--rux-text-label-12-size`) with no render change; recorded rather than swept because it is outside the step that found it. | `maintenance-share.css:29` |
+| **D21** | **Fixed (step 54).** Strong is one notch light in Copy, and Subtle does not exist. Geist's `<strong>` measures **550** inside every Copy rung and **500** inside every Label rung; inside a Heading it is Geist's *Subtle* modifier, **500 at the secondary colour**. This system renders `strong` at 500 everywhere and leaves its colour alone, so it matches Label exactly, misses Copy by 50, and gives a heading's `<strong>` the Subtle weight without the Subtle colour. Step 6 deliberately did not mint 550 because "a ladder stepping in 100s cannot say it"; the served file can (step 54). | Geist specimens, every `strong` measured 2026-08-21; bare `<h2><strong>` probe on `index.html` renders 500 at primary |
 
 ---
 
@@ -545,9 +661,44 @@ reversible and execute under standing authority.
 
 **Post-edit grep, per the rename protocol:** `rux-text-label-12-wide` **css 0 · html 0 · js 0 · tests 0**; `rux-label-eyebrow` **css 0 · html 0 · js 0 · tests 0**; `rux-u-eyebrow` **css 1** — the comment recording its retirement — **html 0 · js 0 · tests 0**. Remaining docs hits are step records. `class-resolution` passes, so every swapped JS class resolves. **Still owed a consumer-migration step**, which this row does not pre-empt: a consumer reading `--rux-label-eyebrow-*` or emitting `.rux-u-eyebrow` must move to `text-label-12`, and both substitutions render identically. **Class C takes a major** (§2.5). 338/338 green. Contract 2.0.0 → **3.0.0**. |
 
+### 5.1 The conformance program, second pass
+
+Opened 2026-08-21 by the owner's restated goal: *conform to Geist exactly, under this
+system's prefix.* Step 49 re-measured the catalog and re-verified §3 against source; the
+five steps after it are what "exactly" still requires. Ordered by dependency: 49 first, then
+51–54 in any order, then 50 once Q12 is answered.
+
+| # | Step | Status | Notes |
+|---|---|---|---|
+| 49 | Re-verify §3 against source and the catalog; correct the drift (doc sync) | **done · Class A** | **What had drifted, listed so the size of the lapse is on record.** The Status block's pick-up list said step 33 was pending, step 11 needed verification and step 16 was waiting — all three were done in the preceding five commits. §1's tier table cited `.rux-u-eyebrow` (retired 47). Rule 2.13 still named `text-label-12-wide` as a live uppercase exception (retired 40, 47). §3.1 listed `11` and `dense` (retired 45) and said nine sizes, eight leadings (it is eight and nine). §3.2 listed `text-label-12-wide` and lacked `heading-32`, `-20`, `-14` (step 7). §3.3 listed `.rux-u-eyebrow` and an uppercase section label. §3.4 had `h4` at 18/28, `h6` as a 12px uppercase label and `p` at 14/24 (steps 7, 41). The Known-drift section described README's pre-step-16 state. Eight steps had moved the code and none re-read §3. **Everything is now re-verified against source, dated, and where a value depends on the cascade, measured live on `index.html`.** **The catalog was re-measured in full the same day** — all 29 styles, computed styles read off vercel.com's rendered specimens — and the thirteen roles this system publishes are **byte-identical to their specimens on size, leading, weight and tracking**. Four findings from that pass change the record: **(1)** `label-20` is **20/32**; rule 2.12's "24, not Geist's 32" departure is withdrawn. **(2)** `text-copy-13-mono` is the catalog's inline-code style (its usage line says so, 13/18), so Q9's "no inline-code style" was false and rule 2.4's step-down is a departure — **D20**. **(3)** Strong is **550 in Copy and 500 in Label**, and **Subtle** (a `strong` inside a Heading) is 500 at the secondary colour — **D21**. **(4)** A Geist style sets **four** properties; the colour on the specimens is demo scaffolding, so rule 1.1's fifth axis is recorded as this system's extension. Two more, recorded because they were open: Q10's missing evidence — the `label-12` specimen carries capitals from its data at tracking 0 — and step 11's external check: vercel.com applies `"calt" 0, "rlig", "ss11"` globally, Geist Sans publishes **nine** style sets per vercel.com/font, so `ss11` is inert on it and `rlig` is default-on; the only live difference from this system's `normal` is `calt 0`, which is not adopted. **Measured live on `index.html`, bare probes and real elements:** pill **12/12** in a 16px box at the default tier (**D19** — step 43's "default 12/16" was the row); `ul`/`ol` **14/24** across 20 items and `pre` **12/28** (**D18**); `code` 12 inheriting 20; `small` 12/20; `strong` inside `h2` **500 at primary**; **0** elements below 12px. **Corrected in the same change:** rule 2.12's family table (label-20, the mono rungs, the display headings), rule 1.1, rule 2.4, rule 2.11, rule 2.13, §3.1–3.4, §4 (D18–D21 added), §6 (Q12 opened; Q9 and Q10 annotated), Known drift, and two stale comments in `tokens.css` — the size-ladder note still said "11 is the floor" and cited the retired positive-tracking branch, and `--rux-line-height-12` still said "pairs with size-11". `README.md` index row updated. **Deliberately not done:** no token, class or value moved — every finding became a defect row or a step, not a fix; `--rux-line-height-12` was not retired (Class C, and its one reader is D19's to remove first); §5 and §6 history is untouched — every correction sits beside the text it corrects, per step 21; no prose test was added for the Status list or §3, because a test that parses rule prose is a second statement of the rule — the Known-drift section records the convention that replaces it. 337/337 green. Class A, because rule text changed (2.12's label row, 1.1's extension, 2.4's and 2.11's corrections) with no token or value moving. Contract 4.2.0 → **4.3.0**. |
+| 50 | Publish the rest of the catalog (Q12) | **done · Class A** | **Q12 answered yes by the owner on 2026-08-21; executed the same day.** The system now publishes the whole catalog under its prefix: **29 roles, 13 sizes, 14 leadings**, every value read off the rendered specimens. **Primitives, 10:** `--rux-size-13` (0.8125rem), `-48`, `-56`, `-64`, `-72`; `--rux-line-height-18` (1.125rem, off the 4px grid the way `26` is — a catalog value, named per rule 2.10), `-36`, `-56`, `-64`, `-72`. **Roles, 16:** `text-heading-48` 48/56, `-56` 56/56, `-64` 64/64, `-72` 72/72, all 600 at `tightest`; `text-button-16` 16/20/500; `text-label-20` 20/**32**, `-16` 16/20, `-13` 13/16; `text-label-14-mono` 14/20, `-13-mono` 13/**20**, `-12-mono` 12/16; `text-copy-24` 24/36, `-20` 20/36, `-18` 18/28, `-13` 13/18, `-13-mono` 13/18 — labels and copy 400, tracking 0. **The mono roles carry a sixth axis, `-family`**, reading `--rux-font-mono`; rule 1.1 now says so, and a new test asserts it. **Colour is primary throughout.** The catalog's usage lines hint that `label-13` and `copy-13` are "secondary" text, and that was weighed and **not adopted**: colour is this system's mapping (rule 1.1), the two secondary-by-default roles today are the pre-rename lead and caption, and a third chosen from a usage hint rather than a measurement would be a new kind of decision made in passing. A component that wants a muted 13 sets its own colour, the allowance §3.3 already grants. **Rule text:** 2.12's last departure is withdrawn; §3.1 and §3.2 list every rung; **§7.3 is amended** — a rung the adopted catalog publishes has a named consumer, the catalog; locally invented rungs still need one. **Enforcement:** the 16 join `PENDING` in `tests/typography-roles.test.mjs`, published, complete, and provably read by nothing but their own utility — which required the corpus change step 51 records. **Verified, not assumed:** all 29 classes probed on `gallery.html` resolve to their catalog values, 29 of 29; A/B on every page, 0 differences (see 51). **Deliberately not done:** adopting any of the sixteen at a call site — Class B, and it belongs to whichever component wants the rung; moving `code` onto `copy-13-mono`, which is step 52; `md:` variants (Q6 answered no); retiring `--rux-line-height-12` (Class C, D19 first). **One stale comment removed in passing** (D3 class): `tokens.css` still carried the heading "Eyebrow — uppercase category/section markers" over nothing, the role having gone at step 47. Cache-busters bumped with step 51. Contract 4.3.0 → **4.4.0**, shared with step 51. |
+| 51 | Publish a utility for each role, in one file | **done · Class A** | **`rux-ui/css/base/text.css`: 29 `.rux-text-{family}-{size}` classes**, one per role, each reading its role's tokens and nothing else — 26 new, and the three that existed (`.rux-text-heading-16` from `card.css`, `.rux-text-label-14` from `preferences.css`, `.rux-text-label-12` from `form.css`) moved in. The component classes that shared those rules (`.rux-card__title`, `.rux-panel__title`, `.rux-workspace__title`, `.rux-preferences__heading`, `.rux-preferences__label`) stay where they were and keep reading the same role, so the move is a selector leaving a rule, not a rule changing. **Imported last by `rux.css`**, and the position is a decision: a utility placed on a component element now wins over the component's own type rule at equal specificity, which is what a call site reaching for a utility is asking for. Moving three existing rules to the end of the cascade could in principle change who wins on an element carrying both classes, **so it was measured rather than reasoned:** every element's computed size, leading, weight, tracking, family and colour was snapshotted on all five pages before the change and diffed after — `index.html` 5,250 elements, `gallery.html` 196, `request.html` 118, `driver.html` 19, `maintenance.html` 9 — **0 differences**. `driver.html` and `maintenance.html` were in their no-data states, so their interaction-gated content is not covered; `index.html` was populated. **`tests/typography-roles.test.mjs` had to learn the difference between a publication and a consumer.** Its corpus is every `base/*.css`, so the moment `text.css` existed every role was "read" and both the used-check and the `PENDING` honesty test went blind — the mirror image of the blind spot step 41 fixed. `text.css` is now excluded from the corpus, with the reason beside it, and two tests were added: every published role has a utility that applies it whole, axis by axis, through the role's own tokens (rule 1.3 made executable), and every mono role carries `-family`. **`tests/gallery-coverage.test.mjs` failed on the new file, correctly** — a base file nobody can see — and the fix was a specimen, not a `KNOWN_GAPS` entry: `gallery.html` now opens with the full ramp, all four families, with `<strong>` inside headings and labels so Subtle and Strong can be eyeballed (and step 54's change seen when it lands). Eyeballed in both themes at 1280. **Cache-busters:** `tools/check-cache-busters.sh --fix` bumped `rux.css` on four pages; the inner `@import "…?v="` lines for `tokens.css`, `card.css`, `form.css` and `preferences.css` were bumped by hand, because the tool tracks page-level references only and a warm browser re-fetching `rux.css` would otherwise re-use the four cached partials — harmless for the three moved rules (a duplicate definition), but the new roles in `tokens.css` would not resolve. `README.md`'s index counts corrected (23 base files, 10 with specimens). **Deliberately not done:** a class per modifier — Strong, Subtle and tabular are `<strong>` and `font-variant-numeric` on the element, as the catalog does them; renaming `.rux-u-section-label` or `.rux-u-subtitle`, which add something beyond their role and keep object names by §3.3's rule. 339/339 green. Contract 4.3.0 → **4.4.0**, shared with step 50. |
+| 52 | Put inline code on the catalog's inline-code style (D20, D18 half) | **done · Class B** | **Executed 2026-08-21, batched with 53 and 54 under one minor bump (§2.3.4).** The Class A half this row planned — `--rux-size-13`, `--rux-line-height-18`, `--rux-text-copy-13-mono-*` — had already landed with step 50, so this is the Class B half alone. **`code, kbd, samp, pre` read `text-copy-13-mono` whole** — six axes, family included — and `code`'s own `color` and `pre`'s own `line-height: 28` go, since the role carries both. **Before → after, resolved, measured on `index.html`:** `pre` **12/28 → 13/18** (1); unpinned `code` **12 → 13** (2, inside that `pre` and one example); **8 `code` stay at 12**, pinned by `.components-app__button-example code` in the app tier — their inherited leading moves 20 → 18, which is inert on an inline element. **That pin is left alone on purpose:** it is the components app's own mapping (a 12px caption and a 12px code string aligned in one example row), made when the default was 12 and restating it; whether it should follow the default is that app's call, and it is recorded here so it is not mistaken for a miss. `gallery.html` gains an inline-code specimen in a `copy-14` line, so the element default has a visible consumer: **13/18 inside a 20px line box, the line box unchanged**. **Rule 2.4 rewritten** — the step-down sentence is history now, kept as such; Q9 annotated. **`--rux-text-copy-13-mono` promoted from `PENDING` to `ROLES`**, and the promotion exposed a regex flaw: the test matched a read of `--rux-text-copy-13` against `--rux-text-copy-13-mono-*`, name-plus-dash being a prefix of both. Reads are now matched as name-dash-axis (`READ`), verified to fail on the old pattern. **`pre` takes 18, the Copy leading**, because block code wraps as prose; `label-13-mono`'s 20 was the alternative and is named so a code-block component can revisit it. **Found, not fixed — D22:** `scheduler/css/features/maintenance-share.css:29` sets `font-size: 12px` as a literal on `.maintenance-trip :is(strong, span, small)`, a rule 2.1 defect in the app tier; outside this step's scope and recorded rather than swept. **States eyeballed:** the gallery, dark, at 1280. **Not eyeballed:** the components app's code samples — the 8 pinned `code` did not move, and the one `pre` and two `code` that did live behind the components view. **Deliberately not done:** `kbd`'s colour and padding (component styling); giving `pre` a background change; publishing a code-block component. Contract 4.4.0 → **4.5.0**, shared with 53 and 54. |
+| 53 | Pair lists with the base leading (D18, the other half) | **done · Class B** | **Executed 2026-08-21.** `ul, ol` no longer set `--rux-line-height-24`; lists inherit `body`'s 14/20. **Before → after, resolved: 14/24 → 14/20**, and the blast radius was measured rather than assumed by diffing every element's computed type on every page. **`index.html`, 38 of the batch's 43 signature changes:** `.rux-side-nav__item` ×11 and both `.rux-side-nav__list`s; `.rux-notifications__list`; `.sched-dev-notes__list` and its empty item; `.sched-scope-trip__doc-list` and its empty item; `.rux-u-record-list` ×3; `.driver-assignment-card__crew-list` ×2 with their crew-member, identity, actions and body descendants; `.flip-seven__roster` and its empty item; `.flip-seven__scores` and four score items — every one **24 → 20**. **`request.html`:** `.trip-request__file-list` 24 → 20. `gallery.html`, `driver.html`, `maintenance.html`: 0. **What that means on screen is smaller than the count:** the side-nav link inside each item already read `label-14` at 20, so the item's box was the link's and its own leading was inert; the 4px loss is real only where the `li` holds bare text — the empty-state items and the Flip Seven scores. **States eyeballed:** `index.html` at 1280, dark, side-nav visible. **Not eyeballed:** notifications, dev-notes, scope-trip documents, crew lists, Flip Seven — all interaction-gated; `request.html`'s file list populated. Named as owed. **Deliberately not done:** `small` — inline, inherits its line's leading by design, no catalog counterpart; `li + li` margin, which is spacing and `layout.md`'s. Contract 4.4.0 → **4.5.0**, shared. |
+| 54 | Strong at 550 in Copy; Subtle in Heading (D21) | **done · Class A + B** | **Executed 2026-08-21.** **Class A half:** `--rux-weight-550: 550` in the ladder; rule 2.11's "nothing above 600" untouched. **The import now declares the range:** `Geist:wght@400;500;600;700` → `Geist:wght@100..900`. Verified twice — the served CSS carries `font-weight: 100 900` once per subset (5 faces, where the discrete form wrote 20), and in the live page `document.fonts` reports every Geist face at `100 900` with `document.fonts.check("550 16px Geist")` true. Same files, zero added bytes. Geist Mono stays discrete: its Strong was never measured. **Class B half — the shape chosen is "default 500, Copy and Heading opt in", and the census decided it:** all 15 `<strong>` on `index.html` are component-pinned (14 at 400, the Flip Seven turn status at 500) and none sits in a `p` or a heading, so a 550 default would have changed nothing there while promising the wrong thing for the dense UI, whose strings are Labels. Rules: `strong, b` **500 at primary**; `p :is(strong, b)` and `.rux-text-copy-* :is(strong, b)` **550**; `:is(h1…h6) :is(strong, b)` and `.rux-text-heading-* :is(strong, b)` **500 at `--rux-text-secondary`**. Specificities (0,0,2) and (0,1,1), so the six component pins step 6 left at 400 keep winning — verified by the A/B. **Before → after, measured on `gallery.html`:** Copy `strong` ×5 (24, 20, 18, 16, 14) **500 → 550**; Heading `strong` ×4 (32, 24, 20, 16) colour **primary → secondary**, weight 500 unchanged; Label `strong` ×4 unchanged at 500. **`index.html`: 0 elements moved**, as the census predicted. **Rule 2.11 amended.** **Components that read a Copy role through their own class** (`.rux-alert`, `.rux-toast`, `.rux-u-subtitle`) do **not** get 550 by this step: they opt in the way the six opt out, and none has a `<strong>` today. **States eyeballed:** the gallery ramp, dark, at 1280 — every modifier visible in one section. **Not eyeballed:** light theme (the Browser pane was not displayed; values confirmed by computed style), the Flip Seven view. **Deliberately not done:** 550 as the default; `font-synthesis` tricks; touching the 400 pins; renaming anything. Contract 4.4.0 → **4.5.0**, shared with 52 and 53. **A caveat on the batch's A/B that applies to all three rows:** `request.html`, `driver.html` and `maintenance.html` were measured in background tabs with a **0-width viewport**, so their narrow media queries were active and page overflow could not be read there; the before and after snapshots were taken under the same condition, so the diffs are sound, but "no overflow" is claimed only for `index.html` and `gallery.html` at 1280. |
+
 ---
 
 ## 6. Open questions
+
+**Q12 — Does the adopted catalog count as a named consumer? — ANSWERED (step 50): yes.**
+Branch (a), by the owner, 2026-08-21. §7.3 is amended, and step 50 published the sixteen
+styles the rule had kept out. Original text follows.
+
+**Q12 — Does the adopted catalog count as a named consumer?** §7.3 holds that a new rung
+needs a named consumer before it is added, and it has done its job: it stopped 30, 36, a
+10px rung and a 9px pill. It has also stopped **16 of the catalog's 29 styles** — heading
+48–72, button-16, label 20/16/13, every mono rung, copy 24/20/18/13 — because no call site
+here reads them (rule 2.12, step 49). The owner's stated goal on 2026-08-21 is to conform to
+Geist **exactly** under this prefix, and "exactly" and §7.3 cannot both hold. **Two
+branches.** *(a)* Amend §7.3: a rung the adopted catalog publishes has a named consumer —
+the catalog — and publishing it is adoption, not invention; locally invented rungs still
+need one. Step 50 executes, Class A, nothing re-renders, and the `PENDING` mechanism holds
+the unread roles honest. *(b)* Keep §7.3 as written, record the system as *exact on the
+thirteen it publishes*, and close step 50 as declined. **Recommendation: (a).** A consumer
+that vendors this system and reaches for `text-heading-48` should find it, and the cost —
+roughly 90 unread custom properties — is the catalog's own size, not this system's
+invention. *Blocks step 50.*
 
 **Q11 — Does the trip bar keep a sub-catalog density tier? — ANSWERED (step 43): no.**
 No departures are permitted, so 11px goes and XXS collapses into the default tier. The 25%
@@ -570,7 +721,11 @@ size batch and the Class C retirement of `--rux-size-11` / `--rux-size-xxs`.*
 The question is moot for screen UI: the uppercase itself was dropped, so no uppercase label
 remains to govern. The branch taken was the third, sentence case, because it is the only one
 that needs no departure. Print keeps its uppercase as a document convention, scoped to
-`trip-envelope.css` and recorded in step 40. Original text follows.
+`trip-envelope.css` and recorded in step 40. *The first branch's evidence arrived anyway
+(step 49): the catalog's `label-12` specimen reads "Label 12 with Strong, AND CAPS" — the
+capitals are in the data, `text-transform` is `none`, tracking is 0. Geist tracks its
+uppercase at 0, so the answer taken would have been conformant either way.* Original text
+follows.
 
  The rule was measured on the
 Geist specimens, and **whether the catalog publishes an uppercase label at all is not
@@ -819,6 +974,11 @@ role.*
 > (`label-14-mono` is 14px, `copy-13-mono` is 13px). Deliberately **not** adopted: changing
 > the inline-code rule to match the catalog. The catalog has no inline-code style to compare
 > against, so it is silent on that case rather than contradicting it.
+>
+> **The last sentence was wrong (step 49).** The catalog's `text-copy-13-mono` carries the
+> usage line *"Used for inline code mentions"* — 13/18 — so it is not silent, it
+> contradicts. The standalone half of the answer stands; the inline half was D20, and step
+> 52 brought `code` onto the catalog's rung.
 
 ---
 
@@ -886,6 +1046,13 @@ system ships whole ladders — but it is an argument that new rungs need a named
 before they are added, and it weakens the case for a 13px rung (**Q5**) unless S4 produces
 one.
 
+*Amended by Q12 (step 50).* **A rung the adopted catalog publishes has a named consumer —
+the catalog.** Publishing it is adoption, not invention, and "a system ships whole ladders"
+is the sentence above applied to the ladder this system adopted. The rule still governs
+everything the catalog does not publish: a locally invented rung, leading, or role needs a
+call site that reads it before it is added, and the `PENDING` list in
+`tests/typography-roles.test.mjs` keeps the published-but-unread roles honest.
+
 **Print needs its own answer, not a smaller copy of the screen answer.** Paper has no
 theme, no zoom, and a fixed physical size, so `rem` buys nothing and `pt` is the honest
 unit. Whatever S2 and S4 get, they should get deliberately.
@@ -927,10 +1094,17 @@ at all, so a copy here would be duplication by construction.
 
 ## Known drift
 
-- `README.md` § Typography predates this document and is the orientation summary per the
-  authority note above. It is accurate on families and on the tracking *intent*, but it
-  describes tracking as "tight on display sizes, normal at body, wide on overlines"
-  without recording that one token serves every display size (D7).
+- `README.md` § Typography has been a pointer since step 16 — it names what is ruled and
+  states no values, so it can no longer drift on a value. *(Until step 49 this bullet still
+  described its pre-step-16 state, in which it published a flat display tracking and a wide
+  overline tracking this document had since retired.)*
+- **This document's own §3 is the drift risk now.** Steps 7, 33, 40, 41, 45 and 47 each
+  moved code and none re-read §3; `tests/foundations-contract.test.mjs` counts log states
+  and reads no prose, so nothing fails when §3 or the Status block's pick-up list goes
+  stale. Step 49 re-dated the verification rather than adding a prose test, because a test
+  that parses rule prose is a second statement of the rule. The honest control is the
+  convention step 49 sets: **a step that moves a value §3 states edits §3 in the same
+  change**, the way README is corrected in the same step.
 - `docs/audit/design-system-audit.md` § 5 rule 6 ("Tokens only, both themes") and rule 10
   ("Docs cite tokens, not numbers") both apply to type and are not restated here. That
   document remains canonical for enforcement tests; this one is canonical for the rules

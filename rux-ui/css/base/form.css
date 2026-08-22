@@ -125,14 +125,11 @@
    .rux-u-hint merges in here at step 31. Once step 22 completed both, the two
    rules were byte-identical — "hint" and "caption" were two names for one
    recipe, and neither name said which. The shape name says it once.
-   docs/foundations/typography.md §5 step 31. */
-.rux-text-label-12 {
-  font-size: var(--rux-text-label-12-size);
-  font-weight: var(--rux-text-label-12-weight);
-  line-height: var(--rux-text-label-12-line-height);
-  letter-spacing: var(--rux-text-label-12-tracking);
-  color: var(--rux-text-label-12-color);
-}
+   docs/foundations/typography.md §5 step 31.
+
+   Step 51 moved the rule itself to base/text.css, beside every other
+   .rux-text-* utility, so a call site can find them in one place. It reads
+   the same five tokens there; nothing resolves differently. */
 .rux-field__label {
   font-size: var(--rux-field-label-size);
   font-weight: var(--rux-field-label-weight);

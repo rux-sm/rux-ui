@@ -28,7 +28,15 @@
    FLAGGED: these are CDN-loaded Google Fonts. If working offline or
    self-hosting, add local .woff2 files and replace this import.             */
 
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap");
+/* Geist is requested as its full variable range, not as discrete weights. The
+   file Google Fonts serves is the same either way; what differs is the
+   @font-face it writes — `wght@400;500;600;700` declared one face per weight,
+   so a `font-weight: 550` snapped to the 600 face. `100..900` declares
+   `font-weight: 100 900` once per subset (verified 2026-08-21), and 550 —
+   the catalog's Strong inside Copy — becomes a real instance at zero extra
+   bytes. Geist Mono stays discrete: its Strong was not measured.
+   docs/foundations/typography.md D21, §5 step 54. */
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@400;500;600&display=swap");
 
 /* Material Symbols Sharp backs every .rux-icon (see --rux-icon-font-family in
    tokens.css). It is imported here, beside the text faces, so that loading the
@@ -143,12 +151,47 @@ small {
   color: var(--rux-text-secondary);
 }
 
-/* Geist's own Strong modifier measures 550 against 400 copy. This ladder
-   steps in 100s and cannot say 550, so 500 — already the system's emphasis
-   weight — is the adopted rung. At 400 this rule rendered <strong> identically
-   to the text around it. docs/foundations/typography.md D2, step 6. */
+/* Emphasis follows the catalog's two modifiers, measured 2026-08-21: Strong is
+   550 inside Copy and 500 inside Label; Subtle — a <strong> inside a Heading —
+   is 500 at the secondary colour. 500 is the default here because a dense
+   UI's strings are Labels by rule 2.12; Copy and Heading contexts opt in
+   below. A component that pins its own weight (six do, at 400 — step 6) keeps
+   winning: these selectors are (0,0,2) and (0,1,1), and a component pin is at
+   least (0,1,1) and loads later. Until step 54 this was 500 everywhere —
+   exact for Label, one notch light for Copy, and Subtle's weight without its
+   colour. At 400, before step 6, it rendered <strong> identically to the text
+   around it. docs/foundations/typography.md D2, D21, rule 2.11, step 54. */
 strong, b { font-weight: var(--rux-weight-500); color: var(--rux-text-primary); }
 em, i    { font-style: italic; }
+
+/* Strong inside Copy: 550. Real, not synthesized — see the @import above. */
+p :is(strong, b),
+.rux-text-copy-24 :is(strong, b),
+.rux-text-copy-20 :is(strong, b),
+.rux-text-copy-18 :is(strong, b),
+.rux-text-copy-16 :is(strong, b),
+.rux-text-copy-14 :is(strong, b),
+.rux-text-copy-13 :is(strong, b),
+.rux-text-copy-13-mono :is(strong, b) {
+  font-weight: var(--rux-weight-550);
+}
+
+/* Subtle inside Heading: the heading's 600 drops to 500 and the colour to
+   secondary — the catalog's way of de-emphasising part of a title. */
+:is(h1, h2, h3, h4, h5, h6) :is(strong, b),
+.rux-text-heading-72 :is(strong, b),
+.rux-text-heading-64 :is(strong, b),
+.rux-text-heading-56 :is(strong, b),
+.rux-text-heading-48 :is(strong, b),
+.rux-text-heading-40 :is(strong, b),
+.rux-text-heading-32 :is(strong, b),
+.rux-text-heading-24 :is(strong, b),
+.rux-text-heading-20 :is(strong, b),
+.rux-text-heading-16 :is(strong, b),
+.rux-text-heading-14 :is(strong, b) {
+  font-weight: var(--rux-weight-500);
+  color: var(--rux-text-secondary);
+}
 
 /* ─── Links ─────────────────────────────────────────────────────────────── */
 
@@ -164,13 +207,22 @@ a:hover { color: var(--rux-accent-hover); text-decoration: underline; }
 
 /* ─── Code & monospace ──────────────────────────────────────────────────── */
 
-/* One rung below the sans beside it (rule 2.4). Was 0.92em, a proportional
-   shrink that landed off the scale at every call site — 12.88px inside the
-   old 16px base, 12.88 inside 14. The pairing is fixed, the number moves
-   with the base. docs/foundations/typography.md D6, step 10. */
+/* The catalog's inline-code style, copy-13-mono — 13/18, mono, 400 — applied
+   whole to every code element (rule 2.4, D20, step 52). Until step 52 this
+   read one rung below the sans around it, 12px, on the belief that the
+   catalog published no inline-code style; it publishes one, and its usage
+   line says what it is for. Before step 10 it was 0.92em, a proportional
+   shrink that landed off the scale at every call site (D6). Inline code, kbd
+   and samp sit in a line box the surrounding copy sizes, so the 18px leading
+   changes nothing there; pre is a block and takes it — it set 28 until step
+   52, a leading no rung pairs with 12 or 13 (D18). */
 code, kbd, samp, pre {
-  font-family: var(--rux-font-mono);
-  font-size: var(--rux-size-12);
+  font-family: var(--rux-text-copy-13-mono-family);
+  font-size: var(--rux-text-copy-13-mono-size);
+  font-weight: var(--rux-text-copy-13-mono-weight);
+  line-height: var(--rux-text-copy-13-mono-line-height);
+  letter-spacing: var(--rux-text-copy-13-mono-tracking);
+  color: var(--rux-text-copy-13-mono-color);
 }
 
 code {
@@ -178,7 +230,6 @@ code {
   background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-card-border);
   border-radius: var(--rux-radius-xs);
-  color: var(--rux-text-primary);
 }
 
 pre {
@@ -187,7 +238,6 @@ pre {
   border-radius: var(--rux-radius-md);
   padding: var(--rux-space-4);
   overflow-x: auto;
-  line-height: var(--rux-line-height-28);
 }
 
 pre code {
@@ -210,10 +260,14 @@ kbd {
 
 /* ─── Lists ─────────────────────────────────────────────────────────────── */
 
+/* Lists inherit the base leading. Until step 53 this set --rux-line-height-24
+   on every list, which put 14px items at 14/24 — a pairing no catalog family
+   has; copy-14 and label-14 are both 14/20. Measured before removal: 20 list
+   items on index.html at 24px, every one through this rule.
+   docs/foundations/typography.md D18, step 53. */
 ul, ol {
   margin: 0;
   padding-left: var(--rux-space-5);
-  line-height: var(--rux-line-height-24);
 }
 
 li + li { margin-top: var(--rux-space-1); }
