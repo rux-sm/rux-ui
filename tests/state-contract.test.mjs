@@ -1,5 +1,10 @@
 /* Rule R3 — aria is the state of record.
  *
+ * Enforces docs/foundations/state.md rules 2.1, 2.3 and 2.4 (audit R3). That
+ * document states the rules; this file is the rule made executable. It was the
+ * rules' ONLY statement until state.md step 1 gave them a home to be canonical
+ * in — the inversion that document was founded to fix.
+ *
  * Where an aria attribute expresses a state (aria-expanded, aria-pressed,
  * aria-selected, aria-current, [hidden]), CSS selects on it and JS writes only
  * it. `.is-*` is reserved for states with no aria equivalent — is-dragging,

@@ -20,7 +20,7 @@ roles onto that vocabulary.
 | [`color.md`](color.md) | 3.0.0 | 19 done | — |
 | `motion.md` | — | not written | — |
 | `naming.md` | — | not written | — |
-| `state.md` | — | not written | — |
+| [`state.md`](state.md) | 1.0.0 | 1 done · 4 open | — |
 
 `../motion.md` exists at the component tier and is not yet a foundation document; folding
 it in is its own decision.
@@ -64,19 +64,22 @@ document once one claims them.
 | `color.md` | **R6**, the color half — tokens only, both themes | written — rule 2.1 |
 | `motion.md` | **R6**, the duration/easing half | planned |
 | `naming.md` | **R1, R2, R4, R5** — one block per component, one modifier vocabulary, namespaces, every emitted class resolves | **unplanned** |
-| `state.md` | **R3, R7, R8** — aria is the state of record, one overlay kernel, focus is visible everywhere | **unplanned** |
+| [`state.md`](state.md) | **R3, R7, R8** — aria is the state of record, one overlay kernel, focus is visible everywhere | written |
 
 **R9 and R10 are deliberately absent.** The gallery as contract surface and "docs cite
 tokens, not numbers" are process rules, and their homes are `CLAUDE.md` and
 `../portability-audit.md` rather than any foundation document. Naming them is what makes
 this routing exhaustive instead of a list of the tractable ones.
 
-**Seven of the eight operative design rules have no planned home.** R6 is the only one the
-document set covered before this table existed, which is why `naming.md` and `state.md` now
-appear in §1's index as *not written* rather than not existing. Four of the seven are
-already enforced — R3, R4 and R8 by their own contract suites, R5 by `class-resolution` —
-so they are live rules whose only statement is a test. That is the same defect `layout.md`
-step 1 was written to fix, standing in three more places.
+**Four of the eight operative design rules still have no home.** When this table was
+written it was seven: R6 was the only one the set covered, and the note here recorded that
+four of the seven were *already enforced* — R3, R4 and R8 by their own contract suites, R5 by
+`class-resolution` — making them live rules whose only statement was a test. `state.md` has
+since taken **R3, R7 and R8**, which fixes that inversion for three of them and leaves it
+standing for R4 and R5. Both belong to `naming.md`, which is **not written**; **R1 and R2**
+are unenforced and unhomed alongside them. That makes `naming.md` the remaining gap in this
+set, and R7 the proof the gap is worth closing — it was the one rule stated nowhere *and*
+checked by nothing, and `state.md` §3 found its scope genuinely ambiguous on first reading.
 
 **A caution about the shape of this set.** These documents are partitioned by *this
 repository's rules*. The table above them partitions by *Geist's pages* — a source for

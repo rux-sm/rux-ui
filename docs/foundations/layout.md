@@ -158,7 +158,7 @@ correctly so.
 | D1 | ~~The application layer holds seven boundaries off the set.~~ | **closed, step 3** |
 | D2 | The space scale and radius scale are published from `tokens.css` and governed by no document. | steps 4, 5 |
 | D5 | `README.md` § Layout states `--rux-container-xs` (480px) and it has no canonical home — layout does not publish container widths, and whether it should is **Q3**. Not a duplicate, so step 7 left it: the fix is to answer Q3, not to move a value into a document that has not claimed the category. | **open** — blocked on Q3 |
-| D3 | `../layout-composition.md` § Responsive Behavior still states four accessibility MUSTs outside a foundation document. **§ Spacing and the layout half moved in step 6**; the remainder is dialog and assistive-technology behaviour, which is `state.md`'s and cannot move until it exists. | **partly closed, step 6** — blocked on `state.md` |
+| D3 | `../layout-composition.md` § Responsive Behavior still states four accessibility MUSTs outside a foundation document. **§ Spacing and the layout half moved in step 6**; the remainder is dialog and assistive-technology behaviour, which is `state.md`'s and cannot move until it exists. | **partly closed, step 6** — moves at [`state.md`](state.md) step 4 |
 | D4 | ~~Nothing enforces §2.4 against the application layer.~~ | **closed, step 3** — the contract test covers both layers |
 
 ---

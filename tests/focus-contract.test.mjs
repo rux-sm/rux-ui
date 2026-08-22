@@ -1,5 +1,10 @@
 /* Rule R8 — focus is visible everywhere.
  *
+ * Enforces docs/foundations/state.md rule 2.6 (audit R8). That document states
+ * the rule; this file is the rule made executable. Its ACCEPTED list is empty
+ * and state.md §3 records why that matters: R8 is the one of R3/R7/R8 that
+ * holds completely.
+ *
  * Every base file that gives an interactive element a :hover treatment must
  * also give it a :focus-visible treatment keyed to --rux-accent-ring.
  *

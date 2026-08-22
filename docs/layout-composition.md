@@ -257,9 +257,11 @@ answers it.
 
 **The rules below did not move, and are not layout's to own.** They are dialog and
 assistive-technology behaviour — the territory `foundations/README.md` §1 routes to
-`state.md` (R3, R7, R8), which is **not written**. Relocating them into `layout.md` would
-put them in a home that has to hand them back, so they stay here until there is somewhere
-correct to move them. layout.md D3 stays open for exactly this remainder.
+`foundations/state.md` (R3, R7, R8). That document now exists, and its **step 4** is where
+these arrive — gated on its steps 2 and 3, because three of the four are about dismissal and
+focus restoration, and its rule 2.5 has not settled whether it governs all dismissal or only
+outside-dismissal. Moving them before that would import them into a rule still changing
+shape. `layout.md` D3 stays open for exactly this remainder.
 
 - Overlay drawers MUST support Escape dismissal, focus restoration, an
   accessible name, and an operable close control.
