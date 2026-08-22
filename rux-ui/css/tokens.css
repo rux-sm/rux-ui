@@ -23,7 +23,17 @@
 
 	/* ─── COLOR · palette ──────────────────────────────────────────────────── */
 
-	--rux-neutral:	oklch(50% 0.004 255); /* Base */
+	/* Chroma 0. The catalog's neutrals are hsl(0 0% n) at every step of both
+	   themes, and this base is what every role the catalog has NO step for still
+	   derives from — the shadows, the disabled foregrounds, the thumb, the scrim.
+	   It carried 0.004 at hue 255 until step 12, so all of those rendered faintly
+	   blue: --rux-shadow-ambient-color resolved (10,10,20) in light theme where it
+	   should be neutral, a 10-code-value cast in the channel a shadow is most
+	   visible in. Everything else moved by at most 3.
+	   This is the last of D4, and it also brings --rux-white and the six disabled
+	   foregrounds inside sRGB, since they are all `from var(--rux-neutral)`.
+	   docs/foundations/color.md rule 2.8, §5 step 12. */
+	--rux-neutral:	oklch(50% 0 0); /* Base */
 	--rux-red:   	oklch(60% 0.280 024); /* Gore */
 	--rux-orange: 	oklch(70% 0.280 050); /* Pyro */
 	--rux-yellow: 	oklch(80% 0.280 085); /* Gold */

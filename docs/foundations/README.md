@@ -18,7 +18,7 @@ roles onto that vocabulary.
 | [`typography.md`](typography.md) | 4.5.0 | 49 done · 5 deferred | — |
 | [`layout.md`](layout.md) | 1.0.0 | 2 done · 5 open | — |
 | `spacing.md` | — | not written | `layout.md` Q4 |
-| [`color.md`](color.md) | 1.5.0 | 11 done | — |
+| [`color.md`](color.md) | 1.6.0 | 12 done · 3 open | Q9 (step 15) |
 | `motion.md` | — | not written | — |
 | `naming.md` | — | not written | — |
 | `state.md` | — | not written | — |
