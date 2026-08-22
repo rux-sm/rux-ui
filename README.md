@@ -339,13 +339,17 @@ directly. Current rux-ui alignment with this shape:
   also moved placeholder and field-help text off the disabled value, where
   they had been rendering at 2.27:1 — below AA — onto secondary at 7.9:1.
 
-This mapping is a reference point for future token work. The text scale has
-had its pass (above); the remaining roles have not been audited against
-Geist's shape.
+*This paragraph read **"a reference point for future token work … the remaining
+roles have not been audited against Geist's shape"** until 2026-08-21. They have
+now: `docs/foundations/color.md` is canonical, its §3.1 carries all ten scales
+measured in both themes, and its steps 2–6 published them and moved every role
+onto them. **The alignment list above is history, not the current mapping** —
+read §3.2 for what each role resolves to. This whole section becomes a pointer
+at that document's step 8.*
 
-#### Swappable accent — JS wiring exists, CSS side does not yet
+#### Swappable accent — working since 2026-08-21
 
-`rux-ui/js/utilities.js` fully implements the _switching_ mechanism:
+`rux-ui/js/utilities.js` implements the _switching_ mechanism:
 
 ```js
 Rux.setAccent("green"); // sets <html data-rux-accent="green">, persists to localStorage
@@ -357,16 +361,21 @@ Rux.getAccent(); // reads it back
 <button data-rux-set-accent="amber" aria-label="Amber">…</button>
 ```
 
-`Rux.ACCENTS` lists four names (`blue`, `violet`, `green`, `amber`), and the
-attribute gets set and restored correctly on load. **But no CSS anywhere
-reads `[data-rux-accent="…"]`** — `--rux-accent` is a single flat value
-(`var(--rux-blue)`) with no per-theme override block, so switching accent
-today changes the attribute with no visible effect. Treat this as a real
-gap, not documentation drift: wiring it up means adding a
-`[data-rux-accent="violet"] { --rux-accent: var(--rux-violet); }`-shaped
-rule (and equivalents) somewhere the theme tokens live, plus deciding
-whether `--rux-violet`/`--rux-green`/`--rux-amber` primitives should be
-added alongside the existing `--rux-blue`.
+`Rux.ACCENTS` lists four names (`blue`, `violet`, `green`, `amber`); `violet`
+selects the catalog's purple scale. **`docs/foundations/color.md` §5 step 6
+published the CSS side**, so switching now changes what renders.
+
+*This section read **"JS wiring exists, CSS side does not yet"** until then, and
+was accurate for as long as it stood: no stylesheet read `[data-rux-accent]`,
+and `tests/state-contract.test.mjs` carried the attribute as accepted debt. The
+gap was never really CSS — an accent cannot be* switched *while it is a
+hand-tuned recipe, because there is no second palette to switch to. Publishing
+the catalog's scales is what made it four lines per accent. The fix this
+paragraph proposed —* `[data-rux-accent="violet"] { --rux-accent: var(--rux-violet) }`
+*plus new `--rux-violet`/`-green`/`-amber` primitives — is **not** what landed,
+and the difference is the point: an accent selects a ten-step **scale**, not one
+colour, because it needs a fill, a hover, a tint, a focus ring and two text
+steps that agree with each other.*
 
 ### Typography
 

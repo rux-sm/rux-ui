@@ -177,18 +177,31 @@ test("both themes move a surface by a comparable amount", () => {
 	// The one real defect the mechanism detour turned up: light theme's 5%
 	// black moved a surface 13 code values where dark theme's 10% white moved
 	// 26, so hover read about half as strongly there.
-	const alpha = (block, name) =>
-		Number(block.match(new RegExp(`${name}:\\s*oklch\\([^;]*?/\\s*(\\d+)%`))[1]);
-	const light = tokens.slice(tokens.indexOf(':root[data-theme="light"]'));
-	const dark = tokens.slice(0, tokens.indexOf(':root[data-theme="light"]'));
+	// Since color.md §5 step 4 the overlays read gray-alpha, whose steps carry
+	// the catalog's own hover/active alphas, so the alpha has to be resolved
+	// through one level of indirection rather than parsed off the role.
+	const cut = tokens.indexOf(':root[data-theme="light"]');
+	const dark = tokens.slice(0, cut);
+	const light = tokens.slice(cut);
+	const alpha = (block, name) => {
+		const step = dark.match(new RegExp(`${name}:\\s*var\\((--rux-gray-alpha-\\d+)\\)`))?.[1];
+		const decl = block.match(new RegExp(`${step ?? name}:\\s*oklch\\([^;]*?/\\s*([\\d.]+)%`));
+		return Number(decl[1]);
+	};
+	// Likewise the surface each is composited over: surface-1 is the catalog's
+	// background-100 now, not a hand-set lightness.
+	const surfaceL = (block) => {
+		const v = block.match(/--rux-background-100:\s*oklch\(([\d.]+)%/);
+		return Number((v ?? dark.match(/--rux-background-100:\s*oklch\(([\d.]+)%/))[1]) / 100;
+	};
 
 	const darkHover = alpha(dark, "--rux-state-hover-overlay");
 	const lightHover = alpha(light, "--rux-state-hover-overlay");
 	// Composited against their own themes' surfaces, these land within a few
 	// code values of each other; the raw alphas differ because black over a
 	// light surface and white over a dark one are not symmetric.
-	const deltaDark = shift(0.18, 1, darkHover / 100);
-	const deltaLight = shift(1.0, 0, lightHover / 100);
+	const deltaDark = shift(surfaceL(dark), 1, darkHover / 100);
+	const deltaLight = shift(surfaceL(light), 0, lightHover / 100);
 	assert.ok(
 		Math.abs(Math.abs(deltaDark) - Math.abs(deltaLight)) <= 6,
 		`hover moves ${deltaDark} in dark but ${deltaLight} in light`,

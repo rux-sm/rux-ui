@@ -196,14 +196,14 @@ p :is(strong, b),
 /* ─── Links ─────────────────────────────────────────────────────────────── */
 
 a {
-  color: var(--rux-accent);
+  color: var(--rux-link-fg);
   text-decoration: none;
   text-underline-offset: calc(var(--rux-space-1) - var(--rux-border-width));
   text-decoration-thickness: var(--rux-border-width);
   transition: color var(--rux-duration-instant) var(--rux-ease-out);
 }
 
-a:hover { color: var(--rux-accent-hover); text-decoration: underline; }
+a:hover { color: var(--rux-link-fg-hover); text-decoration: underline; }
 
 /* ─── Code & monospace ──────────────────────────────────────────────────── */
 

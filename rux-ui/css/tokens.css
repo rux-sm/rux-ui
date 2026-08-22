@@ -33,15 +33,173 @@
 	--rux-purple:	oklch(60% 0.280 290); /* Void */
 	--rux-pink:		oklch(70% 0.280 350); /* Neon */	
 
+	/* ─── COLOR · the catalog's scales ─────────────────────────────────────── */
+	/* Tier 0. The Geist colour catalog, adopted whole: two backgrounds, a
+	   ten-step neutral scale, its ten-step alpha twin, and seven ten-step hue
+	   scales — the same ten purposes in every one (color.md rule 2.2):
+	     100 default bg · 200 hover bg · 300 active bg
+	     400 border · 500 hover border · 600 active border
+	     700 high-contrast bg · 800 its hover
+	     900 secondary text · 1000 primary text
+	   The catalog publishes no values, so every number here was read off the
+	   rendered vercel.com/geist/colors page on 2026-08-21 — its sRGB branch,
+	   which is authored in HSL — and converted to OKLCH, this system's colour
+	   syntax (color.md rule 2.10, Q5). The HSL beside each value is the
+	   measurement; the OKLCH is what this system publishes. All 164 conversions
+	   were verified in a browser to rasterize to the SAME 8-bit sRGB pixel as
+	   the HSL they came from, which is why the precision is two decimals of L.
+	   The greys are chroma 0 (Q3): the catalog's neutrals carry no hue, and
+	   --rux-neutral's 0.004 tint is not one of them.
+	   NOTHING READS THESE YET. Steps 4-6 move the roles onto them; until then
+	   the roles are still recipes on --rux-neutral and the eight hue bases
+	   below, and tests/color-scales.test.mjs asserts that this is still true.
+	   docs/foundations/color.md §5 steps 2 and 3, Q1. */
+	--rux-background-100: oklch(14.57% 0 0); /* hsl(0 0% 4%) */
+	--rux-background-200: oklch(0% 0 0);     /* hsl(0 0% 0%) */
+
+	--rux-gray-100:  oklch(21.56% 0 0); /* hsl(0 0% 10%) */
+	--rux-gray-200:  oklch(23.76% 0 0); /* hsl(0 0% 12%) */
+	--rux-gray-300:  oklch(28.01% 0 0); /* hsl(0 0% 16%) */
+	--rux-gray-400:  oklch(30.08% 0 0); /* hsl(0 0% 18%) */
+	--rux-gray-500:  oklch(38.99% 0 0); /* hsl(0 0% 27%) */
+	--rux-gray-600:  oklch(62.39% 0 0); /* hsl(0 0% 53%) */
+	--rux-gray-700:  oklch(64.94% 0 0); /* hsl(0 0% 56%) */
+	--rux-gray-800:  oklch(58.95% 0 0); /* hsl(0 0% 49%) */
+	--rux-gray-900:  oklch(70.79% 0 0); /* hsl(0 0% 63%) */
+	--rux-gray-1000: oklch(94.66% 0 0); /* hsl(0 0% 93%) */
+
+	--rux-gray-alpha-100:  oklch(100% 0 0 / 5.88%);  /* white 15/255 */
+	--rux-gray-alpha-200:  oklch(100% 0 0 / 9.02%);  /* white 23/255 */
+	--rux-gray-alpha-300:  oklch(100% 0 0 / 12.94%); /* white 33/255 */
+	--rux-gray-alpha-400:  oklch(100% 0 0 / 14.12%); /* white 36/255 */
+	--rux-gray-alpha-500:  oklch(100% 0 0 / 23.92%); /* white 61/255 */
+	--rux-gray-alpha-600:  oklch(100% 0 0 / 50.98%); /* white 130/255 */
+	--rux-gray-alpha-700:  oklch(100% 0 0 / 54.12%); /* white 138/255 */
+	--rux-gray-alpha-800:  oklch(100% 0 0 / 47.06%); /* white 120/255 */
+	--rux-gray-alpha-900:  oklch(100% 0 0 / 61.18%); /* white 156/255 */
+	--rux-gray-alpha-1000: oklch(100% 0 0 / 92.16%); /* white 235/255 */
+
+	--rux-blue-100:  oklch(22.34% 0.0401 258.28); /* hsl(216 50% 12%) */
+	--rux-blue-200:  oklch(25.54% 0.0549 255.87); /* hsl(214 59% 15%) */
+	--rux-blue-300:  oklch(30.67% 0.0811 255.37); /* hsl(213 71% 20%) */
+	--rux-blue-400:  oklch(34.00% 0.0968 254.87); /* hsl(212 78% 23%) */
+	--rux-blue-500:  oklch(38.51% 0.1172 254.74); /* hsl(211 86% 27%) */
+	--rux-blue-600:  oklch(65.04% 0.1925 251.63); /* hsl(206 100% 50%) */
+	--rux-blue-700:  oklch(57.91% 0.2141 257.97); /* hsl(212 100% 48%) */
+	--rux-blue-800:  oklch(51.64% 0.1889 257.72); /* hsl(212 100% 41%) */
+	--rux-blue-900:  oklch(71.78% 0.1521 250.77); /* hsl(210 100% 66%) */
+	--rux-blue-1000: oklch(96.76% 0.0171 240.53); /* hsl(206 100% 96%) */
+
+	--rux-red-100:  oklch(22.12% 0.0374 17.38); /* hsl(357 37% 12%) */
+	--rux-red-200:  oklch(25.86% 0.0594 19.12); /* hsl(357 46% 16%) */
+	--rux-red-300:  oklch(31.54% 0.0895 20.07); /* hsl(356 54% 22%) */
+	--rux-red-400:  oklch(35.19% 0.1043 21.52); /* hsl(357 55% 26%) */
+	--rux-red-500:  oklch(40.75% 0.1325 22.78); /* hsl(357 60% 32%) */
+	--rux-red-600:  oklch(62.54% 0.1931 22.94); /* hsl(358 75% 59%) */
+	--rux-red-700:  oklch(62.54% 0.1931 22.94); /* hsl(358 75% 59%) */
+	--rux-red-800:  oklch(58.04% 0.2043 24.93); /* hsl(358 69% 52%) */
+	--rux-red-900:  oklch(69.83% 0.1926 21.66); /* hsl(358 100% 69%) */
+	--rux-red-1000: oklch(95.71% 0.0201 9.41);  /* hsl(353 90% 96%) */
+
+	--rux-amber-100:  oklch(22.53% 0.0477 74.09); /* hsl(35 100% 8%) */
+	--rux-amber-200:  oklch(24.98% 0.0555 66.33); /* hsl(32 100% 10%) */
+	--rux-amber-300:  oklch(32.28% 0.0728 64.4);  /* hsl(33 100% 15%) */
+	--rux-amber-400:  oklch(35.61% 0.0785 67.34); /* hsl(35 100% 17%) */
+	--rux-amber-500:  oklch(41.5% 0.0888 67.16);  /* hsl(35 91% 22%) */
+	--rux-amber-600:  oklch(75.03% 0.1554 74.28); /* hsl(39 85% 49%) */
+	--rux-amber-700:  oklch(81.73% 0.164 75.99);  /* hsl(39 100% 57%) */
+	--rux-amber-800:  oklch(77.21% 0.1727 64.16); /* hsl(35 100% 52%) */
+	--rux-amber-900:  oklch(77.24% 0.1624 73.17); /* hsl(39 90% 50%) */
+	--rux-amber-1000: oklch(96.63% 0.0317 84.59); /* hsl(40 94% 93%) */
+
+	--rux-green-100:  oklch(22.94% 0.0436 150.38); /* hsl(136 50% 9%) */
+	--rux-green-200:  oklch(27.06% 0.0546 150.49); /* hsl(137 50% 12%) */
+	--rux-green-300:  oklch(29.7% 0.0625 149.77);  /* hsl(136 50% 14%) */
+	--rux-green-400:  oklch(34.5% 0.0914 147.46);  /* hsl(135 70% 16%) */
+	--rux-green-500:  oklch(44.09% 0.1214 147.02); /* hsl(135 70% 23%) */
+	--rux-green-600:  oklch(58.21% 0.1648 146.66); /* hsl(135 70% 34%) */
+	--rux-green-700:  oklch(64.65% 0.146 147.33);  /* hsl(131 41% 46%) */
+	--rux-green-800:  oklch(57.82% 0.1316 147.66); /* hsl(132 43% 39%) */
+	--rux-green-900:  oklch(73.22% 0.1425 148.06); /* hsl(131 43% 57%) */
+	--rux-green-1000: oklch(96.69% 0.0319 153.93); /* hsl(136 73% 94%) */
+
+	--rux-teal-100:  oklch(21.95% 0.0354 178.75); /* hsl(169 78% 7%) */
+	--rux-teal-200:  oklch(25.05% 0.04 179.6);    /* hsl(170 74% 9%) */
+	--rux-teal-300:  oklch(31.47% 0.0522 180.22); /* hsl(171 75% 13%) */
+	--rux-teal-400:  oklch(32.5% 0.0564 179.54);  /* hsl(171 85% 13%) */
+	--rux-teal-500:  oklch(43.42% 0.0762 180.41); /* hsl(172 85% 20%) */
+	--rux-teal-600:  oklch(60.68% 0.1082 179.86); /* hsl(172 85% 32%) */
+	--rux-teal-700:  oklch(64.98% 0.1137 181.88); /* hsl(173 80% 36%) */
+	--rux-teal-800:  oklch(57.54% 0.1009 181.81); /* hsl(173 83% 30%) */
+	--rux-teal-900:  oklch(74.44% 0.1316 182.92); /* hsl(174 90% 41%) */
+	--rux-teal-1000: oklch(96.45% 0.0276 180.14); /* hsl(166 71% 93%) */
+
+	--rux-purple-100:  oklch(22.36% 0.0394 316.05); /* hsl(283 30% 12%) */
+	--rux-purple-200:  oklch(25.85% 0.0622 314.27); /* hsl(281 38% 16%) */
+	--rux-purple-300:  oklch(31.83% 0.0948 312.23); /* hsl(279 44% 23%) */
+	--rux-purple-400:  oklch(35.81% 0.1147 310.32); /* hsl(277 46% 28%) */
+	--rux-purple-500:  oklch(40.95% 0.1432 307.27); /* hsl(274 49% 35%) */
+	--rux-purple-600:  oklch(55.48% 0.1825 305.87); /* hsl(272 51% 54%) */
+	--rux-purple-700:  oklch(55.48% 0.1825 305.87); /* hsl(272 51% 54%) */
+	--rux-purple-800:  oklch(48.45% 0.1683 305.53); /* hsl(272 47% 45%) */
+	--rux-purple-900:  oklch(69.86% 0.1786 309.44); /* hsl(275 80% 71%) */
+	--rux-purple-1000: oklch(95.94% 0.0225 315.33); /* hsl(281 73% 96%) */
+
+	--rux-pink-100:  oklch(22.53% 0.0346 353.7);  /* hsl(335 32% 12%) */
+	--rux-pink-200:  oklch(26.34% 0.0588 355.66); /* hsl(335 43% 16%) */
+	--rux-pink-300:  oklch(31.13% 0.0798 356.72); /* hsl(335 47% 21%) */
+	--rux-pink-400:  oklch(32.12% 0.089 357.47);  /* hsl(335 51% 22%) */
+	--rux-pink-500:  oklch(36.95% 0.1149 358.89); /* hsl(335 57% 27%) */
+	--rux-pink-600:  oklch(50.26% 0.1876 4.4);    /* hsl(336 75% 40%) */
+	--rux-pink-700:  oklch(63.62% 0.2124 1.24);   /* hsl(336 80% 58%) */
+	--rux-pink-800:  oklch(59.47% 0.2196 3.97);   /* hsl(336 74% 51%) */
+	--rux-pink-900:  oklch(69.31% 0.1891 3.82);   /* hsl(341 90% 67%) */
+	--rux-pink-1000: oklch(95.88% 0.0226 348.45); /* hsl(333 90% 96%) */
+
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
 
-	--rux-accent:        var(--rux-blue);
-	--rux-accent-fill:   oklch(from var(--rux-accent) l 0.2 h);
-	--rux-accent-hover:  oklch(from var(--rux-accent) 70% c h);
-	--rux-accent-subtle: oklch(from var(--rux-accent) l c h / 0.14);
-	--rux-accent-ring:   oklch(from var(--rux-accent) 70% 0.28 h);
+	/* The accent is a SCALE SELECTION, not a colour (rule 2.12): it is one
+	   chromatic scale's 700, its hover that scale's 800, its tint that scale's
+	   100, and its ring the catalog's focus colour — which is 900 in dark and
+	   700 in light, so it carries a light-theme override.
+	   Switching accent means switching WHICH scale these five read, which is
+	   what [data-rux-accent] does below. The hover now DARKENS (800 is darker
+	   than 700 in both themes); it lightened until step 6, which was D7.
+	   docs/foundations/color.md rule 2.12, §5 step 6. */
+	/* Which scale is the accent. Blue by default; [data-rux-accent] below
+	   repoints these four, and everything downstream follows without knowing
+	   a switch happened. */
+	--rux-accent-100:    var(--rux-blue-100);
+	--rux-accent-700:    var(--rux-blue-700);
+	--rux-accent-800:    var(--rux-blue-800);
+	--rux-accent-900:    var(--rux-blue-900);
+	--rux-accent-1000:   var(--rux-blue-1000);
+
+	--rux-accent:        var(--rux-accent-700);
+	--rux-accent-hover:  var(--rux-accent-800);
+	--rux-accent-subtle: var(--rux-accent-100);
+	/* The catalog's focus colour: 900 on a dark canvas, 700 on a light one.
+	   The light block overrides this one line and every accent follows. */
+	--rux-accent-ring:   var(--rux-accent-900);
+	/* Was a less-chromatic variant of the accent for solid controls; the 700
+	   step IS the solid-control fill, so it converges on the accent itself.
+	   Kept published, Class C to retire. */
+	--rux-accent-fill:   var(--rux-accent);
 	--rux-selection-bg:  var(--rux-accent);
 	--rux-selection-fg:  var(--rux-fg-on-accent);
+
+	/* A link is TEXT, so it takes the accent scale's text steps — 900, and 1000
+	   on hover — not the fill steps the accent itself rides. Step 6 is what
+	   made the distinction matter: `a:hover` read --rux-accent-hover, which
+	   became the 800 step, and 800 is *darker* than 700 in both themes. On a
+	   dark canvas that made the hover dimmer than the link (4.73:1 → 3.67:1,
+	   under AA) — a fill hover behaving correctly and a text hover inheriting
+	   it by accident. Measured, not noticed: it came out of step 6's contrast
+	   pass. 900 → 1000 moves the right way in BOTH themes, because the scale
+	   inverts around the fills: dark 8.4:1 → ~18:1, light ~5.5:1 → ~12:1.
+	   docs/foundations/color.md D13, §5 step 6. */
+	--rux-link-fg:       var(--rux-accent-900);
+	--rux-link-fg-hover: var(--rux-accent-1000);
 
 	/* ─── TYPOGRAPHY · font family ─────────────────────────────────────────── */
 
@@ -229,46 +387,59 @@
 	/* Higher numbers are lighter and visually closer. */
 
 
-    /* Two surfaces only, following the Vercel Geist model (README.md's
-       "Reference: Vercel Geist colors"): canvas, and everything raised
-       off it — panels, cards, content areas. */
-    --rux-surface-0:	oklch(from var(--rux-neutral) 0% c h);	/* canvas */ 	/* 0,  0,  0  */
-    --rux-surface-1:    oklch(from var(--rux-neutral) 18% c h); /* cards  */	/* 22, 22 ,22 */
-	--rux-surface-2:    oklch(from var(--rux-neutral) 24% c h); /* button */ 	/* 25, 25 ,25 */
-	--rux-input-bg-disabled:  oklch(from var(--rux-neutral) 21.5% c h); /* ( 24, 24, 24) */
+    /* Two surfaces, and they are the catalog's two dedicated backgrounds
+       rather than steps of the gray scale: the page, and everything raised
+       off it — panels, cards, content areas. A component's OWN background
+       (a button, an input, a tag) is a gray step, which is what surface-2 is.
+       docs/foundations/color.md rule 2.3, §5 step 4. */
+    --rux-surface-0:	var(--rux-background-200);	/* page   */
+    --rux-surface-1:    var(--rux-background-100);	/* raised */
+	--rux-surface-2:    var(--rux-gray-100);		/* a control's own fill */
+	/* One consumer (the disabled input) and no purpose of its own beyond
+	   "a control's background", so it reads the role rather than a step
+	   (rule 1.2). Was 21.5% — gray-100 is 21.56%, which is the same colour. */
+	--rux-input-bg-disabled:  var(--rux-surface-2);
 
-	/* One border family for the whole app — grid lines, then three
-	   increasing intensities for hairline borders (default, hover,
-	   active). Replaces the old --rux-border/-subtle/-strong/-button and
-	   --rux-divider/-grid tokens, which this consolidates. */
-	--rux-grid-guide:			oklch(from var(--rux-neutral) 24% c h / 100%);	/* ( 31, 31, 31) */
-	--rux-card-border:			oklch(from var(--rux-neutral) 30% c h / 100%);	/* ( 46, 46, 46) */
-	--rux-card-border-hover:	oklch(from var(--rux-neutral) 39% c h / 100%);	/* ( 69, 69, 69) */
-	--rux-card-border-active:	oklch(from var(--rux-neutral) 62% c h / 100%);	/* (135,135,135) */
+	/* One border family for the whole app: default, hover, active — the
+	   catalog's 400/500/600. A grid line is a border at rest, so it takes 400
+	   alongside the card border; it was a step lighter until step 4, which is
+	   the distinction that goes. docs/foundations/color.md rule 2.4. */
+	--rux-grid-guide:			var(--rux-gray-400);
+	--rux-card-border:			var(--rux-gray-400);
+	--rux-card-border-hover:	var(--rux-gray-500);
+	--rux-card-border-active:	var(--rux-gray-600);
 
 	/* ─── COLOR · interaction states ─────────────────────────────────────── */
 	/* Hover/active list states and the modal scrim — a different axis than
 	   surface depth (they layer onto any tier), so they stay separate. */
 
-	/* Direct values, not aliased through the (now-retired) surface-5/6 tiers
-	   — a different axis from the two-tier canvas/content scale, still
-	   needs its own step beyond it for list-item hover/active. */
-	--rux-bg-hover:      oklch(from var(--rux-neutral) 32% c h);
-	--rux-bg-active:     oklch(from var(--rux-neutral) 36% c h);
+	/* The hover and active background steps. Not a separate axis after all:
+	   the catalog gives 200 and 300 exactly these two jobs, so a list-item
+	   hover is the same step as any other hover background. */
+	--rux-bg-hover:      var(--rux-gray-200);
+	--rux-bg-active:     var(--rux-gray-300);
 
-	/* One interaction recipe for every neutral control. Selected aliases hover
-	   so components can express intent without introducing another color.
+	/* One interaction recipe for every neutral control, and it is the alpha
+	   scale's own hover/active pair — gray-alpha carries the same ten purposes
+	   as gray, translucently, which is precisely what an overlay needs. White
+	   over dark and black over light is the catalog's arrangement and was
+	   already this system's.
 
 	   A fixed alpha, deliberately — not a fixed OKLCH lightness delta. Measured
-	   in what actually reaches the screen, 10% white is the most uniform option
-	   available: +26/+24/+22 8-bit code values on surface-0/1/2. A constant
-	   lightness step is not, because sRGB compresses hard near black — from
-	   --rux-surface-0, which is pure black, calc(l + 0.06) renders rgb(1,1,1),
-	   a one-value change nobody can see. The overlay's larger *lightness* delta
-	   down there is what buys an equal *visible* one. */
-	--rux-state-hover-overlay:    oklch(from var(--rux-white) l c h / 10%);
-	--rux-state-active-overlay:   oklch(from var(--rux-white) l c h / 20%);
+	   in what actually reaches the screen, a white overlay is the most uniform
+	   option available; a constant lightness step is not, because sRGB
+	   compresses hard near black — from --rux-surface-0, which is pure black,
+	   calc(l + 0.06) renders rgb(1,1,1), a one-value change nobody can see.
+	   The overlay's larger *lightness* delta down there is what buys an equal
+	   *visible* one. docs/foundations/color.md §5 step 4. */
+	--rux-state-hover-overlay:    var(--rux-gray-alpha-200);
+	--rux-state-active-overlay:   var(--rux-gray-alpha-300);
 	--rux-state-selected-overlay: var(--rux-state-hover-overlay);
+	/* Named Rux role, no catalog step. The ten purposes are all spoken for and
+	   none of them is "scrim"; the catalog carries its backdrop under Materials
+	   (--ds-overlay-backdrop-color/-opacity), which this document has not
+	   measured. Left as it stands rather than forced onto a step it does not
+	   mean. docs/foundations/color.md §5 step 4. */
 	--rux-overlay-scrim:          oklch(from var(--rux-black) l c h / 60%);
 
 	/* ─── COLOR · recessed well ─────────────────────────────────────────── */
@@ -276,20 +447,24 @@
 	   translucent interaction colors adapt to the surface beneath them. */
 
 	--rux-well-bg: transparent;
+	/* Named Rux role, no catalog step: the ten purposes have no "raised opaque
+	   fill", and the nearest by value (1000) means primary text. A switch thumb
+	   that reads as text would be a step doing two jobs, which rule 2.2
+	   forbids. Left as it stands. docs/foundations/color.md §5 step 4. */
 	--rux-thumb-bg: oklch(from var(--rux-neutral) 90% c h); /* Raised elements */
 
 	/* ─── COLOR · text roles ─────────────────────────────────────────────── */
-	/* One weight-based ladder, darkest/most-prominent to lightest — each
-	   name is the whole story, no separate layer to cross-reference. */
-	/* Two emphasis levels, following Geist's neutral scale, which reserves
-	   exactly two steps for text: 900 secondary, 1000 primary. This was five
-	   (heading/default/muted/faint/disabled) — a finer-grained analog README's
-	   Geist reference already flagged as pending work.
-	   Disabled stays, because it is not an emphasis level: Geist's scale has no
-	   disabled-text step at all, so a state that must read as "you cannot use
-	   this" cannot be one of the two content levels without erasing itself. */
-	--rux-text-primary:   oklch(from var(--rux-neutral) 94% c h);  /* Geist 1000 */
-	--rux-text-secondary: oklch(from var(--rux-neutral) 70% c h);  /* Geist  900 */
+	/* Two emphasis levels, and they are the catalog's only two text steps:
+	   900 secondary, 1000 primary. This was five (heading/default/muted/faint/
+	   disabled) until typography.md §5 step 9 found that two of them aliased a
+	   third and nothing read either.
+	   Disabled stays OUTSIDE the pair and off the scale, for the same reason it
+	   always did: the catalog has no disabled-text step, all ten purposes are
+	   spoken for, and a state that must read as "you cannot use this" is not
+	   one of the two content levels. A named Rux role, recorded as such.
+	   docs/foundations/color.md rule 2.6, §5 step 4. */
+	--rux-text-primary:   var(--rux-gray-1000);
+	--rux-text-secondary: var(--rux-gray-900);
 	--rux-text-disabled:  oklch(from var(--rux-neutral) 100% c h / 28%);
 
 	/* Deprecated — superseded by the pair above. Kept because the vendored
@@ -306,44 +481,74 @@
 	--rux-fg-on-accent-subtle: oklch(from var(--rux-white) l c h / 55%);
 
 	/* ─── COLOR · status roles ───────────────────────────────────────────── */
-	/* Base: ordinary semantic text/icons on the current theme's surfaces. */
-	--rux-danger-base:  oklch(from var(--rux-red)    90% 0.28 h);
-	--rux-warning-base: oklch(from var(--rux-yellow) 90% 0.24 h);
-	--rux-success-base: oklch(from var(--rux-green)  90% 0.28 h);
-	--rux-info-base:    oklch(from var(--rux-blue)   90% 0.28 h);
+	/* A status is a SCALE, not a colour (rule 2.7). Danger is the red scale,
+	   warning amber, success green, info blue — and each role takes the step
+	   its purpose needs, exactly as the neutral roles do:
+
+	     text      900     tint      100
+	     fill      700     on-fill  1000     fill hover 800
+
+	   Warning moved from --rux-yellow (hue 85) to the amber scale (hue 30-44),
+	   which is the hue the catalog calls warning. The four hand-tuned tiers
+	   this replaced — base/strong/subtle/vivid, plus fill for danger only —
+	   corresponded to no step, which was D8.
+	   docs/foundations/color.md rule 2.7, §5 step 5. */
+
+	/* Text and icons. In light theme these were rendering at 1.19-1.85:1
+	   against the canvas, three times under AA; the 900 steps measure
+	   5.3-5.6:1. That was D6, and this line is the fix. */
+	--rux-danger-base:  var(--rux-red-900);
+	--rux-warning-base: var(--rux-amber-900);
+	--rux-success-base: var(--rux-green-900);
+	--rux-info-base:    var(--rux-blue-900);
 	--rux-danger:  var(--rux-danger-base);
 	--rux-warning: var(--rux-warning-base);
 	--rux-success: var(--rux-success-base);
 	--rux-info:    var(--rux-info-base);
 
-	--rux-danger-subtle:	oklch(from var(--rux-danger) 	60% 0.22 h / 0.14);
-	--rux-warning-subtle: 	oklch(from var(--rux-warning) 	60% 0.22 h / 0.14);
-	--rux-success-subtle: 	oklch(from var(--rux-success) 	60% 0.22 h / 0.14);
-	--rux-info-subtle: 		oklch(from var(--rux-info) 		60% 0.22 h / 0.14);
+	/* Tint: the 100 step, and now opaque. It was the base at 14% alpha, which
+	   rendered differently over a card than over the canvas; the catalog's
+	   tint is a background, so it composites once and reads the same anywhere. */
+	--rux-danger-subtle:	var(--rux-red-100);
+	--rux-warning-subtle: 	var(--rux-amber-100);
+	--rux-success-subtle: 	var(--rux-green-100);
+	--rux-info-subtle: 		var(--rux-blue-100);
 
-	/* Strong: prominent foregrounds such as status badges. */
-	--rux-danger-strong:  oklch(from var(--rux-danger)  85% 0.20 h);
-	--rux-warning-strong: oklch(from var(--rux-warning) 85% 0.20 h);
-	--rux-success-strong: oklch(from var(--rux-success) 85% 0.20 h);
-	--rux-info-strong:    oklch(from var(--rux-info)    85% 0.20 h);
+	/* Strong was "a more prominent foreground than base" — a distinction that
+	   existed because base was unreadable in light theme. With base on the 900
+	   step it is readable in both, and strong has no job left: these four now
+	   resolve identically to the base. Kept as published names because removing
+	   one is Class C; recorded as retirement candidates. */
+	--rux-danger-strong:  var(--rux-danger);
+	--rux-warning-strong: var(--rux-warning);
+	--rux-success-strong: var(--rux-success);
+	--rux-info-strong:    var(--rux-info);
 
-	/* Fill: solid controls; deliberately less chromatic than vivid trip bars.
-	   Danger only — the only one of the four with a Fill-based button
-	   variant (.rux-button--danger) today; warning/success/info never got
-	   one, so their fill/on-fill pairs stayed undefined rather than
-	   speculative. */
-	--rux-danger-fill:    oklch(from var(--rux-red) 64% 0.28 h);
-	--rux-danger-on-fill: var(--rux-white);
+	/* Fill: the 700 step, the catalog's high-contrast background, with 1000 —
+	   the scale's own near-white — as the text on it. Published for all four
+	   now rather than danger alone: a step is a step, and the reason the other
+	   three were missing was that nobody had hand-tuned them. */
+	--rux-danger-fill:    var(--rux-red-700);
+	--rux-warning-fill:   var(--rux-amber-700);
+	--rux-success-fill:   var(--rux-green-700);
+	--rux-info-fill:      var(--rux-blue-700);
+	--rux-danger-fill-hover:  var(--rux-red-800);
+	--rux-warning-fill-hover: var(--rux-amber-800);
+	--rux-success-fill-hover: var(--rux-green-800);
+	--rux-info-fill-hover:    var(--rux-blue-800);
+	--rux-danger-on-fill: var(--rux-red-1000);
 
-	/* Vivid: maximum-chroma data surfaces such as trip bars. Success has no
-	   vivid consumer today (danger/warning/info all feed trip-bar or other
-	   live recipes) — kept off rather than defined speculatively. */
-	--rux-danger-vivid:  oklch(from var(--rux-red)    60% 0.28 h);
-	--rux-warning-vivid: oklch(from var(--rux-yellow) 90% 0.28 h);
-	--rux-info-vivid:    oklch(from var(--rux-blue)   60% 0.28 h);
-	--rux-danger-on-vivid:  oklch(from var(--rux-danger)  90% 0.20 h);
-	--rux-warning-on-vivid: oklch(from var(--rux-warning) 90% 0.20 h);
-	--rux-success-on-vivid: oklch(from var(--rux-success) 90% 0.20 h);
+	/* Vivid was the maximum-chroma tier for data surfaces (trip bars). It is
+	   the same purpose as fill — a solid colour carrying a label — so it takes
+	   the same step and now resolves identically to it. Same call as strong:
+	   converged, kept published, Class C to retire. The trip bar's own tone
+	   recipes are the application's mapping and are not touched here (rule 1.3). */
+	--rux-danger-vivid:  var(--rux-danger-fill);
+	--rux-warning-vivid: var(--rux-warning-fill);
+	--rux-info-vivid:    var(--rux-info-fill);
+	--rux-danger-on-vivid:  var(--rux-red-1000);
+	--rux-warning-on-vivid: var(--rux-amber-1000);
+	--rux-success-on-vivid: var(--rux-green-1000);
 
 	/* Compatibility alias for existing consumers. */
 	--rux-danger-bright:  var(--rux-danger-on-vivid);
@@ -1723,6 +1928,49 @@
 }
 
 /* ==========================================================================
+   ACCENT · scale selection
+   --------------------------------------------------------------------------
+   Rux.setAccent(name) in rux-ui/js/utilities.js writes [data-rux-accent] on
+   <html> and persists it; these rules are what makes that visible. Each picks
+   a different chromatic scale for the accent's four steps, and every accent
+   role downstream — the fill, the hover, the tint, the focus ring, the
+   selection — follows without knowing a switch happened.
+
+   The switch shipped without these rules and stayed that way long enough for
+   tests/state-contract.test.mjs to carry [data-rux-accent] as accepted debt.
+   It was not really a CSS gap: an accent could not BE switched while it was a
+   hand-tuned recipe rather than a scale selection, because there was no second
+   scale to switch to. docs/foundations/color.md Q4, D11, §5 step 6.
+
+   Blue is the default and is declared in :root, so it needs no rule here.
+   Rux.ACCENTS names "violet"; the catalog's scale is called purple.
+   ========================================================================== */
+
+:root[data-rux-accent="violet"] {
+	--rux-accent-100: var(--rux-purple-100);
+	--rux-accent-700: var(--rux-purple-700);
+	--rux-accent-800: var(--rux-purple-800);
+	--rux-accent-900: var(--rux-purple-900);
+	--rux-accent-1000: var(--rux-purple-1000);
+}
+
+:root[data-rux-accent="green"] {
+	--rux-accent-100: var(--rux-green-100);
+	--rux-accent-700: var(--rux-green-700);
+	--rux-accent-800: var(--rux-green-800);
+	--rux-accent-900: var(--rux-green-900);
+	--rux-accent-1000: var(--rux-green-1000);
+}
+
+:root[data-rux-accent="amber"] {
+	--rux-accent-100: var(--rux-amber-100);
+	--rux-accent-700: var(--rux-amber-700);
+	--rux-accent-800: var(--rux-amber-800);
+	--rux-accent-900: var(--rux-amber-900);
+	--rux-accent-1000: var(--rux-amber-1000);
+}
+
+/* ==========================================================================
    THEME · light mode
    --------------------------------------------------------------------------
    Dark is the default in :root; this block only overrides what changes.
@@ -1745,94 +1993,161 @@
 	--rux-pink:   oklch(60.0% 0.28 350.0); /*  Neon  */
 	--rux-gray:   oklch(from var(--rux-neutral) 98% c h);
 
+	/* ─── COLOR · the catalog's scales, light ──────────────────────────────── */
+	/* The same steps, measured off the same page with its theme class flipped.
+	   The catalog's own theming model, visible in these two blocks: 700 and 800
+	   are IDENTICAL across themes — a high-contrast fill is the same colour on
+	   either canvas — while 100-600 and 900-1000 invert around them.
+	   docs/foundations/color.md §3.1, §5 steps 2 and 3. */
+	--rux-background-100: oklch(100% 0 0);   /* hsl(0 0% 100%) */
+	--rux-background-200: oklch(98.48% 0 0); /* hsl(0 0% 98%) */
+
+	--rux-gray-100:  oklch(96.19% 0 0); /* hsl(0 0% 95%) */
+	--rux-gray-200:  oklch(93.89% 0 0); /* hsl(0 0% 92%) */
+	--rux-gray-300:  oklch(92.34% 0 0); /* hsl(0 0% 90%) */
+	--rux-gray-400:  oklch(93.89% 0 0); /* hsl(0 0% 92%) */
+	--rux-gray-500:  oklch(83.73% 0 0); /* hsl(0 0% 79%) */
+	--rux-gray-600:  oklch(73.26% 0 0); /* hsl(0 0% 66%) */
+	--rux-gray-700:  oklch(64.94% 0 0); /* hsl(0 0% 56%) */
+	--rux-gray-800:  oklch(58.95% 0 0); /* hsl(0 0% 49%) */
+	--rux-gray-900:  oklch(41.84% 0 0); /* hsl(0 0% 30%) */
+	--rux-gray-1000: oklch(20.44% 0 0); /* hsl(0 0% 9%) */
+
+	--rux-gray-alpha-100:  oklch(0% 0 0 / 5.1%);   /* black 13/255 */
+	--rux-gray-alpha-200:  oklch(0% 0 0 / 7.84%);  /* black 20/255 */
+	--rux-gray-alpha-300:  oklch(0% 0 0 / 10.2%);  /* black 26/255 */
+	--rux-gray-alpha-400:  oklch(0% 0 0 / 7.84%);  /* black 20/255 */
+	--rux-gray-alpha-500:  oklch(0% 0 0 / 21.18%); /* black 54/255 */
+	--rux-gray-alpha-600:  oklch(0% 0 0 / 34.12%); /* black 87/255 */
+	--rux-gray-alpha-700:  oklch(0% 0 0 / 43.92%); /* black 112/255 */
+	--rux-gray-alpha-800:  oklch(0% 0 0 / 50.98%); /* black 130/255 */
+	--rux-gray-alpha-900:  oklch(0% 0 0 / 70.2%);  /* black 179/255 */
+	--rux-gray-alpha-1000: oklch(0% 0 0 / 90.98%); /* black 232/255 */
+
+	--rux-blue-100:  oklch(97.26% 0.0133 251.56); /* hsl(212 100% 97%) */
+	--rux-blue-200:  oklch(96.49% 0.0175 248.01); /* hsl(210 100% 96%) */
+	--rux-blue-300:  oklch(94.74% 0.0263 248.11); /* hsl(210 100% 94%) */
+	--rux-blue-400:  oklch(91.45% 0.0439 246.51); /* hsl(209 100% 90%) */
+	--rux-blue-500:  oklch(83.16% 0.0887 247.26); /* hsl(209 100% 80%) */
+	--rux-blue-600:  oklch(73.05% 0.147 247.81);  /* hsl(208 100% 66%) */
+	--rux-blue-700:  oklch(57.91% 0.2141 257.97); /* hsl(212 100% 48%) */
+	--rux-blue-800:  oklch(51.64% 0.1889 257.72); /* hsl(212 100% 41%) */
+	--rux-blue-900:  oklch(53.3% 0.1883 256.88);  /* hsl(211 100% 42%) */
+	--rux-blue-1000: oklch(26.58% 0.0837 253.67); /* hsl(211 100% 15%) */
+
+	--rux-red-100:  oklch(96.63% 0.0166 17.44); /* hsl(0 100% 97%) */
+	--rux-red-200:  oklch(95.51% 0.0223 17.55); /* hsl(0 100% 96%) */
+	--rux-red-300:  oklch(94.41% 0.028 17.66);  /* hsl(0 100% 95%) */
+	--rux-red-400:  oklch(91.37% 0.041 17.93);  /* hsl(0 90% 92%) */
+	--rux-red-500:  oklch(84.43% 0.0729 18.71); /* hsl(0 82% 85%) */
+	--rux-red-600:  oklch(71.29% 0.1636 21.11); /* hsl(359 90% 71%) */
+	--rux-red-700:  oklch(62.54% 0.1931 22.94); /* hsl(358 75% 59%) */
+	--rux-red-800:  oklch(58.15% 0.2064 25.08); /* hsl(358 70% 52%) */
+	--rux-red-900:  oklch(54.99% 0.1967 25.23); /* hsl(358 66% 48%) */
+	--rux-red-1000: oklch(24.91% 0.0597 17.42); /* hsl(355 49% 15%) */
+
+	--rux-amber-100:  oklch(97.59% 0.0238 83.06); /* hsl(39 100% 95%) */
+	--rux-amber-200:  oklch(96.83% 0.0407 90.37); /* hsl(44 100% 92%) */
+	--rux-amber-300:  oklch(95.75% 0.0481 89.01); /* hsl(43 96% 90%) */
+	--rux-amber-400:  oklch(90.97% 0.1042 87.15); /* hsl(42 100% 78%) */
+	--rux-amber-500:  oklch(86.51% 0.1272 79.44); /* hsl(38 100% 71%) */
+	--rux-amber-600:  oklch(80.38% 0.1427 73.83); /* hsl(36 90% 62%) */
+	--rux-amber-700:  oklch(81.73% 0.164 75.99);  /* hsl(39 100% 57%) */
+	--rux-amber-800:  oklch(77.21% 0.1727 64.16); /* hsl(35 100% 52%) */
+	--rux-amber-900:  oklch(52.75% 0.1317 54.32); /* hsl(30 100% 32%) */
+	--rux-amber-1000: oklch(30.57% 0.0765 44.3);  /* hsl(20 79% 17%) */
+
+	--rux-green-100:  oklch(97.54% 0.0206 145.41); /* hsl(120 60% 96%) */
+	--rux-green-200:  oklch(96.93% 0.0258 145.37); /* hsl(120 60% 95%) */
+	--rux-green-300:  oklch(94.52% 0.0466 145.19); /* hsl(120 60% 91%) */
+	--rux-green-400:  oklch(91.62% 0.0712 145.84); /* hsl(122 60% 86%) */
+	--rux-green-500:  oklch(85.55% 0.1239 145.97); /* hsl(124 60% 75%) */
+	--rux-green-600:  oklch(80.04% 0.1721 145.4);  /* hsl(125 60% 64%) */
+	--rux-green-700:  oklch(64.65% 0.146 147.33);  /* hsl(131 41% 46%) */
+	--rux-green-800:  oklch(57.82% 0.1316 147.66); /* hsl(132 43% 39%) */
+	--rux-green-900:  oklch(51.57% 0.1253 147.58); /* hsl(133 50% 32%) */
+	--rux-green-1000: oklch(28.97% 0.0448 147.52); /* hsl(128 29% 15%) */
+
+	--rux-teal-100:  oklch(97.96% 0.0154 183.89); /* hsl(169 70% 96%) */
+	--rux-teal-200:  oklch(96.94% 0.0232 181.39); /* hsl(167 70% 94%) */
+	--rux-teal-300:  oklch(94.98% 0.0381 182.05); /* hsl(168 70% 90%) */
+	--rux-teal-400:  oklch(92.65% 0.0558 183.79); /* hsl(170 70% 85%) */
+	--rux-teal-500:  oklch(86.99% 0.0976 182);    /* hsl(170 70% 72%) */
+	--rux-teal-600:  oklch(81.53% 0.1317 179.22); /* hsl(170 70% 57%) */
+	--rux-teal-700:  oklch(64.98% 0.1137 181.88); /* hsl(173 80% 36%) */
+	--rux-teal-800:  oklch(57.54% 0.1009 181.81); /* hsl(173 83% 30%) */
+	--rux-teal-900:  oklch(52.03% 0.0913 183.27); /* hsl(174 91% 25%) */
+	--rux-teal-1000: oklch(31.98% 0.0543 179.87); /* hsl(171 80% 13%) */
+
+	--rux-purple-100:  oklch(96.58% 0.0224 312.19); /* hsl(276 100% 97%) */
+	--rux-purple-200:  oklch(96.74% 0.0196 312.85); /* hsl(277 87% 97%) */
+	--rux-purple-300:  oklch(94.66% 0.029 310.82);  /* hsl(274 78% 95%) */
+	--rux-purple-400:  oklch(91.75% 0.043 312.01);  /* hsl(276 71% 92%) */
+	--rux-purple-500:  oklch(81.38% 0.0966 310.05); /* hsl(274 70% 82%) */
+	--rux-purple-600:  oklch(71.99% 0.1497 308.39); /* hsl(273 72% 73%) */
+	--rux-purple-700:  oklch(55.48% 0.1825 305.87); /* hsl(272 51% 54%) */
+	--rux-purple-800:  oklch(48.45% 0.1683 305.53); /* hsl(272 47% 45%) */
+	--rux-purple-900:  oklch(47.06% 0.2205 304.22); /* hsl(274 71% 43%) */
+	--rux-purple-1000: oklch(24% 0.1245 305.27);    /* hsl(276 100% 15%) */
+
+	--rux-pink-100:  oklch(95.8% 0.0258 345.83);  /* hsl(330 100% 96%) */
+	--rux-pink-200:  oklch(95.82% 0.0214 355.22); /* hsl(340 90% 96%) */
+	--rux-pink-300:  oklch(93.9% 0.0295 355.48);  /* hsl(340 82% 94%) */
+	--rux-pink-400:  oklch(91.02% 0.0413 356.89); /* hsl(341 76% 91%) */
+	--rux-pink-500:  oklch(84.29% 0.0751 357.04); /* hsl(340 75% 84%) */
+	--rux-pink-600:  oklch(74.2% 0.1306 0.49);    /* hsl(341 75% 73%) */
+	--rux-pink-700:  oklch(63.62% 0.2124 1.24);   /* hsl(336 80% 58%) */
+	--rux-pink-800:  oklch(59.47% 0.2196 3.97);   /* hsl(336 74% 51%) */
+	--rux-pink-900:  oklch(53.52% 0.1882 2.43);   /* hsl(336 65% 45%) */
+	--rux-pink-1000: oklch(25.92% 0.0885 358.23); /* hsl(333 74% 15%) */
+
+	/* ─── What is no longer overridden here, and why ──────────────────────── */
+	/* Steps 4-6 put the surfaces, borders, list-item states, control overlays,
+	   the text pair, the four statuses and the accent onto scale STEPS. Every
+	   step already carries its own light value in the block above, so a role
+	   reading one is correct in both themes by construction and its override
+	   here became dead weight. Roughly thirty declarations were removed for
+	   that reason — the whole "same ladder, inverted" apparatus this block used
+	   to carry, which is the long way of saying what the catalog says by having
+	   two values per step.
+	   What remains below is what genuinely differs per theme and is NOT a step:
+	   named Rux roles with an absolute lightness (rule 2.1's second half), and
+	   component tokens with no role to inherit from.
+	   docs/foundations/color.md §5 steps 4, 5 and 6. */
+
 	/* ─── Text ────────────────────────────────────────────────────────────── */
-	/* Mirrors the dark pair's 24-point gap from the opposite end of the scale:
-	   94/70 becomes 14/38, at 19.8:1 and 10.0:1 on a light card. */
-	--rux-text-primary:   oklch(from var(--rux-neutral) 14% c h);
-	--rux-text-secondary: oklch(from var(--rux-neutral) 38% c h);
+	/* Disabled is not on the scale (rule 2.6 — the catalog has no disabled
+	   step), so it still states its own value per theme. */
 	--rux-text-disabled:  oklch(from var(--rux-neutral) 58% c h);
 
 	/* Deprecated — see the base block. */
 	--rux-text-default:  var(--rux-text-primary);
 	--rux-text-heading:  var(--rux-text-primary);
 
+	/* ─── Accent ──────────────────────────────────────────────────────────── */
+	/* The catalog's focus colour is the accent scale's 900 on a dark canvas and
+	   its 700 on a light one — the one accent role that is not theme-invariant.
+	   Reading --rux-accent-700 rather than --rux-blue-700 means every
+	   [data-rux-accent] follows this automatically. */
+	--rux-accent-ring: var(--rux-accent-700);
+
 	/* ─── Status ───────────────────────────────────────────────────────────── */
-	/* Darker foreground roles maintain readable contrast on the 92–98% light
-	   surfaces. Components continue to consume the same semantic names. */
-	--rux-danger-base:  oklch(from var(--rux-red)    92% 0.22 h);
-	--rux-warning-base: oklch(from var(--rux-yellow) 92% 0.18 h);
-	--rux-success-base: oklch(from var(--rux-green)  92% 0.22 h);
-	--rux-info-base:    oklch(from var(--rux-blue)   92% 0.22 h);
-
-	/* Strong foregrounds are darker than the light-theme base so compact
-	   badges retain definition against pale surfaces. */
-	--rux-danger-strong:  oklch(from var(--rux-danger)  60% 0.20 h);
-	--rux-warning-strong: oklch(from var(--rux-warning) 60% 0.20 h);
-	--rux-success-strong: oklch(from var(--rux-success) 60% 0.20 h);
-	--rux-info-strong:    oklch(from var(--rux-info)    60% 0.20 h);
-
 	/* A solid badge inverts here: the dark-theme recipe (bright fill, dark
 	   text) has no contrast to give on a pale canvas, so the fill darkens
 	   past the strong stop and the label goes near-white. */
 	--rux-badge-solid-lightness:    52%;
 	--rux-badge-solid-fg-lightness: 99%;
 
-	/* Vivid: maximum-chroma data surfaces such as trip bars. */
-	--rux-danger-vivid:  oklch(from var(--rux-red)    60% 0.28 h);
-	--rux-warning-vivid: oklch(from var(--rux-yellow) 90% 0.28 h);
-	--rux-info-vivid:    oklch(from var(--rux-blue)   60% 0.28 h);
-	--rux-danger-on-vivid:  oklch(from var(--rux-danger)  90% 0.20 h);
-	--rux-warning-on-vivid: oklch(from var(--rux-warning) 90% 0.20 h);
-	--rux-success-on-vivid: oklch(from var(--rux-success) 90% 0.20 h);
-
 	/* ─── Surfaces ────────────────────────────────────────────────────────── */
-    --rux-surface-0:	oklch(from var(--rux-neutral) 98% c h);	/* canvas */ 	/* 0,  0,  0  */
-    --rux-surface-1:    oklch(from var(--rux-neutral) 100% c h); /* cards  */	/* 22, 22 ,22 */
-	--rux-surface-2:    oklch(from var(--rux-neutral) 94% c h); /* button */ 	/* 25, 25 ,25 */
-
 	/* --rux-panel-attached-bg (COMPONENT · panel, above) is a direct value,
 	   not aliased through --rux-surface-0 — needs its own light-theme
-	   override here for the same reason --rux-surface-0 itself does. Same
-	   value as --rux-surface-0's own light override above (both are the
-	   chrome tier now — see README.md's "Reference: Vercel Geist colors"). */
+	   override here for the same reason --rux-surface-0 used to. */
 	--rux-panel-attached-bg: oklch(from var(--rux-neutral) 84% c h);
-
-	/* ─── Borders and interaction ─────────────────────────────────────────── */
-	/* Same three-step intensity ladder as dark theme, inverted: light
-	   surfaces (84%/94%) need a *darker* border to read, not a lighter
-	   one. --card-border/--grid-guide anchor to the last-tuned values the
-	   old --rux-border/-button/--rux-divider tokens had before today's
-	   border-family consolidation folded them into this one; --active is
-	   a new third tier with no prior value, picked to keep the same
-	   step-size relationship dark theme has between hover and active. */
-	--rux-grid-guide:         oklch(from var(--rux-neutral) 88% c h);
-	--rux-card-border:        oklch(from var(--rux-neutral) 88% c h);
-	--rux-card-border-hover:  oklch(from var(--rux-neutral) 70% c h);
-	--rux-card-border-active: oklch(from var(--rux-neutral) 50% c h);
-	/* Raised from 5%/9% to match dark theme's strength. Measured the same way:
-	   5% black moved a light surface 13 code values where dark theme's 10%
-	   white moves 26, so hover read about half as strongly here. 9%/16% lands
-	   at 23/38. This was the one real defect behind the mechanism detour. */
-	--rux-state-hover-overlay:  oklch(from var(--rux-black) l c h / 9%);
-	--rux-state-active-overlay: oklch(from var(--rux-black) l c h / 16%);
-
-	/* Inverted like every other pair here: the dark values step *up* from the
-	   content tier (surface-1 20% → 32%/36%), so light steps *down* from its
-	   own content tier (surface-1 100% → 88%/84%), preserving the same 12/16
-	   lightness deltas. Without these overrides the dark 32%/36% leak into
-	   light theme and any fill using them — .rux-tag, .rux-avatar, the
-	   .rux-progress track — renders as a near-black block on a light card. */
-	--rux-bg-hover:   oklch(from var(--rux-neutral) 88% c h);
-	--rux-bg-active:  oklch(from var(--rux-neutral) 84% c h);
 
 	/* ─── Recessed / raised fills ─────────────────────────────────────────── */
 	/* Dark theme defines these with absolute lightness values that render
 	   correctly on a black canvas but produce invisible or inverted results
 	   on the light one. Each override inverts the intent. */
-
-	/* Disabled inputs: dark theme is near-black (L21.5%) on black; light
-	   theme needs a visible light-gray well on a near-white surface. */
-	--rux-input-bg-disabled: oklch(from var(--rux-neutral) 93% c h);
 
 	/* Raised thumb: dark theme is near-white (L90%) on a dark track; light
 	   theme needs a dark thumb so the switch reads against a light track. */

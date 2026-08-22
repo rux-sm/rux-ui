@@ -46,7 +46,12 @@ const ACCEPTED_STATE_MODIFIERS = new Map([
 /* Attributes JS writes that no stylesheet reads yet. Only recorded, deliberate
  * gaps belong here — an entry is a promise that the CSS side is coming. */
 const ACCEPTED_UNREAD_ATTRIBUTES = new Map([
-	["data-rux-accent", "README 'Swappable accent — JS wiring exists, CSS side does not yet': the switch mechanism ships, the [data-rux-accent] palette rules do not"],
+	/* [data-rux-accent] lived here from step 19 until color.md §5 step 6, which
+	   published the palette rules the entry was holding the place for. It was
+	   never really a CSS gap: an accent cannot be switched while it is a
+	   hand-tuned recipe, because there is no second palette to switch to. The
+	   scales (color.md steps 2-3) are what made four lines per accent possible,
+	   and the entry came out the moment they were read. */
 ]);
 
 const STATE_WORDS = "open|active|hidden|visible|selected|current|loading|disabled|expanded|pressed";

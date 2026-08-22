@@ -33,11 +33,21 @@ test("text carries two emphasis levels, following Geist", () => {
 	// Geist's neutral scale reserves exactly two steps for text: 900 secondary,
 	// 1000 primary. This was five, which README's Geist reference already
 	// called "a finer-grained analog" of that pair.
-	for (const role of ["--rux-text-primary", "--rux-text-secondary"]) {
+	//
+	// Until color.md §5 step 4 this asserted each was a literal oklch() — "a
+	// real value, not an alias" — which was the right guard while the pair was
+	// hand-tuned and the risk was one level quietly aliasing the other. Now the
+	// levels ARE the catalog's two text steps, so the stronger assertion is
+	// that each names its step: an alias is exactly what is wanted, provided it
+	// is an alias of the right thing.
+	for (const [role, step] of [
+		["--rux-text-primary", "--rux-gray-1000"],
+		["--rux-text-secondary", "--rux-gray-900"],
+	]) {
 		assert.match(
 			tokens,
-			new RegExp(`${role}:\\s*oklch\\(`),
-			`${role} must be a real value, not an alias`,
+			new RegExp(`${role}:\\s*var\\(${step}\\)`),
+			`${role} must read ${step}, the catalog's step for it`,
 		);
 	}
 });
@@ -87,18 +97,30 @@ test("the retired third tier is gone, not published as an alias", () => {
 	}
 });
 
-test("both themes define the pair with the same separation", () => {
+test("each theme separates the pair in the right direction", () => {
 	// Perceptual distance, not contrast ratio — OKLCH lightness is uniform, so
-	// an equal gap reads as an equal step from either end of the scale.
-	const level = (block, name) =>
-		Number(block.match(new RegExp(`${name}:\\s*oklch\\(from [^)]+\\) (\\d+)%`))?.[1]);
+	// a gap reads as the same step from either end of the scale.
+	//
+	// This asserted the two gaps were EQUAL until color.md §5 step 4. That
+	// symmetry was this system's, not the catalog's: the light block's own
+	// comment described "mirroring the dark pair's 24-point gap from the
+	// opposite end", and color.md D2 recorded it as a departure — the catalog's
+	// light pair is 21.4 points apart where its dark pair is 23.9. Adopting the
+	// steps means adopting the asymmetry, so what is left to enforce is the
+	// direction: primary is always further from the canvas than secondary.
 	const cut = tokens.indexOf(':root[data-theme="light"]');
 	const dark = tokens.slice(0, cut);
 	const light = tokens.slice(cut);
 
+	// A role names its step once, in the dark block; each theme block then
+	// gives that step its own value.
+	const stepOf = (role) =>
+		dark.match(new RegExp(`${role}:\\s*var\\((--rux-gray-\\d+)\\)`))?.[1];
+	const level = (block, role) =>
+		Number(block.match(new RegExp(`${stepOf(role)}:\\s*oklch\\(([\\d.]+)%`))?.[1]);
+
 	const darkGap = level(dark, "--rux-text-primary") - level(dark, "--rux-text-secondary");
 	const lightGap = level(light, "--rux-text-secondary") - level(light, "--rux-text-primary");
-	assert.ok(darkGap > 0, "dark primary must sit above secondary");
-	assert.ok(lightGap > 0, "light primary must sit below secondary");
-	assert.equal(darkGap, lightGap, "the two themes must separate the pair equally");
+	assert.ok(darkGap > 0, `dark primary must sit above secondary (gap ${darkGap})`);
+	assert.ok(lightGap > 0, `light primary must sit below secondary (gap ${lightGap})`);
 });
