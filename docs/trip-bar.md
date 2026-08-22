@@ -1,5 +1,15 @@
 # Trip Bar — Layout & Design Rules
 
+> **Colour values below are the trip bar's own mapping, not design-system vocabulary.**
+> [`docs/foundations/color.md`](foundations/color.md) owns the scales and the roles; a
+> scheduler feature owns which of them its objects take, and the trip bar's tone recipes are
+> exactly that (its rule 1.3). **Several literals here have already drifted from the CSS** —
+> the interactive overlay is documented at `0.2` where `trip-bar.css` renders `0.24`, and the
+> notes/pending-icon values do not appear in the stylesheet at all. Treat every raw `oklch()`
+> in this file as presumed stale and read the CSS. Recorded rather than repaired at
+> `color.md` step 8: rewriting a feature's colour tables is the scheduler's work, not a
+> consolidation pass's.
+
 The trip bar is a compact Gantt-style card on the scheduler grid. Each bar represents a single bus assignment for a trip. This document defines the layout rules, sizing, typography, and color system.
 
 ---

@@ -86,9 +86,9 @@ Where the two disagree, the foundation document wins. Do not restate a value her
    This includes third-party guidance: translate any external design
    review or standard into `--rux-*` tokens and existing `.rux-*` components —
    never adopt a foreign token, class, or value wholesale. For color
-   specifically, Rux UI follows Vercel Geist's color system as a structural
-   reference where it fits — see README.md's "Reference: Vercel Geist
-   colors" for the semantic-step model and current alignment.
+   specifically, `docs/foundations/color.md` is canonical — it owns the scales,
+   the steps, the roles, both themes and both gamut branches. Read it before
+   changing a colour token; do not restate its values here or in README.
 3. If a reusable value is missing, check the tier before adding. A new
    **primitive or semantic** token is shared vocabulary: stop and propose the
    name and its intended value, and do not add it unprompted. A new

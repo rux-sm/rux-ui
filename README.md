@@ -255,97 +255,40 @@ heuristic does not settle it.
 > stale, and are being converted to pointers section by section as each foundation document
 > settles. Cite the foundation document, never this list.
 
-### Backgrounds
+### Backgrounds & Color
 
-Two surfaces only, following the Vercel Geist model (see "Reference: Vercel
-Geist colors" below):
+**Canonical: [`docs/foundations/color.md`](docs/foundations/color.md).** That document owns
+the scales, the steps, the roles that read them, the two themes, the gamut branches, and the
+rules governing all of it. It carries a contract version and its own amendment log. **This
+section is a pointer: it names what is ruled, never what the rules say.** Where the two
+disagree, the foundation document wins and this section is corrected in the same change.
 
-| Token             | Use for                                                                     |
-| ----------------- | --------------------------------------------------------------------------- |
-| `--rux-surface-0` | Chrome — app canvas, panel/floating-window shells, headers, tabs, controls  |
-| `--rux-surface-1` | Content — cards, tables, menus, popovers, dialogs, anything holding content |
+| Where | What it governs |
+|---|---|
+| §1 | the three tiers — scales, roles, component tokens — and what a role may resolve to |
+| rule 2.2 | ten steps, one purpose each |
+| rule 2.3 | the two backgrounds, and the band a component's own fill sits in |
+| rule 2.4 | borders: default, hover, active |
+| rule 2.5 | high-contrast fills, and the focus ring |
+| rule 2.6 | two text levels; disabled is a state, not a level |
+| rule 2.7 | a status is a scale, not a colour |
+| rule 2.9 | the gamut a value is published for, and the sRGB fallback behind every P3 one |
+| rule 2.11 | the contrast floor, evaluated in the worse gamut |
+| rule 2.12 | the accent is a scale selection |
+| §3 | the catalog as measured, and what every role resolves to today |
 
-The rule of thumb: if it's a container that _holds_ content, it's
-`--rux-surface-1`; if it's UI furniture around that content, it's
-`--rux-surface-0`. Since the 2026-08 flatten this is literal: `html`/`body`,
-the app shell (`--rux-shell-bg`), the UI header, and the splash all paint
-`--rux-surface-0` — one continuous canvas — and `.rux-workspace` paints
-nothing (`--rux-workspace-bg: transparent`), so the only raised layers are
-the surface‑1 content containers themselves, exactly Geist's
-`background-100`/`-200` model. `--rux-bg-hover` / `--rux-bg-active` are direct values
-(not aliased to a surface step) for interactive list-item states — a
-different axis from the two-surface scale, layered onto whichever surface
-the interactive element sits on rather than replacing it.
+Three things worth knowing before reading further: the system is **[Vercel
+Geist](https://vercel.com/geist/colors) adopted whole** rather than referenced — its scales
+are published under this system's prefix, measured off the rendered page because Vercel
+publishes no values; every colour is `oklch()`; and **the hue scales ship twice**, an sRGB
+branch and a wide-gamut one behind a media query.
 
-**No gradients** except `--rux-overlay-scrim` (a flat 60% black scrim for modals). No full-bleed imagery as background. No textures, patterns, grain. Surfaces are flat color separated by hairlines.
-
-### Color
-
-One accent (`--rux-accent`, `var(--rux-blue)` — `oklch(60% 0.28 255)` — by default) used sparingly — primary actions, active states, links, focus rings. Status colors (`--rux-success`, `--rux-warning`, `--rux-danger`, `--rux-info`) for semantic feedback only — never decorative.
-
-All colors are `oklch()` so chroma stays perceptually balanced if you retheme.
-
-#### Reference: Vercel Geist colors
-
-As of 2026-08-16, Rux UI follows [Vercel Geist's color system](https://vercel.com/geist/colors)
-as a **structural** model where it fits — not a literal palette to copy.
-That page doesn't publish raw hex/oklch values; what it documents is a
-10-step neutral scale (`--ds-gray-100` through `--ds-gray-1000`) with a
-fixed semantic role per step:
-
-| Step | Role                           |
-| ---- | ------------------------------ |
-| 100  | Default background             |
-| 200  | Hover background               |
-| 300  | Active background              |
-| 400  | Default border                 |
-| 500  | Hover border                   |
-| 600  | Active border                  |
-| 700  | High-contrast background       |
-| 800  | Hover high-contrast background |
-| 900  | Secondary text/icons           |
-| 1000 | Primary text/icons             |
-
-Geist repeats this same 10-step shape for every other scale (blue, red,
-green, amber, teal, purple, pink), plus two dedicated `background-100`/
-`-200` tokens for the page canvas.
-
-Follow the **progression** (subtle → strong, one role per step), not the
-token names or exact numbers — per the Design rules in the `rux-design` skill, external
-guidance always gets expressed through `--rux-*` tokens, never imported
-directly. Current rux-ui alignment with this shape:
-
-- `--rux-grid-guide` / `--rux-card-border` / `--rux-card-border-hover` /
-  `--rux-card-border-active` mirrors the border/border-hover/border-active
-  triad (steps 400/500/600).
-- `--rux-surface-0` / `--rux-surface-1` mirrors Geist's own dedicated
-  `background-100`/`-200` pair more directly than the 10-step gray scale
-  does — Rux UI collapsed its former 8-step surface ladder (and the whole
-  card-level/elevation-tier system built on it) down to exactly two
-  surfaces for this reason: chrome, and everything raised off it. See
-  Backgrounds above and [Cards](docs/cards.md) for what that collapse
-  actually changed.
-- `--rux-bg-hover` / `--rux-bg-active` are a separate axis (interactive
-  list-item states, not depth) — no direct Geist background-hover/-active
-  equivalent has been mapped yet.
-- `--rux-text-primary` / `-secondary` maps directly onto the primary-text /
-  secondary-text pair (1000/900). This was five levels (`-heading` /
-  `-default` / `-muted` / `-faint` / `-disabled`) until 2026-08-18; `-heading`
-  and `-default` forward to the pair and stay published for the vendored
-  consumers, while `-muted` and `-faint` were retired outright — see
-  `docs/foundations/typography.md` §5 step 9. `--rux-text-disabled` deliberately stayed outside it: Geist's
-  scale has no disabled-text step, because a state that must read as "you
-  cannot use this" is not one of the two content levels. Collapsing the five
-  also moved placeholder and field-help text off the disabled value, where
-  they had been rendering at 2.27:1 — below AA — onto secondary at 7.9:1.
-
-*This paragraph read **"a reference point for future token work … the remaining
-roles have not been audited against Geist's shape"** until 2026-08-21. They have
-now: `docs/foundations/color.md` is canonical, its §3.1 carries all ten scales
-measured in both themes, and its steps 2–6 published them and moved every role
-onto them. **The alignment list above is history, not the current mapping** —
-read §3.2 for what each role resolves to. This whole section becomes a pointer
-at that document's step 8.*
+*This section carried a token table, a ten-step reference table, an alignment list and an
+accent paragraph of its own until `color.md` step 8. Every one of them had already gone stale
+or was about to: the alignment list described roles as "not yet audited against Geist's shape"
+after steps 4–6 had put all of them on it, and the accent paragraph described a gap step 6
+had closed. That is the failure mode the one-home rule exists to prevent, observed twice in
+one file.*
 
 #### Swappable accent — working since 2026-08-21
 
@@ -514,13 +457,14 @@ radius at a viewport edge; that is layout behavior, not a new panel variant.
 
 ### Surface depth
 
-`--rux-surface-0` and `--rux-surface-1` are the whole depth scale (0 is canvas, 1 is everything raised off it) — see Backgrounds above. There is no deeper nesting tier: a card inside a card inside a panel is the same color at every depth. `--rux-surface-contrast` is reserved for light elements such as switch thumbs; it is not another surface step.
+Two surfaces, and no deeper nesting tier: a card inside a card inside a panel is the same
+colour at every depth. Which token is which, and what a component's own fill takes, is
+[`color.md`](docs/foundations/color.md) rule 2.3.
 
 ### Borders & shadows
 
-Borders are **hairlines** (always 1px) from one family: `--rux-grid-guide`
-for grid/table lines, then `--rux-card-border` → `--rux-card-border-hover` →
-`--rux-card-border-active` as increasing intensities for everything else.
+Borders are **hairlines** (always 1px) from one family, in three intensities — default,
+hover, active — which [`color.md`](docs/foundations/color.md) rule 2.4 names and values.
 Solid buttons, segmented controls, and base cards keep a transparent border
 slot so hover, focus, and active states never shift layout. Shadows are
 reserved for floating surfaces and subtle tactile lift on buttons.

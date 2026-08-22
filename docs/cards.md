@@ -20,7 +20,10 @@ header corner.
 **One card color, regardless of nesting depth** — see "Reference: Vercel
 Geist colors" in `README.md`. Rux UI used to have a numbered
 `.rux-card--level-1` through `-4` nesting scale, each level computing one
-step darker via relative `oklch`; that system is gone. There are now just
+step darker via relative `oklch`; that system is gone. **Which token is the canvas and
+which is the raised surface, and what each resolves to, is
+[`docs/foundations/color.md`](foundations/color.md) rule 2.3** — this file states no colour
+values of its own beyond the elevation arithmetic below, which is the card's own. There are now just
 two surfaces app-wide: `--rux-surface-0` (canvas, chrome — shells, panels,
 headers, tabs) and `--rux-surface-1` (everything raised off it — cards,
 content areas, modals). A card nested inside a card inside a panel reads the
@@ -114,7 +117,9 @@ for the shell aliases, so existing overrides continue to work.
 owner.
 
 `--elevated`/`--recessed` have no tokens of their own — they're a dynamic
-`oklch` adjustment on whatever `--rux-card-body-bg` is already in scope, see
+`oklch` adjustment on whatever `--rux-card-body-bg` is already in scope — which is the
+same defect class as `color.md` **D15**, arithmetic on a token rather than a published
+step, and is recorded there rather than fixed here. See
 card.css. `--rux-card-level-1..4-*` and `--rux-card-floating-bg/-shadow`
 no longer exist — deleted along with the level system and the "floating
 windows skip a layer" mechanism they backed (see Panel section below).

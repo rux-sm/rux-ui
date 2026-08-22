@@ -539,11 +539,13 @@ the others extend existing suites.
    written by JS must be defined in a stylesheet or explicitly registered as a
    markup-hook. *(★ class-resolution test — this is the suite's current blind spot per
    CLAUDE.md, and it would have caught five ghosts)*
-6. **Tokens only, both themes.** No literal color, duration, easing, or z-index in any
-   rule (print stylesheets excepted, behind a namespaced `--print-*`-style palette
-   documented as an exception). Any absolute-lightness token must have a light-theme
-   override or a relative (`from var()`) definition.
-   *(extends `tests/tokens-contract` + `tests/motion-contract`)*
+6. **Tokens only, both themes.** No literal duration, easing, or z-index in any rule.
+   **The colour half of this rule has moved** to
+   [`docs/foundations/color.md`](../foundations/color.md) rule 2.1, as this document's own
+   status note committed it to — that document states it, and
+   `tests/color-contract` enforces the absolute-lightness half it used to leave unchecked.
+   The duration/easing half stays here until `motion.md` claims it.
+   *(`tests/motion-contract`; colour: `tests/color-contract` + `tests/color-scales`)*
 7. **One overlay kernel.** Dismissible surfaces register with the shared dismiss manager
    (one singleton, one outside-pointerdown, one Escape policy, one focus trap/restore
    helper, one layer-promotion helper). No module binds its own document-level dismiss
