@@ -279,11 +279,27 @@ with standard tooling around it, not one ritual fewer.
   framework application real performance. Acceptable for a throwaway prototype;
   wrong for anything maintained.
 
-### 7.6 One simplification to take regardless of the decision
+### 7.6 A simplification proposed here and then withdrawn
 
-**Retire the `full` profile.** Its only consumer, `guide_runner`, is archived.
-Two profiles means every export question is asked twice and one of the answers
-has no reader. This is independent of §7's outcome and can be done first.
+> **Withdrawn 2026-08-22, before execution.** This section said: *retire the
+> `full` profile — its only consumer, `guide_runner`, is archived, and two
+> profiles means every export question is asked twice with one answer having no
+> reader.* Measuring it before acting killed it.
+>
+> **The footprint is ~10 lines** — one `if` branch carrying an `rsync`, and one
+> `PROFILE_NOTE` variant. **And the mode is not hypothetical: this repository's
+> own reference application is plain HTML and loads 17 behaviour modules.**
+> `full` describes exactly how `index.html` consumes the system.
+>
+> So "its only consumer is archived" proves the profile is **unused
+> externally**, not that it is **wrong** — the distinction `naming.md` §8.2 was
+> careful about with `.rux-color-picker`, where what settled the retirement was
+> finding two live components already covering its ground. Nothing covers
+> `full`'s. Retiring it would remove a supported consumption mode to save ten
+> lines, and it would be re-added the first time a static consumer appears.
+>
+> **Keep both profiles.** The one thing worth doing is what this note does:
+> record why, so the idea is not proposed a third time.
 
 ### 7.7 What would have to be true to adopt
 
