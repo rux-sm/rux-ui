@@ -60,10 +60,19 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  /* SUSPECT — these are Inter's axes (alt 1, alt g), but the loaded face is Geist.
-     Verify what Geist publishes before changing; removing them is the safe default
-     if none apply. docs/foundations/typography.md D9, step 11. */
-  font-feature-settings: "cv11", "ss03";
+  /* No font-feature-settings. This read `"cv11", "ss03"` under the comment
+     "Inter alt 1, alt g" until step 11 — a setting carried over from a previous
+     typeface and never re-verified against Geist.
+       cv11 — Geist publishes NO character-variant features at all, so it was
+              inert. Confirmed twice: the documented feature list has none, and
+              it produced no metric change against a `tnum` control that did.
+       ss03 — real, but not what the comment believed: Geist's ss03 is *rounder
+              punctuation*, not an alternate g. The tag matching the recorded
+              intent is **ss01** (alternate a, g).
+     Both removed rather than one corrected: ss03 was applied under a false
+     belief, so keeping it would be adopting a stylistic set nobody chose. If
+     alternate a/g is ever wanted here, it is ss01 and it is a design decision.
+     docs/foundations/typography.md D9, step 11. */
 }
 
 body {
