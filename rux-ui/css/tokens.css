@@ -496,11 +496,6 @@
 	--rux-text-label-14-color:       var(--rux-text-primary);    /* L100 dark · L10 light */
 
 	/* Eyebrow — uppercase category/section markers. */
-	--rux-text-label-12-wide-size:        var(--rux-size-12);
-	--rux-text-label-12-wide-weight:      var(--rux-weight-400);      /* 400 */
-	--rux-text-label-12-wide-line-height: var(--rux-line-height-16);
-	--rux-text-label-12-wide-tracking:    var(--rux-tracking-normal); /* 0 — step 40. The name is now a misnomer; retiring it is Class C. */
-	--rux-text-label-12-wide-color:       var(--rux-text-secondary);      /* L60 dark · L32 light */
 
 	/* Button — interactive strings. Weight 500 and flat tracking per rules 2.11
 	   and 2.12, which name the family; §3.2 published no rung for it until
@@ -574,11 +569,6 @@
 	--rux-label-control-tracking: var(--rux-text-label-14-tracking);
 	--rux-label-control-color: var(--rux-text-label-14-color);
 
-	--rux-label-eyebrow-size: var(--rux-text-label-12-wide-size);
-	--rux-label-eyebrow-weight: var(--rux-text-label-12-wide-weight);
-	--rux-label-eyebrow-line-height: var(--rux-text-label-12-wide-line-height);
-	--rux-label-eyebrow-tracking: var(--rux-text-label-12-wide-tracking);
-	--rux-label-eyebrow-color: var(--rux-text-label-12-wide-color);
 
 	/* ─── SPACING · shared roles ──────────────────────────────────────────── */
 

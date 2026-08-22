@@ -164,7 +164,7 @@ function createAssignmentModule({
 	const iconWrap = el("span", "assignment-module__icon");
 	iconWrap.appendChild(icon(iconName));
 	labelWrap.appendChild(iconWrap);
-	const heading = el("h3", "assignment-module__label rux-u-eyebrow", label);
+	const heading = el("h3", "assignment-module__label rux-text-label-12", label);
 	heading.id = headingId;
 	labelWrap.appendChild(heading);
 	section.append(labelWrap, content);
@@ -481,7 +481,7 @@ function contactRow(view) {
 	);
 	row.setAttribute("aria-label", "Trip contact");
 	const details = el("div", "assignment-compact-module__details");
-	details.appendChild(el("p", "assignment-module__label rux-u-eyebrow", "Trip contact"));
+	details.appendChild(el("p", "assignment-module__label rux-text-label-12", "Trip contact"));
 	const identity = el("div", "assignment-compact-module__body");
 	if (contact.name || contact.phone) {
 		const contactLine = el(
@@ -588,7 +588,7 @@ function crewBusSection(fleet, fleetIndex, assignmentId) {
 	const headingId = `crew-${safeId(assignmentId)}-${safeId(fleet.busNumber || fleetIndex)}`;
 	const heading = el(
 		"h3",
-		"assignment-module__label rux-u-eyebrow driver-assignment-card__crew-bus-heading",
+		"assignment-module__label rux-text-label-12 driver-assignment-card__crew-bus-heading",
 		isCurrentBus ? "Your Bus" : `Bus ${fleet.busNumber || "Unassigned"}`,
 	);
 	heading.id = headingId;
@@ -711,7 +711,7 @@ function notesModule(view) {
 	);
 	section.dataset.module = "notes";
 	section.setAttribute("aria-label", "Notes");
-	section.appendChild(el("p", "assignment-module__label rux-u-eyebrow", "Notes"));
+	section.appendChild(el("p", "assignment-module__label rux-text-label-12", "Notes"));
 	const notesId = `notes-${safeId(view.id)}`;
 	const notes = el("p", "driver-assignment-card__notes", view.notes);
 	notes.id = notesId;

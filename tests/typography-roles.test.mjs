@@ -54,7 +54,6 @@ const ROLES = [
 	"--rux-text-copy-14",
 	"--rux-text-label-12",
 	"--rux-text-label-14",
-	"--rux-text-label-12-wide",
 	"--rux-text-button-14",
 	"--rux-text-button-12",
 ];
@@ -97,7 +96,6 @@ const SUPERSEDED = {
 	"--rux-text-body": "--rux-text-copy-14",
 	"--rux-text-caption": "--rux-text-label-12",
 	"--rux-label-control": "--rux-text-label-14",
-	"--rux-label-eyebrow": "--rux-text-label-12-wide",
 };
 
 test("every typography role is complete", () => {

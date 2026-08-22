@@ -312,10 +312,10 @@
 }
 
 .sched-scope-trip__section-label {
-	font-size: var(--rux-text-label-12-wide-size);
-	font-weight: var(--rux-text-label-12-wide-weight);
-	color: var(--rux-text-label-12-wide-color);
-	letter-spacing: var(--rux-text-label-12-wide-tracking);
+	font-size: var(--rux-text-label-12-size);
+	font-weight: var(--rux-text-label-12-weight);
+	color: var(--rux-text-label-12-color);
+	letter-spacing: var(--rux-text-label-12-tracking);
 	padding-bottom: var(--rux-space-2);
 	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 	line-height: 1;

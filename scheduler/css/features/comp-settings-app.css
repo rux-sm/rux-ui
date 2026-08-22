@@ -225,10 +225,10 @@
 
 .settings-req-section {
 	margin: var(--rux-space-2) 0 var(--rux-space-1);
-	color: var(--rux-text-label-12-wide-color);
-	font-size: var(--rux-text-label-12-wide-size);
-	font-weight: var(--rux-text-label-12-wide-weight);
-	letter-spacing: var(--rux-text-label-12-wide-tracking);
+	color: var(--rux-text-label-12-color);
+	font-size: var(--rux-text-label-12-size);
+	font-weight: var(--rux-text-label-12-weight);
+	letter-spacing: var(--rux-text-label-12-tracking);
 }
 
 .settings-req-section:first-child {
@@ -307,9 +307,9 @@
 
 .settings-billing-row__label {
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-text-label-12-wide-size);
-	font-weight: var(--rux-text-label-12-wide-weight);
-	letter-spacing: var(--rux-text-label-12-wide-tracking);
+	font-size: var(--rux-text-label-12-size);
+	font-weight: var(--rux-text-label-12-weight);
+	letter-spacing: var(--rux-text-label-12-tracking);
 }
 
 .settings-billing-confirm-grid {

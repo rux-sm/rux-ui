@@ -30,16 +30,18 @@
 	.gallery-title { font-size: var(--rux-size-16); font-weight: var(--rux-weight-600); }
 	.gallery-meta  { font-size: var(--rux-size-12); color: var(--rux-text-muted); font-variant-numeric: tabular-nums; }
 	.gallery-section { margin-block-start: var(--rux-space-8); }
-	/* The eyebrow role, read whole rather than restated: this is a small
-	   uppercase section marker, which rule 2.12 classes as label. It carried
-	   weight 600 — the heading weight — and h2's 40px leading at 12px text. */
+	/* text-label-12, read whole rather than restated: a section marker, which
+	   rule 2.12 classes as label. It carried weight 600 — the heading weight —
+	   and h2's 40px leading at 12px text.
+	   Step 40 dropped uppercase from every label and MISSED this one, because
+	   it swept .css files and this lives in an inline style block. Same cause
+	   as the table headers step 44 caught through a component token. */
 	.gallery-section > h2 {
-		font-size: var(--rux-text-label-12-wide-size);
-		font-weight: var(--rux-text-label-12-wide-weight);
-		line-height: var(--rux-text-label-12-wide-line-height);
-		letter-spacing: var(--rux-text-label-12-wide-tracking);
-		text-transform: uppercase;
-		color: var(--rux-text-label-12-wide-color);
+		font-size: var(--rux-text-label-12-size);
+		font-weight: var(--rux-text-label-12-weight);
+		line-height: var(--rux-text-label-12-line-height);
+		letter-spacing: var(--rux-text-label-12-tracking);
+		color: var(--rux-text-label-12-color);
 		padding-block-end: var(--rux-space-2);
 		border-block-end: var(--rux-border-width) solid var(--rux-card-border);
 		margin-block-end: var(--rux-space-4);

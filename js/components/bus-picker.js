@@ -20,7 +20,7 @@ function build() {
   el.setAttribute("aria-label", "Move to bus");
 
   el.innerHTML = `
-    <p class="sched-bus-picker__heading rux-u-eyebrow">Move to bus</p>
+    <p class="sched-bus-picker__heading rux-text-label-12">Move to bus</p>
     <div class="sched-bus-picker__list" id="bus-picker-list"></div>
   `;
   document.body.appendChild(el);

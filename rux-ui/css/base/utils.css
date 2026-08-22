@@ -53,20 +53,26 @@
 /* Eyebrow-style section heading typography, in two opt-in levels so callers
    take only what they need:
 
-     .rux-u-eyebrow        typography alone
+     .rux-text-label-12    typography alone (form.css)
      .rux-u-section-label  the same typography plus a divider rule beneath it
 
    Applications add one of these to the element rather than being named in
    this file. A component needing its own modifiers may read the same tokens
    directly instead. */
-.rux-u-eyebrow,
+/* .rux-u-eyebrow was here until step 47. Once step 40 dropped its uppercase and
+   zeroed its tracking it applied text-label-12 and nothing else, which by §3.3
+   means it is that role's utility under another name — .rux-text-label-12
+   (form.css) already publishes it. Merged rather than kept as an alias, the
+   same call step 31 made for .rux-u-caption and .rux-u-hint.
+   .rux-u-section-label keeps its object name because it adds a divider below;
+   .rux-menu__header is a component's own class. */
 .rux-u-section-label,
 .rux-menu__header {
-	font-size: var(--rux-text-label-12-wide-size);
-	font-weight: var(--rux-text-label-12-wide-weight);
-	color: var(--rux-text-label-12-wide-color);
-	line-height: var(--rux-text-label-12-wide-line-height);
-	letter-spacing: var(--rux-text-label-12-wide-tracking);
+	font-size: var(--rux-text-label-12-size);
+	font-weight: var(--rux-text-label-12-weight);
+	color: var(--rux-text-label-12-color);
+	line-height: var(--rux-text-label-12-line-height);
+	letter-spacing: var(--rux-text-label-12-tracking);
 }
 
 .rux-u-section-label {

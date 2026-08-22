@@ -10,7 +10,7 @@
    chrome, while a section heading is page copy introducing the box.
 
    Three tiers of "label a group", smallest first, so the right one is easy to
-   pick: .rux-u-eyebrow / .rux-u-section-label (utils.css) is the 12px uppercase
+   pick: .rux-text-label-12 / .rux-u-section-label is the 12px uppercase
    marker that divides content inside one surface, .rux-card__header titles a
    surface, and .rux-section titles a run of surfaces.
 

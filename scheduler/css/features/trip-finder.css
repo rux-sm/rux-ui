@@ -88,10 +88,10 @@
    the eyebrow recipe so it reads as a section label, not as another result. */
 .sched-scope-trip-finder__group td {
 	padding-top: var(--rux-space-4);
-	color: var(--rux-text-label-12-wide-color);
-	font-size: var(--rux-text-label-12-wide-size);
-	font-weight: var(--rux-text-label-12-wide-weight);
-	letter-spacing: var(--rux-text-label-12-wide-tracking);
+	color: var(--rux-text-label-12-color);
+	font-size: var(--rux-text-label-12-size);
+	font-weight: var(--rux-text-label-12-weight);
+	letter-spacing: var(--rux-text-label-12-tracking);
 }
 
 /* It is a label, not a row you can pick. base/table.css makes every tbody row
