@@ -116,9 +116,35 @@ it proves classes resolve *within this repository* and has no knowledge of any
 consumer, which is precisely how classes only a consumer used looked dead and
 were pruned.
 
-A consumer therefore SHOULD carry a check that reads the `rux-*` classes and
-`--rux-*` tokens out of its own markup and fails when the vendored copy does
-not define them.
+**That check now lives here, not in each consumer**: `tools/check-consumer.mjs`.
+
+```bash
+tools/check-consumer.mjs --app <dir> [--design-system <dir>] [--exclude <path>]...
+```
+
+It reads the `rux-*` classes and `--rux-*` tokens out of an application's own
+files and fails when the copy does not define them. It enforces **both** of
+§4's rules — undefined or invented names, and interpolation into the `rux-`
+namespace — and it excludes **every** Rux UI copy inside the application, so
+pointing `--design-system` at an out-of-tree checkout is a **pre-sync dry run**:
+it answers *what would break if this consumer moved to that version* before
+anything is copied.
+
+It lives upstream because every consumer needs the identical check, a consumer
+that skips it fails silently, and it is required under §7's npm model exactly as
+it is under this one. Markdown is deliberately not scanned — a changelog naming
+a class it removed is not a use.
+
+> **Recorded because it argues for the tool better than the tool does.** The
+> `v0.1.5` tag message lists the tokens this check would flag in the live
+> portal. That list was assembled by hand with `grep -F` and is **wrong in both
+> directions**: it names `--rux-border`, which is a substring of the
+> `--rux-border-width` the consumer actually writes and which is still defined,
+> and it misses `--rux-text-faint` and `--rux-text-muted`, because the hand pass
+> only tested tokens removed *since v0.1.4*. The authoritative answer is
+> `tools/check-consumer.mjs --app <portal> --design-system <this repo>/rux-ui`:
+> **11 undefined tokens and 1 invented one, all in `portal/app/globals.css`.**
+> Read the tool, not the tag.
 
 Two rules fall out of that incident:
 
@@ -145,7 +171,8 @@ worse than surfacing it with a warning attached.
 3. Add a thin wrapper in the consumer that resolves this repository from an
    argument, an environment variable, then a sibling checkout — never a
    hardcoded home directory — and runs the consumer's build afterwards.
-4. Add the name check and the scheduled drift job.
+4. Wire `tools/check-consumer.mjs` into the consumer's own CI, and add the
+   scheduled drift job.
 5. Load `css/rux.css` before application styles; under `full`, load
    `js/overlay.js` before the other behaviors.
 
