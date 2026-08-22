@@ -482,6 +482,18 @@ is breaking (3 JS constructors + vendored consumers) — alias first.
 
 ## 4. Naming glossary — canonical terms
 
+> **Status: historical.** This table is what the 2026-08 audit *found* and what it
+> *recommended*, and it is kept as the record of that. It is **not** where a naming rule is
+> stated any more — [`naming.md`](../foundations/naming.md) is, and where the two disagree
+> the foundation document wins. Read a row here as evidence of drift that existed, not as
+> current vocabulary. Closed by `naming.md` step 5.
+>
+> **One row is now actively wrong and is left visible rather than edited away**: *Size
+> scale* recommends `--sm/--md/--lg`, and `naming.md` Q1 later answered that **`--md` is
+> forbidden** — the middle size is an unmodified block, because publishing `--md` would make
+> every call site restate the default. That is exactly the drift a second home produces, and
+> striking it silently would delete the evidence.
+
 Design-system concepts (the agreed focus). **Bold** = recommended canonical name;
 renames marked ⚠ are breaking and must go through the ledger + vendored-consumer check.
 

@@ -588,8 +588,9 @@ Use oklch() for all color values.
 Use full readable words.  Exception: `bg` for background.
 Use Title Case for UI controls and headings, following the content rules above.
 
-State classes (.is-*, .has-*) are JS-toggled, no prefix.
-BEM for components: `.rux-card`, `.rux-card__body`, `.rux-card--elevated`.
+State classes (.is-*, .has-*) are JS-toggled, no prefix — see docs/foundations/state.md.
+The class shape and the modifier vocabulary are stated in docs/foundations/naming.md
+(§1.1, rules 2.1-2.4). Not restated here.
 
 When in doubt, edit a token before adding a new component override.
 ```

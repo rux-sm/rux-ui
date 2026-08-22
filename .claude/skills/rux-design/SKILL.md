@@ -70,16 +70,18 @@ existing files merely to make the new-app structure cleaner.
 
 **`docs/foundations/` outranks this list.** These rules route an agent to the right tier
 and prefix; the canonical statement of a design rule and its values lives in the foundation
-document for that section — `typography.md`, `color.md` and `layout.md` today; `motion.md`,
-`naming.md` and `state.md` to follow. There is no `spacing.md`: `layout.md` owns the space
-scale, and its Q4 records why the split was not made.
+document for that section — `typography.md`, `color.md`, `layout.md`, `naming.md` and
+`state.md` today; only `motion.md` is still to come. There is no `spacing.md`: `layout.md`
+owns the space scale, and its Q4 records why the split was not made.
 Where the two disagree, the foundation document wins. Do not restate a value here.
 
-0. **Pick the right prefix.** `.rux-*` / `--rux-*` is reserved for `rux-ui/` and
-   means "portable and domain-free". Anything naming a trip, bus, driver, fleet,
-   customer, manifest, or itinerary is `.sched-*` / `--sched-*` and lives in
-   `scheduler/`. `tests/portability-boundary.test.mjs` enforces both directions,
-   so a misplaced name fails the suite rather than drifting.
+0. **Pick the right prefix.** The portable namespaces — attributes, public and
+   private custom properties, events, keyframes — are stated in
+   `docs/foundations/naming.md` §1.3 and rule 2.5; which prefix a *domain* name
+   takes is `docs/portability-audit.md` §3. Read those rather than this line.
+   `tests/portability-boundary.test.mjs` and `tests/prefix-contract.test.mjs`
+   enforce both directions, so a misplaced name fails the suite rather than
+   drifting.
 1. Compose with existing `.rux-*` components before inventing a new component.
    Typical screens combine cards, panels, fields, buttons, menus, stacks, and
    clusters.
@@ -98,8 +100,11 @@ Where the two disagree, the foundation document wins. Do not restate a value her
    fits. Keep truly feature-only values beside that feature. Never invent a
    `.rux-*` class name to fit a design — propose it the same way. List every
    token and class you add in your final report.
-4. Follow the BEM contract: `.rux-{block}`, `.rux-{block}__{element}`, and
-   `.rux-{block}--{modifier}`. Use `.is-*` or `.has-*` for JavaScript state.
+4. Follow the class shape and the modifier vocabulary that
+   `docs/foundations/naming.md` states — §1.1 and rules 2.1–2.4 — and use
+   `.is-*` / `.has-*` for JavaScript state under `state.md`'s rules. Do not
+   restate either shape here; `tests/naming-contract`, `tests/block-ownership`
+   and `tests/modifier-vocabulary` enforce them.
 5. Preserve optical radius nesting **where the scale still steps**: a floating
    surface steps down to the card it contains. A control inside a card does
    **not** — since `layout.md` step 8 put both `--rux-radius-container` and
