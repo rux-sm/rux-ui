@@ -240,7 +240,7 @@
 
 /* — Mobile — */
 
-@media (max-width: 640px) {
+@media (max-width: 720px) {
 	/* Hide less-critical columns on small screens */
 	.driver-app__table .col-phone,
 	.driver-app__table .col-expiry {

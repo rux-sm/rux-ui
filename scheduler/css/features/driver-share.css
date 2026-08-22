@@ -986,7 +986,7 @@ html {
 
 }
 
-@media (max-width: 479px) {
+@media (max-width: 500px) {
 	.driver-share-header {
 		padding-inline: var(--sched-driver-page-gutter);
 	}
@@ -996,7 +996,7 @@ html {
 	}
 }
 
-@media (max-width: 359px) {
+@media (max-width: 420px) {
 	.driver-share-header__logo {
 		width: var(--sched-driver-logo-width-compact);
 	}

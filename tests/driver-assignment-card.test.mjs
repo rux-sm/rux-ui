@@ -587,7 +587,14 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 		readFile(new URL("../rux-ui/css/tokens.css", import.meta.url), "utf8"),
 		readFile(new URL("../rux-ui/css/base/badges.css", import.meta.url), "utf8"),
 	]);
-	assert.match(css, /@media \(max-width: 479px\)/);
+	/* The viewport breakpoint moved 479 -> 500 in layout.md step 3: 479 and 480
+	   were one boundary spelled two ways, and both collapsed into the published
+	   mobile width. Which width this is now belongs to the breakpoint contract,
+	   not here — this assertion only cares that the narrow protection exists.
+	   The @container below stays at 479 on purpose: layout.md §1.3 puts
+	   container queries outside the set, because they measure the component's
+	   own width rather than the viewport's. */
+	assert.match(css, /@media \(max-width: 500px\)/);
 	assert.match(css, /container:\s*driver-assignment-card\s*\/\s*inline-size/);
 	assert.match(css, /@container driver-assignment-card \(max-width: 479px\)/);
 	assert.match(

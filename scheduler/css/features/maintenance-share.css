@@ -46,7 +46,7 @@
    wide tracking like the rest of the group.) */
 .maintenance-changes__title { margin: 0 0 var(--rux-space-2); }
 .maintenance-changes__line, .maintenance-changes__empty { width: max-content; margin: 0; padding: var(--rux-space-1) 0; color: var(--rux-text-secondary); font-size: var(--rux-size-14); white-space: nowrap; }
-@media (max-width: 640px) { .maintenance-share { padding: var(--rux-space-3); } }
+@media (max-width: 720px) { .maintenance-share { padding: var(--rux-space-3); } }
 @media (max-width: 500px) {
 	.maintenance-share-header.rux-ui-header {
 		visibility: visible;

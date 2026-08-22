@@ -1,10 +1,10 @@
 # Rux UI Foundations — Layout
 
-**Contract version: 1.2.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.3.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 9 steps: **5 done · 4 open**
+**Status** · 9 steps: **6 done · 3 open**
 This document is canonical for **breakpoints (§1), the space scale (§7), and the radius
 scale and Materials presets (§8)**. Steps 4 and 5 brought the last two in. What layout still
 owes — reconciling the application layer's seven off-set widths, *adopting* the measured
@@ -76,9 +76,11 @@ The portable layer publishes **four** widths. This is a closed set.
 
 | Width | What changes there | Where |
 |---|---|---|
+| **420px** | The narrow-phone tier below the mobile breakpoint: compact page gutter and logo, grids drop to one column | `driver-share.css`, `flip-seven.css`, `tasks-panel.css` |
 | **500px** | The shared mobile breakpoint — touch-target minimums, and the drawer's mobile mode | `tokens.css`, `drawer.css` |
 | **580px** | Phones get one floating-window frame contract regardless of contents | `panel.css` |
 | **620px** | The header brand sheds its dividers and caps the logo | `ui-header.css` |
+| **720px** | The workspace stops fitting two columns: side-by-side bodies stack, wide tables shed their money columns | `driver-week-info.css`, `flip-seven.css`, `comp-*.css`, `maintenance-share.css` |
 | **760px** | The header drops nav, responsive utilities, and active profiles | `ui-header.css` |
 
 **500px is the general-purpose one.** The other three are specific to a component's own
@@ -119,32 +121,33 @@ near it.
 **2.3** A breakpoint MUST be a viewport media query. Component-width-dependent behavior is
 out of scope (§1.3).
 
-**2.4** The application layer SHOULD converge on the same set. It is not enforced today —
-see §3 and step 3.
+**2.4** Both layers use the same set. One vocabulary, and a published width is available to
+either, not required of either. Enforced for both since step 3 — see §3. *(Was a SHOULD
+scoped to the application layer until Q1 was answered.)*
 
 ---
 
 ## 3. Current state
 
-**The portable layer is clean.** `rux-ui/css/` uses exactly the four, and nothing else.
+**Both layers are on the set.** The portable layer always was — `rux-ui/css/` uses exactly
+500, 580, 620 and 760. The application layer was not, and step 3 reconciled it: it now uses
+**420, 500/501, 580/581 and 720**, every one of them §1.1's.
 
-**The application layer is not.** `scheduler/css/` uses **eleven distinct widths**
-expressing **nine boundaries**, of which **two are on the set and seven are not**:
+`tests/breakpoint-contract.test.mjs` covers **both layers** as of step 3, so §2.4 is enforced
+rather than aspirational.
 
-| Boundary | On the set? |
-|---|---|
-| **359px** | no |
-| **420px** | no |
-| **479 / 480px** | no |
-| **500 / 501px** | **yes** — the shared mobile breakpoint |
-| **560px** | no |
-| **580px** | **yes** — the floating-window frame contract |
-| **640px** | no |
-| **700px** | no |
-| **720px** | no |
+**What §3 used to say, kept because it is the argument for §1.2.** The application layer held
+eleven distinct widths expressing nine boundaries, seven of them off the set: 359, 420,
+479, 480, 560, 640, 700 and 720. Several sat a few pixels apart — 479 and 480 were the same
+boundary spelled two ways, and `trip-request.css` alone carried 480, 560 and 580, with 560
+and 580 twenty pixels apart in one file. None of the seven was a decision anybody remembered
+making. That is what §1.2's asymmetry exists to prevent, observed rather than hypothesised.
 
-Several are a few pixels apart, and none of the seven is a decision anybody remembers
-making. That is the §1.2 failure mode, observed rather than hypothesized.
+**Container queries are not part of this.** The application layer has twelve, at 320, 340,
+359, 400, 420, 450, 460, 479, 520, 640, 700 and 800 — several of them the same numbers step 3
+retired as *breakpoints*, which is not a contradiction: §1.3 puts them outside the set
+because they measure a component's own width, not the viewport's. They are untouched and
+correctly so.
 
 ---
 
@@ -152,10 +155,10 @@ making. That is the §1.2 failure mode, observed rather than hypothesized.
 
 | # | Defect | Status |
 |---|---|---|
-| D1 | The application layer holds seven boundaries off the set (§3). | step 3 |
+| D1 | ~~The application layer holds seven boundaries off the set.~~ | **closed, step 3** |
 | D2 | The space scale and radius scale are published from `tokens.css` and governed by no document. | steps 4, 5 |
 | D3 | `../layout-composition.md` § Spacing and § Responsive Behavior state values and MUSTs outside a foundation document. | step 6 |
-| D4 | Nothing enforces §2.4 against the application layer, so D1 can grow while D1 is open. | step 3 |
+| D4 | ~~Nothing enforces §2.4 against the application layer.~~ | **closed, step 3** — the contract test covers both layers |
 
 ---
 
@@ -168,7 +171,7 @@ do.
 |---|---|---|---|
 | 1 | Establish this document; adopt the breakpoint set as canonical | **done · Class A** | Founding entry, and the correction typography step 35 called for. The set was **not invented here** — all four widths, and the purpose of each recorded in §1.1, were already closed and enforced in `tests/breakpoint-contract.test.mjs`, which predates this document. What was missing was a *home*: `CLAUDE.md`'s one-home rule says an enforcement test SHOULD cite the section it enforces, and that test cited nothing because no section existed, leaving the rule stated **only** in enforcement. Nothing resolves differently and no CSS moves — this is a relocation of authority, not a change to it. **Deliberately did not widen the scope to the space scale, radius, or the elevation presets** (steps 4, 5): a document that claims a scale it has not verified is worse than one that says it does not cover it, which is why the Status block and §1 both state the narrow scope outright. **Deliberately did not answer typography's Q6.** This step hands Q6 a published width to map onto; *which* roles step down and to which rung remains a design decision that document owns. **Deliberately did not name the document `spacing.md`**, which was README §1's plan of record: a breakpoint is a width at which layout changes, not a spacing value, and `../layout-composition.md`'s responsive MUSTs will need this home at step 6. README §1 is corrected in the same change, per the rule that the index is derived. |
 | 2 | Cite this section from `tests/breakpoint-contract.test.mjs` | **done · Class A** | Completes step 1: enforcement SHOULD cite the section it enforces, and until it does, a reader of the test cannot tell whether the set is a rule or a convention someone froze. Comment-only; no assertion, width, or CSS changes, and the suite's behavior is byte-identical. **Corrected a defect in the test's own rationale while there:** it said the application layer used "eleven distinct widths" and then listed **ten**, omitting **501px** — the `min-width` companion to the `max-width: 500px` boundary. The count was right and the list was short by one. The rewritten comment states eleven widths and nine boundaries, and §1.1 now records that either side of a boundary is the same decision, which is what made the omission easy to miss. **Deliberately did not add an assertion against the application layer** — that is step 3, and asserting a rule the codebase violates 7 times turns the suite red for a known, recorded defect (D1) rather than a regression. **Deliberately did not change the ratchet's mechanics**: the allow-list stays the enforcement, this document stays the rule. |
-| 3 | Bring the application layer onto the set (D1, D4) | **[open]** | Seven boundaries in `scheduler/css/` to reconcile (§3). Each needs a decision, not a find-and-replace: 479/480 and 560 plausibly collapse into 500, but 640/700/720 are workspace-width decisions that may justify a fifth published width under §1.2 rather than being forced onto an existing one. Extend `breakpoint-contract.test.mjs` to cover the application layer once the count reaches zero — asserting earlier just pins the defect. **Class B in effect**: every collapsed boundary re-renders something at some width, so it owes before/after widths and named states per README §2.3. |
+| 3 | Bring the application layer onto the set (D1, D4) | **done · Class A + Class B** | **Executed 2026-08-22.** Nine boundaries to seven to four. **Closes D1 and D4.** The step warned this was a set of decisions rather than a find-and-replace, and it was — the seven off-set widths turned out to be three different problems. **(i) Drift, collapsed onto published widths at no cost (§1.2: reusing one needs no step).** 479 and 480 were one boundary spelled two ways, both → **500**; `trip-request.css` carried 480, 560 *and* 580, with 560 twenty pixels from a 580 in the same file — that 560 → **581**, which is 580's `min-width` companion the way 501 is 500's. **(ii) A tier below the set.** 359 and 420 were both narrow-phone widths and the set's floor was 500, so there was nothing to reuse; 359 folded into **420**, minted as the fifth width. **(iii) A band with nothing near it.** 640 (5 uses), 700 (2) and 720 (2) all mean *the workspace stops fitting two columns*, and the nearest published widths are 620 and 760 — but §1.1's rows say what changes at each, and 620's says the header sheds its dividers. Forcing a table onto a width measured for the header would make that row false, so **720** is minted as the sixth. **Collapsed upward on purpose:** narrow treatment applying *earlier* can never overflow, only the reverse can, so 640 → 720 moves seven sites in the safe direction while 720's own two sites do not move at all. **Class B, states needing an eyeball:** anything between 641 and 720 now gets the narrow treatment — the components gallery, settings, fleet and trip-list demos, and `maintenance-share`; and 360–420 now gets `driver-share`'s compact gutter and logo. **Verified:** the browser resolves the application layer's CSS to exactly 420/500/580/720, and neither 420 nor 700 produces horizontal page overflow. **The comp-* gallery surfaces were not individually eyeballed** — the direction is provably safe, but that is an argument, not a look. **Enforcement extended:** `breakpoint-contract.test.mjs` now walks both layers, resolves N+1 to N, and was proved to bite by injecting a 665px query into the application layer. **Deliberately did not touch the twelve container queries** — several use the very numbers this step retired as breakpoints, and §1.3 puts them outside the set on purpose. **Deliberately did not mint a width per cluster**: 640 and 720 as separate published widths would have been the smallest local fix and exactly the multiplication §1.2 exists to stop. Contract 1.2.0 → 1.3.0. |
 | 4 | Give the space scale a canonical home (D2) | **done · Class A** | 15 `--rux-space-*` tokens in `tokens.css`, 4px-gridded with one deliberate half-step at 6px and a 1px hairline off the grid. Documenting what exists is Class A; the log MUST state plainly that these were never measured against Geist, unlike the type ramp. Gated on nothing, but SHOULD land with step 5 so the measurement happens once. | **Executed 2026-08-22** as §7. Class A and it moves no code: the fifteen tokens are documented where they already resolve, nothing renders differently. **The step required this said plainly and here it is: the space scale was never measured against Geist.** Every figure in `typography.md` §3 and `color.md` §3.1 was read off a rendered specimen; these fifteen values are this system's own, adopted before any foundation document existed. That is not a defect — **Geist publishes no spacing page**, so there is no specimen to measure against, and §7 records which scales are conformance and which are ours so a reader is not misled by the company they keep. Both departures from the 4px grid are recorded with their reasons: `--rux-space-px` (1px hairline, which must not scale with a reader's font size, and so is the one space token not in `rem`) and `--rux-space-1-5` (6px, the single half-step, because 4px is tight and 8px loose for control padding). **Deliberately did not change a value or add a rung.** **Deliberately did not write a MUST** about which rung to use where — that is composition, and it arrives with step 6. |
 | 5 | Measure Geist Materials; publish radius and the elevation presets (D2) | **done · Class A** | 7 `--rux-radius-*` tokens plus the semantic three (`container`, `control`, `input`). The source is [vercel.com/geist/materials](https://vercel.com/geist/materials): eight elevation presets bundling radius, fill, stroke and shadow. **Values are not published** — they must be read off the rendered specimens in a browser, the way every figure in `typography.md` was, and the step MUST say so. Expect Class B: `tokens.css` already cites the Materials modal tier at 12px, so some of this is adopted informally and may not survive measurement. | **Executed 2026-08-22** as §8. **The step's own prediction held.** It warned that `tokens.css` cites the Materials modal tier at 12px, that some of this was adopted informally, and that it might not survive measurement. 12px and 16px survived — `--rux-radius-lg` and `-xl` match Geist exactly. **8px did not.** Geist's small-surface radius is **6px** across Base, Small and Tooltip; this system has no 6px rung, and its `--rux-radius-md` at 8px has no Geist counterpart. `md` is what both `--rux-radius-container` and `--rux-radius-input` resolve to, so it is on nearly every card, panel and field in the application — **the widest blast radius in this document**. All eight presets are recorded in §8.1 with their full shadow stacks; the 1px stroke is constant across all eight, so only radius and shadow vary. **Retitled from "Adopt" to "Measure … publish"**, because the document is a decision document and this step moved no code: the adoption is now **step 8**, gated on two things this step could not supply. **Deliberately did not adopt anything**, for those two reasons: (a) the specimens are pinned to a `#0a0a0a` fill and answered neither `prefers-color-scheme` nor a `data-theme` attribute, so **only dark values were obtainable** — and a `rgba(255,255,255,0.145)` stroke plainly is not the light value, so light exists somewhere unmeasured; (b) moving `md` 8px → 6px re-renders nearly every surface and needs before/after and named states per README §2.3. **Deliberately did not measure buttons or inputs**: Materials covers elevated surfaces, and those have their own Geist pages — which is why `xs` and `sm` show no counterpart in §8.2 rather than being called orphans. |
 | 6 | Relocate `../layout-composition.md`'s rule content (D3) | **[open]** | Its § Spacing states values (16px rhythm, the 8px scheduler inset, the 40px toggle row) and its § Responsive Behavior states MUSTs, which by `CLAUDE.md`'s test makes both rules living outside a foundation document. They move here or become pointers. **Gated on steps 4 and 5**: converting a section to a pointer before the rule it points at is settled deletes the only statement of it — the same trap typography step 16 records. |
@@ -181,11 +184,16 @@ do.
 ## 6. Open questions
 
 **Q1 — Should the application layer share one set with the portable layer, or publish its
-own?** Step 3 assumes one shared set. The alternative is that `scheduler/` is a consumer
-like any other and may declare its own widths, in which case §2.4 is wrong and the honest
-rule is that the portable layer's four are a floor, not a ceiling. *Does not block step 3
-— it changes what "done" means for it, and the answer will be clearer once the seven
-boundaries have been looked at individually.*
+own? — ANSWERED: one shared set.** The question said the answer would be clearer once the
+seven boundaries had been looked at individually, and it was. Two of the three groups needed
+no new vocabulary at all — they were drift, and collapsed onto widths the portable layer had
+already published. The third needed two widths the portable layer does not use today (420
+and 720), and adding them to §1.1 costs it nothing: a published width is available, not
+required. A separate application set would have had to publish those same two widths anyway,
+and would then own the question of what happens when the two sets disagree about 500.
+
+§2.4 is therefore upgraded from SHOULD to enforced — `breakpoint-contract.test.mjs` covers
+both layers as of step 3. *Answered 2026-08-22 with step 3.*
 
 **Q2 — Is 620 a real breakpoint or an accident?** 620 and 760 both exist for `ui-header.css`
 alone, and 620 sits 120px from 500 with no stated reason for that distance. It may be a

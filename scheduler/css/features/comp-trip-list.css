@@ -103,7 +103,7 @@
 
 /* — Mobile — */
 
-@media (max-width: 640px) {
+@media (max-width: 720px) {
 	.trips-app__table .col-payment,
 	.trips-app__table .col-quoted,
 	.trips-app__table .col-owed,
