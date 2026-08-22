@@ -1,10 +1,10 @@
 # Rux UI Foundations — Color
 
-**Contract version: 1.3.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.4.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 10 steps: **8 done · 2 open**
+**Status** · 11 steps: **9 done · 2 open**
 This document is canonical for colour in Rux UI. **Tier 0 is the catalog** (steps 2, 3) and
 **Tier 1 reads it** (steps 4–6): every surface, border, list state, control overlay, text
 level, status and accent role resolves to one scale step per theme. 164 catalog values
@@ -14,9 +14,14 @@ colour this system publishes now clears AA in both themes** — the two headline
 4.74–9.25**, step 9).
 
 **Where to pick up.** No decision is open. Two steps remain, both Class A: **7** makes rules
-2.1, 2.8, 2.9 and 2.11 executable — most of what it needs now exists, since steps 2–9 added
-nine tests — and **8** consolidates `README.md`, the audit's R6, the skill and the component
+2.1, 2.8, 2.9 and 2.11 executable — most of what it needs now exists, since steps 2–11 added
+eleven tests — and **8** consolidates `README.md`, the audit's R6, the skill and the component
 docs into pointers.
+
+**Both gamuts ship.** The hue scales are published twice since step 11: an sRGB branch, and a
+P3 branch behind `@media (color-gamut: p3)` that a wide-gamut display gets instead. Greys and
+backgrounds have one value in both — they are achromatic. **The AA floor is evaluated in the
+worse gamut**, so nothing passes only because a display is good.
 
 **What is still not conformant, measured rather than assumed.** **D5**: 30 tokens in dark and
 21 in light resolve outside sRGB — not one of them a role on a step. They are the legacy
@@ -204,18 +209,34 @@ not a role (D6, D8).
 scale, and the catalog has none. *(True of the scale since step 2, and enforced. Still
 false of the roles, which read `--rux-neutral` at C 0.004 — D4, closed by step 4.)*
 
-**2.9 Every token resolves inside sRGB.** A value the browser has to gamut-map is a value
-nobody chose. The catalog's P3 branch is a separate, opt-in declaration under
-`@supports (color-gamut: p3)`, and a token MUST NOT depend on it. *(Today every chromatic
-Rux token is outside sRGB — D5.)*
+**2.9 Every token resolves inside the gamut it is published for.** A value the browser has to
+gamut-map is a value nobody chose. Since step 11 the hue scales are published **twice**: an
+sRGB branch, which is the base declaration and the authority for any display that cannot do
+better, and a P3 branch inside `@media (color-gamut: p3) { @supports (color: oklch(0% 0 0)) }`.
+Each MUST be valid in its own gamut, and **every P3 value MUST have an sRGB value behind
+it** — the wide branch raises a ceiling, it never introduces a colour.
+
+*The nesting is not decoration.* `color-gamut` is a **media** feature, so `@supports` cannot
+test it: `@supports (color-gamut: p3)` is an invalid condition that silently evaluates false.
+That is how step 11 was first written, and the block simply never applied — caught by
+measuring the rendered value in a browser, not by any test, since the CSS is well-formed
+either way. The media query tests the *display*; the inner `@supports` tests the *syntax*.
+
+*(D5's 30 out-of-gamut tokens are unaffected: they are the legacy hue bases at chroma 0.28,
+which exceed P3 as well, and their fix is still the Class C removal.)*
 
 **2.10 OKLCH is the expression; the catalog's sRGB is the value.** This system writes
 every colour as `oklch()` so a hue can be retuned without re-deriving its lightness. The
 catalog writes its sRGB branch as HSL. Adopting a step means converting its sRGB value to
 OKLCH and **recording the measured HSL beside it**; the rendered colour is what conforms,
 not the syntax, and the comment is what lets the next reader check the conversion instead
-of trusting it. Enforced by `tests/color-scales.test.mjs`. **The conversion is lossless at
-8-bit** — all 164 published steps were verified in a browser to rasterize to the same pixel
+of trusting it. Enforced by `tests/color-scales.test.mjs`. **Since step 11 a hue step carries two published values** — the sRGB one, converted from the
+catalog's HSL and recording it, and the P3 one, which the catalog authors in `oklch()` and
+which is therefore measured rather than converted and cites no HSL. Greys, the alpha scale
+and the backgrounds carry one value in both branches: they are achromatic and have no width
+to gain. `tests/color-scales.test.mjs` checks provenance per branch for that reason.
+
+**The sRGB conversion is lossless at 8-bit** — all 164 published steps were verified in a browser to rasterize to the same pixel
 as the HSL they came from, which is what sets the precision at two decimals of `L` (at one,
 four of them drift by a single code value). *(Q5, step 2.)*
 
@@ -249,6 +270,13 @@ rather than a preference:
 *step's meaning* and not for what a fill carrying a label may use. Both label colours are
 theme-invariant literals because the 700/800 steps are: a label reading `background-100`
 would look correct and flip to near-black on a dark blue button the moment the theme changed.
+
+**The floor is evaluated in the WORSE gamut** (step 11). A pairing that clears in P3 but not
+in sRGB is not published, because the sRGB branch is what a display without P3 renders and it
+cannot be the one that fails. `blue-700` with a white label measures **5.04 in P3 and 4.44 in
+sRGB** — it would pass on the machine most designers own and fail on a large share of the
+machines the app runs on, which is exactly the asymmetry this clause exists to catch, and why
+the fills sit at 800 rather than 700.
 
 **This is also the rule Geist's own buttons follow**, which is corroboration and not the
 source — its error button is `red-800` + white and its warning is `amber-800` + near-black,
@@ -464,6 +492,7 @@ reversible and execute under standing authority.
 | 5 | Map the status roles onto the hue scales; close D6 | **done · Class B** | **Rule 2.7 made real, and D6 with it.** **Text → `{scale}-900`:** danger red, warning **amber** (moved off `--rux-yellow` at hue 85 to the hue the catalog calls warning, 30–44), success green, info blue. **Before → after contrast, light theme, against the canvas: 1.85 / 1.30 / 1.19 / 1.37 → 5.14 / 5.34 / 5.10 / 5.09.** Three times under AA to comfortably over, which is the single most valuable thing in this document. Dark went the other way and stayed fine: 8.27 / 13.86 / 15.80 / 12.69 → 7.15 / 9.95 / 9.39 / 8.40 — less contrast, and on the catalog. **Tint → `{scale}-100`, and now opaque** (it was the base at 14% alpha, which rendered differently over a card than over the canvas; a tint is a background, so it composites once). **Fill → 700, fill-hover → 800, on-fill → 1000**, and published for all four statuses rather than danger alone — the other three were missing only because nobody had hand-tuned them. **Two tiers converged and are kept published:** `-strong` now resolves to the base (it existed to be readable where the base was not, which was D6) and `-vivid` to the fill (same purpose — a solid colour carrying a label). Both are Class C to retire and are recorded as candidates. **The trip bar's own tone recipes are untouched** (rule 1.3 — the application owns its mapping). **Found, not fixed — D14:** `red-1000` on `red-700` measures **3.44:1** dark, 4.19:1 light, below AA. It was ~3.95:1 before, so this step moved it slightly worse. **This row first recorded the pairing as "the catalog's own", which was wrong — it was this step's inference from rule 2.2's "1000 = primary text", and the catalog's foundation publishes no on-fill pairing at all.** The correction is left visible rather than rewritten, because the mistake is instructive: a step number applied by analogy is not a measurement. What the right pairing is turns on **Q8**. Contract shared. |
 | 6 | Accent as a scale selection; focus ring onto the catalog (D7, D11, D13) | **done · Class B** | **`--rux-accent` is now a selection of four steps**, not a colour: `accent-100/700/800/900/1000` name which scale is the accent, and `accent`, `-hover`, `-subtle`, `-ring` read those. **Before → after:** accent L 60 C 0.28 → **57.91 C 0.2141** (`blue-700`); hover **70 → 51.64** (`blue-800`) — the hover now *darkens*, which is D7 and is the most visible single change for buttons, links and active tabs; subtle 14% alpha → opaque `blue-100`; ring 70 C 0.28 → **71.78 C 0.1521** dark and **57.91** light, the catalog's focus colour, which is the one accent role that is not theme-invariant and so keeps a one-line light override that every accent inherits. `accent-fill` converges on the accent and is a Class C candidate. **D11 closed:** `[data-rux-accent="violet"|"green"|"amber"]` published, four lines each, repointing the same steps; verified live that all three resolve their accent, hover and ring to their own scale. `tests/state-contract.test.mjs` no longer carries the attribute as accepted debt. The gap was never really CSS — an accent cannot be *switched* while it is a hand-tuned recipe, because there is no second palette to switch to. **D13, found by this step's own contrast pass and fixed in it:** `a:hover` read `--rux-accent-hover`, so when that became the 800 step a link got **dimmer** on hover in dark theme, 4.73:1 → **3.67:1**, under AA. A fill role behaving correctly, inherited by text. Links now read `--rux-link-fg` / `-hover` = the accent scale's **900 → 1000** text steps, which move the right way in both themes because the scale inverts around the fills: dark **8.40 → 19.16**, light **5.09 → 14.70**. **Verification for the whole batch.** The first attempt was wrong and is recorded because the error is instructive: flipping `data-theme` and reading computed styles immediately samples elements **mid-transition**, returning interpolated `oklab()` values — it reported `.rux-input` at white-on-white 1.12:1, which does not exist. Redone with transitions disabled and the previous cascade **replayed at matched specificity** (the technique `typography.md` step 27 had to learn): on `gallery.html`, **310 of 312 elements move in each theme, 106 distinct changes**, every one matching the intended mapping; on `index.html`, 4,625 of 5,288. Page overflow 0. **Eyeballed:** `gallery.html` dark at 1280, top of page only — screenshots after scrolling returned blank frames because the Browser pane was not compositing, so the rest of the gallery and **all of light theme are measured but not seen**. That is the largest gap in this batch. Also unseen: every interaction-gated surface, and the trip bar, whose tone recipes read status roles that moved. Contract shared. |
 | 9 | Put text on a fill over the AA floor (D14, Q8) | **done · Class B** | **Executed 2026-08-22 under branch (a).** Rule 2.11 gains its fill half — the first rule this document originates rather than adopts — and every published fill moves to the step that satisfies it. **Two label roles added**, both theme-invariant literals under rule 1.1a because no scale step is a true white or near-black (`gray-1000` is `#ededed` dark and `#171717` light): `--rux-fg-on-fill` `oklch(100% 0 0)` and `--rux-fg-on-fill-inverse` `oklch(14.57% 0 0)`. They are literals *on purpose* — a fill is the 700/800 step and so is the same colour in both themes, so a label reading `background-100` would flip to near-black on a dark blue button when the theme changed. **Before → after, resolved:** `danger-fill` `red-700` → `red-800` and its label `red-1000` → white, **3.44 → 4.74** dark / 4.19 → 4.73 light; `warning-fill` → `amber-800` + inverse **9.25**; `success-fill` → `green-800` + inverse **4.85**; `info-fill` → `blue-800` + white **5.73**; `--rux-button-accent-background` `--rux-accent` → `--rux-accent-800`, **4.43 → 5.73** both themes. `-on-vivid` follows `-on-fill` (same pairing, other name), which reaches the trip bar. **`--rux-accent` itself stays at 700** — it is the identity colour for borders, icons and focus, none of which carries a label, and links already go through the 900 text step. **`--rux-fg-on-accent` moved off `--rux-white`** to the true white: worth 0.01 of contrast, but it was one of D5's 30 out-of-gamut tokens and this was the step with reason to touch it. **The accent button's hover now darkens** (`calc(l - 0.06)`, was `l + 0.05`): a lighter hover on an 800 fill lands back at 700's contrast and drops the label under AA under the pointer, which is worse than failing at rest. Contrast now *rises* on interaction — 5.73 → 7.36 → 9.10. That leaves the mechanism wrong even though the direction is right, recorded as **D15**. **Solid badges were checked and not touched** — their own lightness arithmetic already clears (7.64 dark / 5.52 light). **Verified:** every fill measured in both themes on `gallery.html`; **eyeballed in both themes** on the live dev server, buttons/badges/alerts, which is the first visual check this document has managed — screenshots composite only at scroll 0, so the sections were hidden rather than scrolled past. `tests/color-scales.test.mjs` failed on the fill move and its expectation was updated, which is the ratchet working. 348/348. Contract 1.2.1 → **1.3.0**. |
+| 11 | Publish the P3 branch (Q7, reversed) | **done · Class B** | **Executed 2026-08-22.** **140 declarations** — seven hue scales, ten steps, both themes — inside `@media (color-gamut: p3) { @supports (color: oklch(0% 0 0)) { … } }`, re-measured off vercel.com/geist/colors that day with the theme class flipped, on a P3 display. **Greys, the alpha scale and the two backgrounds are deliberately absent**: they are achromatic, gain nothing from a wider gamut, and the catalog publishes them as HSL in both branches too. That is 140 rather than 164 and the difference is the point. **Class B, not the Class A step 3 predicted** — on a P3 display every chromatic colour in the system re-renders; an sRGB display never matches the media query and is untouched. **Before → after on a P3 display:** `blue-700` `oklch(57.91% 0.2141 257.97)` → `oklch(57.61% 0.2321 258.23)`, and equivalently across all 140. Greys verified unchanged at `oklch(30.08% 0 0)`. **Rules amended:** 2.9 rewritten for two branches with the sRGB-fallback requirement; 2.10 records that a hue step now carries two values and that only the sRGB one has HSL provenance to cite; **2.11 gains the worse-gamut clause**, which is the substantive addition — a pairing that clears in P3 but not sRGB is not published. **The first attempt was silently broken and the browser is what caught it.** The block was written as `@supports (color-gamut: p3)`, which is an invalid condition — `color-gamut` is a *media* feature, `@supports` tests properties — so it evaluated false and never applied. The CSS was well-formed, the suite passed, and only reading `--rux-blue-700` off a live page showed it still resolving to the sRGB value. Recorded because no test would have caught it and the next branch-style block has the same trap. **Verified after the fix:** the branch is active (`blue-700` resolves to the P3 value), and **every published pairing clears AA in P3 in both themes** — danger button 4.67/4.70, accent 6.63/6.73, warning 9.21, success 4.94/4.88, info 6.63/6.73, status text 4.85–9.75, links 7.74/5.99, primary text 17.36/16.70. Contrast computed with **Display P3 primaries**, not sRGB's, on a `display-p3` canvas. **Eyeballed** on the dev server, buttons/badges/alerts, dark. `tests/color-scales.test.mjs` gains two tests: the branch covers every hue step in both themes and contains no achromatic scale, and it publishes steps only — never re-pointing a role, which is what would let a wide gamut quietly relax the floor. 350/350. Contract 1.3.0 → **1.4.0**. |
 | 7 | Enforce rules 2.1 (second half), 2.8, 2.9, 2.11 | **[open]** | **After steps 2–6**, because the checks fail today and a test that fails on the state it was written in is a todo, not a ratchet. Extends `tests/tokens-contract.test.mjs` or adds `tests/color-contract.test.mjs`: every absolute-lightness token in `:root` has a light override (D12); the gray scale has chroma 0; every token parses to an in-gamut sRGB value; the 900/1000 steps of every scale meet 4.5:1 against both backgrounds in both themes. Class A. |
 | 8 | **Consolidate** — strip duplicated colour rules elsewhere; convert them to pointers | **[open]** | The closing step, last by construction (`CLAUDE.md` § One home per rule). **In scope:** `README.md` § Backgrounds (the two-surface rule and token table), § Color (the accent sentence, the `oklch` sentence), § Reference: Vercel Geist colors (the step table — now §2.2 — and the alignment list — now §3.3), § Swappable accent (D11's record); `../audit/design-system-audit.md` §5 R6, which keeps its duration/easing half for `motion.md` and points here for colour; the `rux-design` skill's colour paragraph; the literal `oklch()` values in `../trip-bar.md` and `../cards.md`, which become token names or are recorded as the trip bar's own tokens. **Before stripping anything,** each rule is checked to exist here first. Contract bump: patch. |
 | 10 | Correct D14's framing and record what a component page is worth | **done** | Class A, and a **patch** — wording, evidence and a corrected citation; no token, rule or value moves. **What was wrong.** Step 5 recorded D14 as *"the catalog's own text-on-fill pairing, so changing it is a departure rather than a correction"*. The pairing was **step 5's own inference** from rule 2.2's "1000 = primary text", applied by analogy to a surface rule 2.2 never mentions. The catalog's foundation publishes no on-fill pairing at all, so there was nothing to depart from. **What was then wrong in the other direction.** Measuring `vercel.com/geist/button` produced a confident correction — "Geist's standard is 800 + white, D14 is my mapping error, no decision needed" — which overshot twice. **(1)** The blue fill cited as "Geist's primary at 4.50:1" is in that page's **Custom** section, which demonstrates `CustomButton` *overriding* the system's colours; the page states "primary, success, ghost, and violet are not valid type values". It was the one button there that is by construction not the standard. **(2)** Even the genuine specimens are a **component mapping**, which this document's own precedence rule reserves to a downstream — and `typography.md` already paid for that confusion: Q7 set the type floor at 11px on the Badge's authority and Q11 reversed it, at the cost of two releases and a Class C removal. **What survives, and it is the useful part:** the button page can *falsify* an inference without *establishing* a rule. It shows a white label rather than the 1000 step, which is enough to retire step 5's guess and not enough to replace it. **Recorded:** D14 rewritten; step 5's sentence corrected in place with the error left visible; rule 2.11 gains an explicit note that its floor stops at the two backgrounds and why; **Q8** opened to decide whether it should; **step 9** drafted against it; a source note added to §'s preamble stating that component pages are observations, never authority, with the Q7→Q11 precedent and the three Button measurements as evidence. `../README.md`'s source table corrected likewise. **Deliberately not done:** amending rule 2.11 — that is Q8's to decide and step 9's to execute; and touching any token, which is why the destructive button still measures 3.44:1 today. Contract 1.2.0 → **1.2.1**. |
@@ -570,9 +599,15 @@ up to 23 points lighter. Every figure stays above AA (the catalog's light text m
 mirror the dark theme's symmetry, which the catalog does not have, and "harder than Geist"
 is not a decision anyone made. *Blocks step 4.*
 
-**Q7 — Publish the P3 branch? — ANSWERED (step 3): sRGB first; P3 is a later Class A
-step.** Taken as recommended. The §3.1 P3 measurements stand as the record for whenever
-that step runs. Original text follows.
+**Q7 — Publish the P3 branch? — ANSWERED TWICE. (step 3): sRGB first. (step 11): both, and
+the later step is Class B rather than Class A.** The owner set building for P3 as the goal on
+2026-08-22 and step 11 published the wide branch. **Two things step 3's answer got wrong, both
+worth keeping:** it filed the later step as **Class A**, on the reasoning that adding a branch
+adds and does not change — but on a P3 display *every chromatic colour in the system
+re-renders*, which is Class B by §2.1's own definition, and only sRGB displays are untouched.
+And it framed the choice as sRGB *or* P3 when the real question was whether to keep the
+fallback: **dual-branch** is what shipped, because a design system that gets vendored into
+applications its authors do not control cannot assume the display. Original text follows.
 
 **Q7 — Publish the P3 branch?** The catalog ships wide-gamut values under
 `@supports (color-gamut: p3)`; on a P3 display vercel.com renders them, and they are what

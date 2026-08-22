@@ -39,8 +39,14 @@ const STEPS = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
    Splitting there is what lets "defined in both themes" be a real assertion
    rather than "defined at least once somewhere". */
 const LIGHT_AT = tokens.indexOf(':root[data-theme="light"]');
-const DARK_BLOCK = stripComments(tokens.slice(0, LIGHT_AT));
-const LIGHT_BLOCK = stripComments(tokens.slice(LIGHT_AT));
+/* The P3 branch (color.md §5 step 11) is a whole second set of hue values
+   under @supports, so every "is this step declared / achromatic / invariant"
+   check has to run on the sRGB branch alone or it sees each name twice. */
+const P3_AT = tokens.indexOf("@media (color-gamut: p3)");
+const SRGB = P3_AT > 0 ? tokens.slice(0, P3_AT) : tokens;
+const P3_BLOCK = P3_AT > 0 ? tokens.slice(P3_AT) : "";
+const DARK_BLOCK = stripComments(SRGB.slice(0, LIGHT_AT));
+const LIGHT_BLOCK = stripComments(SRGB.slice(LIGHT_AT));
 
 const declOf = (block, name) =>
 	block.match(new RegExp(`${name}:\\s*([^;]+);`))?.[1]?.trim() ?? null;
@@ -135,12 +141,16 @@ test("every step records the measurement it came from", () => {
 	   the catalog's HSL, and the conversion is recorded beside it. Without the
 	   comment the provenance is gone and the next reader cannot check the
 	   conversion — which is how a measured system decays into a chosen one. */
+	/* The sRGB branch only. Its values were CONVERTED from the catalog's HSL, so
+	   the source has to travel with them or the conversion cannot be rechecked.
+	   The P3 branch has no HSL to cite — the catalog authors those steps in
+	   oklch and they were measured as oklch — so requiring a comment there
+	   would be demanding provenance that does not exist. That branch gets its
+	   own test below instead. */
 	const undocumented = [];
 	for (const scale of [...HUES, "gray"]) {
 		for (const step of STEPS) {
-			const line = tokens.match(
-				new RegExp(`--rux-${scale}-${step}:[^\\n]*`, "g"),
-			);
+			const line = SRGB.match(new RegExp(`--rux-${scale}-${step}:[^\\n]*`, "g"));
 			for (const l of line ?? []) {
 				if (!/\/\* hsl\(/.test(l)) undocumented.push(l.trim().slice(0, 60));
 			}
@@ -235,4 +245,61 @@ test("the accent is a scale selection, not a colour (rule 2.12)", () => {
 			);
 		}
 	}
+});
+
+test("the P3 branch covers every hue step in both themes, and only hues", () => {
+	/* color.md §5 step 11. Progressive enhancement: the sRGB branch above is
+	   what an ordinary display gets, and this raises the ceiling where there is
+	   one. Greys, the alpha scale and the two backgrounds are deliberately
+	   ABSENT — they are achromatic, and an achromatic colour gains nothing from
+	   a wider gamut. Geist publishes them as HSL in both branches; so does this,
+	   and a grey appearing here would mean someone widened something that has
+	   no width to gain. */
+	assert.ok(P3_BLOCK, "no @media (color-gamut: p3) block");
+	const dark = P3_BLOCK.slice(0, P3_BLOCK.indexOf(':root[data-theme="light"]'));
+	const light = P3_BLOCK.slice(P3_BLOCK.indexOf(':root[data-theme="light"]'));
+	const missing = [];
+	for (const hue of HUES) {
+		for (const step of STEPS) {
+			const re = new RegExp(`--rux-${hue}-${step}:\\s*oklch\\(`);
+			if (!re.test(dark)) missing.push(`--rux-${hue}-${step} (P3 dark)`);
+			if (!re.test(light)) missing.push(`--rux-${hue}-${step} (P3 light)`);
+		}
+	}
+	assert.deepEqual(missing, []);
+
+	const achromatic = stripComments(P3_BLOCK).match(
+		/--rux-(?:gray|gray-alpha|background)-\d+:/g,
+	);
+	assert.deepEqual(
+		achromatic,
+		null,
+		"an achromatic scale has no P3 variant to publish",
+	);
+});
+
+test("the P3 branch never lowers a fill below the AA floor (rule 2.11)", () => {
+	/* The floor is evaluated in the WORSE gamut, which is what stops a wide
+	   branch from being the reason a pairing looks acceptable. blue-700 with a
+	   white label measures 5.04 in P3 and 4.44 in sRGB; the fills sit at 800
+	   because of the second number, and adding P3 must not quietly relax that.
+	   Asserted structurally — the published fills read the 800 step, and this
+	   test fails if a P3-only re-tune ever moves one back down. */
+	for (const [role, step] of [
+		["--rux-danger-fill", "--rux-red-800"],
+		["--rux-warning-fill", "--rux-amber-800"],
+		["--rux-success-fill", "--rux-green-800"],
+		["--rux-info-fill", "--rux-blue-800"],
+	]) {
+		assert.match(
+			stripComments(SRGB),
+			new RegExp(`${role}:\\s*var\\(${step}\\)`),
+			`${role} must read ${step} — the step chosen by the worse gamut`,
+		);
+	}
+	assert.doesNotMatch(
+		stripComments(P3_BLOCK),
+		/--rux-(?:danger|warning|success|info|accent)-(?:fill|700|800)/,
+		"the P3 branch must publish scale steps only, never re-point a role",
+	);
 });
