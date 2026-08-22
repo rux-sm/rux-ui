@@ -531,10 +531,11 @@ renames marked ⚠ are breaking and must go through the ledger + vendored-consum
 > it changes" is the principle `docs/foundations/` generalizes.
 >
 > **Moved so far:** **R6**'s colour half to `color.md` (rule 2.1); **R1, R2, R4 and R5** to
-> `naming.md` (rules 2.1, 2.4, 2.5, 2.6) by that document's step 4. **Still stated here:**
-> **R3, R7 and R8**, which `state.md` has claimed and will move on its own consolidation
-> step; **R6**'s duration/easing half, waiting on `motion.md`; and **R9** and **R10**, whose
-> homes are `CLAUDE.md` and `../portability-audit.md` rather than any foundation document.
+> `naming.md` by its step 4; **R3, R7 and R8** to `state.md` by its step 5. **Still stated
+> here:** only **R6**'s duration/easing half, waiting on `motion.md`, and **R9** and **R10**,
+> whose homes are `CLAUDE.md` and `../portability-audit.md` rather than any foundation
+> document. **Eight of the ten have left**, and the two that remain are the two whose
+> destination does not exist or is not a foundation document at all.
 >
 > **Every ★ below is spent.** All four tests it marked as worth writing now exist —
 > `state-contract`, `focus-contract`, `motion-contract` and `gallery-coverage` — so the
@@ -554,13 +555,11 @@ history, where it is a record rather than a plan.
    canonical, because publishing it would make every call site restate the default. A rule
    stated in two places is a rule that will drift, and this one had.
    *(`tests/modifier-vocabulary`)*
-3. **Aria is the state of record.** Where an aria attribute expresses the state
-   (`aria-expanded`, `aria-pressed`, `aria-selected`, `aria-current`, `[hidden]`), CSS
-   selects on it and JS writes only it. `.is-*` is reserved for states with no aria
-   equivalent (`is-dragging`, `is-scrolled`, `is-resizing`). BEM `--state` modifiers are
-   prohibited. JS must not write a class or attribute no stylesheet reads.
-   *(`tests/state-contract`: forbid `--open|--active|--hidden` modifiers; flag `.is-*`
-   written in `rux-ui/js/` with no CSS reader)*
+3. **Aria is the state of record.** **Moved** to
+   [`state.md`](../foundations/state.md) rules 2.1–2.4, which split what this entry ran
+   together — the aria channel, when a `.is-*` class is legitimate, the modifier
+   prohibition, and "JS never writes what nothing reads" — into four rules that can be cited
+   separately. *(`tests/state-contract`)*
 4. **Namespace everything portable.** **Moved** to
    [`naming.md`](../foundations/naming.md) rule 2.5, whose §1.3 carries the namespace table.
    *(`tests/prefix-contract` over `rux-ui/js` + `rux-ui/css`; ten accepted-bare entries,
@@ -575,14 +574,13 @@ history, where it is a record rather than a plan.
    `tests/color-contract` enforces the absolute-lightness half it used to leave unchecked.
    The duration/easing half stays here until `motion.md` claims it.
    *(`tests/motion-contract`; colour: `tests/color-contract` + `tests/color-scales`)*
-7. **One overlay kernel.** Dismissible surfaces register with the shared dismiss manager
-   (one singleton, one outside-pointerdown, one Escape policy, one focus trap/restore
-   helper, one layer-promotion helper). No module binds its own document-level dismiss
-   listeners.
-8. **Focus is visible everywhere.** Every base file that styles an interactive selector
-   carries a `:focus-visible` rule keyed to `--rux-accent-ring`.
-   *(`tests/focus-contract`: file styles `:hover` on interactive element ⇒ must contain
-   `:focus-visible`)*
+7. **One overlay kernel.** **Moved** to
+   [`state.md`](../foundations/state.md) rule 2.5, which also **narrowed** it: its Q2
+   established that the kernel owns outside-press and Escape, not every path that closes a
+   surface — a menu closing on its own item being activated is the surface's own business.
+   *(`tests/overlay-kernel`, written since; this entry had named no test at all)*
+8. **Focus is visible everywhere.** **Moved** to
+   [`state.md`](../foundations/state.md) rule 2.6. *(`tests/focus-contract`)*
 9. **The gallery is the contract surface.** Every base block appears in `gallery.html`,
    with behavior modules loaded, before it ships. *(`tests/gallery-coverage`, a ratchet: CSS block
    census ⊆ gallery class census)*

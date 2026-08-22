@@ -6,11 +6,11 @@ handler. Skip it for pure token, color, or static-layout changes.
 
 ## Focus and keyboard
 
-- Every interactive element needs a visible focus state, using `:focus-visible`
-  (not bare `:focus`, which also fires on mouse click). Group focus for a
-  compound control with `:focus-within`.
-- Never remove the default outline without supplying a `:focus-visible`
-  replacement.
+- **The focus rule itself is stated in `docs/foundations/state.md` rule 2.6**, and
+  `tests/focus-contract.test.mjs` enforces it. Not restated here.
+- Practical corollaries that rule does not cover: prefer `:focus-visible` to bare
+  `:focus`, which also fires on mouse click, and group focus for a compound
+  control with `:focus-within`.
 - A custom interactive element (anything that isn't a native `<button>`,
   `<a>`, or form control) needs an explicit keyboard handler
   (`addEventListener("keydown", …)` for Enter/Space) alongside its click
