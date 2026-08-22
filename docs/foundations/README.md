@@ -17,9 +17,11 @@ roles onto that vocabulary.
 |---|---|---|---|
 | [`typography.md`](typography.md) | 1.13.2 | 28 done · 6 open · 2 deferred | Q6 |
 | [`layout.md`](layout.md) | 1.0.0 | 2 done · 5 open | — |
-| `spacing.md` | — | not written | — |
+| `spacing.md` | — | not written | `layout.md` Q4 |
 | `color.md` | — | not written | — |
 | `motion.md` | — | not written | — |
+| `naming.md` | — | not written | — |
+| `state.md` | — | not written | — |
 
 `../motion.md` exists at the component tier and is not yet a foundation document; folding
 it in is its own decision.
@@ -47,6 +49,41 @@ and should say so, the way its steps do.
 worth knowing before trusting a page: its `Badge` renders **11px** at size Small, below the
 12px floor its type catalog publishes; and its `label-20` takes 32px leading where every
 smaller Label rung is flat at 16–20. Adopt what the specimens do, not what the prose implies.
+
+### What each document owns
+
+`../audit/design-system-audit.md` §5 carries the operative design rules as **R1–R10**, and
+its own status note commits them to move: *"as each foundation document lands, the rules in
+its domain move there and this list keeps only the test mapping."* This table is the routing
+for that move. It **states no rules and no values** — read those in §5, or in the foundation
+document once one claims them.
+
+| Document | Rules it will own | State |
+|---|---|---|
+| `typography.md` | — its domain predates R1–R10 | written |
+| `layout.md` | — breakpoints predate them too | written, breakpoints only |
+| `color.md` | **R6**, the color half — tokens only, both themes | planned |
+| `motion.md` | **R6**, the duration/easing half | planned |
+| `naming.md` | **R1, R2, R4, R5** — one block per component, one modifier vocabulary, namespaces, every emitted class resolves | **unplanned** |
+| `state.md` | **R3, R7, R8** — aria is the state of record, one overlay kernel, focus is visible everywhere | **unplanned** |
+
+**R9 and R10 are deliberately absent.** The gallery as contract surface and "docs cite
+tokens, not numbers" are process rules, and their homes are `CLAUDE.md` and
+`../portability-audit.md` rather than any foundation document. Naming them is what makes
+this routing exhaustive instead of a list of the tractable ones.
+
+**Seven of the eight operative design rules have no planned home.** R6 is the only one the
+document set covered before this table existed, which is why `naming.md` and `state.md` now
+appear in §1's index as *not written* rather than not existing. Four of the seven are
+already enforced — R3, R4 and R8 by their own contract suites, R5 by `class-resolution` —
+so they are live rules whose only statement is a test. That is the same defect `layout.md`
+step 1 was written to fix, standing in three more places.
+
+**A caution about the shape of this set.** These documents are partitioned by *this
+repository's rules*. The table above them partitions by *Geist's pages* — a source for
+values, not a map of what needs governing here. `layout.md` already originated a rule Geist
+publishes no page for, and `naming.md` and `state.md` would do it twice more. Where the two
+shapes disagree the rules win, and Geist stays what it is: where the numbers come from.
 
 ---
 
