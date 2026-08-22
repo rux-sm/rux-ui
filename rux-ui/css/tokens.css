@@ -35,7 +35,6 @@
 	   docs/foundations/color.md rule 2.8, §5 step 12. */
 	--rux-neutral:	oklch(50% 0 0); /* Base */
 	--rux-red:   	oklch(60% 0.280 024); /* Gore */
-	--rux-orange: 	oklch(70% 0.280 050); /* Pyro */
 	--rux-yellow: 	oklch(80% 0.280 085); /* Gold */
 	--rux-green:	oklch(60% 0.280 140); /* Moss */
 	--rux-cyan:		oklch(70% 0.280 195); /* Wind */
@@ -2045,7 +2044,6 @@
 
 	/* ─── Primitives ──────────────────────────────────────────────────────── */
 	--rux-red:    oklch(60.0% 0.28 024.0); /*  Gore  */
-	--rux-orange: oklch(80.0% 0.28 050.0); /*  Pyro  */
 	--rux-yellow: oklch(80.0% 0.28 085.0); /*  Gold  */
 	--rux-green:  oklch(60.0% 0.28 140.0); /*  Moss  */
 	--rux-cyan:   oklch(60.0% 0.28 195.0); /*  Wind  */

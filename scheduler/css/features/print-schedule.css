@@ -35,8 +35,6 @@
 	--print-purple-tint: oklch(96% 0.025 300);
 	--print-yellow-line: oklch(55% 0.1 95);
 	--print-yellow-tint: oklch(96% 0.02 95);
-	--print-orange-line: oklch(55% 0.12 55);
-	--print-orange-tint: oklch(96% 0.025 55);
 	--print-pink-line: oklch(55% 0.12 350);
 	--print-pink-tint: oklch(96% 0.025 350);
 
@@ -279,10 +277,7 @@
 	--_print-trip-override-line: var(--print-yellow-line);
 	--_print-trip-override-tint: var(--print-yellow-tint);
 }
-.sched-print-trip[data-trip-bar-color="orange"] {
-	--_print-trip-override-line: var(--print-orange-line);
-	--_print-trip-override-tint: var(--print-orange-tint);
-}
+
 .sched-print-trip[data-trip-bar-color="pink"] {
 	--_print-trip-override-line: var(--print-pink-line);
 	--_print-trip-override-tint: var(--print-pink-tint);

@@ -13,6 +13,7 @@
    ========================================================================== */
 
 import { latestDocument } from "../core/trip-documents.js";
+import { normalizeTripColor } from "../core/trip-colors.js";
 
 /* ── Module state ───────────────────────────────────────────────────────── */
 
@@ -917,9 +918,10 @@ export function createTripBar(trip, callbacks = {}) {
   ]
     .filter(Boolean)
     .join(" ");
-  if (["cyan", "green", "purple", "yellow", "orange", "pink"].includes(trip.trip_bar_color)) {
-    bar.dataset.tripBarColor = trip.trip_bar_color;
-  }
+  /* Retired names map rather than drop, so a row still holding "orange" keeps
+     a colour instead of losing one. js/core/trip-colors.js. */
+  const tripBarColor = normalizeTripColor(trip.trip_bar_color);
+  if (tripBarColor) bar.dataset.tripBarColor = tripBarColor;
   bar.tabIndex = 0;
   bar.setAttribute("role", "button");
   bar.setAttribute("aria-pressed", "false");

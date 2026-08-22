@@ -40,8 +40,8 @@
 		<!-- The design system's public entrypoint: tokens, typography, webfonts,
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
-		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=72" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=304" />
+		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=73" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=305" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=14"
@@ -92,7 +92,7 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/print-schedule.css?v=36"
+			href="./scheduler/css/features/print-schedule.css?v=37"
 		/>
 		<link
 			rel="stylesheet"
@@ -649,22 +649,6 @@
 										style="
 											--color: var(
 												--sched-trip-color-yellow
-											);
-										"
-									></span>
-								</label>
-								<label class="rux-color-swatch" title="Orange">
-									<input
-										type="radio"
-										name="profileAvatarColor"
-										value="orange"
-										aria-label="Orange"
-									/>
-									<span
-										class="rux-color-swatch__dot"
-										style="
-											--color: var(
-												--sched-trip-color-orange
 											);
 										"
 									></span>
@@ -1466,25 +1450,6 @@
 													style="
 														--color: var(
 															--sched-trip-color-yellow
-														);
-													"
-												></span>
-											</label>
-											<label
-												class="rux-color-swatch"
-												title="Orange"
-											>
-												<input
-													type="radio"
-													name="tripBarColor"
-													value="orange"
-													aria-label="Orange"
-												/>
-												<span
-													class="rux-color-swatch__dot"
-													style="
-														--color: var(
-															--sched-trip-color-orange
 														);
 													"
 												></span>
@@ -7419,7 +7384,7 @@
 		<script src="./js/panels/trip-finder.js?v=10" defer></script>
 		<script src="./js/panels/request-inbox.js?v=10" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=10" defer></script>
-		<script src="./js/panels/print-schedule.js?v=34" defer></script>
+		<script src="./js/panels/print-schedule.js?v=35" defer></script>
 		<script src="./js/panels/trip-envelope.js?v=19" defer></script>
 		<script type="module" src="./js/core/app-reload.js?v=4"></script>
 		<script
@@ -7459,7 +7424,7 @@
 				clearTripBars,
 				applyItineraryUploaded,
 				applyItineraryDeleted,
-			} from "./js/components/trip-bar.js?v=26";
+			} from "./js/components/trip-bar.js?v=27";
 			import BusPicker, {
 				findConflict as findBusConflict,
 			} from "./js/components/bus-picker.js?v=8";
@@ -8661,7 +8626,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=35");
+					const db = await import("./js/data/trip-db.js?v=36");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -11840,7 +11805,7 @@
 			// the calendar without a reload. renderBusRows ends in
 			// renderScheduler(), which repaints the bars and the stripes.
 			async function loadFleet() {
-				const db = await import("./js/data/trip-db.js?v=35");
+				const db = await import("./js/data/trip-db.js?v=36");
 				try {
 					schedulerBuses = await db.fetchBuses();
 				} catch (err) {
@@ -11873,7 +11838,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=35");
+					const db = await import("./js/data/trip-db.js?v=36");
 					loadTrip = db.loadTrip;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;

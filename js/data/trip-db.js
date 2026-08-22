@@ -15,6 +15,7 @@
    ========================================================================== */
 
 import { supabase } from "./supabase.js";
+import { normalizeTripColor } from "../core/trip-colors.js";
 import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
 import { assignmentsOnLeg, busSlotCount } from "../core/bus-slots.js";
 import { contactsShareIdentity } from "../core/contact-identity.js?v=2";
@@ -744,9 +745,9 @@ import {
 		const validTripTypes = ["round_trip", "one_way", "dropoff_pickup"];
 		window.TripPanel?.setTripType(root, validTripTypes.includes(trip.trip_type) ? trip.trip_type : "round_trip");
 		window.TripPanel?.setBillingType(root, trip.is_self_organized ? "ticketed" : "charter");
-		const tripBarColor = ["cyan", "green", "purple", "yellow", "orange", "pink"].includes(trip.trip_bar_color)
-			? trip.trip_bar_color
-			: "";
+		/* A row holding a retired name still checks the swatch it now renders as,
+		   so opening the editor does not silently blank the field. */
+		const tripBarColor = normalizeTripColor(trip.trip_bar_color);
 		const tripBarColorInput = root.querySelector(`[name="tripBarColor"][value="${tripBarColor}"]`);
 		if (tripBarColorInput) tripBarColorInput.checked = true;
 		syncManifestBtn(root);

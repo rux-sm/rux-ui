@@ -283,8 +283,14 @@
     const card = el("article", "sched-print-trip");
     if (!trip.driverStatus || trip.driverStatus !== "confirmed") card.classList.add("sched-print-trip--unconfirmed");
     const tripBarColor = trip.trip_bar_color || trip.tripBarColor;
-    if (["cyan", "green", "purple", "yellow", "orange", "pink"].includes(tripBarColor)) {
-      card.dataset.tripBarColor = tripBarColor;
+    /* The one copy of the palette that cannot import js/core/trip-colors.js:
+       this file is a classic IIFE loaded with `defer`, not a module. Kept in
+       step with that file by hand, and named here so the next change to the
+       set knows to look. Orange maps to yellow rather than dropping, as it
+       does everywhere else. */
+    const printColor = tripBarColor === "orange" ? "yellow" : tripBarColor;
+    if (["cyan", "green", "purple", "yellow", "pink"].includes(printColor)) {
+      card.dataset.tripBarColor = printColor;
     }
     const tripTypeVal = trip.trip_type || trip.tripType;
     const isPatternedTrip = tripTypeVal === "one_way" || tripTypeVal === "dropoff_pickup";

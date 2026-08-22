@@ -25,8 +25,11 @@
 	--sched-trip-color-green:  var(--rux-green);
 	--sched-trip-color-purple: var(--rux-purple);
 	--sched-trip-color-yellow: var(--rux-yellow);
-	--sched-trip-color-orange: var(--rux-orange);
 	--sched-trip-color-pink:   var(--rux-pink);
+	/* Orange retired 2026-08-22: the design system publishes one warm hue and
+	   the board used two. Stored rows still holding "orange" render yellow —
+	   js/core/trip-colors.js does the mapping, nothing was migrated.
+	   docs/foundations/color.md Q9, §5 step 16. */
 	/* — chroma —
 	   Multiplier on each category color's own source chroma (relative-color
 	   `c`), not a fixed replacement value — keeps every hue's native chroma

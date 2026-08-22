@@ -46,11 +46,20 @@ test("printed trip override colors remain visible for unconfirmed trips", () => 
 });
 
 test("trip bar color data is assigned independently of confirmation status", () => {
+	/* The contract is the second half: a trip's colour is its own, and never a
+	   function of whether it is confirmed. This used to pin the literal palette
+	   array as well, which made it a copy of the list rather than a test of the
+	   rule — and it failed the moment step 16 moved that list to
+	   js/core/trip-colors.js. Repointed at the shape, not the membership;
+	   `tests/trip-colors.test.mjs` owns the membership now. */
 	const colorAssignment = tripBarSource.match(
-		/if \(\["cyan", "green", "purple", "yellow", "orange", "pink"\]\.includes\(trip\.trip_bar_color\)\) \{[\s\S]*?\n  \}/,
+		/const tripBarColor = normalizeTripColor\(trip\.trip_bar_color\);[\s\S]*?\n/,
 	)?.[0];
-	assert.ok(colorAssignment);
-	assert.match(colorAssignment, /bar\.dataset\.tripBarColor = trip\.trip_bar_color/);
+	assert.ok(colorAssignment, "the colour assignment should read normalizeTripColor");
+	assert.match(
+		tripBarSource,
+		/if \(tripBarColor\) bar\.dataset\.tripBarColor = tripBarColor;/,
+	);
 	assert.doesNotMatch(colorAssignment, /confirmed/);
 });
 

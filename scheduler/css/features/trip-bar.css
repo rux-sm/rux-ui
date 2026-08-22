@@ -424,10 +424,7 @@
 	--_trip-bar-color: var(--sched-trip-color-yellow);
 	--sched-trip-bar-bg-lightness: 80%;
 }
-.sched-trip-bar[data-trip-bar-color="orange"] {
-	--_trip-bar-color: var(--sched-trip-color-orange);
-	--sched-trip-bar-bg-lightness: 80%;
-}
+
 .sched-trip-bar[data-trip-bar-color="pink"] { --_trip-bar-color: var(--sched-trip-color-pink); }
 
 .sched-trip-bar--unconfirmed:not([data-trip-bar-color]) {

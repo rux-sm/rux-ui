@@ -1,20 +1,17 @@
 import { getProfilePhotoUrl } from "../data/profile-db.js";
+import { normalizeTripColor } from "./trip-colors.js";
 
 // Preset background colors for the initials avatar (no freeform picker) —
 // same palette/tokens as the Trip Bar Color swatches, so avatars stay
 // visually consistent with the rest of the app.
-const AVATAR_COLOR_TOKENS = {
-	cyan: "--sched-trip-color-cyan",
-	green: "--sched-trip-color-green",
-	purple: "--sched-trip-color-purple",
-	yellow: "--sched-trip-color-yellow",
-	orange: "--sched-trip-color-orange",
-	pink: "--sched-trip-color-pink",
-};
-
 export function avatarColorValue(key) {
-	const token = AVATAR_COLOR_TOKENS[key];
-	return token ? `var(${token})` : "";
+	/* The palette is js/core/trip-colors.js — one set, shared deliberately so an
+	   avatar and a trip bar tagged the same colour look the same. The token name
+	   follows the colour name, so the map this used to keep was a second copy of
+	   the list; retiring orange is what made that a liability. A profile still
+	   holding "orange" renders yellow rather than losing its colour. */
+	const color = normalizeTripColor(key);
+	return color ? `var(--sched-trip-color-${color})` : "";
 }
 
 export function driverInitials(name) {
