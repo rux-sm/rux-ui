@@ -1,10 +1,10 @@
 # Rux UI Foundations — Naming
 
-**Contract version: 1.2.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.3.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 6 steps: **3 done · 3 open**
+**Status** · 7 steps: **3 done · 1 ready · 3 open**
 This document is canonical for **what things are called** — the class shape, the modifier
 vocabulary, the namespaces a portable layer may use, and the requirement that a name in
 markup resolves to a rule. It is the home `README.md` §1 routes **R1, R2, R4 and R5** to,
@@ -153,6 +153,42 @@ Ordered by dependency. Every step records what it deliberately did **not** do.
 | 4 | Move R1, R2, R4 and R5 out of `../audit/design-system-audit.md` §5 | **[open]** | That section's own status note commits each rule to move as its foundation document lands. With this document written, all four of its rules can go, leaving the test mapping. **Gated on steps 2 and 3** — converting a rule to a pointer before it is settled deletes the only statement of it, which is the trap `typography.md` step 16 records. |
 | 5 | **Consolidate** — strip duplicated naming rules elsewhere; convert them to pointers | **[open]** | The closing step. In scope: the `rux-design` skill's BEM and prefix rules, `README.md` wherever it states a naming rule, `../audit/design-system-audit.md` §4's naming glossary, and `CLAUDE.md`'s own naming guidance. **Blocked on steps 2–4.** |
 | 6 | Give `fleet-app` one home (D6) | **done · Class B** | **Executed 2026-08-22.** The block was declared in **two** files — 14 selectors in `fleet-panel.css`, 12 in `fleet-app.css` — and they were not panel-versus-view variants but **different elements of the same table**: `__equipment-cell` in one, `__vehicle-cell` in the other. **It had already cost something.** `.fleet-app__order` was declared in both at identical specificity; `fleet-app.css` loads later, so it won, and the panel's copy was **dead** — all four of its declarations restated verbatim by the winner, which also added the `width: 2rem` the panel's version lacked. Nobody noticed, because neither file's author could see the whole block. That is R1's failure mode, observed rather than hypothesised. **What was done:** the dead `.fleet-app__order` deleted, the other 13 rules moved into `fleet-app.css`, `fleet-panel.css` left owning only `sched-scope-fleet` plus a comment pointing at the new home. **Verified by measurement, not argument:** the 19 resolved `fleet-app__*` selectors were hashed across 23 computed properties each with the original files in place, then again after the move — **identical to the digit** (`-170764937`), and the block now resolves from one file. Safe by construction too: only `customer-panel.css` loads between the two and it never mentions `fleet-app`. **The whole tree is now 0 split blocks of 112** in `scheduler/css/features`. **Deliberately did not ship the test** that would have caught this — see step 2, where the attempt is recorded. Contract 1.1.0 → 1.2.0. |
+
+### 5.1 The Geist conformance program
+
+**Opened 2026-08-22 by the owner; not started.** The stated goal: *simplify the component
+set, retire what is obsolete, replace it with a Geist-style selection, and normalize the
+names of what survives closer to Geist.*
+
+This is the shape `typography.md` §5.1 used for the same kind of work, and it is here rather
+than in a new document for the reason that program demonstrated: retiring a rung and
+renaming it are **one decision**, and splitting them across two documents means reading two
+logs to reconstruct one change. Inventory and naming travel together. *(If the inventory
+section outgrows this document later, it splits out as a numbered step — cheaper than
+guessing now.)*
+
+**The order is deliberate and it is not the intuitive one.** Simplify first, rename second.
+Renaming a component that is about to be deleted is pure waste, and it is the easy drift,
+because renaming feels more tractable than deciding what to cut.
+
+**This document is missing what typography's program ran on.** Typography could execute
+because its §3 held a **measured catalog** — 29 styles read off rendered specimens, so every
+later step was a mapping against a fixed source. `naming.md` has no equivalent: §1 records
+this system's own vocabulary and nothing records **what Geist calls its components**.
+Renaming toward a target held only in someone's head cannot be reviewed and cannot be
+recorded, so measuring it is step 7 and everything else waits on it.
+
+| # | Step | Status | Notes |
+|---|---|---|---|
+| 7 | Measure and publish Geist's component vocabulary | **[ready]** | The step-49 equivalent, and the program's only unblocked step. Read the component names off **vercel.com/geist** — the pages, their headings, and the class names on the rendered specimens — and publish them in a new §7 the way `typography.md` §3 publishes the type catalog. **Values are not published**, so this is measurement, not transcription. **What it must record:** which of this system's blocks have a Geist counterpart, which are this system's own (a scheduler trip bar has no Geist equivalent and never will), and which Geist publishes that this system has no answer for. **Class A** — it publishes a source, renames nothing, and moves no code. **Do not begin renaming inside this step**; the whole point of separating it is that the retire-versus-keep decision reads the same table. |
+
+**After step 7, in this order**, each opened as its own numbered step once the one before it
+lands: **retire** the components the audit finds obsolete (Class C — public names, so
+`../portability-audit.md` executes); **rename** the survivors onto Geist's vocabulary
+(Class C likewise, and the grep protocol applies to each); **migrate** call sites and the
+gallery. **D7 is absorbed here** — `.rux-menu` and `.sched-scheduler` are merge decisions
+that the retire-and-rename pass reaches anyway, and fixing them first would risk merging a
+block that is about to be retired.
 
 ---
 
