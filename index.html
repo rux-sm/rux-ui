@@ -40,7 +40,7 @@
 		<!-- The design system's public entrypoint: tokens, typography, webfonts,
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
-		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=79" />
+		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=80" />
 		<link rel="stylesheet" href="./scheduler/css/components.css?v=309" />
 		<link
 			rel="stylesheet"
@@ -9840,11 +9840,11 @@
 			rpTabs.forEach((btn) => {
 				btn.addEventListener("click", () => {
 					const paneId = btn.getAttribute("aria-controls");
+					// aria-selected is the only channel — state.md rule 2.1,
+					// step 7 retired the redundant .is-active write.
 					rpTabs.forEach((b) => {
-						b.classList.remove("is-active");
 						b.setAttribute("aria-selected", "false");
 					});
-					btn.classList.add("is-active");
 					btn.setAttribute("aria-selected", "true");
 					rpPanes.forEach((p) => {
 						p.hidden = p.id !== paneId;

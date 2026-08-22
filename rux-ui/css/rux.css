@@ -39,7 +39,7 @@
 @import "./base/preferences.css?v=4";
 @import "./base/profile-picker.css?v=2";
 @import "./base/feedback.css?v=3";
-@import "./base/navigation.css";
+@import "./base/navigation.css?v=1";
 @import "./base/utils.css";
 /* Type utilities last, so .rux-text-* wins over a component's own type rule
    at equal specificity. docs/foundations/typography.md §5 step 51. */

@@ -97,7 +97,7 @@
 
 /* Unselected tabs brighten their text/icon on hover instead of picking up a
    background tint — same "ghost" feel as .rux-button--ghost:hover. Selected
-   tabs are unaffected: .is-active/[aria-selected] sits later in the
+   tabs are unaffected: [aria-selected] sits later in the
    cascade at equal specificity, so it still wins on hover. */
 .rux-tab:hover {
 	--_state-overlay: transparent;
@@ -127,7 +127,6 @@
 	pointer-events: none;
 }
 
-.rux-tab.is-active,
 .rux-tab[aria-selected="true"] {
 	--_state-overlay: transparent;
 	background-color: var(--rux-tab-selected-bg);
@@ -169,7 +168,6 @@
 	color: var(--rux-tabs-attached-tab-hover-fg);
 }
 
-.rux-tabs--attached > .rux-tab.is-active,
 .rux-tabs--attached > .rux-tab[aria-selected="true"] {
 	position: relative;
 	z-index: 3;
@@ -216,13 +214,13 @@
    declaration — focus ring included — the moment an active tab was
    keyboard-focused. The inactive tab's own focus rule had picked up the
    *active* tab's shadow instead, which was backwards.) */
-.rux-tabs--attached > .rux-tab:is(.is-active, [aria-selected="true"]):focus-visible {
+.rux-tabs--attached > .rux-tab[aria-selected="true"]:focus-visible {
 	box-shadow:
 		var(--rux-tabs-attached-tab-active-shadow),
 		var(--rux-tab-focus-ring);
 }
 
-.rux-tabs--attached > .rux-tab:not(.is-active):not([aria-selected="true"]):focus-visible {
+.rux-tabs--attached > .rux-tab:not([aria-selected="true"]):focus-visible {
 	box-shadow:
 		var(--rux-tabs-attached-tab-shadow),
 		var(--rux-tab-focus-ring);
@@ -234,11 +232,9 @@
    end — same specificity (0,3,0), and this rule comes later, so it was
    winning. Bumped to 0,4,0 here so it wins regardless of source order,
    instead of only working by accident of rule placement. */
-.rux-tabs--attached > .rux-tab.is-active:first-child,
 .rux-tabs--attached > .rux-tab[aria-selected="true"]:first-child {
 	border-left: 0;
 }
-.rux-tabs--attached > .rux-tab.is-active:last-child,
 .rux-tabs--attached > .rux-tab[aria-selected="true"]:last-child {
 	border-right: 0;
 }
@@ -253,7 +249,6 @@
 	color: var(--rux-tabs-floating-tab-fg);
 }
 
-.rux-panel--floating .rux-tabs--attached > .rux-tab.is-active,
 .rux-panel--floating .rux-tabs--attached > .rux-tab[aria-selected="true"] {
 	background-color: var(--rux-tabs-floating-tab-selected-bg);
 	color: var(--rux-tabs-floating-tab-selected-fg);
@@ -291,7 +286,6 @@
 	pointer-events: none;
 }
 
-.rux-tab.is-active > .rux-icon,
 .rux-tab[aria-selected="true"] > .rux-icon {
 	--_icon-fill: var(--rux-icon-fill-selected);
 
