@@ -225,41 +225,12 @@ move or resize it.
 
 ## Spacing
 
-Rux uses a `16px` visual content rhythm through `--rux-space-4` for card- and
-panel-level relationships. This describes relationships, not unconditional
-padding on every edge, and it is not the only rhythm in the app — dense,
-repeating-row contexts intentionally use a tighter one (below).
+Canonical: **[`foundations/layout.md` §9.1](foundations/layout.md) — the card rhythm**, and
+**§9.2** for the dense, repeating-row exception. The space scale itself is **§7**.
 
-| Relationship | Contract |
-| --- | --- |
-| UI header to app shell | `0` |
-| Panel to workspace | `0` |
-| Panel pane content inset | `16px`, adjusted when attached navigation owns the top seam |
-| Sibling cards in a pane | `16px` |
-| Card header inset | `16px` |
-| Headered card body | `0 16px 16px` |
-| Headerless card body | `16px` on all sides |
-| Content rows inside a stacked card body | `16px` |
-| Card-section regions | same visual rhythm as cards |
-
-Agents MUST use the component tokens instead of hardcoded `16px` values. A
-header's bottom padding and a following body's top padding must not accidentally
-combine into a `32px` seam.
-
-### Dense, repeating-row exceptions
-
-A few contexts deliberately use a tighter rhythm than `16px`, since a list of
-many short, similar rows (a settings toggle list, a scheduler grid) reads
-better dense than at card-level spacing:
-
-| Context | Contract |
-| --- | --- |
-| Repeating settings-toggle rows (`.rux-view-options__row`) | `0` gap, fixed `40px` row height — rhythm comes from the row height, not a gap |
-| Scheduler grid row inset (`--sched-scheduler-row-block-inset`) | `8px` (`--rux-space-2`) |
-
-Use the `16px` card rhythm as the default for any new titled group or content
-block. Reach for a tighter rhythm only for a genuinely dense, repeating list
-of short rows — not as a general "make it more compact" adjustment.
+Both sections used to live here, stating values and a MUST outside a foundation document
+(layout.md D3). They moved wholesale in its step 6; this is a pointer and states no values,
+per `CLAUDE.md`'s one-home rule.
 
 ## Scrolling
 
@@ -279,9 +250,17 @@ A specialized component MAY own scrolling when documented. Avoid assigning
 
 ## Responsive Behavior
 
-- Wide layouts SHOULD keep panels attached beside the workspace.
-- At narrow widths, panels MAY become overlay drawers or move into the normal
-  content flow.
+Canonical for the layout half: **[`foundations/layout.md` §9.3](foundations/layout.md)** —
+panels attached at wide widths, drawers at narrow ones, rails and drawer widths as
+application variants. Which widths are narrow is **§1.1**'s, and it is the only place that
+answers it.
+
+**The rules below did not move, and are not layout's to own.** They are dialog and
+assistive-technology behaviour — the territory `foundations/README.md` §1 routes to
+`state.md` (R3, R7, R8), which is **not written**. Relocating them into `layout.md` would
+put them in a home that has to hand them back, so they stay here until there is somewhere
+correct to move them. layout.md D3 stays open for exactly this remainder.
+
 - Overlay drawers MUST support Escape dismissal, focus restoration, an
   accessible name, and an operable close control.
 - Modal drawers MUST implement complete dialog behavior. Non-modal drawers
@@ -290,9 +269,6 @@ A specialized component MAY own scrolling when documented. Avoid assigning
   value, minimum, maximum, and the controlled panel.
 - A resize separator MUST be visible and operable only while its controlled
   panel is open. It MUST NOT double as the panel disclosure control.
-- Collapsed rails and drawer widths are application variants, not base-shell
-  defaults. Interactive rail controls SHOULD provide conventional touch target
-  sizes.
 
 Panel and drawer transitions follow the shared [Productive Motion](motion.md)
 contract. Layout implementations should consume the `--rux-panel-*` motion
