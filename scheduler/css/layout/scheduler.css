@@ -180,10 +180,10 @@
    index.html) — with no date label in the workspace header each cell is
    self-contained. Same voice as the day name it sits beside. */
 .sched-scheduler__day-month {
-	font-size: var(--rux-size-14);
-	font-weight: var(--rux-weight-400);
-	letter-spacing: var(--rux-tracking-normal);
-	line-height: 1;
+	font-size: var(--rux-text-label-14-size);
+	font-weight: var(--rux-text-label-14-weight);
+	letter-spacing: var(--rux-text-label-14-tracking);
+	line-height: var(--rux-text-label-14-line-height);
 	color: var(--rux-text-secondary);
 }
 
@@ -192,10 +192,10 @@
    emphasis while the weekday and month around it stay quiet. All three used
    to share one secondary-gray recipe, which made the whole label chrome. */
 .sched-scheduler__day-number {
-	font-size: var(--rux-size-14);
-	font-weight: var(--rux-weight-500);
+	font-size: var(--rux-text-label-14-size);
+	font-weight: var(--rux-text-label-14-weight);
 	color: var(--rux-text-primary);
-	line-height: 1;
+	line-height: var(--rux-text-label-14-line-height);
 }
 
 .sched-scheduler__day-number--today {
@@ -326,11 +326,11 @@
    column, one cell in the same header row as Mon/Tue/Wed. */
 .sched-scheduler__corner-label {
 	display: block;
-	line-height: 1;
+	line-height: var(--rux-text-label-14-line-height);
 	text-align: center;
-	font-size: var(--rux-size-14);
-	font-weight: var(--rux-weight-400);
-	letter-spacing: var(--rux-tracking-normal);
+	font-size: var(--rux-text-label-14-size);
+	font-weight: var(--rux-text-label-14-weight);
+	letter-spacing: var(--rux-text-label-14-tracking);
 	color: var(--rux-text-secondary);
 }
 
@@ -361,7 +361,7 @@
 	display: flex;
 	letter-spacing: var(--rux-tracking-normal);
 	color: var(--rux-text-primary);
-	font-weight: var(--rux-weight-500);
+	font-weight: var(--rux-text-label-12-weight);
 	font-variant-numeric: tabular-nums;
 }
 

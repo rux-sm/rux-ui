@@ -1040,8 +1040,12 @@
 	/* --rux-badge-shadow: not set */
 	--rux-badge-padding-inline: var(--rux-space-2);
 	--rux-badge-height:         20px;
-	--rux-badge-font-size:      var(--rux-size-12);
-	--rux-badge-font-weight:    var(--rux-weight-500);
+	/* A badge is a Label by rule 2.12's tree — "badge, cell, chip, field label,
+	   eyebrow" — so it takes label-12, not the Button family. Weight 500 -> 400
+	   at step 41. Its 20px box is fixed, so the leading change is inert. */
+	--rux-badge-font-size:      var(--rux-text-label-12-size);
+	--rux-badge-font-weight:    var(--rux-text-label-12-weight);
+	--rux-badge-line-height:    var(--rux-text-label-12-line-height);
 	--rux-badge-background-opacity: 16%;
 	/* The border used to be the variant color at full strength against a 12%
 	   fill, so the outline shouted while the fill whispered. Mixed back toward
@@ -1082,8 +1086,13 @@
 
 	/* — typography — */
 	--rux-button-font-family: var(--rux-font-sans);
-	--rux-button-font-size:   var(--rux-size-14);
-	--rux-button-font-weight: var(--rux-weight-400);
+	/* The Button family, adopted at step 41. Weight was 400 here and rule 2.11
+	   has said `text-button-*` is 500 since it was written; the role published
+	   at step 38 is what made that statable. Leading joins the recipe for the
+	   first time — the rule stated `line-height: 1` as a literal. */
+	--rux-button-font-size:        var(--rux-text-button-14-size);
+	--rux-button-font-weight:      var(--rux-text-button-14-weight);
+	--rux-button-line-height:      var(--rux-text-button-14-line-height);
 
 	/* — states — */
 	--rux-button-hover-text:          var(--rux-text-primary);
@@ -1184,7 +1193,8 @@
 
 	--rux-button-height-compact:        	24px;
 	--rux-button-icon-size-compact:     	var(--rux-icon-sm);
-	--rux-button-font-size-compact:     	var(--rux-size-12);
+	--rux-button-font-size-compact:     	var(--rux-text-button-12-size);
+	--rux-button-line-height-compact:   	var(--rux-text-button-12-line-height);
 	--rux-button-padding-inline-compact: 	var(--rux-space-1);
 	--rux-button-content-gap-compact:   	var(--rux-space-1);
 

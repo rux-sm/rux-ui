@@ -61,9 +61,11 @@
   background: var(--rux-bg-hover);
   color: var(--rux-text-primary);
   border-radius: var(--rux-radius-xs);
-  font-size: var(--rux-size-12);
-  font-weight: var(--rux-weight-400);
-  line-height: 1;
+  /* A chip is a Label by rule 2.12's tree. Unlike badge and button this box
+     is padding-driven, so the leading change grows it 12px -> 16px. Step 41. */
+  font-size: var(--rux-text-label-12-size);
+  font-weight: var(--rux-text-label-12-weight);
+  line-height: var(--rux-text-label-12-line-height);
 }
 
 

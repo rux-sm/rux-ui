@@ -61,7 +61,7 @@
   color: var(--_badge-color);
   font-size: var(--rux-badge-font-size);
   font-weight: var(--rux-badge-font-weight);
-  line-height: 1;
+  line-height: var(--rux-badge-line-height);
   white-space: nowrap;
 }
 

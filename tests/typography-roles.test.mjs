@@ -21,6 +21,28 @@ sheets["colors_and_type.css"] = await readFile(
 	"utf8",
 );
 
+// The component-token tier is a real consumer: --rux-button-font-weight reading
+// --rux-text-button-14-weight is how a component adopts a role, and it is the
+// documented shape (§3.2). Without tokens.css here, a role adopted that way
+// looks unread and both the used-check and the PENDING honesty test go blind —
+// which is exactly what happened when step 41 adopted the Button family.
+//
+// The superseded-alias block is cut out first. Those aliases are themselves
+// role reads (--rux-heading-page-size: var(--rux-text-heading-40-size)), so
+// leaving them in would let a role satisfy the used-check through its own
+// deprecated alias and nothing else. Removal is step 33.
+const SUPERSEDED_MARK = "TYPOGRAPHY · superseded role names";
+const supersededAt = tokens.indexOf(SUPERSEDED_MARK);
+if (supersededAt === -1) {
+	throw new Error(
+		"tokens.css no longer marks the superseded-alias block; this test sliced it out by that comment",
+	);
+}
+const nextSection = tokens.indexOf("/* ───", supersededAt + SUPERSEDED_MARK.length);
+sheets["tokens.css (component tier)"] =
+	tokens.slice(0, tokens.lastIndexOf("/* ───", supersededAt)) +
+	(nextSection === -1 ? "" : tokens.slice(nextSection));
+
 // Every role carries the same axes; a call site should never have to drop to
 // the raw scale for one of them.
 const AXES = ["size", "weight", "line-height", "tracking", "color"];
@@ -33,6 +55,8 @@ const ROLES = [
 	"--rux-text-label-12",
 	"--rux-text-label-14",
 	"--rux-text-label-12-wide",
+	"--rux-text-button-14",
+	"--rux-text-button-12",
 ];
 
 // Roles published ahead of their consumers (typography.md §5 step 38). §2.1
@@ -54,8 +78,9 @@ const ROLES = [
 // rather than left implicit, because a reader who assumes PENDING means
 // "nothing uses it" would draw the wrong conclusion from that entry.
 const PENDING = [
-	"--rux-text-button-14",
-	"--rux-text-button-12",
+	// --rux-text-button-14 and -12 were promoted into ROLES by step 41, which
+	// adopted them on .rux-button. --rux-text-label-18 stays: its only consumer
+	// is .driver-share-header__label in scheduler/css, outside this corpus.
 	"--rux-text-label-18",
 ];
 

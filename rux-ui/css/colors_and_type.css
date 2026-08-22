@@ -122,7 +122,9 @@ h6 {
    when the portal and export surfaces (S3/S4) get their own treatment. */
 p {
   margin: 0;
-  line-height: var(--rux-line-height-24);
+  /* copy-14's leading, not copy-16's. The ladder pairs 14 with 20; this read
+     24, which is the 16px rung's. Step 41. */
+  line-height: var(--rux-text-copy-14-line-height);
   text-wrap: pretty;
 }
 

@@ -35,8 +35,16 @@ test("a badge is sized as a label, not as a control", () => {
 });
 
 test("a badge recedes from the content it annotates", () => {
-	assert.equal(tokenValue("--rux-badge-font-size"), "var(--rux-size-12)");
-	assert.equal(tokenValue("--rux-badge-font-weight"), "var(--rux-weight-500)");
+	// Asserted through the role rather than the raw rung. Rule 1.2: a recurring
+	// size+leading recipe goes through a role, and rule 2.12's tree makes a
+	// badge a Label — "badge, cell, chip, field label, eyebrow". This read the
+	// primitives directly and pinned weight 500, which is what made D16's
+	// contradiction executable: rule 2.11 said badges were 500, rule 2.12 said
+	// they were Labels, and Labels are 400. Resolved toward the catalog at
+	// step 41 — a badge is not interactive, so it is not a Button.
+	assert.equal(tokenValue("--rux-badge-font-size"), "var(--rux-text-label-12-size)");
+	assert.equal(tokenValue("--rux-badge-font-weight"), "var(--rux-text-label-12-weight)");
+	assert.equal(tokenValue("--rux-badge-line-height"), "var(--rux-text-label-12-line-height)");
 	assert.equal(tokenValue("--rux-badge-radius"), "var(--rux-radius-full)");
 });
 

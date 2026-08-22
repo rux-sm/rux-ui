@@ -33,7 +33,7 @@
 	font-family: var(--rux-button-font-family);
 	font-size: var(--rux-button-font-size);
 	font-weight: var(--rux-button-font-weight);
-	line-height: 1;
+	line-height: var(--rux-button-line-height);
 	letter-spacing: 0;
 	cursor: pointer;
 	user-select: none;
@@ -405,6 +405,10 @@
 	--_icon-size: var(--rux-button-icon-size-compact);
 	--_icon-optical-size: var(--rux-icon-optical-size-sm);
 	font-size: var(--rux-button-font-size-compact);
+	/* Overrides the size, so it must override the leading too — otherwise 12px
+	   text keeps the 14px rung's 20px leading. Same defect D14 records for
+	   headings; caught here by measuring rather than by reading. Step 41. */
+	--rux-button-line-height: var(--rux-button-line-height-compact);
 	padding: 0 var(--rux-button-padding-inline-compact);
 	gap: var(--rux-button-content-gap-compact);
 }
