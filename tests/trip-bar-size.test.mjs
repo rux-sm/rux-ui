@@ -145,20 +145,25 @@ test("the bus pill is never louder than the row text beside it", () => {
 	}
 });
 
-test("type below 12px carries the dense tracking rung (rule 2.14)", () => {
-	// The threshold read 14 until step 37 corrected rule 2.14, which had
-	// demanded +0.02em at 12px while citing the Geist measurement that records
-	// 0 there. This test kept the old number and did not fail at step 37 only
-	// because nothing had yet dropped the dense rung. Since step 43 no tier
-	// renders below 12, so this loop is vacuous — kept as the ratchet that
-	// catches a future tier trying to go under the floor again.
+test("no tier goes below the 12px floor (rule 2.14)", () => {
+	// This asserted the opposite shape until step 45: rule 2.14 used to say
+	// "below 14px, tracking turns positive" and this checked that a sub-14 tier
+	// carried --rux-tracking-dense. Step 37 corrected the threshold to 12 — the
+	// old number survived here and did NOT fail then, only because nothing had
+	// yet dropped the dense rung. Steps 42 and 43 removed every sub-12
+	// consumer, and step 45 deleted the rule and the token: a positive tracking
+	// branch exists only to prop up rungs below the catalog floor.
+	//
+	// What is left to enforce is the floor itself, which is the part a future
+	// tier could still violate.
 	for (const tier of TIERS) {
-		if (rowFont(tier) >= 12) continue;
-		const raw = valueOf(tier, "--sched-trip-bar-row-tracking");
-		assert.match(
-			raw,
-			/--rux-tracking-dense/,
-			`${tier}: ${rowFont(tier)}px row text must carry --rux-tracking-dense`,
+		assert.ok(
+			rowFont(tier) >= 12,
+			`${tier}: ${rowFont(tier)}px row text is below the 12px floor (rule 2.14)`,
+		);
+		assert.ok(
+			pillFont(tier) >= 12,
+			`${tier}: ${pillFont(tier)}px pill text is below the 12px floor (rule 2.14)`,
 		);
 	}
 });

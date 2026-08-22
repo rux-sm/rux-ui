@@ -59,7 +59,6 @@
 	   — the one rung its own type catalog does not publish, kept legible by
 	   positive tracking (rule 2.14). Was 10px, which nothing in the catalog
 	   uses. docs/foundations/typography.md Q7, step 30. */
-	--rux-size-11:		0.6875rem;
 	--rux-size-12:		0.75rem;
 	--rux-size-14:		0.875rem;
 	--rux-size-16:		1rem;
@@ -94,7 +93,6 @@
 	   `v0.1.0` failure mode in design-system-distribution.md §4. Nothing in
 	   this repository reads them; removal is step 33.
 	   docs/foundations/typography.md §5 step 31. */
-	--rux-size-xxs:		var(--rux-size-11);
 	--rux-size-xs:		var(--rux-size-12);
 	--rux-size-sm:		var(--rux-size-14);
 	--rux-size-md:		var(--rux-size-16);
@@ -132,7 +130,6 @@
 	   only Heading rides it. Measured off the Geist specimens — -0.02em at
 	   14-20, -0.04em at 24-32, -0.06em at 40 and up.
 	   docs/foundations/typography.md rule 2.13, step 27. */
-	--rux-tracking-dense:    0.02em;    /* below 14 — see rule 2.14 */
 	--rux-tracking-tight:    -0.02em;   /* heading 14-20 */
 	--rux-tracking-tighter:  -0.04em;   /* heading 24-32 */
 	--rux-tracking-tightest: -0.06em;   /* heading 40+   */
