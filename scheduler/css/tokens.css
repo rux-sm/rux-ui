@@ -84,10 +84,10 @@
 	   split step 6 closed on .rux-ui-header__badge-count.
 	   docs/foundations/typography.md rule 2.11, step 30. */
 	--sched-trip-bar-bus-label-weight: var(--rux-weight-500);
-	--sched-trip-bar-bus-label-height:      var(--rux-line-height-12);   /* 12px */
-	--sched-trip-bar-bus-label-font-size:   var(--rux-size-11);          /* 11px */
+	--sched-trip-bar-bus-label-height:      var(--rux-text-label-12-line-height);
+	--sched-trip-bar-bus-label-font-size:   var(--rux-text-label-12-size);
 	--sched-trip-bar-bus-label-line-height: var(--rux-line-height-12);   /* 12px */
-	--sched-trip-bar-bus-label-tracking:    var(--rux-tracking-dense);    /* 11px is sub-12 */
+	--sched-trip-bar-bus-label-tracking:    var(--rux-text-label-12-tracking);
 	--sched-trip-bar-meta-radius:      var(--rux-radius-sm);
 	--sched-trip-bar-meta-fg: var(--rux-fg-on-accent);
 	--sched-trip-bar-shadow: var(--rux-shadow-3);

@@ -17,12 +17,26 @@ const ruxTokens = await readFile(
 
 const ROOT_FONT_PX = 16;
 
-// Resolve a --rux-* primitive to px. Only primitives are resolved: the point of
-// step 30 is that the trip bar states rungs, so anything else is a failure.
-function pxOf(name) {
-	const raw = ruxTokens.match(new RegExp(`${name}:\\s*([\\d.]+)(rem|px)`));
-	assert.ok(raw, `${name} not found in rux-ui/css/tokens.css`);
-	return raw[2] === "rem" ? Number(raw[1]) * ROOT_FONT_PX : Number(raw[1]);
+// Resolve a --rux-* token to px, following var() chains.
+//
+// Step 30 required a *primitive* here, to stop the trip bar deriving sizes with
+// clamp(). Step 43 relaxed that to any --rux-* token, because rule 1.2 asks a
+// recurring recipe to go through a ROLE rather than the raw scale, and a role
+// is itself a named rung — a strictly stronger form of "states its rungs" than
+// naming the primitive. What stays forbidden is arithmetic, and the clamp/calc
+// assertion below is what enforces that.
+function pxOf(name, seen = new Set()) {
+	assert.ok(!seen.has(name), `${name} resolves in a cycle`);
+	seen.add(name);
+	const decl = ruxTokens.match(new RegExp(`${name}:\\s*([^;]+);`));
+	assert.ok(decl, `${name} not found in rux-ui/css/tokens.css`);
+	const literal = decl[1].match(/^\s*([\d.]+)(rem|px)/);
+	if (literal) {
+		return literal[2] === "rem" ? Number(literal[1]) * ROOT_FONT_PX : Number(literal[1]);
+	}
+	const ref = decl[1].match(/var\(\s*(--rux-[\w-]+)\s*\)/);
+	assert.ok(ref, `${name} resolves to "${decl[1].trim()}", which is neither a length nor a --rux-* token`);
+	return pxOf(ref[1], seen);
 }
 
 // Read a custom property out of a block, falling back to the sheet-wide default
@@ -131,9 +145,15 @@ test("the bus pill is never louder than the row text beside it", () => {
 	}
 });
 
-test("type below 14px carries the dense tracking rung (rule 2.14)", () => {
+test("type below 12px carries the dense tracking rung (rule 2.14)", () => {
+	// The threshold read 14 until step 37 corrected rule 2.14, which had
+	// demanded +0.02em at 12px while citing the Geist measurement that records
+	// 0 there. This test kept the old number and did not fail at step 37 only
+	// because nothing had yet dropped the dense rung. Since step 43 no tier
+	// renders below 12, so this loop is vacuous — kept as the ratchet that
+	// catches a future tier trying to go under the floor again.
 	for (const tier of TIERS) {
-		if (rowFont(tier) >= 14) continue;
+		if (rowFont(tier) >= 12) continue;
 		const raw = valueOf(tier, "--sched-trip-bar-row-tracking");
 		assert.match(
 			raw,
@@ -144,22 +164,17 @@ test("type below 14px carries the dense tracking rung (rule 2.14)", () => {
 });
 
 test("the size settings still drive the row typography", () => {
-	assert.match(
-		schedTokens,
-		/--sched-trip-bar-row-font-size:\s*var\(--rux-size-12\)/,
-	);
-	// The tier is the scheduler's own modifier name and keeps its t-shirt
-	// label — step 31 renamed the rux- vocabulary, not a consumer's namespace.
-	for (const [tier, size] of [
-		["xxs", "11"],
-		["sm", "14"],
-	]) {
-		assert.match(
-			barCss,
-			new RegExp(
-				`\\.sched-scheduler--trip-bar-size-${tier}\\s*\\{[^}]*--sched-trip-bar-row-font-size:\\s*var\\(--rux-size-${size}\\)`,
-				"s",
-			),
-		);
-	}
+	// Asserted as RESOLVED px, not as literal token names. The tiers named
+	// primitives until step 43 pointed them at roles (rule 1.2); pinning the
+	// spelling would have made a conformance step look like a regression.
+	assert.equal(rowFont("sm"), 14, "SM renders 14px row text");
+	assert.equal(rowFont("xs"), 12, "the default tier renders 12px row text");
+
+	// XXS is deliberately equal to the default now, and that is Q11's answer
+	// rather than a bug: no departures are allowed, 11px has no rung in the
+	// catalog, and the catalog publishes exactly ONE leading at 12. There is no
+	// catalog-legal way to keep a third tier apart on size or leading, so the
+	// tier survives as a no-op class and its 25% density gain is gone.
+	assert.equal(rowFont("xxs"), rowFont("xs"), "XXS collapsed into the default tier (Q11)");
+	assert.equal(rowLine("xxs"), rowLine("xs"), "XXS collapsed into the default tier (Q11)");
 });
