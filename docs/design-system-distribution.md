@@ -190,14 +190,27 @@ actually hurt*.
 The latest tag is **`v0.1.4`**. `HEAD` is **87 commits past it**, and the one
 live consumer is pinned to `v0.1.4`. Nothing noticed, and nothing was going to.
 
-**That is the model working as designed, not a discipline failure.** A snapshot
-has no notion of "you are behind," which is precisely why §5 has to *invent*
-one — a scheduled job that re-vendors the latest tag and opens the drift as a
-pull request. **That job has never been built.** §5 is a prescription this
-repository has been carrying unfunded since it was written.
+> **Correction, 2026-08-22, and it weakens this proposal.** The paragraph below
+> originally said §5's scheduled drift job "has never been built" and called §5
+> an unfunded prescription. **Both are false.** The consumer has
+> `.github/workflows/sync-design-system.yml`: a Monday cron that checks out
+> rux-ui, pins the **latest tag** rather than HEAD, re-vendors through the
+> upstream script, detects drift, runs its name check as a non-blocking report,
+> and opens a pull request. §4 and §5 are implemented, and implemented well.
+>
+> **Which means the 87-commit gap was not a detection failure at all.** The job
+> pins a *release*, and this repository had not been tagged since `v0.1.4`. It
+> was correctly doing nothing, because there was nothing to sync to. The gap was
+> **release cadence here**, not blindness there — and npm would not have fixed
+> it, because a package with no new version published is equally quiet.
+>
+> That removes the one benefit §7.2 claims. Read the rest of this section with
+> that in mind: it is now a proposal in search of a problem, and §7.7 should be
+> read as *what would have to be true*, not as a plan.
 
-So the weight of the current model is not the copying. It is that we are
-hand-building a thing package managers give away.
+**A snapshot still has no notion of "you are behind" on its own** — §5 exists
+because of that, and §5 is answered. What remains true is narrower: the answer
+is bespoke per consumer, and a second consumer must build it again.
 
 ### 7.2 The proposal
 
