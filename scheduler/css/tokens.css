@@ -87,7 +87,7 @@
 	--sched-trip-bar-bus-label-height:      var(--rux-line-height-12);   /* 12px */
 	--sched-trip-bar-bus-label-font-size:   var(--rux-size-11);          /* 11px */
 	--sched-trip-bar-bus-label-line-height: var(--rux-line-height-12);   /* 12px */
-	--sched-trip-bar-bus-label-tracking:    var(--rux-tracking-dense);    /* 11px is sub-14 */
+	--sched-trip-bar-bus-label-tracking:    var(--rux-tracking-dense);    /* 11px is sub-12 */
 	--sched-trip-bar-meta-radius:      var(--rux-radius-sm);
 	--sched-trip-bar-meta-fg: var(--rux-fg-on-accent);
 	--sched-trip-bar-shadow: var(--rux-shadow-3);

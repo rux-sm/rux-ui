@@ -505,6 +505,32 @@
 	--rux-text-label-12-wide-tracking:    var(--rux-tracking-wide);   /* 0.04em */
 	--rux-text-label-12-wide-color:       var(--rux-text-secondary);      /* L60 dark · L32 light */
 
+	/* Button — interactive strings. Weight 500 and flat tracking per rules 2.11
+	   and 2.12, which name the family; §3.2 published no rung for it until
+	   step 38. Leading is the catalog's own (12/16 and 14/20), NOT the
+	   leading-equals-size the controls currently set — adopting these is the
+	   Class B half and is not this step. docs/foundations/typography.md §5 step 38. */
+	--rux-text-button-14-size:        var(--rux-size-14);
+	--rux-text-button-14-weight:      var(--rux-weight-500);      /* 500 */
+	--rux-text-button-14-line-height: var(--rux-line-height-20);
+	--rux-text-button-14-tracking:    var(--rux-tracking-normal); /* 0 */
+	--rux-text-button-14-color:       var(--rux-text-primary);    /* L100 dark · L10 light */
+
+	--rux-text-button-12-size:        var(--rux-size-12);
+	--rux-text-button-12-weight:      var(--rux-weight-500);      /* 500 */
+	--rux-text-button-12-line-height: var(--rux-line-height-16);
+	--rux-text-button-12-tracking:    var(--rux-tracking-normal); /* 0 */
+	--rux-text-button-12-color:       var(--rux-text-primary);    /* L100 dark · L10 light */
+
+	/* Label at 18 — the catalog's 18/20 rung, flat leading like every other
+	   Label. Not --rux-line-height-28: that pairing serves Copy, which grows
+	   its leading with size; Label does not (rule 2.12). */
+	--rux-text-label-18-size:        var(--rux-size-18);
+	--rux-text-label-18-weight:      var(--rux-weight-400);      /* 400 */
+	--rux-text-label-18-line-height: var(--rux-line-height-20);
+	--rux-text-label-18-tracking:    var(--rux-tracking-normal); /* 0 */
+	--rux-text-label-18-color:       var(--rux-text-primary);    /* L100 dark · L10 light */
+
 	/* ─── TYPOGRAPHY · superseded role names ─────────────────────────────── */
 	/* The intent-named roles, published alongside the shape-named ones for one
 	   release. A consumer's markup and stylesheets read these; removal is

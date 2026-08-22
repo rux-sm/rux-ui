@@ -35,6 +35,22 @@ const ROLES = [
 	"--rux-text-label-12-wide",
 ];
 
+// Roles published ahead of their consumers (typography.md §5 step 38). §2.1
+// makes this legal — a Class A addition has "no downstream effect until a
+// consumer opts in" — but the used-check below would fail them, because that
+// check IS §7.3's named-consumer rule and it cannot tell a rung awaiting
+// migration from a rung nobody wanted.
+//
+// So they are asserted from the other side: complete, and still unread. The
+// second half is the honesty test. The moment a call site adopts one, this
+// list fails and the role must move up into ROLES — which is what stops a
+// pending role from sitting here unexamined after its migration lands.
+const PENDING = [
+	"--rux-text-button-14",
+	"--rux-text-button-12",
+	"--rux-text-label-18",
+];
+
 // The intent-named roles step 31 replaced, kept published for one release so a
 // vendored consumer has somewhere to go. Each forwards to its shape-named
 // replacement, and nothing in this repository may read one — an alias with an
@@ -108,6 +124,30 @@ test("no role is defined but unused", () => {
 			consumers,
 			new RegExp(`var\\(${role}-`),
 			`${role} is defined but nothing reads it`,
+		);
+	}
+});
+
+test("a pending role is complete, exactly like a published one", () => {
+	for (const role of PENDING) {
+		for (const axis of AXES) {
+			assert.match(
+				tokens,
+				new RegExp(`${role}-${axis}:`),
+				`${role} is missing its ${axis} axis (rule 1.1)`,
+			);
+		}
+	}
+});
+
+test("a pending role that gained a consumer is promoted, not left pending", () => {
+	const consumers = Object.values(sheets).join("\n");
+	for (const role of PENDING) {
+		assert.doesNotMatch(
+			consumers,
+			new RegExp(`var\\(${role}-`),
+			`${role} is read by a stylesheet — move it from PENDING into ROLES ` +
+				`and record the migration step (typography.md §5)`,
 		);
 	}
 });
