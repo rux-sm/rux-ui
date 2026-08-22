@@ -3,20 +3,8 @@
    Copy-ready, driver-specific assignment summaries for the loaded schedule.
    ========================================================================== */
 
-.sched-scope-right-panel__footer-group {
-	display: flex;
-	width: 100%;
-	gap: var(--rux-button-group-gap);
-}
-
-.sched-scope-right-panel__footer-group[hidden] {
-	display: none;
-}
-
-.sched-scope-right-panel__footer-group > .rux-button {
-	flex: 1;
-	min-width: 0;
-}
+/* .sched-scope-right-panel__footer-group moved to layout/scheduler-app.css,
+   which owns that block — naming.md rule 2.1, step 13. */
 
 .sched-driver-week-info {
 	display: flex;

@@ -37,10 +37,10 @@
    ========================================================================== */
 
 @import "./tokens.css?v=6";
-@import "./features/trip-bar.css?v=44";
+@import "./features/trip-bar.css?v=45";
 @import "./features/trip-panel.css?v=35";
 @import "./features/trip-history.css?v=3";
 @import "./features/trip-dialog.css?v=3";
 @import "./features/itinerary.css?v=5";
-@import "./layout/scheduler.css?v=23";
-@import "./layout/scheduler-app.css?v=98";
+@import "./layout/scheduler.css?v=24";
+@import "./layout/scheduler-app.css?v=99";

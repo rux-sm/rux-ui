@@ -254,34 +254,9 @@
 	--_icon-optical-size: var(--sched-trip-bar-icon-optical-size);
 }
 
-/* XXS now resolves to exactly what the default tier resolves to, and that is
-   the whole of Q11's answer: no departures, so 11px goes, and the catalog
-   publishes only ONE leading at 12 (16). There is no catalog-legal way to keep
-   a third tier apart on size or leading alone.
-
-   What that costs, stated rather than discovered later: trip-bar height is
-   `row-line-height x visible-row-count`, so at 7 rows this tier rendered
-   12 x 7 = 84px against the default's 16 x 7 = 112px — a 25% density gain that
-   no longer exists. The tier is kept as a no-op class so a stored preference
-   still resolves; retiring the option itself is a product change, not a type
-   one. docs/foundations/typography.md §5 step 43, Q11. */
-.sched-scheduler--trip-bar-size-xxs {
-	--sched-trip-bar-row-font-size:   var(--rux-text-label-12-size);
-	--sched-trip-bar-row-line-height: var(--rux-text-label-12-line-height);
-	--sched-trip-bar-row-tracking:    var(--rux-text-label-12-tracking);
-	--sched-trip-bar-bus-label-height:      var(--rux-text-label-12-line-height);
-	--sched-trip-bar-bus-label-font-size:   var(--rux-text-label-12-size);
-	--sched-trip-bar-bus-label-line-height: var(--rux-text-label-12-line-height);
-}
-
-.sched-scheduler--trip-bar-size-sm {
-	--sched-trip-bar-row-font-size:   var(--rux-size-14);           /* 14px */
-	--sched-trip-bar-row-line-height: var(--rux-line-height-20);    /* 20px */
-	--sched-trip-bar-bus-label-height:      var(--rux-line-height-16);    /* 16px */
-	--sched-trip-bar-bus-label-font-size:   var(--rux-size-12);           /* 12px */
-	--sched-trip-bar-bus-label-line-height: var(--rux-line-height-16);    /* 16px */
-	--sched-trip-bar-bus-label-tracking:    var(--rux-tracking-normal);   /* 12px is on-scale */
-}
+/* .sched-scheduler--trip-bar-size-xxs / --trip-bar-size-sm moved to
+   layout/scheduler.css, which owns .sched-scheduler — naming.md rule 2.1,
+   step 13. They set --sched-trip-bar-* tokens, which is why they lived here. */
 
 /* Partial POs keep the confirmed trip surface (including color overrides),
    while the shared outline warns that authorization is incomplete. */

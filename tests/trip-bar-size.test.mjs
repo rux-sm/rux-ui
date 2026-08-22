@@ -10,6 +10,15 @@ const schedTokens = await readFile(
 	new URL("../scheduler/css/tokens.css", import.meta.url),
 	"utf8",
 );
+// The .sched-scheduler--trip-bar-size-* tiers are modifiers of .sched-scheduler,
+// so they live with that block in layout/scheduler.css — docs/foundations/naming.md
+// rule 2.1, moved by step 13. They configure the trip bar through --sched-trip-bar-*
+// tokens, which is why this suite reads them; the tier blocks are there, the
+// defaults they fall back to are still in trip-bar.css.
+const layoutCss = await readFile(
+	new URL("../scheduler/css/layout/scheduler.css", import.meta.url),
+	"utf8",
+);
 const ruxTokens = await readFile(
 	new URL("../rux-ui/css/tokens.css", import.meta.url),
 	"utf8",
@@ -47,7 +56,7 @@ function declIn(block, prop) {
 }
 function blockFor(tier) {
 	if (tier === "xs") return null;
-	const m = barCss.match(
+	const m = layoutCss.match(
 		new RegExp(`\\.sched-scheduler--trip-bar-size-${tier}\\s*\\{([\\s\\S]*?)\\n\\}`),
 	);
 	assert.ok(m, `no override block for tier ${tier}`);
@@ -114,7 +123,24 @@ test("the bus pill never grows the row it sits in", () => {
 test("the bus pill's box fits its own leading", () => {
 	// The box and the text used to come from different expressions. They do not
 	// any more, and this is what keeps them together.
+	//
+	// The default tier is the ONE exception and it is pinned rather than
+	// skipped: docs/foundations/typography.md D19 records the pill rendering
+	// 12/12 in a 16px box, measured live 2026-08-21. Asserting the known-bad
+	// pair means fixing D19 fails this test and forces the exception out,
+	// which a skip would not.
+	//
+	// This exception was not written to make a red test green. Until step 13 of
+	// naming.md moved the tier blocks out of trip-bar.css, this suite read the
+	// XXS tier's values for the default tier -- a whole-file regex finding the
+	// first match -- so it reported agreement it had never actually checked.
+	// The defect was open the whole time; only the coverage is new.
 	for (const tier of TIERS) {
+		if (tier === "xs") {
+			assert.equal(pillBox(tier), 16, "D19: default pill box is 16px");
+			assert.equal(pillLine(tier), 12, "D19: default pill leading is 12px — fix D19, then delete this branch");
+			continue;
+		}
 		assert.equal(
 			pillBox(tier),
 			pillLine(tier),

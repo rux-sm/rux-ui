@@ -147,6 +147,90 @@
 	}
 }
 
+/* XXS now resolves to exactly what the default tier resolves to, and that is
+   the whole of Q11's answer: no departures, so 11px goes, and the catalog
+   publishes only ONE leading at 12 (16). There is no catalog-legal way to keep
+   a third tier apart on size or leading alone.
+
+   What that costs, stated rather than discovered later: trip-bar height is
+   `row-line-height x visible-row-count`, so at 7 rows this tier rendered
+   12 x 7 = 84px against the default's 16 x 7 = 112px — a 25% density gain that
+   no longer exists. The tier is kept as a no-op class so a stored preference
+   still resolves; retiring the option itself is a product change, not a type
+   one. docs/foundations/typography.md §5 step 43, Q11. */
+.sched-scheduler--trip-bar-size-xxs {
+	--sched-trip-bar-row-font-size:   var(--rux-text-label-12-size);
+	--sched-trip-bar-row-line-height: var(--rux-text-label-12-line-height);
+	--sched-trip-bar-row-tracking:    var(--rux-text-label-12-tracking);
+	--sched-trip-bar-bus-label-height:      var(--rux-text-label-12-line-height);
+	--sched-trip-bar-bus-label-font-size:   var(--rux-text-label-12-size);
+	--sched-trip-bar-bus-label-line-height: var(--rux-text-label-12-line-height);
+}
+
+.sched-scheduler--trip-bar-size-sm {
+	--sched-trip-bar-row-font-size:   var(--rux-size-14);           /* 14px */
+	--sched-trip-bar-row-line-height: var(--rux-line-height-20);    /* 20px */
+	--sched-trip-bar-bus-label-height:      var(--rux-line-height-16);    /* 16px */
+	--sched-trip-bar-bus-label-font-size:   var(--rux-size-12);           /* 12px */
+	--sched-trip-bar-bus-label-line-height: var(--rux-line-height-16);    /* 16px */
+	--sched-trip-bar-bus-label-tracking:    var(--rux-tracking-normal);   /* 12px is on-scale */
+}
+
+/* — Pull-to-change-week hint — */
+/* Feedback for the click-drag-to-change-week gesture (installWeekDrag() in
+   index.html) — dragging horizontally on empty scheduler background, not
+   regular scrolling. --_progress (0–1, set inline by JS) tracks how far the
+   drag is toward the trigger threshold; .is-ready marks the moment it's far
+   enough that releasing will actually page the week. */
+.sched-scheduler__pull-hint {
+	--_progress: 0;
+	position: absolute;
+	top: 50%;
+	width: 2.5rem;
+	height: 2.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	background: color-mix(in oklch, var(--rux-accent) 85%, transparent);
+	color: var(--rux-fg-on-accent);
+	opacity: 0;
+	pointer-events: none;
+	z-index: var(--rux-z-overlay);
+	transform: translateY(-50%) scale(calc(0.5 + (var(--_progress) * 0.5)));
+	transition: opacity var(--rux-duration-fast) var(--rux-ease-out);
+}
+
+.sched-scheduler__pull-hint--prev {
+	left: var(--rux-space-3);
+}
+
+.sched-scheduler__pull-hint--next {
+	right: var(--rux-space-3);
+}
+
+.sched-scheduler__pull-hint.is-active {
+	opacity: var(--_progress);
+}
+
+.sched-scheduler__pull-hint.is-ready {
+	opacity: 1;
+	background: var(--rux-accent);
+	animation: sched-pull-hint-pulse 700ms var(--rux-ease-in-out) infinite;
+}
+
+@keyframes sched-pull-hint-pulse {
+	0%, 100% { transform: translateY(-50%) scale(1); }
+	50% { transform: translateY(-50%) scale(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.sched-scheduler__pull-hint.is-ready {
+		animation: none;
+	}
+}
+
+
 /* ---------- Header row ---------- */
 
 .sched-scheduler__col-head,
