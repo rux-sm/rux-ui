@@ -17,17 +17,30 @@ import { join } from "node:path";
  */
 
 /* Tier 0 is where values live; everything above it must reach for a token. */
-const EXEMPT = new Map([
+const EXEMPT_ALL = new Map([
 	["rux-ui/css/tokens.css", "Tier 0 — the one place a literal is the point"],
 	["scheduler/css/tokens.css", "the application's Tier 0 overlay"],
-	/* Paper is a different medium with a different gamut and no theme. Both
-	   foundations record it as owed its own answer, not as conformant:
-	   typography.md §7.3 S2, and color.md's R6 exception. Each keeps its
-	   literals behind a namespaced palette (--print-*, --env-*) so they cannot
-	   leak onto a screen surface. */
+]);
+
+/* Print is no longer exempt wholesale. Step 61 tokenised every weight on paper
+   — the catalog already published 500, 700 and 800, so it cost nothing and
+   changed no rendered value — which means a literal `font-weight` in a print
+   file now fails here exactly as it would on screen.
+
+   Two axes stay open, and they are open on the merits rather than by default:
+   `font-size`, because rule 2.1's stated reason for `rem` is that a reader can
+   raise their browser's default, and paper has no such control — so `pt` in
+   trip-envelope.css may be more correct than `rem`, not less; and
+   `line-height`, which print sets to 1 in 19 places that have never been
+   sorted into marks and words the way screen's twenty-two were. Both are
+   recorded as open steps, and colour likewise: the --print- and --env- palettes
+   are a coherent two-stop ink system that has to be remapped deliberately, not
+   swept. */
+const PRINT = new Map([
 	["scheduler/css/features/print-schedule.css", "print surface — typography.md §7.3 S2"],
 	["scheduler/css/features/trip-envelope.css", "print surface — typography.md §7.3 S2"],
 ]);
+const PRINT_STILL_LITERAL = new Set(["font-size", "line-height"]);
 
 /* rule 2.2, "One exception: a glyph box is not a type role" — the closed list
  * that paragraph refers to. Every entry is a MARK, not a word: an icon, an
@@ -124,11 +137,11 @@ function declarations(css) {
 }
 
 const FILES = [...cssFiles("rux-ui/css"), ...cssFiles("scheduler/css")]
-	.filter((f) => !EXEMPT.has(f));
+	.filter((f) => !EXEMPT_ALL.has(f));
 
 test("every exempt file still exists and is still exempt for a stated reason", () => {
 	/* An exemption that outlives its file is a hole nobody notices. */
-	for (const [f, why] of EXEMPT) {
+	for (const [f, why] of [...EXEMPT_ALL, ...PRINT]) {
 		assert.ok(readFileSync(f, "utf8").length > 0, `${f} is exempt for "${why}" but is empty or gone`);
 	}
 	assert.ok(FILES.length > 40, `expected the whole CSS tree, walked only ${FILES.length} files`);
@@ -140,6 +153,7 @@ test("no type axis states a literal outside Tier 0 (typography rules 2.1, 2.2)",
 		for (const { line, selector, prop, value } of declarations(readFileSync(file, "utf8"))) {
 			if (!TYPE_PROPS.test(prop)) continue;
 			if (value.startsWith("var(")) continue;
+			if (PRINT.has(file) && PRINT_STILL_LITERAL.has(prop)) continue;
 			if (ALLOWED.get(prop)?.has(value)) continue;
 			/* `line-height: 1` and the Material Symbols ligature reset
 			   (`font-weight: normal`, paired with `font-style: normal` while the
@@ -162,6 +176,7 @@ test("the glyph-box list stays closed, and the text-reset list only shrinks", ()
 	   defect could move in behind it. */
 	const seen = new Set();
 	for (const file of FILES) {
+		if (PRINT.has(file)) continue;
 		for (const { selector, prop, value } of declarations(readFileSync(file, "utf8"))) {
 			if (prop === "line-height" && value === "1") seen.add(selector);
 		}
@@ -184,6 +199,7 @@ test("no colour is stated as a literal outside Tier 0 (color.md rule 2.1)", () =
 	   A colour function with no var() behind it is the thing that cannot. */
 	const offenders = [];
 	for (const file of FILES) {
+		if (PRINT.has(file)) continue;
 		for (const { line, prop, value } of declarations(readFileSync(file, "utf8"))) {
 			if (COLOR_FN.test(value) && !/var\(--/.test(value) && !/currentColor/i.test(value)) {
 				offenders.push(`${file}:${line}  ${prop}: ${value}`);

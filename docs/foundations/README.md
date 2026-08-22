@@ -15,9 +15,8 @@ roles onto that vocabulary.
 
 | Document | Contract | Status | Blocked on |
 |---|---|---|---|
-| [`typography.md`](typography.md) | 4.9.0 | 55 done · 5 deferred | — |
-| [`layout.md`](layout.md) | 1.0.0 | 2 done · 5 open | — |
-| `spacing.md` | — | not written | `layout.md` Q4 |
+| [`typography.md`](typography.md) | 4.10.0 | 56 done · 2 deferred · 3 withdrawn | — |
+| [`layout.md`](layout.md) | 1.2.0 | 5 done · 4 open | — |
 | [`color.md`](color.md) | 3.0.0 | 19 done | — |
 | `motion.md` | — | not written | — |
 | `naming.md` | — | not written | — |
@@ -61,7 +60,7 @@ document once one claims them.
 | Document | Rules it will own | State |
 |---|---|---|
 | `typography.md` | — its domain predates R1–R10 | written |
-| `layout.md` | — breakpoints predate them too | written, breakpoints only |
+| `layout.md` | — breakpoints predate them too | written — breakpoints, space, radius, Materials |
 | `color.md` | **R6**, the color half — tokens only, both themes | written — rule 2.1 |
 | `motion.md` | **R6**, the duration/easing half | planned |
 | `naming.md` | **R1, R2, R4, R5** — one block per component, one modifier vocabulary, namespaces, every emitted class resolves | **unplanned** |

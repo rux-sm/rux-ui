@@ -19,7 +19,9 @@ const docs = Object.fromEntries(
 );
 const readme = await readFile(new URL("README.md", dir), "utf8");
 
-const STATES = ["done", "ready", "open", "deferred"];
+/* `withdrawn` is not `done` and not `deferred`: the step will never be
+   executed, and the log keeps it so the reasoning survives the decision. */
+const STATES = ["done", "ready", "open", "deferred", "withdrawn"];
 
 // A log row is `| n | step | status | notes |`. Only column 3 is the status —
 // a note may well mention another state in prose (step 3 records that it was
