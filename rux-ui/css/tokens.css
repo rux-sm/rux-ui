@@ -336,30 +336,50 @@
 	--rux-radius-full: 9999px;
 
 	/* ─── SHADOW · elevation system ───────────────────────────────────────── */
-	/* One overhead light source. Raised surfaces combine a subtle top rim,
-	   tight contact shadow, and softer ambient layer. Themes override only
-	   these colors; component recipes stay identical. */
-	--rux-shadow-contact-color: oklch(from var(--rux-neutral) 0% c h / 86%);
-	--rux-shadow-ambient-color: oklch(from var(--rux-neutral) 0% c h / 28%);
-	--rux-shadow-overlay-color: oklch(from var(--rux-neutral) 0% c h / 34%);
+	/* Geist Materials, adopted 2026-08-22 — docs/foundations/layout.md §8.1,
+	   step 9. Three of Geist's eight presets are adopted, because three is
+	   what this system has roles for: Small -> --rux-shadow-1 (scrolled
+	   header and footer edges), Menu -> --rux-shadow-2 (menus, popovers,
+	   anchored panels), Modal -> --rux-shadow-3 (modals, floating panels,
+	   trip bar). Base, Tooltip, Medium, Large and Fullscreen have no consumer
+	   here and are recorded in §8.1 rather than published as dead tokens.
+
+	   ONLY THE SHADOW LAYERS ARE ADOPTED. Each Geist preset also bundles a
+	   1px stroke and a backdrop fill into its box-shadow; this system paints
+	   both with real borders and backgrounds, so adopting them would double
+	   every border. §8.1 records the full presets including the parts left.
+
+	   The alphas are Geist's (2% / 4% / 6%) but expressed through this
+	   system's own neutral-derived tokens, so the chroma-0 guarantee that
+	   color.md rule 2.8 won survives — a literal #0000000a would reintroduce
+	   the cast that fix removed. Contact/ambient/overlay are now
+	   THEME-INVARIANT, matching Geist, whose Menu and Modal stacks are
+	   identical in both themes; only the Small preset varies, and it varies
+	   in geometry as well as alpha, so --rux-shadow-1 is overridden whole in
+	   the light block rather than through a color. */
+	--rux-shadow-contact-color: oklch(from var(--rux-neutral) 0% c h / 2%);
+	--rux-shadow-ambient-color: oklch(from var(--rux-neutral) 0% c h / 4%);
+	--rux-shadow-overlay-color: oklch(from var(--rux-neutral) 0% c h / 6%);
+	--rux-shadow-small-color:   oklch(from var(--rux-neutral) 0% c h / 16%);
 	--rux-shadow-inset-color:   oklch(from var(--rux-neutral) 0% c h / 86%);
 	--rux-shadow-rim-color:     oklch(from var(--rux-white) l c h / 0%);
 
 	/*--rux-shadow-inset:
 		inset 0 1px 2px var(--rux-shadow-inset-color),
 		inset 0 -1px 0 var(--rux-shadow-rim-color); */
-	--rux-shadow-1:
-		inset 0 1px 0 var(--rux-shadow-rim-color),
-		0 1px 1px var(--rux-shadow-contact-color),
-		0 2px 4px var(--rux-shadow-ambient-color);
+	/* The `inset 0 1px 0` rim these three carried is gone: --rux-shadow-rim-color
+	   resolves to 0% alpha in BOTH themes, so it painted nothing. Measured, not
+	   assumed. The token itself stays — navigation.css:52 uses it as a
+	   background, and removing a public name would be Class C. */
+	--rux-shadow-1: 0 1px 2px var(--rux-shadow-small-color);
 	--rux-shadow-2:
-		inset 0 1px 0 var(--rux-shadow-rim-color),
-		0 1px 2px var(--rux-shadow-contact-color),
-		0 6px 14px var(--rux-shadow-ambient-color);
+		0 1px 1px var(--rux-shadow-contact-color),
+		0 4px 8px -4px var(--rux-shadow-ambient-color),
+		0 16px 24px -8px var(--rux-shadow-overlay-color);
 	--rux-shadow-3:
-		inset 0 1px 0 var(--rux-shadow-rim-color),
-		0 2px 4px var(--rux-shadow-contact-color),
-		0 14px 32px var(--rux-shadow-overlay-color);
+		0 1px 1px var(--rux-shadow-contact-color),
+		0 8px 16px -4px var(--rux-shadow-ambient-color),
+		0 24px 32px -8px var(--rux-shadow-overlay-color);
 	--rux-shadow-pressed: inset 0 1px 3px var(--rux-shadow-inset-color);
 	/* ─── MOTION ─────────────────────────────────────────────────────────── */
 	/* Productive motion foundation. Names mirror the role of Carbon's motion
@@ -2231,9 +2251,16 @@
 	--rux-tag-default: oklch(from var(--rux-neutral) 82% c h);
 
 	/* ─── Elevation colors ────────────────────────────────────────────────── */
-	--rux-shadow-contact-color: oklch(from var(--rux-neutral) 16% c h / 70%);
-	--rux-shadow-ambient-color: oklch(from var(--rux-neutral) 16% c h / 10%);
-	--rux-shadow-overlay-color: oklch(from var(--rux-neutral) 16% c h / 14%);
+	/* Geist Materials, step 9. Contact, ambient and overlay are NOT overridden
+	   here any more: Geist's Menu and Modal stacks are identical in both
+	   themes, so the three layer colors are theme-invariant and inherit the
+	   root values. Only Small differs, and it differs in geometry too
+	   (`0 2px 2px` light against `0 1px 2px` dark), which no color override
+	   can express — so --rux-shadow-1 is replaced whole. --rux-shadow-inset-color
+	   keeps its override; it feeds --rux-shadow-pressed, which step 9 did not
+	   touch. */
+	--rux-shadow-small-color:   oklch(from var(--rux-neutral) 0% c h / 4%);
+	--rux-shadow-1: 0 2px 2px var(--rux-shadow-small-color);
 	--rux-shadow-inset-color:   oklch(from var(--rux-neutral) 16% c h / 70%);
 	/* Rim light is dark-theme only (white edge on a black surface). On a
 	   light canvas it reads as a stray white line — suppress it by routing
