@@ -11,6 +11,11 @@ and prohibited behavior.
 
 ## 1. Model
 
+> **Under reconsideration — see §7.** §1–§6 describe what is in force today and
+> stay authoritative until a decision is recorded. §7 proposes replacing the
+> vendored snapshot with an npm dependency and states what that would and would
+> **not** fix.
+
 This repository is the source of truth. A consuming application holds a
 **stamped snapshot**, not a live link:
 
@@ -143,3 +148,110 @@ worse than surfacing it with a warning attached.
 4. Add the name check and the scheduled drift job.
 5. Load `css/rux.css` before application styles; under `full`, load
    `js/overlay.js` before the other behaviors.
+
+---
+
+## 7. Proposal — replace the vendored snapshot with an npm dependency
+
+**Status: proposed 2026-08-22, not adopted.** Nothing in §1–§6 changes until
+this is decided. Written because the owner asked whether a simpler model exists,
+and the honest answer is *yes for one specific cost, no for the cost that
+actually hurt*.
+
+### 7.1 The measurement that prompted it
+
+The latest tag is **`v0.1.4`**. `HEAD` is **87 commits past it**, and the one
+live consumer is pinned to `v0.1.4`. Nothing noticed, and nothing was going to.
+
+**That is the model working as designed, not a discipline failure.** A snapshot
+has no notion of "you are behind," which is precisely why §5 has to *invent*
+one — a scheduled job that re-vendors the latest tag and opens the drift as a
+pull request. **That job has never been built.** §5 is a prescription this
+repository has been carrying unfunded since it was written.
+
+So the weight of the current model is not the copying. It is that we are
+hand-building a thing package managers give away.
+
+### 7.2 The proposal
+
+A consumer declares a dependency on a tag instead of holding a copy:
+
+```json
+"dependencies": { "rux-ui": "github:rux-sm/rux-ui#v0.1.5" }
+```
+
+No registry, works from a private repository, and the consumer imports
+`rux-ui/css/rux.css` directly. Rux UI is plain CSS with no build step, which is
+what makes this clean rather than merely different.
+
+| Exists today | Becomes |
+|---|---|
+| `tools/vendor-into.sh` export set | package.json `files` |
+| `VENDORED.md` stamping | package.json + lockfile, with integrity hashes |
+| §5's unbuilt scheduled drift job | `npm outdated`; Dependabot or Renovate opens the PR |
+| `design-system/` committed to the consumer | nothing — it resolves into `node_modules` |
+| §3 step 8, `@import` verification | still ours, as a publish-time check |
+
+### 7.3 What this does NOT fix, stated first because it is the part that bit us
+
+**Gate 2 — the consumer name check — is required under every option, and npm
+does not help.**
+
+CSS class usage is strings. When `v0.1.0` renamed `.rux-card--boxed`,
+`.rux-cluster` and `.rux-button--header`, the consumer kept building green and
+the elements silently lost their styling. **An npm install would have done
+exactly the same thing.** A renamed class is not a build error, not a type
+error, and not a test failure, whether the file arrived by `rsync` or by
+`npm install`.
+
+Any framing of this proposal as "npm makes the gates unnecessary" is wrong.
+§4's three gates survive intact; only their *plumbing* changes.
+
+**Tagging does not go away either.** npm needs a version. It is the same ritual
+with standard tooling around it, not one ritual fewer.
+
+### 7.4 What it costs
+
+- **The `?v=` strip still has to happen.** §3 step 7 exists because a bundler
+  resolves `?v=N` as a literal filename. That transform moves from the export
+  script to a `prepack` script. Smaller, not gone — and it remains **the only
+  edit the copy receives**, which is a property worth keeping.
+- **A no-build consumer gets harder, not easier.** A plain-HTML application
+  cannot `<link>` into `node_modules` unless its server serves that path. Today
+  this is hypothetical: the one live consumer is Next.js, and the `full`
+  profile's only user, `guide_runner`, is archived. It stops being hypothetical
+  the moment a static consumer appears, and this proposal should be re-read then
+  rather than assumed to still hold.
+- **Docs and the skill ship differently.** §3 steps 5 and 6 copy `README.md`,
+  the `rux-design` skill, and `docs/foundations/` wholesale so agents editing a
+  consumer stay on-system. `files` can carry them, but *finding* them inside
+  `node_modules` is worse than finding them in `design-system/`. **This is the
+  weakest part of the proposal** and wants an answer before adoption.
+
+### 7.5 Rejected, recorded so they are not revisited
+
+- **Git submodules.** Pins a commit with no version semantics, and the developer
+  experience is worse than what exists today. Strictly worse than both options.
+- **Hosted CSS from GitHub Pages.** The repository already has `.nojekyll`, so
+  this is closer than it looks, and install cost drops to zero. Rejected anyway:
+  it is a runtime dependency on an external host, it cannot be pinned without
+  versioning the URL path, it breaks offline development, and it costs a
+  framework application real performance. Acceptable for a throwaway prototype;
+  wrong for anything maintained.
+
+### 7.6 One simplification to take regardless of the decision
+
+**Retire the `full` profile.** Its only consumer, `guide_runner`, is archived.
+Two profiles means every export question is asked twice and one of the answers
+has no reader. This is independent of §7's outcome and can be done first.
+
+### 7.7 What would have to be true to adopt
+
+1. An answer to §7.4's docs-and-skill question — where a consumer's agent reads
+   `docs/foundations/` from once it lives in `node_modules`.
+2. A `prepack` step carrying §3's `?v=` strip and `@import` verification, so the
+   published package keeps the guarantees the export script provides today.
+3. The consumer's name check kept and, ideally, moved upstream so every consumer
+   inherits it rather than writing its own.
+4. `v0.1.5` tagged, since **87 commits** of unvendored change is the migration's
+   real content and should land as one reviewable move either way.
