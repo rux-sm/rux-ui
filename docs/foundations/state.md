@@ -1,10 +1,10 @@
 # Rux UI Foundations — State
 
-**Contract version: 1.0.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.1.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 5 steps: **1 done · 4 open**
+**Status** · 6 steps: **3 done · 3 open**
 This document is canonical for **how a component expresses that it is in a state** — which
 attribute carries it, which class may substitute, who may bind a dismiss listener, and where
 a focus ring is required. It is the home `README.md` §1 routes **R3, R7 and R8** to.
@@ -73,10 +73,18 @@ enforced** — see §4 D1.)*
 **2.4 JS never writes what nothing reads.** *(R3. Enforced, for both classes and
 `data-rux-*` attributes.)*
 
-**2.5 One overlay kernel.** Dismissible surfaces register with the shared dismiss manager in
-`rux-ui/js/overlay.js` — one singleton, one outside-`pointerdown`, one Escape policy, one
-focus trap and restore helper, one layer-promotion helper. **No module binds its own
-document-level dismiss listener.** *(R7. **Not enforced** — see §4 D2.)*
+**2.5 One overlay kernel owns the policies that must be singular.** Dismissible surfaces
+register with the shared dismiss manager in `rux-ui/js/overlay.js`, which is the **only**
+module that may bind a document-level outside-`pointerdown` or consume Escape at the
+document level. It also publishes the one focus trap and restore helper and the one
+layer-promotion helper.
+
+**Two policies, not every path that closes a surface.** Outside-press must be singular
+because two modules deciding what counts as "outside" is how a click lands on nothing;
+Escape must be singular because two handlers consuming one keypress closes two surfaces. A
+menu closing itself on Tab, or on its own item being activated, is neither — that is the
+surface's own business and stays with the surface. *(R7, narrowed by Q2. Enforced:
+`tests/overlay-kernel.test.mjs`.)*
 
 **2.6 Focus is visible everywhere.** Every base file that styles an interactive selector
 carries a `:focus-visible` rule keyed to `--rux-accent-ring`. A rule that suppresses the
@@ -92,7 +100,7 @@ state modifier, every `.is-*` written by `rux-ui/js` is read by a stylesheet, no
 unread-attribute list is **empty**. The state-modifier list holds **two** entries, both
 recorded as pending renames (§4 D4).
 
-**R7 — the kernel exists and is complete; nothing checks that it is the only one.**
+**R7 — holds, and is enforced since step 2.**
 `overlay.js` provides a stack, `register`, `dismissAbove`, `trapFocus` with
 `previousFocus` restore, and `promoteLayer`. Five document-level listeners are bound outside
 it. **Three are not dismiss listeners** and do not engage 2.5: `controls.js` delegates
@@ -100,8 +108,12 @@ it. **Three are not dismiss listeners** and do not engage 2.5: `controls.js` del
 `[data-rux-set-accent]` clicks. **Two are `menu.js`'s**, and its own comment says the
 outside-dismiss and Escape paths live in the kernel while "what stays here is
 menu-specific" — the roving arrow keys, Home/End, Tab-closes, and close-on-item-click.
-Tab-closes and close-on-activation *are* dismissals, so whether 2.5 holds depends on whether
-it governs all dismissal or only outside-dismissal. §6 Q2.
+Tab-closes and close-on-activation *are* dismissals, which is what made Q2 real. It is
+answered narrow, and the evidence was in the codebase rather than in the argument: **six
+modules already carry a comment deferring outside-click and Escape to the kernel** —
+`menu.js`, `drawer.js`, `popover.js`, `suggestions.js`, `ui-shell.js` and `utilities.js`.
+R7's sentence was broader than its own implementation, and rule 2.5 now matches what was
+built.
 
 **R8 — holds completely.** `focus-contract` runs four checks and its
 `ACCEPTED_HOVER_WITHOUT_FOCUS` allowlist is **empty**: no base file styles `:hover` on an
@@ -113,8 +125,8 @@ interactive selector without also styling `:focus-visible`.
 
 | # | Defect | Status |
 |---|---|---|
-| D1 | Four `.is-*` classes name states aria already expresses — `.is-open` (drawer, side-nav), `.is-active` (side-nav, ui-header, navigation, menu), `.is-selected` (table), `.is-visible` (drawer, side-nav). Rule 2.2 forbids this and **nothing checks it**: `state-contract` verifies a `.is-*` class *resolves*, never that it is *justified*. Q1 must be answered first — `aria-expanded` describes the trigger, not the surface, so some of these may be legitimate. | step 3, gated on Q1 |
-| D2 | Rule 2.5 (R7) has no test. It is the only one of R3/R7/R8 that has never been enforced, and §3 shows the answer is not obvious by inspection. | step 2 |
+| D1 | **Two** `.is-*` classes name states aria already expresses — `.is-open` (drawer, side-nav), `.is-active` (side-nav, ui-header, navigation, menu), `.is-selected` (table), `.is-visible` (drawer, side-nav). Rule 2.2 forbids this and **nothing checks it**: `state-contract` verifies a `.is-*` class *resolves*, never that it is *justified*. Q1 must be answered first — `aria-expanded` describes the trigger, not the surface, so some of these may be legitimate. | step 6 — Q1 answered, and cleared two of the four |
+| D2 | ~~Rule 2.5 (R7) has no test.~~ | **closed, step 2** — `tests/overlay-kernel.test.mjs` |
 | D3 | Four accessibility MUSTs — Escape dismissal, focus restoration, accessible names, dialog behaviour, resize-separator ARIA — still live in `../layout-composition.md` § Responsive Behavior, outside a foundation document. `layout.md` D3 records the other half of this and is **blocked on this document existing**. | step 4 |
 | D4 | Two BEM state modifiers accepted as debt: `.rux-button--loading` (would become `[aria-busy]`) and `.rux-splash--hidden` (would become `[hidden]`). Each is a public rename and belongs in `../portability-audit.md`, not a drive-by. | recorded in `state-contract`; needs a rename step |
 
@@ -127,10 +139,11 @@ Ordered by dependency. Every step records what it deliberately did **not** do.
 | # | Step | Status | Notes |
 |---|---|---|---|
 | 1 | Establish this document; adopt R3, R7 and R8 as canonical | **done · Class A** | Founding entry, 2026-08-22. **Nothing was invented and nothing resolves differently** — this is a relocation of authority. R3 and R8 were already enforced by `state-contract` and `focus-contract`; what they lacked was a section to cite, which `CLAUDE.md`'s one-home rule says an enforcement test SHOULD have. R7 lacked both. §1 and §3 are **measured, not asserted**: the aria table counts rules in `rux-ui/css`, the fifteen `.is-*` classes were enumerated from it, and the five document-level listeners were read individually rather than counted — which is what separated the three that are activation delegation from the two that are menu-specific. **Deliberately did not fix D1**, because Q1 is genuinely open and a document that resolves a question by acting on it has skipped the argument. **Deliberately did not write the R7 test** (step 2): §3 shows 2.5's scope is ambiguous, and a test written before Q2 is answered would pin the ambiguity rather than the rule. **Deliberately did not take `layout.md` D3's four MUSTs yet** (step 4) — they arrive once this document has rules to hang them on, not merely a file to hold them. **Deliberately did not claim R4 or R5**, which `README.md` §1 routes to `naming.md`; `state-contract` happens to enforce parts of both, and a test's file name is not a claim of ownership. |
-| 2 | Answer Q2, then enforce rule 2.5 (D2) | **[open]** | The R7 test. Scope depends on Q2: if 2.5 governs all dismissal, `menu.js`'s Tab-closes and close-on-activation must move into the kernel or be recorded as exceptions; if it governs outside-dismissal only, the rule needs rewording and the test is a narrow check that only `overlay.js` binds document-level `pointerdown` and Escape. **Do not write the test first** — it would freeze whichever reading the author happened to hold. |
-| 3 | Answer Q1, then reconcile the four `.is-*` classes (D1) | **[open]** | Class B if any class is replaced by an attribute: CSS selectors change and JS writes change with them. Gated on Q1. Whatever the answer, rule 2.2 gains a test — either the four are justified and the test allows exactly them, or they are not and the test forbids the category. |
+| 2 | Answer Q2, then enforce rule 2.5 (D2) | **done · Class A** | **Executed 2026-08-22.** Q2 answered **narrow**, and the argument did not need to be made — it was already in the codebase. **Six modules carry a comment deferring outside-click and Escape to the kernel**: `menu.js`, `drawer.js`, `popover.js`, `suggestions.js`, `ui-shell.js` and `utilities.js`. R7's sentence was broader than its own implementation, so rule 2.5 is reworded to match what was built: the kernel owns **outside-`pointerdown`** and **Escape** — the two policies that must be singular — plus the focus trap/restore and layer-promotion helpers. Tab-closes and close-on-activation stay with the surface. `tests/overlay-kernel.test.mjs` enforces it in four checks, and the third is the one that matters: it asserts the kernel **does** bind both, so the other two mean *exactly one* rather than *at most one* — a kernel that stopped binding them would otherwise turn the suite green. Proved to bite by injecting a second Escape handler into `menu.js`. **Deliberately did not widen the rule to element-level listeners**: a drag handle's `pointerdown` and a roving arrow-key pattern are not dismissal and never were. **Closes D2.** |
+| 3 | Answer Q1; triage the four `.is-*` classes (D1) | **done · Class A** | **Executed 2026-08-22.** Q1 answered by looking at each of the four against its own markup rather than at the category, and they split **two and two**. **The principle**: a surface MAY carry a class for a state its *trigger* expresses in aria, because `aria-expanded` describes the trigger and nothing describes the surface — but it MAY NOT when the element itself already carries the aria attribute. **Legitimate: `.is-open`** on `.rux-drawer` and `.rux-side-nav--overlay`. No aria attribute means "open" on a surface; `aria-hidden` is about assistive-technology exposure, not visual state, and coupling a transform to it would be wrong — the drawer writes both and they mean different things. **Legitimate: `.is-visible`** on the two scrims, which are decorative and have no state to expose. **Defect: `.is-active`** — `view-router.js` **already writes `aria-current="page"` on the same element**, and `side-nav.css` and `ui-header.css` **already select on it**. Two writers and two readers for one state, which rule 2.1 forbids outright. **Defect: `.is-selected`** on `tr` — `aria-selected` is the channel, and `role="grid"` is already in use in `index.html`, so it is valid here rather than merely nicer. **Deliberately did not remove either defect in this step** (step 6): both change CSS selectors and JS writes together, one of them in the application layer, and bundling a decision with its migration is what makes a log unreadable later. |
 | 4 | Receive `../layout-composition.md`'s accessibility MUSTs (D3) | **[open]** | Closes `layout.md`'s D3 remainder, which is explicitly waiting on this document. The four MUSTs are dialog and assistive-technology behaviour and belong here, not in layout. **Gated on steps 2 and 3**: three of the four are about dismissal and focus restoration, which is rule 2.5's territory, and moving them before 2.5 is settled would import them into a rule that is still changing shape. |
 | 5 | **Consolidate** — strip duplicated state rules elsewhere; convert them to pointers | **[open]** | The closing step. In scope: `../audit/design-system-audit.md` §5's R3, R7 and R8 entries, which its own status note commits to move; the `rux-design` skill's state and focus guidance; `README.md` wherever it states a focus or state rule; and any CSS comment that states a MUST rather than explaining a value. **Blocked on steps 2–4** — converting a section to a pointer before the rule it points at is settled deletes the only statement of it, which is the trap `typography.md` step 16 records. |
+| 6 | Retire `.is-active` and `.is-selected` onto aria (D1) | **[open]** | Class B, and step 3 established both are defects rather than judgement calls. **`.is-active`** is the cleaner half: `aria-current="page"` is already written by `view-router.js` and already read by `side-nav.css` and `ui-header.css`, so this is deleting a redundant second channel, not building a first one — four CSS files and one JS writer. **`.is-selected`** needs the customers table confirmed as one of the `role="grid"` tables before `aria-selected` replaces it, and its writer is `js/panels/customers-panel.js` in the **application** layer, so the change crosses the tier boundary. Owes a grep per `CLAUDE.md`'s protocol: `.is-*` classes are live query hooks and the suite does not cover HTML class attributes. |
 
 ---
 

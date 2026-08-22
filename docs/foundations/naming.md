@@ -1,10 +1,10 @@
 # Rux UI Foundations — Naming
 
-**Contract version: 1.0.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.1.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 5 steps: **1 done · 4 open**
+**Status** · 5 steps: **2 done · 3 open**
 This document is canonical for **what things are called** — the class shape, the modifier
 vocabulary, the namespaces a portable layer may use, and the requirement that a name in
 markup resolves to a rule. It is the home `README.md` §1 routes **R1, R2, R4 and R5** to,
@@ -39,7 +39,7 @@ practice and that list disagree. The families actually in use:
 | Family | Modifiers |
 |---|---|
 | Size | `--sm`, `--lg`, and `--default-size` |
-| Emphasis | `--ghost`, `--solid`, `--default`, `--accent` |
+| Emphasis | `--ghost`, `--solid`, `--default` (button only), `--accent` |
 | Intent | `--danger`, `--warning`, `--success`, `--info` |
 | Placement | `--attached`, `--floating`, `--anchored`, `--overlay`, `--modal` |
 | Surface depth | `--surface`, `--elevated`, `--recessed` |
@@ -103,8 +103,11 @@ of canonical modifiers:
 2. **`--default-size` is an off-vocabulary size name**: `.rux-panel--default-size`, which
    the stylesheet only ever compounds with `.rux-panel--floating`.
 3. **`--default` and `--solid` may be one concept under two names.** `--default` is the
-   neutral filled variant on `.rux-button` and `.rux-panel`; `--solid` is the filled variant
-   on `.rux-badge` and `.rux-output`.
+   neutral filled variant, on `.rux-button` **only**; `--solid` is the filled variant on
+   `.rux-badge` and `.rux-output`. *(An earlier draft of this section said `--default` was
+   on `.rux-panel` too. It is not — `.rux-panel--default-size` is a different modifier, and
+   a greedy pattern read its prefix as one. The denylist in step 3 caught it, which is the
+   argument for writing the test rather than trusting the survey that motivated it.)*
 4. **`--solid` means two different things.** On `.rux-badge` it fills the background; on
    `.rux-card` it opts the block into the shell's chrome. One name, two concepts — which
    R2 forbids in the direction people forget to look.
@@ -130,10 +133,10 @@ and an audit reference. `data-dismiss` is the interesting one: it cannot simply 
 | # | Defect | Status |
 |---|---|---|
 | D1 | Rule 2.1's operative half — no sibling blocks for one component — has no test, because nothing declares which blocks belong to which component. `naming-contract` checks the pattern and the orphan case only. | step 2 |
-| D2 | Rule 2.4 (R2) has no test. The audit specified a synonym denylist; it was never written, and §3 records four drifts it would have caught. | step 3, gated on Q1 and Q2 |
-| D3 | `.rux-panel--default-size` is a size modifier outside the size vocabulary. | step 3 |
-| D4 | `--solid` carries two concepts (`.rux-badge` fills; `.rux-card` adopts shell chrome), and `--default` may be a third name for the first of them. Resolving either is a public rename and belongs in `../portability-audit.md`. | step 3, gated on Q2 |
-| D5 | R2's canonical list names `--md`, which no block defines. Rule or practice is wrong and this document does not yet say which. | Q1 |
+| D2 | ~~Rule 2.4 (R2) has no test.~~ **closed, step 3.** The audit specified a synonym denylist; it was never written, and §3 records four drifts it would have caught. | **closed, step 3** |
+| D3 | `.rux-panel--default-size` is a size modifier outside the size vocabulary. | **portability-audit.md** entry 22 |
+| D4 | `--solid` carries two concepts (`.rux-badge` fills; `.rux-card` adopts shell chrome), and `.rux-button--default` may be a third name for the first of them. Resolving either is a public rename and belongs in `../portability-audit.md`. | **portability-audit.md** entry 22 |
+| D5 | ~~R2's canonical list names `--md`, which no block defines.~~ | **closed, step 3** — Q1: the rule was wrong |
 
 ---
 
@@ -145,13 +148,20 @@ Ordered by dependency. Every step records what it deliberately did **not** do.
 |---|---|---|---|
 | 1 | Establish this document; adopt R1, R2, R4 and R5 as canonical | **done · Class A** | Founding entry, 2026-08-22, and the last of `README.md` §1's routing table to land. **Nothing was invented and nothing resolves differently.** R4 and R5 were already enforced by `prefix-contract` and `class-resolution`; R1 was half enforced by `naming-contract`; R2 was never enforced at all. §1's tables and §3's four drifts are **measured** — the 38 modifiers were enumerated from `rux-ui/css`, and the two synonym findings came from reading what `--solid` and `--default` actually do in each block rather than from the names. **Deliberately did not fix D3, D4 or D5**, all of which are public renames: `CLAUDE.md` prohibits a rename outside a document that authorizes it, and the authorizing document for a public name is `../portability-audit.md`, not this one. **Deliberately did not write the denylist** (step 3) — Q1 and Q2 decide what belongs on it, and a denylist written first would encode whichever reading its author held, the same trap `state.md` step 1 recorded for R7. **Deliberately did not claim `.is-*` / `.has-*`**, which `state.md` owns: `naming-contract` happens to check their shape, and a test's file name is not a claim of ownership. **Deliberately did not restate `../portability-audit.md`'s rename process**, which stays the one home for how a public name changes. |
 | 2 | Give rule 2.1 a testable definition, then enforce it (D1) | **[open]** | The blocker is not the test, it is the definition: "sibling blocks for parts of one component" needs a machine-readable statement of which blocks are parts of which component. Options are a declared manifest, or inferring it from co-location in one CSS file — the second is free and probably close enough, since the portable layer is already one file per component. **Do not skip to the test**: an inferred rule that is wrong in a few places will be silenced with exceptions until it means nothing. |
-| 3 | Answer Q1 and Q2, then enforce rule 2.4 (D2, D3, D4, D5) | **[open]** | The synonym denylist R2 asked for. Scope depends on both questions. Any rename it implies is Class C and goes through `../portability-audit.md` first, with the grep protocol `CLAUDE.md` requires — `--solid` alone spans four blocks in three files. |
+| 3 | Answer Q1–Q3; enforce rule 2.4 (D2, D5) | **done · Class A** | **Executed 2026-08-22.** All three questions answered by the owner, and `tests/modifier-vocabulary.test.mjs` written against the answers. **Q1: no `--md`** — the middle size is an unmodified block, and `--md` is *forbidden* rather than absent, since publishing it would make every call site restate the default. R2's canonical list was wrong, not the two components. **Q3: the eight families are a reading aid**, so the test is a **denylist**, not an allowlist of sanctioned families — the allowlist would have to be right about all 38 modifiers on the day it lands, and every miss becomes an exception that makes it mean less. Sizes are the one family checked as an allowlist, because Q1 settled them. **Q2: `--solid` means filled, everywhere**; `.rux-card`'s chrome meaning and `.rux-button--default` both rename. **The test caught an error in the survey that motivated it.** §3 and §1.2 claimed `--default` was on `.rux-button` *and* `.rux-panel`. It is not: `.rux-panel--default-size` is a different modifier, and the greedy pattern in the founding scan read its prefix as a bare `--default`. The pending-rename list failed on the phantom class the first time it ran. Both sections are corrected, and this is the argument for writing the test rather than trusting the survey. **Closes D2** (2.4 had no test) **and D5** (R2's list named a `--md` nothing defines). **Deliberately did not execute the three renames** — Class C, and `CLAUDE.md` sends them to `../portability-audit.md`, now **entry 22**, which is where entry 19 did the same job on 2026-08-20. D3 and D4 stay open against that entry. **Deliberately did not check for *new* collisions**: one name carrying two concepts needs a human to read what a modifier does, so the test pins the one we found and asserts a second needs a defect entry rather than a list entry. Contract 1.0.0 → 1.1.0. |
 | 4 | Move R1, R2, R4 and R5 out of `../audit/design-system-audit.md` §5 | **[open]** | That section's own status note commits each rule to move as its foundation document lands. With this document written, all four of its rules can go, leaving the test mapping. **Gated on steps 2 and 3** — converting a rule to a pointer before it is settled deletes the only statement of it, which is the trap `typography.md` step 16 records. |
 | 5 | **Consolidate** — strip duplicated naming rules elsewhere; convert them to pointers | **[open]** | The closing step. In scope: the `rux-design` skill's BEM and prefix rules, `README.md` wherever it states a naming rule, `../audit/design-system-audit.md` §4's naming glossary, and `CLAUDE.md`'s own naming guidance. **Blocked on steps 2–4.** |
 
 ---
 
 ## 6. Open questions
+
+**Q1 — Should `--md` exist, or is an unmodified block the middle size? — ANSWERED: no
+`--md`.** The middle size is an unmodified block, and `--md` is **forbidden** rather than
+merely absent — publishing it would make every call site restate the default. R2's canonical
+list was wrong, not the two components, and §1.2 is corrected. `.rux-panel--default-size`
+(D3) resolves with it: a size modifier outside the size vocabulary, renamed or dropped.
+*Answered 2026-08-22 with step 3.* Original text follows.
 
 **Q1 — Should `--md` exist, or is an unmodified block the middle size?** R2's canonical list
 names `--sm/--md/--lg`, and no block defines `--md`: `.rux-avatar` and `.rux-button` carry
@@ -161,13 +171,32 @@ shortest and is what every consumer already writes. *Blocks step 3, because the 
 to know whether `--md` is required, permitted, or forbidden. Whichever way it goes, D5 and
 `--default-size` (D3) resolve with it.*
 
+**Q2 — Is `--solid` one concept or two, and is `--default` a third name for it? —
+ANSWERED: two concepts, and yes.** `--solid` means **filled**, everywhere. `.rux-badge` and
+`.rux-output` already use it that way and keep it. `.rux-card--solid` means *adopt the
+shell's chrome*, which is a different idea wearing the same word, and it is the one that
+renames. `.rux-button--default` is the neutral filled variant — `--solid`'s first meaning
+under another name — and it renames too.
+
+Both are public renames, so `../portability-audit.md` owns the execution and step 3 records
+them as pending rather than doing them. *Answered 2026-08-22 with step 3.* Original text
+follows.
+
 **Q2 — Is `--solid` one concept or two, and is `--default` a third name for it?** On
 `.rux-badge` and `.rux-output` it means *filled*. On `.rux-card` it means *adopt the shell's
-chrome* — a different idea that happens to look similar. `.rux-button--default` and
-`.rux-panel--default` are the neutral filled variant, which is `--solid`'s first meaning
-under another name. So the vocabulary may be carrying one synonym pair and one collision at
-once. *Blocks step 3. Answering it means deciding which of the three names survives in which
-family — a public rename either way, so `../portability-audit.md` owns the execution.*
+chrome* — a different idea that happens to look similar. `.rux-button--default` is the
+neutral filled variant, which is `--solid`'s first meaning under another name. So the
+vocabulary may be carrying one synonym pair and one collision at once. *Blocks step 3.*
+
+**Q3 — Does the modifier vocabulary have families, or is it flat? — ANSWERED: a reading
+aid.** §1.2's eight families stay as a way to read 38 modifiers and are **not** a rule. Step
+3's test is therefore a **denylist** of what is known to be wrong, not an allowlist of
+sanctioned families.
+
+The allowlist is the stronger rule and the wrong one to write first: it would have to be
+right about all 38 modifiers on the day it lands, and every miss becomes an exception entry
+that makes it mean less. One family is checked as an allowlist — **sizes**, because Q1
+settled it. *Answered 2026-08-22 with step 3.* Original text follows.
 
 **Q3 — Does the modifier vocabulary have families, or is it flat?** §1.2 groups 38 modifiers
 into eight families to make them legible, but nothing enforces that a new modifier joins

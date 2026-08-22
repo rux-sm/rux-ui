@@ -1,10 +1,10 @@
 # Rux UI Foundations — Layout
 
-**Contract version: 1.5.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.6.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 9 steps: **8 done · 1 open**
+**Status** · 10 steps: **9 done · 1 open**
 This document is canonical for **breakpoints (§1), the space scale (§7), and the radius
 scale and Materials presets (§8)**. Steps 4 and 5 brought the last two in. What layout still
 owes — reconciling the application layer's seven off-set widths, *adopting* the measured
@@ -157,7 +157,7 @@ correctly so.
 |---|---|---|
 | D1 | ~~The application layer holds seven boundaries off the set.~~ | **closed, step 3** |
 | D2 | The space scale and radius scale are published from `tokens.css` and governed by no document. | steps 4, 5 |
-| D5 | `README.md` § Layout states `--rux-container-xs` (480px) and it has no canonical home — layout does not publish container widths, and whether it should is **Q3**. Not a duplicate, so step 7 left it: the fix is to answer Q3, not to move a value into a document that has not claimed the category. | **open** — blocked on Q3 |
+| D5 | ~~`README.md` § Layout states `--rux-container-xs` (480px) and it has no canonical home — layout does not publish container widths, and whether it should is **Q3**. Not a duplicate, so step 7 left it: the fix is to answer Q3, not to move a value into a document that has not claimed the category. ~~ | **closed, step 10** — §10 publishes it, and Q3 is answered |
 | D3 | `../layout-composition.md` § Responsive Behavior still states four accessibility MUSTs outside a foundation document. **§ Spacing and the layout half moved in step 6**; the remainder is dialog and assistive-technology behaviour, which is `state.md`'s and cannot move until it exists. | **partly closed, step 6** — moves at [`state.md`](state.md) step 4 |
 | D4 | ~~Nothing enforces §2.4 against the application layer.~~ | **closed, step 3** — the contract test covers both layers |
 
@@ -179,6 +179,7 @@ do.
 | 7 | **Consolidate** — strip duplicated layout rules elsewhere; convert them to pointers | **done · Class A** | **Executed 2026-08-22.** The closing step, and it was **re-scoped first**: the step's scope list was written at step 1, when this document owned breakpoints alone. It now owns the space scale, radius, Materials and composition, so the sweep was larger than the list anticipated. **What it found, worst first. (a) `README.md` § Optical radius was a second authority stating the whole primitive scale, and it was wrong** — it published `--rux-radius-sm` as **6px** when that rung has always been **4px**, an error that predates this document, and its role mappings had gone stale at step 8 on top of that. Two ways to be wrong in one section is the argument for the one-home rule in miniature. **(b) `README.md` § Spacing** restated the entire space scale, every rung with its value — a straight second copy of §7. **(c) `README.md` § Layout** stated the desktop/mobile section gutters, and § Buttons stated `--rux-space-3`'s value in parentheses. All four are now pointers on the shape § Typography already used: they name what is ruled, never what the rules say. **(d) The `rux-design` skill broke its own rule.** Two lines below *"Do not restate a value here"* it stated the tokenized **16px** rhythm; that is now a pointer. Its routing line was stale (`typography.md` today; spacing, colour and motion to follow) and now names the three documents that exist, the three that do not, and why there is no `spacing.md`. **(e) A rule the skill stated was falsified by step 8 and nobody noticed** — *nested controls step down one radius level from their containing surface.* Since container and control both took Geist's default rung they are the **same value**, so a control inside a card does not step down, and Geist does not step there either. The rule now says where the scale still steps and where it does not. **(f) `navigation.css` cited `../layout-composition.md` for the 0-gap header-to-shell and panel-to-workspace values**, which step 6 moved; repointed at §9.1. **(g) Step 6's own overreach, corrected.** §9.3 had taken *collapsed rails and drawer widths are application variants* — but `../layout-composition.md` still states that rule, it is a **portability** rule about which layer may define a value, and **Q3 is the open question of whether layout owns those dimensions at all**. Moving it here answered Q3 by accident. The duplicate is removed and §9.3 records why. **Deliberately did not move `--rux-container-xs`**, which `README.md` states with no canonical home: it is not a duplicate, and relocating it would claim a category Q3 has not settled. Recorded as **D5** instead — a gap on the books beats a value moved into the wrong document. **Deliberately did not touch the two `MUST NOT` bullets in `../layout-composition.md` §§ Application Anatomy and UI Header**, for the same reason as (g): both are portability rules, and `tokens.css` and `side-nav.css` cite them and still resolve. Contract 1.4.0 → 1.5.0. |
 | 8 | Publish Geist's 6px default radius; repoint the semantic three (§8.2) | **done · Class A + Class B** | **Executed 2026-08-22** on the owner's decision, of the two §8.2 offered. **Measuring Geist's Button page first changed the shape of the change.** §8.2 read the disagreement as "Geist uses 6px where we use 8px," implying 8px was simply wrong. It is not: Geist scales control radius with height — measured **24px→4px, 32px→6px, 36px→6px, 40px→8px** — and its tokens name **`--geist-radius: 6px`** as the product default against **`--geist-marketing-radius: 8px`**. So 8px is a real Geist value reserved for other surfaces, and what this system lacked was only the middle rung. **Our height ladder already matches Geist's exactly** — `--rux-button-height-compact` 24, `-standard` 32, `--rux-field-height` 36, `-header` 40 — so `sm` 4px was already correct for compact controls and `md` 8px already correct for 40px headers and tabs. That turned a sweeping change into a surgical one. **Class A:** `--rux-radius-default: 6px`, named rather than numbered because it is not a size step between `sm` and `md` — it is the default, which is how Geist names it, and the ladder already mixes non-size names (`0`, `full`). **Class B — before → after:** `--rux-radius-container` **8 → 6px** (cards, anchored panels; 8 call sites), `--rux-radius-control` **4 → 6px** (every button; 14 sites), `--rux-radius-input` **8 → 6px** (inputs). **Measured after the change:** a freshly built standard button is 32px tall at **6px**, matching Geist's 32px specimen exactly; card and input both 6px; `--rux-modal-radius` and `--rux-panel-floating-radius` **unchanged at 12px**, which already conformed to Materials' Medium/Large/Menu/Modal tier. **States needing an eyeball:** cards, buttons and inputs throughout — the change is 2px in both directions and shows most at small control sizes. **Deliberately did not** move `md` from 8px: it is Geist's value for 40px controls and this system's 40/44px header buttons and tabs read it. **Deliberately did not** give buttons a per-height radius (see Q5) — that is a component API change, not a scale change, and nobody asked for it. **Deliberately did not** touch the ghost icon buttons that render at 0px; that is a pre-existing component decision, unaffected here. Contract 1.1.0 → 1.2.0. |
 | 9 | Adopt the Materials elevation presets (§8.1, D2) | **[open]** | Class B. What step 8 left: the eight shadow stacks, against this system's current shadow tokens, which §8 has not yet compared. **Gated on a value that does not exist yet** — §8.1 records that the specimens are pinned to a `#0a0a0a` fill and answered neither `prefers-color-scheme` nor a `data-theme` attribute, so only dark was obtainable, and a `rgba(255,255,255,0.145)` stroke is plainly not the light value. Light must be sourced before adoption or explicitly substituted, and this step must say which. Owes before/after and named states per README §2.3. |
+| 10 | Answer Q3; publish the fixed dimensions (D5) | **done · Class A** | **Executed 2026-08-22** as §10. Class A: six tokens documented where they already resolve, no value moves. **My first recommendation on Q3 was a flat "no" and measuring proved it wrong.** The portable layer publishes six fixed dimensions — `--rux-container-xs`, `--rux-panel-width-sm`, `--rux-panel-min-width`, `--rux-panel-floating-width` and its safe max, and `--rux-workspace-header-min-height` — so answering "no" would have left all six governed by nothing while closing the question that noticed them. Answering "yes" would have claimed the drawer-width rule, which is not about what a value should be but about **who may state one**. The split is the answer: layout owns the vocabulary, portability owns the layer boundary. **`--rux-drawer-*-default-width` stays `auto`** and appears in §10 only to explain its own absence — that is the portability rule working, not a gap. **Closes D5**, which step 7 opened rather than fix, on the grounds that moving a value into a document that had not claimed the category was worse than recording the gap. That judgement held: the category needed claiming first. **Deliberately did not invent a container scale** — `--rux-container-xs` is alone because app shells have no content max-width and there are no marketing surfaces; the `xs` names a rung, not a family. Contract 1.5.0 → 1.6.0. |
 
 ---
 
@@ -226,6 +227,19 @@ Geist would give 4px and 8px. Closing that means either three radius tokens keye
 height ladder, or accepting one radius as a deliberate simplification. *Blocks nothing.
 Recorded because it was measured, not because it is a defect — a single radius across sizes
 is a defensible choice, but it should be a choice on record rather than an accident.*
+
+**Q3 — Does layout own the shell's fixed dimensions? — ANSWERED: split, and the split is
+the answer.** Layout owns the **vocabulary** of dimensions the portable layer publishes —
+§10 now lists all six. `../portability-audit.md` and `../layout-composition.md` own the
+separate rule about **which layer may define a product dimension**, which is why
+`--rux-drawer-*-default-width` resolves to `auto` and appears in §10 only as an explanation
+of its own absence.
+
+A flat "no" was the tempting answer and it was wrong: the portable layer plainly does
+publish fixed dimensions, and calling them all portability's would have left six live tokens
+governed by nothing. A flat "yes" would have claimed the drawer-width rule, which is not
+about what a value should be but about who may state one. *Answered 2026-08-22 with step 10,
+which closes D5.* Original text follows.
 
 **Q3 — Does layout own the shell's fixed dimensions?** Rail widths, drawer widths, and panel
 minimums are layout decisions that live in `tokens.css` today and are called "application
@@ -382,3 +396,31 @@ width* — and it is a **portability** rule about which layer may define a value
 rule about what the value is. **Q3 is the open question of whether layout owns those fixed
 dimensions at all**, so moving the rule here would have answered Q3 by accident. Step 7
 removed the duplicate.
+
+---
+
+## 10. Published fixed dimensions
+
+Widths and heights the **portable layer publishes** as tokens. §1 governs the widths at
+which layout *changes*; this section governs the widths layout *is*.
+
+| Token | Value | What it sizes |
+|---|---|---|
+| `--rux-container-xs` | 480px | the one container max-width — narrow dialogs and forms |
+| `--rux-panel-width-sm` | 280px | a small docked panel |
+| `--rux-panel-min-width` | 224px | the floor a panel may be resized to |
+| `--rux-panel-floating-width` | `min(600px, 100vw − 2 × --rux-space-4)` | a floating window's default |
+| `--rux-panel-floating-safe-max-width` | 64rem | its ceiling |
+| `--rux-workspace-header-min-height` | 40px, 44px at §1.1's 500 | the workspace header band |
+
+**There is no container scale**, and `--rux-container-xs` is deliberately alone: app shells
+have no content max-width — the workspace fills available width — and Rux UI has no
+marketing surfaces to need a wider one. The `xs` suffix names the rung it would occupy if a
+scale ever existed, not a family that does.
+
+**Why the drawer widths are absent.** `--rux-drawer-left-default-width` and its right twin
+resolve to `auto`, and that is the rule working rather than a gap: `../layout-composition.md`
+holds that *the shared shell MUST NOT define product drawer widths, collapsed rails, feature
+breakpoints, or a workspace content minimum width*. That is a **portability** rule about
+which layer may define a value, and it is not this document's — see §6 Q3. An application
+sets those on its own shell, the same way it sets `--rux-app-view-padding`.
