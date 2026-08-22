@@ -1479,7 +1479,12 @@
 	--rux-table-header-bg:       var(--rux-surface-1);
 	--rux-table-header-fg:       var(--rux-text-primary);
 	--rux-table-header-weight:   var(--rux-weight-400);
-	--rux-table-header-tracking: var(--rux-tracking-wide);
+	/* A table header is a Label by rule 2.12's tree — a single line of UI text —
+	   and rule 2.13 holds that Label tracks 0 at every size it publishes. This
+	   read --rux-tracking-wide (+0.04em) until step 44. Steps 39 and 40 missed
+	   it because they swept call sites reading the primitive directly and this
+	   one reads it through a component token. */
+	--rux-table-header-tracking: var(--rux-text-label-12-tracking);
 
 	/* — row / cell — */
 	--rux-table-row-height:           36px;
