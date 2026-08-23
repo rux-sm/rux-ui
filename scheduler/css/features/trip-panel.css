@@ -408,10 +408,10 @@
 	align-items: center;
 	justify-content: center;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-14);
+	font-size: var(--rux-text-label-14-size);
 	font-variant-numeric: tabular-nums;
-	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-line-height-20);
+	font-weight: var(--rux-text-label-14-weight);
+	line-height: var(--rux-text-label-14-line-height);
 	white-space: nowrap;
 }
 .sched-scope-trip__po-coverage > .rux-icon {
@@ -449,7 +449,9 @@
 	border: var(--rux-input-border);
 	border-color: var(--rux-input-disabled-border);
 	border-radius: var(--rux-input-border-radius);
-	font-size: var(--rux-size-14);
+	font-size: var(--rux-text-label-14-size);
+	font-weight: var(--rux-text-label-14-weight);
+	line-height: var(--rux-text-label-14-line-height);
 	cursor: not-allowed;
 }
 .sched-scope-trip__payment-empty > .rux-icon,
@@ -495,8 +497,9 @@
 	min-width: 0;
 	overflow: hidden;
 	color: var(--rux-text-primary);
-	font-size: var(--rux-size-14);
-	font-weight: var(--rux-weight-400);
+	font-size: var(--rux-text-label-14-size);
+	font-weight: var(--rux-text-label-14-weight);
+	line-height: var(--rux-text-label-14-line-height);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -535,7 +538,9 @@
 	justify-content: center;
 	padding-inline: var(--rux-space-2);
 	color: var(--rux-text-primary);
-	font-size: var(--rux-size-14);
+	font-size: var(--rux-text-label-14-size);
+	font-weight: var(--rux-text-label-14-weight);
+	line-height: var(--rux-text-label-14-line-height);
 	pointer-events: none;
 }
 .sched-scope-trip__payment-date {
@@ -771,8 +776,9 @@
 }
 .sched-scope-trip__doc-name {
 	flex: 1;
-	font-size: var(--rux-size-14);
-	font-weight: var(--rux-weight-400);
+	font-size: var(--rux-text-label-14-size);
+	font-weight: var(--rux-text-label-14-weight);
+	line-height: var(--rux-text-label-14-line-height);
 	color: currentColor;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -782,7 +788,9 @@
 }
 .sched-scope-trip__doc-date {
 	flex: none;
-	font-size: var(--rux-size-12);
+	font-size: var(--rux-text-label-12-size);
+	font-weight: var(--rux-text-label-12-weight);
+	line-height: var(--rux-text-label-12-line-height);
 	font-variant-numeric: tabular-nums;
 	color: var(--rux-fg-on-accent-muted);
 }
