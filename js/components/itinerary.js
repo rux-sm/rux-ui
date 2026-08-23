@@ -551,9 +551,18 @@
 		const dutyForWarn = sessionDutyMins ?? netMins;
 		const drWarn = driveForWarn > 10 * 60;
 		const dutyWarn = dutyForWarn !== null && dutyForWarn > 15 * 60;
-		const field = (val, unit, warn) => `
-        <output class="rux-output${warn ? " sched-trip-itinerary__seg-stat--warn" : ""}">${escHtml(val)} <span class="sched-trip-itinerary__unit">${unit}</span></output>`;
-		return `<div class="sched-trip-itinerary__day-stats">${field(miVal, "mi", false)}${field(drVal, "hr", drWarn)}${field(dutyVal, "hr", dutyWarn)}${field(offVal, "hr", false)}</div>`;
+		// Same anatomy renderDutySummaryStats already uses: .rux-field wrapping a
+		// label above the output. These four were the only stats in the tab
+		// rendered bare, which left the over-limit tint saying "notice this"
+		// without saying what. <output> is labelable but these carry no id to
+		// point a `for` at, so the visible label is presentational and the
+		// accessible name comes from aria-label on the output itself.
+		const field = (label, val, unit, warn) => `
+        <div class="rux-field">
+          <label class="rux-field__label">${label}</label>
+          <output class="rux-output${warn ? " sched-trip-itinerary__seg-stat--warn" : ""}" aria-label="${label}">${escHtml(val)} <span class="sched-trip-itinerary__unit">${unit}</span></output>
+        </div>`;
+		return `<div class="sched-trip-itinerary__day-stats">${field("Miles", miVal, "mi", false)}${field("Drive", drVal, "hr", drWarn)}${field("On-Duty", dutyVal, "hr", dutyWarn)}${field("Off-Duty", offVal, "hr", false)}</div>`;
 	}
 
 	// Shared three-stat anatomy for cards that close a duty period. Off Duty
