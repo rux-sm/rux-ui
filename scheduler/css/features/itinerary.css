@@ -116,8 +116,9 @@
 .sched-trip-itinerary__day-date {
 	margin-left: var(--rux-space-2);
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-14);
-	font-weight: var(--rux-weight-400);
+	font-size: var(--rux-text-label-14-size);
+	font-weight: var(--rux-text-label-14-weight);
+	line-height: var(--rux-text-label-14-line-height);
 }
 
 /* Same label + primary-row anatomy as .sched-trip-itinerary__stop. End of Day
@@ -176,7 +177,9 @@
 	gap: var(--rux-space-1);
 	margin: 0;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-12);
+	font-size: var(--rux-text-label-12-size);
+	font-weight: var(--rux-text-label-12-weight);
+	line-height: var(--rux-text-label-12-line-height);
 }
 
 .sched-trip-itinerary__boundary-note .rux-icon {
@@ -193,7 +196,9 @@
 	gap: var(--rux-space-1);
 	padding: var(--rux-card-padding);
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-14);
+	font-size: var(--rux-text-label-14-size);
+	font-weight: var(--rux-text-label-14-weight);
+	line-height: var(--rux-text-label-14-line-height);
 }
 
 .sched-trip-itinerary__idle-day strong {
@@ -655,7 +660,9 @@
 .sched-trip-itinerary__unit {
 	margin-left: var(--rux-space-1);
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-12);
+	font-size: var(--rux-text-label-12-size);
+	font-weight: var(--rux-text-label-12-weight);
+	line-height: var(--rux-text-label-12-line-height);
 }
 
 .sched-trip-itinerary__source {
@@ -815,15 +822,16 @@
 }
 
 .sched-trip-itinerary__suggestion-name {
-	font-size: var(--rux-size-14);
-	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-line-height-20);
+	font-size: var(--rux-text-label-14-size);
+	font-weight: var(--rux-text-label-14-weight);
+	line-height: var(--rux-text-label-14-line-height);
 }
 
 .sched-trip-itinerary__suggestion-address {
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-12);
-	line-height: var(--rux-line-height-16);
+	font-size: var(--rux-text-label-12-size);
+	font-weight: var(--rux-text-label-12-weight);
+	line-height: var(--rux-text-label-12-line-height);
 }
 
 @container (max-width: 460px) {
