@@ -751,35 +751,7 @@
 	padding-right: calc(var(--rux-icon-sm, 14px) + var(--rux-space-2) * 2);
 }
 
-.sched-trip-itinerary__suggestion-row {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
-	align-items: center;
-	border-radius: var(--rux-radius-sm);
-}
-
-.sched-trip-itinerary__suggestion-row.is-saved {
-	grid-template-columns: minmax(0, 1fr);
-}
-
-.sched-trip-itinerary__suggestion-row:hover {
-	background: var(--rux-button-hover-overlay);
-}
-
-/* The row, not the item, owns hover here: each row pairs the suggestion
-   button with a separate save action, so the highlight has to span both.
-   .rux-suggestions__item's own hover is therefore switched off rather than
-   left to double up with .sched-trip-itinerary__suggestion-row:hover. */
-.sched-trip-itinerary__suggestion:hover {
-	background: transparent;
-}
-
-.sched-trip-itinerary__suggestion-save {
-	flex: none;
-	margin-right: var(--rux-space-1);
-}
-
-.sched-trip-itinerary__suggestion-row.is-saved .sched-trip-itinerary__suggestion-name {
+.sched-trip-itinerary__suggestion.is-saved .sched-trip-itinerary__suggestion-name {
 	color: var(--rux-accent);
 }
 

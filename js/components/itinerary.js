@@ -1733,20 +1733,17 @@
 					? suggestion.location.address
 					: suggestion.place_formatted || suggestion.full_address || "";
 				return `
-					<div class="sched-trip-itinerary__suggestion-row${isSaved ? " is-saved" : ""}">
-						<button class="rux-suggestions__item sched-trip-itinerary__suggestion" type="button" role="option" data-suggestion-idx="${i}">
-							<span class="rux-suggestions__label sched-trip-itinerary__suggestion-name">${escHtml(name)}</span>
-							<span class="rux-suggestions__sublabel sched-trip-itinerary__suggestion-address">${isSaved ? "Saved · " : ""}${escHtml(address)}</span>
-						</button>
-						${isSaved ? "" : `<button class="rux-button rux-button--ghost rux-button--icon sched-trip-itinerary__suggestion-save" type="button" data-save-suggestion-idx="${i}" aria-label="Use and save ${escHtml(name)}" title="Use and save location"><span class="rux-icon" aria-hidden="true">bookmark_add</span></button>`}
-					</div>`;
+					<button class="rux-suggestions__item sched-trip-itinerary__suggestion${isSaved ? " is-saved" : ""}" type="button" role="option" data-suggestion-idx="${i}">
+						<span class="rux-suggestions__label sched-trip-itinerary__suggestion-name">${escHtml(name)}</span>
+						<span class="rux-suggestions__sublabel sched-trip-itinerary__suggestion-address">${isSaved ? "Saved · " : ""}${escHtml(address)}</span>
+					</button>`;
 			}).join("");
 			suggestionsEl.hidden = false;
 		}
 
 		async function getLocationsDb() {
 			if (!locationsDbPromise) {
-				locationsDbPromise = import("../data/locations-db.js?v=2").catch((err) => {
+				locationsDbPromise = import("../data/locations-db.js?v=3").catch((err) => {
 					locationsDbPromise = null;
 					throw err;
 				});
@@ -2018,23 +2015,7 @@
 			await finishAddressSelection(idx);
 		}
 
-		async function saveSelectedLocation(stop, suggestion) {
-			try {
-				await (await getLocationsDb()).saveLocation({
-					name: suggestion?.name || stop.name || stop.address,
-					address: stop.address,
-					lat: stop.lat,
-					lng: stop.lng,
-					mapboxId: stop.mapboxId,
-				});
-				window.Rux?.toast?.("Location saved for future autofill.");
-			} catch (err) {
-				console.warn("Could not save selected location:", err);
-				window.Rux?.toast?.(err?.message || "Could not save location.");
-			}
-		}
-
-		async function retrieveSuggestion(idx, suggestion, { save = false } = {}) {
+		async function retrieveSuggestion(idx, suggestion) {
 			const token = getMapboxToken();
 			const stop = stops[idx];
 			if (!token || !stop || !suggestion?.mapbox_id) return;
@@ -2051,11 +2032,7 @@
 				stop.mapboxId = suggestion.mapbox_id || stop.mapboxId;
 				stop.name = stop.name || suggestion.name || "";
 				addressSessionToken = uuid();
-				const savePromise = save
-					? saveSelectedLocation(stop, suggestion)
-					: null;
 				await finishAddressSelection(idx);
-				if (savePromise) await savePromise;
 			} catch (err) {
 				console.warn("Address retrieve failed:", err);
 			}
@@ -2195,20 +2172,13 @@
 		});
 
 		suggestionsEl.addEventListener("click", (e) => {
-			const saveBtn = e.target.closest("[data-save-suggestion-idx]");
 			const btn = e.target.closest("[data-suggestion-idx]");
-			if ((!btn && !saveBtn) || activeAddressIdx === null) return;
-			const suggestionIndex = parseInt(
-				saveBtn?.dataset.saveSuggestionIdx ?? btn.dataset.suggestionIdx,
-				10,
-			);
-			const suggestion = activeSuggestions[suggestionIndex];
+			if (!btn || activeAddressIdx === null) return;
+			const suggestion = activeSuggestions[parseInt(btn.dataset.suggestionIdx, 10)];
 			if (suggestion?.source === "saved") {
 				applySavedLocation(activeAddressIdx, suggestion);
 			} else {
-				retrieveSuggestion(activeAddressIdx, suggestion, {
-					save: Boolean(saveBtn),
-				});
+				retrieveSuggestion(activeAddressIdx, suggestion);
 			}
 		});
 

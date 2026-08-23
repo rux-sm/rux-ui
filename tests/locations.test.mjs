@@ -57,5 +57,39 @@ test("Configuration owns the directory and itinerary searches it before Mapbox",
 		itinerary.indexOf("await savedLocationSuggestions(q)") <
 			itinerary.indexOf('new URL("https:\/\/api.mapbox.com\/search\/searchbox\/v1\/suggest")'),
 	);
-	assert.match(itinerary, /data-save-suggestion-idx/);
+	/* The directory is still fed from the itinerary flow, but by saving the
+	   trip rather than by a per-suggestion bookmark button: that button was
+	   never an independent action -- it selected the address AND remembered
+	   it -- so the decision moved to the point where the trip is committed.
+	   itinerary.js now only reads the directory. */
+	assert.doesNotMatch(itinerary, /data-save-suggestion-idx/);
+	const tripDb = readFileSync(
+		new URL("../js/data/trip-db.js", import.meta.url),
+		"utf8",
+	);
+	assert.match(tripDb, /saveLocations\(stopLocations\)/);
+	/* After the stops are written, never before: it is a side effect and must
+	   not be able to fail a trip save. */
+	assert.ok(
+		tripDb.indexOf('from("trip_stops").insert') <
+			tripDb.indexOf("saveLocations(stopLocations)"),
+	);
+});
+
+test("every write to the shared locations blob re-reads the server first", () => {
+	/* The whole directory is one row (settings/locations-v1) upserted whole,
+	   and the client is anon, so it is one list for everybody. A write built
+	   on the in-memory cache silently drops additions made since page load --
+	   which auto-saving on every trip save would hit routinely. */
+	const db = readFileSync(
+		new URL("../js/data/locations-db.js", import.meta.url),
+		"utf8",
+	);
+	const writers = db.match(
+		/export async function (?:saveLocation|saveLocations|deleteLocation)\b[\s\S]*?\n\}/g,
+	) || [];
+	assert.equal(writers.length, 3);
+	for (const fn of writers) {
+		assert.match(fn, /loadLocations\(\{ refresh: true \}\)/);
+	}
 });

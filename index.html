@@ -41,7 +41,7 @@
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=86" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=317" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=319" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=15"
@@ -6441,14 +6441,14 @@
 		     the page itself; each module still does that for itself. -->
 		<script src="./rux-ui/js/boot.js?v=1"></script>
 		<script src="./js/panels/trip-panel.js?v=44"></script>
-		<script src="./js/components/itinerary.js?v=32"></script>
+		<script src="./js/components/itinerary.js?v=34"></script>
 		<script src="./js/panels/driver-panel.js?v=29" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=17" defer></script>
-		<script src="./js/panels/customers-panel.js?v=12" defer></script>
-		<script src="./js/panels/settings-panel.js?v=9" defer></script>
-		<script src="./js/panels/trip-finder.js?v=10" defer></script>
+		<script src="./js/panels/customers-panel.js?v=13" defer></script>
+		<script src="./js/panels/settings-panel.js?v=11" defer></script>
+		<script src="./js/panels/trip-finder.js?v=11" defer></script>
 		<script src="./js/panels/request-inbox.js?v=10" defer></script>
-		<script src="./js/panels/trip-manifest.js?v=11" defer></script>
+		<script src="./js/panels/trip-manifest.js?v=12" defer></script>
 		<script src="./js/panels/print-schedule.js?v=36" defer></script>
 		<script src="./js/panels/trip-envelope.js?v=19" defer></script>
 		<script type="module" src="./js/core/app-reload.js?v=4"></script>
@@ -6475,7 +6475,7 @@
 			src="./js/panels/documents-panel.js?v=4"
 		></script>
 		<script type="module" src="./js/panels/trip-history.js?v=6"></script>
-		<script type="module" src="./js/panels/tasks-panel.js?v=65"></script>
+		<script type="module" src="./js/panels/tasks-panel.js?v=66"></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=24"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
 
@@ -7686,7 +7686,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=36");
+					const db = await import("./js/data/trip-db.js?v=38");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -10865,7 +10865,7 @@
 			// the calendar without a reload. renderBusRows ends in
 			// renderScheduler(), which repaints the bars and the stripes.
 			async function loadFleet() {
-				const db = await import("./js/data/trip-db.js?v=36");
+				const db = await import("./js/data/trip-db.js?v=38");
 				try {
 					schedulerBuses = await db.fetchBuses();
 				} catch (err) {
@@ -10898,7 +10898,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=36");
+					const db = await import("./js/data/trip-db.js?v=38");
 					loadTrip = db.loadTrip;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;

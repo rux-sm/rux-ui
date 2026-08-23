@@ -387,7 +387,7 @@
   }
 
   async function ensureLocationsDb() {
-    if (!locationsDb) locationsDb = await import("../data/locations-db.js?v=2");
+    if (!locationsDb) locationsDb = await import("../data/locations-db.js?v=3");
     return locationsDb;
   }
 

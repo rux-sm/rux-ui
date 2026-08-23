@@ -1333,6 +1333,35 @@ import {
 				}
 			}
 
+			// Every verified address on a saved trip becomes a saved location, so
+			// the next trip's autocomplete offers it without anyone bookmarking it
+			// by hand. This replaced a per-suggestion save button, which was never
+			// an independent action -- it selected the address AND remembered it,
+			// so the only thing lost is having to decide while typing.
+			//
+			// Side effect only, and deliberately after the stops are safely
+			// written: a failure here must not turn a successful trip save into a
+			// failed one, the same rule the driver statuses above follow. One
+			// bulk call rather than one per stop, because the saved list is a
+			// single shared row that gets rewritten whole on every write.
+			try {
+				const stopLocations = savedStopsData
+					.filter((stop) => stop.address && stop.lat != null && stop.lng != null)
+					.map((stop) => ({
+						name: stop.name || stop.address,
+						address: stop.address,
+						lat: stop.lat,
+						lng: stop.lng,
+						mapboxId: stop.mapbox_id || null,
+					}));
+				if (stopLocations.length) {
+					const locationsDb = await import("./locations-db.js?v=3");
+					await locationsDb.saveLocations(stopLocations);
+				}
+			} catch (locationError) {
+				console.warn("Trip stops could not be added to saved locations:", locationError);
+			}
+
 			// Replace payments
 			const { error: deletePaymentsErr } = await supabase
 				.from("trip_payments")
