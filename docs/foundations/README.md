@@ -18,12 +18,13 @@ roles onto that vocabulary.
 | [`typography.md`](typography.md) | 4.10.1 | 58 done · 1 deferred · 3 withdrawn | — |
 | [`layout.md`](layout.md) | 1.8.1 | 12 done | — |
 | [`color.md`](color.md) | 3.0.0 | 19 done | — |
-| `motion.md` | — | not written | — |
+| [`motion.md`](motion.md) | 1.0.0 | 1 done · 2 open | — |
 | [`naming.md`](naming.md) | 1.17.0 | 14 done · 1 open | — |
 | [`state.md`](state.md) | 1.7.0 | 9 done | — |
 
-`../motion.md` exists at the component tier and is not yet a foundation document; folding
-it in is its own decision.
+`../motion.md` stays at the component tier — which token a panel, menu or scrim consumes,
+and the verification checklist for each. [`motion.md`](motion.md) owns the scales those
+recipes draw from; its step 3 moves that document's Foundation Tokens table here.
 
 ### The source these documents are written against
 
@@ -36,6 +37,7 @@ the worked example; the unwritten documents follow the same method.
 | `typography.md` | [vercel.com/geist/typography](https://vercel.com/geist/typography) | adopted; ramp, leading, tracking and role families all measured from it |
 | [`color.md`](color.md) | [vercel.com/geist/colors](https://vercel.com/geist/colors) | written (step 1, 2026-08-21); every scale measured off the page's custom properties in both themes and both gamut branches. Ten-step scales: 1–3 component backgrounds, 4–6 borders, 7–8 high-contrast backgrounds, **9–10 the only two text colours** — which is what answered typography's Q4. Tier 0 is the catalog and every role with a step reads it (steps 2–6). **Its component pages are deliberately *not* a source** — those are Geist's own mapping, and treating one as authority is the mistake `typography.md` Q7 made with the Badge and Q11 reversed; `color.md`'s source note records it |
 | [`layout.md`](layout.md) | **none — originated here** | written, breakpoints only. Geist publishes four foundations and **no breakpoint page**, so this is the first foundation rule this repo originates rather than adopts. Its remaining scope (space scale, radius, Materials elevation) is measured from Geist and is recorded as open steps |
+| [`motion.md`](motion.md) | **none — originated here** | written. Geist publishes **no motion page**, so this is the **second** foundation rule this repository originates rather than adopts, after `layout.md`'s breakpoints. Every value in it is measured from this repository's own tokens, and its §6 Q1 has no upstream to defer to |
 | `spacing.md` | [vercel.com/geist/materials](https://vercel.com/geist/materials) | reviewed, not written — and **may not be needed**: `layout.md` steps 4 and 5 already claim the space scale, radius, and the eight elevation presets. Fold or keep is `layout.md` Q4's to settle |
 | component specs | the [component index](https://vercel.com/geist) and its 71 pages | **censused, not adopted** — [`naming.md`](naming.md) §7 publishes Geist's component vocabulary and maps it against this system's blocks. It is a name census: it renames nothing, and its central finding is that Geist publishes **no class vocabulary** to converge on. Read §7.3 for the mapping, including the `switch`/`toggle` crossing |
 
@@ -62,7 +64,7 @@ document once one claims them.
 | `typography.md` | — its domain predates R1–R10 | written |
 | `layout.md` | — breakpoints predate them too | written — breakpoints, space, radius, Materials |
 | `color.md` | **R6**, the color half — tokens only, both themes | written — rule 2.1 |
-| `motion.md` | **R6**, the duration/easing half | planned |
+| [`motion.md`](motion.md) | **R6**, the duration/easing half | written — and it **originates** rather than adopts |
 | [`naming.md`](naming.md) | **R1, R2, R4, R5** — one block per component, one modifier vocabulary, namespaces, every emitted class resolves | written |
 | [`state.md`](state.md) | **R3, R7, R8** — aria is the state of record, one overlay kernel, focus is visible everywhere | written |
 
@@ -76,7 +78,9 @@ eight had none: R6 was the only one the set covered, and four of the seven were 
 enforced* — R3, R4 and R8 by their own contract suites, R5 by `class-resolution` — making
 them live rules whose only statement was a test. `state.md` took R3, R7 and R8;
 `naming.md` took R1, R2, R4 and R5. R6's colour half is in `color.md` and its duration and
-easing half waits on `motion.md`, the one document still unwritten.
+easing half is now in `motion.md`, founded 2026-08-22 — **every one of the eight rules with a
+foundation home now has one**, and R9 and R10 remain deliberately absent because theirs are
+`CLAUDE.md` and `../portability-audit.md`.
 
 **The inversion is fixed; the enforcement gaps it exposed are not.** Writing the two
 documents was mostly transcription, and the value was in what transcription forced someone
