@@ -99,11 +99,10 @@
 	column-gap: var(--rux-space-2);
 }
 
-.sched-trip-itinerary__summary-actions {
-	display: flex;
-	align-items: center;
-	gap: var(--rux-button-group-gap);
-}
+/* .rux-card__footer already supplies flex, centring, the gap and the
+   right-alignment; what stays is only what differs from it. Geist's Fieldset
+   is "related form controls inside a bordered card with optional footer
+   actions" — the actions belong in the footer, not beside the title. */
 
 .sched-trip-itinerary__summary-actions > .rux-button {
 	flex: none;

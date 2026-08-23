@@ -760,11 +760,11 @@
 		return `
 	  <div class="rux-card__header">
         <span class="rux-card__title">Trip Summary</span>
-        <div class="sched-trip-itinerary__summary-actions"></div>
       </div>
       <div class="rux-card__body">
         <div class="sched-trip-itinerary__summary-grid">${statsHtml}</div>
-      </div>`;
+      </div>
+      <footer class="rux-card__footer sched-trip-itinerary__summary-actions"></footer>`;
 	}
 
 	function renderFinalDaySummary(stops) {
