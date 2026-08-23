@@ -443,6 +443,11 @@
 .sched-trip-itinerary__dwell-footer .sched-trip-itinerary__marker {
 	align-self: center;
 	align-items: center;
+	/* Flush left, not centred: the badge is wider than the pin, and centring
+	   pushed the pin 7px past the left edge every label and control below it
+	   lines up on. The badge keeps its width so the title beside it does not
+	   move — only the pin does. */
+	justify-content: flex-start;
 	width: var(--rux-button-height-standard);
 	height: var(--rux-button-height-standard);
 	padding-top: 0;
@@ -622,7 +627,8 @@
    already has the whole width, so half of it clears 127 comfortably and
    stacking there would spend two rows where one does. */
 .sched-trip-itinerary__time-row:not(.sched-trip-itinerary__time-row--single)
-	.sched-trip-itinerary__datetime {
+	.sched-trip-itinerary__datetime,
+.sched-trip-itinerary__yard-times--meet .sched-trip-itinerary__datetime {
 	grid-template-columns: minmax(0, 1fr);
 }
 
