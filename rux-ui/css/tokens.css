@@ -955,6 +955,10 @@
 	--rux-z-sticky:   200;
 	--rux-z-overlay:  300;
 	--rux-z-modal:    400;
+	/* Above the modal layer: a boot screen covers the application entire,
+	   modals included. Added by layout.md step 14, which found .rux-splash
+	   reaching for 9999 because the scale had no rung to say this. */
+	--rux-z-splash:   500;
 
 	/* ======================================================================
 	   COMPONENT TOKENS

@@ -390,3 +390,49 @@ test("human and agent guidance route to the canonical layout contract", () => {
 	assert.doesNotMatch(layoutDocs, /UI header to app shell/);
 	assert.match(layoutDocs, /## Spacing[\s\S]{0,400}?foundations\/layout\.md/);
 });
+
+/* Rule §11.3 — stacking order. Enforces docs/foundations/layout.md §11.3.1,
+ * written by its step 14 once the rule had a line a checker could hold.
+ *
+ * §11.3 splits stacking in two: a rule that stacks against ANOTHER component
+ * uses the --rux-z-* scale, and a small integer ordering one component's own
+ * children does not. A checker cannot tell those apart — that needs to know
+ * which stacking context a selector renders inside, which no regex reads.
+ *
+ * So this asserts the part that IS decidable, and the line comes from the scale
+ * rather than from the shape of today's data: the published rungs are 1, 100,
+ * 200, 300, 400 and 500, so a literal at or above 100 sits in the same numeric
+ * space as the global layers and will interleave with them whether its author
+ * meant it or not. Below 100 a literal cannot collide with any rung but base.
+ *
+ * This is deliberately WEAKER than §11.3.1's prose, and saying so is the point:
+ * it is a floor that catches the unambiguous case, not the whole rule made
+ * executable. .rux-resize-gutter's z-index: 10 stays legal under it and is a
+ * judgement §11.3.2 leaves to the author. */
+const stackingFiles = [
+	...["content", "drawer", "panel", "popover", "menu", "side-nav", "navigation", "feedback", "table", "app-shell"]
+		.map((n) => `rux-ui/css/base/${n}.css`),
+	"scheduler/css/layout/scheduler.css",
+	"scheduler/css/layout/scheduler-app.css",
+	"scheduler/css/features/maintenance-share.css",
+	"scheduler/css/features/trip-bar.css",
+];
+
+test("no literal z-index reaches the global scale (§11.3.1)", () => {
+	const offenders = [];
+	for (const path of stackingFiles) {
+		const css = readFileSync(new URL(`../${path}`, import.meta.url), "utf8")
+			.replace(/\/\*[\s\S]*?\*\//g, " ");
+		for (const match of css.matchAll(/z-index:\s*(-?\d+)/g)) {
+			const value = Number(match[1]);
+			if (value >= 100) offenders.push(`${path}: z-index: ${value} — use a --rux-z-* token`);
+		}
+	}
+	assert.deepEqual(
+		offenders,
+		[],
+		`literal z-index values inside the published scale's range. The scale runs\n` +
+			`1 / 100 / 200 / 300 / 400 / 500; a literal at or above 100 interleaves with\n` +
+			`it unpredictably. See layout.md §11:\n\n${offenders.join("\n")}`,
+	);
+});

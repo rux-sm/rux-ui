@@ -1,10 +1,10 @@
 # Rux UI Foundations — Layout
 
-**Contract version: 1.10.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.11.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 13 steps: **13 done**
+**Status** · 14 steps: **14 done**
 This document is canonical for **breakpoints (§1), the space scale (§7), and the radius
 scale and Materials presets (§8)**. Steps 4 and 5 brought the last two in, and **step 9
 adopted the elevation presets**, which was the last thing §8 had measured but not applied.
@@ -159,7 +159,7 @@ correctly so.
 | D3 | ~~`../layout-composition.md` § Responsive Behavior still states four accessibility MUSTs outside a foundation document.~~ **Fully closed 2026-08-22.** § Spacing and the layout half moved in step 6; the accessibility remainder was received by [`state.md`](state.md) step 4 as its rules 2.7–2.10, and that section is now a pointer to both halves. Step 6's refusal to relocate them here — into a home that would have had to hand them back — is what let the second half land in one move instead of two. | **closed** — step 6 and `state.md` step 4 |
 | D4 | ~~Nothing enforces §2.4 against the application layer.~~ | **closed, step 3** — the contract test covers both layers |
 | D5 | ~~`README.md` § Layout states `--rux-container-xs` (480px) and it has no canonical home — layout does not publish container widths, and whether it should is **Q3**. Not a duplicate, so step 7 left it: the fix is to answer Q3, not to move a value into a document that has not claimed the category. ~~ | **closed, step 10** — §10 publishes it, and Q3 is answered |
-| D6 | **Nothing enforces §11**, and two declarations sit outside the scale with no name: `.rux-splash` at `9999` (`base/content.css`) and `.rux-resize-gutter` at `10` (`base/drawer.css`). A test must first be able to tell §11.3.1's cross-component stacking from §11.3.2's local stacking, and no regex reads that distinction — so the definition comes before the check. | needs its own step |
+| D6 | ~~**Nothing enforces §11**, and two declarations sit outside the scale.~~ **Closed, step 14.** §11.3.3 gave the rule a checkable floor drawn from the scale itself, and `layout-contract` enforces it with no exception list. `.rux-splash`'s `9999` became `--rux-z-splash`, a rung the scale had been missing. `.rux-resize-gutter`'s `10` is **legal and stays** — it is below every global rung, and 11.3.2 leaves that judgement to the author. | **closed, step 14** |
 
 ---
 
@@ -183,6 +183,7 @@ do.
 | 11 | Doc sync — close D2; reorder §4 (drift) | **done · Class A** | **Executed 2026-08-22**, alongside `typography.md` step 62 and for the same reason: a review of what remained found this document overstating its debt. **D2 said the space and radius scales were "governed by no document"** — true when written at step 1, when this document covered breakpoints alone. Step 4 gave the space scale §7, step 5 published the radius scale and the Materials presets as §8, step 8 adopted Geist's 6px default, and step 10 added §10. Both scales have been governed for four steps and the row never moved. **Elevation is deliberately not folded in**: §8.1's presets are measured and unadopted, and that is step 9's, not D2's — closing D2 does not close it. **§4's rows also ran D1, D2, D5, D3, D4**, because step 7 inserted D5 in the wrong place; reseated after D4. **Patch, not minor:** a status correction and a row order; no value moves. Contract 1.6.0 → 1.6.1. |
 | 12 | Source Geist's light-theme Materials values; correct §8.1 (unblocks 9) | **done · Class A** | **Executed 2026-08-22 as §8.1.1.** §8.1 asserted the light branch was *not obtainable*, and **that assertion was wrong**. It was measured off the rendered specimen boxes, which are pinned to `#0a0a0a` and answer no theme signal — but Geist also publishes the same values as `--ds-shadow-*` custom properties on `:root`, and **those do answer `prefers-color-scheme`**. Reading `getComputedStyle(document.documentElement)` under an emulated light scheme and again under dark returns both branches directly. **The dark figures were confirmed, not replaced** — every one matches the specimen reading to the code value, which is the argument for recording the method and not only the number. Also corrected: §8.1 called the stroke *constant*; it is theme-varying (`rgba(0,0,0,.08)` light against `rgba(255,255,255,.145)` dark), as is the backdrop fill, and both now have their own table. **Class A** — it publishes a source and corrects a record; no token moves and nothing renders differently. **Deliberately did not adopt anything**, which is step 9's job and was left to it even though both landed the same day. Contract 1.6.1 → 1.7.0. |
 | 13 | Claim z-index (R6's homeless third) | **done · Class A** | **Executed 2026-08-22 as §11. Claimed, not declined.** The competing claim was `state.md` rule 2.5's layer-promotion helper, and **the code had already settled it**: `promoteLayer()` toggles a `data-rux-modal-layer` attribute and **never writes `z-index`**, while CSS reads that attribute and applies `calc(var(--rux-z-modal) + 1)`. The kernel decides *when* a surface is promoted, the scale decides *how high* — the same division §8 and `state.md` already use for elevation, where this document owns the Materials presets and that one owns what opens. **The rule was restated rather than inherited, because R6's version was false.** *No literal z-index in any rule* is contradicted by the code **43 times** — but **39 of those are 0 to 5**, lifting a pseudo-element over its own parent or ordering two children inside one component, which has nothing to do with whether a modal sits above a drawer. Importing R6 as written would have made this document publish a rule that is violated on arrival and unenforceable, which is the trap `naming.md` step 2 spent its life avoiding. §11.3 splits it: cross-component stacking uses the scale, local stacking does not. **Two real outliers found and recorded rather than fixed** (D6): `.rux-splash` at **9999** is *above everything* written as a magic number, and `.rux-resize-gutter` at **10** seats itself between the base rung and dropdowns with no name for where it sits. **Deliberately did not add rungs for either** — inventing `--rux-z-splash` inside the step that claims the scale would be deciding its shape while writing its charter. **Deliberately did not write a test**: §11.3.2 means a checker must tell local stacking from global, and no regex reads that distinction; D6 records it as needing a definition first. Contract 1.9.0 → 1.10.0. |
+| 14 | Give §11 a checkable floor and enforce it (D6) | **done · Class A + Class B** | **Executed 2026-08-22.** Step 13 claimed z-index and deliberately left two things: no test, and two declarations outside the scale. **The blocker was real and is not solved — it is bounded.** A checker still cannot tell 11.3.1's cross-component stacking from 11.3.2's local stacking; that needs the stacking context a selector renders inside, which no regex reads. **What changed is where the line came from.** The obvious move was to fit one to the data — literals cluster at 0–5 with outliers at 10 and 9999, so *≤ 5 is local* looks clean and is **curve-fitting**: the boundary would move the first time a component legitimately needed a sixth layer. The line §11.3.3 takes instead comes from the **scale's own rungs** — 1, 100, 200, 300, 400, 500 — so a literal at or above **100** shares numeric space with the global layers and interleaves with them regardless of intent, while anything below 100 can collide with nothing but base. That holds whatever the code does next. **It is deliberately weaker than the prose it enforces**, and §11.3.3 says so: a floor for the unambiguous case, not the rule made executable. **`.rux-splash` was the only violation**, and it was reaching for `9999` because the scale had no rung for *above everything* — so the fix was to publish one. `--rux-z-splash: 500` is **Class A** (additive) and repointing `.rux-splash` is **Class B** (`9999` → `500`, both above every other layer, so nothing reorders). **`.rux-resize-gutter`'s `10` is legal and stays**, recorded rather than quietly tidied: it sits below every global rung, and 11.3.2 leaves that to the author. **Verified to fail before being accepted** — a planted `z-index: 250` in `popover.css` went red naming the file and the value, and the revert was confirmed clean. Contract 1.10.0 → 1.11.0. |
 
 ---
 
@@ -470,6 +471,7 @@ belonging to nobody.
 | `--rux-z-sticky` | 200 | sticky headers and column headers |
 | `--rux-z-overlay` | 300 | scrims and drawers |
 | `--rux-z-modal` | 400 | modals, and the kernel's promoted layer at `+ 1` |
+| `--rux-z-splash` | 500 | a boot screen, which covers the application entire |
 
 Hundred-step gaps so an application can seat something between two rungs without a rename.
 
@@ -502,4 +504,16 @@ token.
 business.** A small integer ordering one component's own children needs no token and gets
 none. Requiring one would grow the scale by a rung per component and make it mean nothing.
 
-*(Nothing enforces either half — see §4 D6.)*
+**11.3.3 The checkable floor.** A checker cannot tell 11.3.1 from 11.3.2 — that needs to know
+which stacking context a selector renders inside, and no regex reads it. What **is** decidable
+comes from the scale rather than from the shape of today's code: the rungs are 1, 100, 200,
+300, 400, 500, so **a literal `z-index` at or above 100 sits in the same numeric space as the
+global layers** and will interleave with them whether its author meant it or not. Below 100 a
+literal cannot collide with any rung but base.
+
+This is **deliberately weaker than 11.3.1**, and the weakness is stated rather than hidden: it
+is a floor that catches the unambiguous case, not the whole rule made executable.
+`.rux-resize-gutter`'s `z-index: 10` stays legal under it, and that is a judgement 11.3.2
+leaves to the author.
+
+*(Enforced: `tests/layout-contract.test.mjs`.)*
