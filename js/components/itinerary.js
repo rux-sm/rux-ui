@@ -1470,19 +1470,30 @@
 								<span class="rux-button__label">Add stop</span>
 							</button>
 						</div>`;
+				// Day N is a .rux-section, not a .rux-card: content.css states the
+				// rule this follows — .rux-card__header titles A SURFACE, while
+				// .rux-section titles A RUN OF SURFACES, and a day holds every
+				// stop plus its closing boundary. The rows keep their one shared
+				// box (the file header's Carbon-style rule: depth from a divider,
+				// not from boxing each row), so the section's run is that box and
+				// the boundary card, not one box per stop.
 				dayCards.push(`
-					<article class="rux-card sched-trip-itinerary__day-group" data-day-number="${dayNumber}">
-						<div class="rux-card__header">
-							<h3 class="rux-card__title">Day ${dayNumber}${dayDate ? `<span class="sched-trip-itinerary__day-date">${escHtml(formatBoundaryDate(dayDate))}${dayLastDate && dayLastDate > dayDate ? ` – ${escHtml(formatBoundaryDate(dayLastDate))}` : ""}</span>` : ""}</h3>
+					<section class="rux-section sched-trip-itinerary__day-group" data-day-number="${dayNumber}">
+						<div class="rux-section__header">
+							<div class="rux-u-row">
+							<h3 class="rux-section__title">Day ${dayNumber}${dayDate ? `<span class="sched-trip-itinerary__day-date">${escHtml(formatBoundaryDate(dayDate))}${dayLastDate && dayLastDate > dayDate ? ` – ${escHtml(formatBoundaryDate(dayLastDate))}` : ""}</span>` : ""}</h3>
 							${dayExpandableCount > 0 ? `<div class="rux-u-cluster">
 				<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-expand aria-expanded="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount}" aria-label="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount ? "Collapse" : "Expand"} Day ${dayNumber} statistics"><span class="rux-icon rux-button__disclosure-icon" aria-hidden="true">keyboard_arrow_down</span></button>
 							</div>` : ""}
+							</div>
 						</div>
+						<div class="rux-card">
 						<div class="rux-card__body sched-trip-itinerary__day-group-body">
 							${daySections}
 							${addRow}
 						</div>
-					</article>`);
+						</div>
+					</section>`);
 				daySections = "";
 				dayExpandableCount = 0;
 				dayExpandedCount = 0;

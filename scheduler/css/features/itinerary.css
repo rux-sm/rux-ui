@@ -272,8 +272,21 @@
    every row inside supplies its own inset, and a flush edge-to-edge body
    is what lets each row's border-top run the full width as a real divider
    instead of stopping short at an outer padding gutter. */
+/* Day N is a .rux-section (content.css: a section titles a RUN of surfaces,
+   a card header titles ONE). This is that run's single surface — the rows keep
+   sharing one box per the file header's divider rule, so the section introduces
+   [this box + the day's closing boundary card] rather than one box per stop.
+   Padding stays 0: every row inside supplies its own. */
 .sched-trip-itinerary__day-group-body {
 	padding: 0;
+}
+
+/* .rux-section__header is a column (title above description). The day's title
+   carries a trailing expand control, so it gets a row of its own rather than an
+   override of the primitive; space-between matches what .rux-card__header did
+   before the section conversion. */
+.sched-trip-itinerary__day-group > .rux-section__header > .rux-u-row {
+	justify-content: space-between;
 }
 
 /* Depth comes from one thin divider between rows, not a second, separately
