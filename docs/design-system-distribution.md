@@ -11,10 +11,11 @@ and prohibited behavior.
 
 ## 1. Model
 
-> **Under reconsideration — see §7.** §1–§6 describe what is in force today and
-> stay authoritative until a decision is recorded. §7 proposes replacing the
-> vendored snapshot with an npm dependency and states what that would and would
-> **not** fix.
+> **Reconsidered and kept — see §7.** The vendored snapshot was measured against
+> an npm dependency on 2026-08-22 and the alternative was **declined**: the one
+> benefit it offered was already delivered by the consumer's drift job, and the
+> failure that has actually bitten twice is model-independent. §1–§6 are in
+> force; §7.0 records the reasoning.
 
 This repository is the source of truth. A consuming application holds a
 **stamped snapshot**, not a live link:
@@ -180,10 +181,47 @@ worse than surfacing it with a warning attached.
 
 ## 7. Proposal — replace the vendored snapshot with an npm dependency
 
-**Status: proposed 2026-08-22, not adopted.** Nothing in §1–§6 changes until
-this is decided. Written because the owner asked whether a simpler model exists,
-and the honest answer is *yes for one specific cost, no for the cost that
-actually hurt*.
+**Status: DECLINED 2026-08-22. §1–§6 remain in force and this section is kept as
+the record of why, not as a plan.** It is written in the future tense throughout
+because it was a live proposal for a few hours; read it as history. §7.0 is the
+decision.
+
+### 7.0 Why it was declined
+
+**The proposal existed to buy one thing — staleness detection — and that turned
+out to be already delivered.** §7.1's correction has the detail: the consumer's
+`sync-design-system.yml` pins the latest tag weekly, re-vendors through the
+upstream script, runs its name check and opens a pull request. §5 is not an
+unfunded prescription; it is implemented and working.
+
+**The measurement that prompted the proposal was misread.** 87 commits of drift
+looked like blindness and was **release cadence** — the job syncs to *releases*,
+and nothing had been tagged since `v0.1.4`, so it was correctly idle. npm would
+not have helped: a package with no new version published is exactly as quiet.
+Tagging `v0.1.5`, `v0.1.6` and `v0.1.7` is what actually closed that gap.
+
+**Three further reasons, each on its own sufficient to leave §1–§6 alone:**
+
+- **The failure that has genuinely bitten twice is model-independent.**
+  `v0.1.0`'s renames and `v0.1.5`'s 81 removed tokens both passed a green build.
+  npm catches neither, because CSS class usage is strings. §7.3 said so, and it
+  is why `tools/check-consumer.mjs` mattered more than the distribution
+  mechanism did.
+- **§7.4's weakest point never got an answer.** `docs/foundations/` and the
+  `rux-design` skill ship into `design-system/` so a consumer's agent stays
+  on-system; finding them inside `node_modules` is worse, and no one proposed a
+  fix.
+- **What survives is narrower than a distribution change.** Both the drift job
+  and the name check are bespoke per consumer, so a second consumer rebuilds
+  them. That is an argument for moving them **upstream** — which
+  `check-consumer.mjs` did for one of them — not for changing how files travel.
+
+**What would reopen this:** a second consumer that cannot vendor, or one on a
+toolchain where a copied directory is genuinely awkward. Neither exists today,
+and §7.2's mechanics are recorded below so that reader does not start from
+scratch.
+
+**Read §7.7 as *what would have to be true*, never as a checklist.**
 
 ### 7.1 The measurement that prompted it
 
@@ -279,7 +317,7 @@ with standard tooling around it, not one ritual fewer.
   framework application real performance. Acceptable for a throwaway prototype;
   wrong for anything maintained.
 
-### 7.6 A simplification proposed here and then withdrawn
+### 7.6 A simplification proposed here and then withdrawn (before §7 itself was)
 
 > **Withdrawn 2026-08-22, before execution.** This section said: *retire the
 > `full` profile — its only consumer, `guide_runner`, is archived, and two
