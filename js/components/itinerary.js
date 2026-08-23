@@ -841,8 +841,8 @@
 				</div>
 			</div>
 			<div class="sched-trip-itinerary__yard-times${mode === "yard" ? " sched-trip-itinerary__yard-times--meet" : ""}">
-				<div class="rux-field" data-yard-meet-row${mode === "yard" ? "" : " hidden"}><span class="rux-field__label">Customer meet</span><div class="sched-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-meet-date value="${escHtml(pickup?.spotDate || startDate || "")}" aria-label="Calculated customer meet date" readonly /><input class="rux-input" type="time" data-yard-meet-time value="${escHtml(pickup?.spot || "")}" aria-label="Calculated customer meet time" readonly /></div></div>
-				<div class="rux-field"><span class="rux-field__label">Departs yard</span><div class="sched-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-depart-date value="${escHtml(pickup?.departPrevDate || startDate || "")}" aria-label="Yard departure date" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /><input class="rux-input" type="time" data-yard-depart-time value="${escHtml(pickup?.departPrev || "")}" aria-label="Yard departure time" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /></div></div>
+				<div class="rux-field" data-yard-meet-row${mode === "yard" ? "" : " hidden"}><span class="rux-field__label">Customer Meet</span><div class="sched-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-meet-date value="${escHtml(pickup?.spotDate || startDate || "")}" aria-label="Calculated customer meet date" readonly /><input class="rux-input" type="time" data-yard-meet-time value="${escHtml(pickup?.spot || "")}" aria-label="Calculated customer meet time" readonly /></div></div>
+				<div class="rux-field"><span class="rux-field__label">Yard Departure</span><div class="sched-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-depart-date value="${escHtml(pickup?.departPrevDate || startDate || "")}" aria-label="Yard departure date" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /><input class="rux-input" type="time" data-yard-depart-time value="${escHtml(pickup?.departPrev || "")}" aria-label="Yard departure time" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /></div></div>
 			</div>
 			</div>
 		</section>`;
@@ -997,14 +997,15 @@
 		const showDwellStatus = type !== "sleeper" && type !== "return" && !!nextTravelStop;
 		const dwellStatus = ["off", "sleeper", "on"].includes(stop.dwellStatus) ? stop.dwellStatus : "on";
 
-		// Shown as well as spoken since the visible labels landed, so these are
-		// words rather than the "Dep"/"Arr"/"Spt" abbreviations they were while
-		// only a screen reader ever reached them.
-		const time1Label = type === "sleeper" ? "Starts" : "Departs";
+		// Title Case nouns, per Geist's Input content rule: a label names the
+		// thing, it does not describe what happens. These were "Dep"/"Arr"/"Spt"
+		// while only a screen reader reached them, then briefly verbs when they
+		// became visible.
+		const time1Label = type === "sleeper" ? "Start" : "Departure";
 		const time2 =
 			type === "pickup"  ? { label: "Spot", field: "spot", dateField: "spotDate" } :
-			type === "sleeper" ? { label: "Ends", field: "arrive", dateField: "arriveDate" } :
-			                     { label: "Arrives", field: "arrive", dateField: "arriveDate" };
+			type === "sleeper" ? { label: "End", field: "arrive", dateField: "arriveDate" } :
+			                     { label: "Arrival", field: "arrive", dateField: "arriveDate" };
 
 		const isVerified = !!(stop.lat && stop.lng);
 		const showAddrIcon = isStale || isVerified;
@@ -1044,10 +1045,9 @@
 			   </div>`;
 		const addrEl = type === "sleeper"
 			? `<div class="rux-field">
-                 <label class="rux-field__label" for="${addrFieldId}">Resting at</label>
+                 <label class="rux-field__label" for="${addrFieldId}">Resting Location</label>
                  <div class="sched-trip-itinerary__address-wrap">
                <input id="${addrFieldId}" class="rux-input" type="text" value="${escHtml(visibleSleeperAddr)}" readonly
-                      placeholder="Inherits previous stop's address"
                       aria-label="${visibleSleeperAddr ? `Resting at ${escHtml(visibleSleeperAddr)}` : "Resting location — inherits previous stop's address"}" />
              </div></div>`
 			: isReturn
