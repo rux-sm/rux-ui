@@ -16,7 +16,7 @@ roles onto that vocabulary.
 | Document | Contract | Status | Blocked on |
 |---|---|---|---|
 | [`typography.md`](typography.md) | 4.10.1 | 58 done · 1 deferred · 3 withdrawn | — |
-| [`layout.md`](layout.md) | 1.9.0 | 12 done · 1 open | — |
+| [`layout.md`](layout.md) | 1.10.0 | 13 done | — |
 | [`color.md`](color.md) | 3.0.0 | 19 done | — |
 | [`motion.md`](motion.md) | 1.2.0 | 3 done · 1 open | — |
 | [`naming.md`](naming.md) | 1.17.0 | 14 done · 1 open | — |
