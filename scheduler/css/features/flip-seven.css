@@ -7,6 +7,14 @@
 
 .flip-seven [hidden] { display: none !important; }
 .flip-seven__quit { flex: none; }
+/* The header's action row must be able to shrink. .rux-u-row is a bare flex
+   row, so it keeps the default min-width: auto and refuses to go below its
+   content width — which meant .flip-seven__status's own ellipsis never
+   engaged and a long status pushed the title to zero and spilled out of the
+   header. The status text is user-supplied ("<name> is drawing"), so it is
+   unbounded and has to be the part that yields. */
+.flip-seven__panel > .rux-panel__header > .rux-u-row { min-width: 0; }
+.flip-seven__panel > .rux-panel__header > .rux-panel__title { flex: 0 0 auto; }
 .flip-seven__status {
 	min-width: 0;
 	overflow: hidden;
