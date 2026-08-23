@@ -18,8 +18,8 @@ roles onto that vocabulary.
 | [`typography.md`](typography.md) | 4.10.1 | 58 done · 1 deferred · 3 withdrawn | — |
 | [`layout.md`](layout.md) | 1.10.0 | 13 done | — |
 | [`color.md`](color.md) | 3.0.0 | 19 done | — |
-| [`motion.md`](motion.md) | 1.2.0 | 3 done · 1 open | — |
-| [`naming.md`](naming.md) | 1.17.0 | 14 done · 1 open | — |
+| [`motion.md`](motion.md) | 1.3.0 | 4 done | — |
+| [`naming.md`](naming.md) | 1.18.0 | 15 done | — |
 | [`state.md`](state.md) | 1.7.0 | 9 done | — |
 
 `../motion.md` stays at the component tier — which token a panel, menu or scrim consumes,
