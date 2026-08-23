@@ -8,12 +8,17 @@
    one input can be focused). First consumer is the trip panel's
    booking/trip-contact autofill (js/panels/trip-panel.js).
 
-   Not yet used by js/components/itinerary.js's own Mapbox address search,
-   which predates this and has its own copy of the same positioning/render/
-   select mechanics — left alone on purpose. That flow is tangled with
-   session-token and geocode-on-select concerns specific to Mapbox, and
-   isn't worth the regression risk of refactoring a working, business-
-   critical flow just for the sake of sharing this code sooner.
+   Second consumer is js/components/itinerary.js's Mapbox address search.
+   It predated this component and carried its own copy of the same
+   positioning/render/select mechanics; that copy was retired 2026-08-22.
+
+   This note used to say that flow was left alone on purpose — "tangled with
+   session-token and geocode-on-select concerns ... not worth the regression
+   risk". Two things changed. The concerns turned out to separate cleanly:
+   the Mapbox session token lives in the consumer's `fetch`, geocode-on-select
+   in its `onSelect`, and this component sees neither. And the reason to move
+   was never code sharing — the hand-rolled copy had no arrow keys and never
+   set aria-selected, so its list was reachable by mouse only.
 
    API
    ---

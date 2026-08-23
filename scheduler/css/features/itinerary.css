@@ -751,10 +751,6 @@
 	padding-right: calc(var(--rux-icon-sm, 14px) + var(--rux-space-2) * 2);
 }
 
-.sched-trip-itinerary__suggestion.is-saved .sched-trip-itinerary__suggestion-name {
-	color: var(--rux-accent);
-}
-
 @container (max-width: 460px) {
 	.sched-trip-itinerary__yard-times--meet {
 		grid-template-columns: minmax(0, 1fr);

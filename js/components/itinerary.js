@@ -1480,6 +1480,7 @@
 			closeDayCard();
 
 			stopsEl.innerHTML = dayCards.join("");
+			bindAddressSuggestions();
 			syncRouteButton();
 		}
 
@@ -1552,12 +1553,18 @@
 
 			const pickupIdx = stops.indexOf(pickup);
 			if (mode === "yard" && activeAddressIdx === pickupIdx) {
-				hideSuggestions();
+				// The pickup row is replaced just below, so detach rather than hide:
+				// it closes the dropdown if this input owns it, and the focusin
+				// binding re-attaches whatever replaces it.
+				stopsEl
+					.querySelector(`.sched-trip-itinerary__stop[data-stop-idx="${pickupIdx}"] [data-field="address"]`)
+					?.__ruxSuggestions?.detach();
 				activeAddressIdx = null;
 			}
 			const currentPickup = stopsEl.querySelector(`.sched-trip-itinerary__stop[data-stop-idx="${pickupIdx}"]`);
 			const replacementPickup = elementFromMarkup(renderStop(pickup, pickupIdx, stops));
 			if (currentPickup && replacementPickup) currentPickup.replaceWith(replacementPickup);
+			bindAddressSuggestions();
 			syncDwellSummaryCard(pickup, pickupIdx);
 			window.Rux?.syncDateInputs?.(section);
 		}
@@ -1663,38 +1670,19 @@
 			dayAddMenu.innerHTML = "";
 		});
 
-		let addressSearchTimer = null;
-		let addressSearchSeq = 0;
 		let addressSessionToken = uuid();
 		let activeAddressIdx = null;
-		let activeSuggestions = [];
 		let locationsDbPromise = null;
 
-		const suggestionsEl = document.createElement("div");
-		suggestionsEl.className = "rux-suggestions sched-trip-itinerary__suggestions";
-		suggestionsEl.hidden = true;
-		suggestionsEl.setAttribute("role", "listbox");
-		suggestionsEl.setAttribute("aria-label", "Address suggestions");
-		document.body.appendChild(suggestionsEl);
-
-		function hideSuggestions() {
-			suggestionsEl.hidden = true;
-			suggestionsEl.innerHTML = "";
-			activeSuggestions = [];
-		}
-
-		function selectedAddressInput() {
-			if (activeAddressIdx === null) return null;
-			return stopsEl.querySelector(`.sched-trip-itinerary__stop[data-stop-idx="${activeAddressIdx}"]:not([hidden]) [data-field="address"]`);
-		}
-
-		function positionSuggestions(input) {
-			const rect = input.getBoundingClientRect();
-			const margin = 8;
-			const width = Math.max(rect.width, 240);
-			suggestionsEl.style.left = `${Math.max(margin, Math.min(rect.left, window.innerWidth - width - margin))}px`;
-			suggestionsEl.style.top = `${rect.bottom + 4}px`;
-			suggestionsEl.style.width = `${Math.min(width, window.innerWidth - margin * 2)}px`;
+		/* The dropdown itself is rux-ui/js/suggestions.js: one singleton panel,
+		   debounce, stale-response guarding, arrow keys, aria-selected /
+		   aria-activedescendant / aria-expanded, popover placement, and the
+		   overlay kernel's outside-press and Escape. What stays here is the part
+		   that is actually about addresses -- the Mapbox session token, the
+		   saved-locations merge, and geocode-on-select. */
+		function addressStopIdx(input) {
+			const stopEl = input?.closest("[data-stop-idx]");
+			return stopEl ? parseInt(stopEl.dataset.stopIdx, 10) : null;
 		}
 
 		function suggestionLabel(suggestion) {
@@ -1703,42 +1691,6 @@
 				[suggestion.name, suggestion.place_formatted].filter(Boolean).join(", ") ||
 				suggestion.name ||
 				"Address";
-		}
-
-		function renderSuggestions(input, suggestions) {
-			activeSuggestions = suggestions;
-			if (!suggestions.length) {
-				hideSuggestions();
-				return;
-			}
-			// Same promotion rux-ui/js/suggestions.js's own dropdown uses — this
-			// one predates that shared component and has its own copy of the
-			// same positioning mechanics (see the file header comment), so it
-			// needs the same fix independently: .sched-trip-itinerary__suggestions
-			// is a fixed-position, document.body-appended panel with a flat
-			// --rux-z-dropdown (100) z-index, while the trip editor's own
-			// .rux-panel--floating sits at --rux-z-modal (400) — without
-			// this, the address suggestions list renders behind the dialog
-			// it's popping out of instead of on top of it.
-			// The host list is the overlay kernel's, so this reads it rather
-			// than keeping a third verbatim copy of the selector.
-			window.RuxOverlay.promoteLayer(suggestionsEl, input);
-			positionSuggestions(input);
-			suggestionsEl.innerHTML = suggestions.map((suggestion, i) => {
-				const isSaved = suggestion.source === "saved";
-				const name = isSaved
-					? suggestion.location.name
-					: suggestion.name || suggestionLabel(suggestion);
-				const address = isSaved
-					? suggestion.location.address
-					: suggestion.place_formatted || suggestion.full_address || "";
-				return `
-					<button class="rux-suggestions__item sched-trip-itinerary__suggestion${isSaved ? " is-saved" : ""}" type="button" role="option" data-suggestion-idx="${i}">
-						<span class="rux-suggestions__label sched-trip-itinerary__suggestion-name">${escHtml(name)}</span>
-						<span class="rux-suggestions__sublabel sched-trip-itinerary__suggestion-address">${isSaved ? "Saved · " : ""}${escHtml(address)}</span>
-					</button>`;
-			}).join("");
-			suggestionsEl.hidden = false;
 		}
 
 		async function getLocationsDb() {
@@ -1766,22 +1718,15 @@
 			}
 		}
 
-		async function suggestAddress(input, idx) {
+		/* The controller owns debounce, the stale-response guard and the
+		   "did focus move away" check, so this is only the data half: saved
+		   locations first, then Mapbox deduped against them. */
+		async function fetchAddressSuggestions(query) {
+			const saved = await savedLocationSuggestions(query);
 			const token = getMapboxToken();
-			const q = input.value.trim();
-			if (q.length < 2) {
-				hideSuggestions();
-				return;
-			}
-			const seq = ++addressSearchSeq;
-			const saved = await savedLocationSuggestions(q);
-			if (seq !== addressSearchSeq || activeAddressIdx !== idx) return;
-			if (!token || q.length < 3) {
-				renderSuggestions(input, saved);
-				return;
-			}
+			if (!token || query.length < 3) return saved.map(toSuggestionItem);
 			const url = new URL("https://api.mapbox.com/search/searchbox/v1/suggest");
-			url.searchParams.set("q", q);
+			url.searchParams.set("q", query);
 			url.searchParams.set("session_token", addressSessionToken);
 			url.searchParams.set("access_token", token);
 			url.searchParams.set("country", "US");
@@ -1792,17 +1737,56 @@
 				const response = await fetch(url);
 				if (!response.ok) throw new Error(`Mapbox suggest failed: ${response.status}`);
 				const data = await response.json();
-				if (seq !== addressSearchSeq || activeAddressIdx !== idx) return;
 				const savedAddresses = new Set(
 					saved.map((item) => item.location.address.toLowerCase()),
 				);
 				const mapbox = (data.suggestions || [])
 					.filter((item) => !savedAddresses.has(suggestionLabel(item).toLowerCase()))
 					.map((item) => ({ ...item, source: "mapbox" }));
-				renderSuggestions(input, [...saved, ...mapbox]);
+				return [...saved, ...mapbox].map(toSuggestionItem);
 			} catch (err) {
 				console.warn("Address suggestions failed:", err);
-				renderSuggestions(input, saved);
+				return saved.map(toSuggestionItem);
+			}
+		}
+
+		/* .rux-suggestions renders item.label and item.sublabel; everything else
+		   on the object rides through untouched to onSelect. */
+		function toSuggestionItem(suggestion) {
+			const isSaved = suggestion.source === "saved";
+			return {
+				...suggestion,
+				label: isSaved
+					? suggestion.location.name
+					: suggestion.name || suggestionLabel(suggestion),
+				sublabel: isSaved
+					? `Saved \u00b7 ${suggestion.location.address}`
+					: suggestion.place_formatted || suggestion.full_address || "",
+			};
+		}
+
+		/* Bound whenever stop rows are rebuilt, not on first focus: the
+		   controller's own focus listener has to exist BEFORE the field is
+		   focused, or focusing a field that already has an address opens
+		   nothing. Rows are replaced wholesale on every render, so the marker
+		   attribute resets with them and each generation binds exactly once. */
+		function bindAddressSuggestions() {
+			const unbound = stopsEl.querySelectorAll(
+				'[data-field="address"]:not([data-rux-suggestions])',
+			);
+			for (const input of unbound) {
+				input.dataset.ruxSuggestions = "1";
+				input.__ruxSuggestions = window.RuxSuggestions.attach(input, {
+					minChars: 2,
+					debounceMs: 250,
+					fetch: fetchAddressSuggestions,
+					onSelect: (item) => {
+						const idx = addressStopIdx(input);
+						if (idx === null || !stops[idx]) return;
+						if (item.source === "saved") applySavedLocation(idx, item);
+						else retrieveSuggestion(idx, item);
+					},
+				});
 			}
 		}
 
@@ -1995,7 +1979,6 @@
 			const stop = stops[idx];
 			stop.milesSource = stop.milesSource === "manual" ? "manual" : "estimated";
 			stop.driveSource = stop.driveSource === "manual" ? "manual" : "estimated";
-			hideSuggestions();
 			renderStopList();
 			updateFromLabels();
 			await estimateLeg(idx);
@@ -2142,8 +2125,6 @@
 				if (stops[idx].milesSource !== "manual") stops[idx].miles = "";
 				if (stops[idx].driveSource !== "manual") stops[idx].drive = "";
 				updateSummary();
-				clearTimeout(addressSearchTimer);
-				addressSearchTimer = setTimeout(() => suggestAddress(e.target, idx), 250);
 			}
 			if (field === "miles") {
 				stops[idx].milesSource = "manual";
@@ -2161,36 +2142,12 @@
 
 		stopsEl.addEventListener("focusin", (e) => {
 			if (e.target.dataset.field !== "address") return;
-			const stopEl = e.target.closest("[data-stop-idx]");
-			if (!stopEl) return;
-			const idx = parseInt(stopEl.dataset.stopIdx, 10);
-			if (activeAddressIdx !== idx) {
-				activeAddressIdx = idx;
-				addressSessionToken = uuid();
-			}
-			suggestAddress(e.target, idx);
-		});
-
-		suggestionsEl.addEventListener("click", (e) => {
-			const btn = e.target.closest("[data-suggestion-idx]");
-			if (!btn || activeAddressIdx === null) return;
-			const suggestion = activeSuggestions[parseInt(btn.dataset.suggestionIdx, 10)];
-			if (suggestion?.source === "saved") {
-				applySavedLocation(activeAddressIdx, suggestion);
-			} else {
-				retrieveSuggestion(activeAddressIdx, suggestion);
-			}
-		});
-
-		document.addEventListener("mousedown", (e) => {
-			if (suggestionsEl.hidden) return;
-			if (suggestionsEl.contains(e.target)) return;
-			if (selectedAddressInput()?.contains(e.target)) return;
-			hideSuggestions();
-		});
-
-		document.addEventListener("keydown", (e) => {
-			if (e.key === "Escape") hideSuggestions();
+			const idx = addressStopIdx(e.target);
+			if (idx === null || activeAddressIdx === idx) return;
+			// Moving to a different field starts a new Mapbox autocomplete
+			// session; the dropdown itself is already bound by render.
+			activeAddressIdx = idx;
+			addressSessionToken = uuid();
 		});
 
 		// Update "From" labels after the user finishes editing a name field
