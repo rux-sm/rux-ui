@@ -90,6 +90,21 @@ test("the configured yard is not auto-saved into the directory", () => {
 	assert.match(tripDb, /!==\s*yardAddress/);
 });
 
+test("sleeper stops are not auto-saved — their address and coordinates disagree", () => {
+	/* A sleeper rests wherever the previous real stop is; itinerary.js derives
+	   that fresh on every render and never reads the stored row, which its own
+	   comments describe as drifting once stops are reordered. In the live data
+	   9 of 11 sleepers carry the current previous stop's coordinates while 10
+	   carry an address belonging to a different stop, so the row pairs an
+	   address with coordinates for somewhere else. Auto-save would have been
+	   the first consumer to trust that pair. */
+	const tripDb = readFileSync(
+		new URL("../js/data/trip-db.js", import.meta.url),
+		"utf8",
+	);
+	assert.match(tripDb, /\.filter\(\(stop\) => stop\.type !== "sleeper"\)/);
+});
+
 test("every write to the shared locations blob re-reads the server first", () => {
 	/* The whole directory is one row (settings/locations-v1) upserted whole,
 	   and the client is anon, so it is one list for everybody. A write built

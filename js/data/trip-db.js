@@ -1357,7 +1357,20 @@ import {
 				const yardAddress = String(window.RuxSettings?.getYard?.()?.address || "")
 					.trim()
 					.toLowerCase();
+				// A sleeper has no location of its own -- it rests wherever the
+				// previous real stop is, and itinerary.js derives that fresh on
+				// every render rather than reading the row (see
+				// previousStopAddress, and the comment above the zero-distance
+				// leg). Its stored address/lat/lng are a snapshot the codebase
+				// documents as drifting once stops are reordered, and the live
+				// data shows exactly that: of 11 sleepers carrying coordinates,
+				// 9 have the CURRENT previous stop's coordinates while 10 have an
+				// address belonging to some OTHER stop in the same trip. The pair
+				// disagrees about which stop it describes, so saving it would
+				// publish an address bound to the wrong coordinates -- and this
+				// would have been the first consumer in the app to trust it.
 				const stopLocations = savedStopsData
+					.filter((stop) => stop.type !== "sleeper")
 					.filter((stop) => stop.address && stop.lat != null && stop.lng != null)
 					.filter((stop) => stop.address.trim().toLowerCase() !== yardAddress)
 					.map((stop) => ({
