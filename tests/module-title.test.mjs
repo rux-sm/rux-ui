@@ -55,23 +55,29 @@ test("no workspace title claims to be the page heading", () => {
 
 test("the workspace title does not depend on its tag for size", () => {
 	// It was an h1 and is now an h2, so its type cannot come from the element.
-	// It doesn't: card.css types it with the shared panel-heading role,
-	// alongside .rux-card__title and .rux-panel__title. workspace.css owns the
-	// box only — a second type declaration there would be dead anyway, since
-	// card.css imports later.
-	const shared = card.match(
-		/(?:^|\n)([^{}]*\.rux-workspace__title\s*\{[^}]*\})/,
-	)[1];
-	for (const role of [
-		"--rux-text-heading-16-size",
-		"--rux-text-heading-16-weight",
-		"--rux-text-heading-16-line-height",
-		"--rux-text-heading-16-tracking",
-	]) {
-		assert.match(shared, new RegExp(role), `missing ${role}`);
-	}
+	// Since typography.md §3.5 step 64 workspace.css owns the type AND the box:
+	// a workspace titles the page at heading-24, where a panel titles a surface
+	// at 20 and a card at 16. Before that it shared card.css's heading-16 recipe
+	// and so titled SMALLER than the panels nested inside it.
 	const box = workspace.match(/\.rux-workspace__title\s*\{[^}]*\}/)[0];
-	assert.doesNotMatch(box, /font-size|font-weight|line-height/);
+	for (const role of [
+		"--rux-text-heading-24-size",
+		"--rux-text-heading-24-weight",
+		"--rux-text-heading-24-line-height",
+		"--rux-text-heading-24-tracking",
+	]) {
+		assert.match(box, new RegExp(role), `missing ${role}`);
+	}
+	// card.css imports AFTER workspace.css, so any rule left there would win and
+	// silently undo the ladder. It must not type this class at all. Comments are
+	// stripped first: card.css legitimately NAMES the class in the note recording
+	// why it left, and matching prose would fail on the explanation itself.
+	const cardRules = card.replace(/\/\*[\s\S]*?\*\//g, "");
+	assert.doesNotMatch(
+		cardRules,
+		/\.rux-workspace__title[^{}]*\{[^}]*font-size/,
+		"card.css must not re-type .rux-workspace__title — it imports later and would win",
+	);
 });
 
 test("every view resolves a name for the header", () => {

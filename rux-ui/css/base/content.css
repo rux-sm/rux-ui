@@ -30,13 +30,18 @@
 	gap: var(--rux-space-1);
 }
 
+/* heading-16, the same rung as .rux-card__title — deliberately. Between a
+   section and a card the hierarchy signal is POSITION, not size: a section
+   heading sits outside the frame it introduces, a card title inside one.
+   Spending a size step on it would push the section above the panel that
+   contains it. typography.md §3.5. */
 .rux-section__title {
 	margin: 0;
-	color: var(--rux-text-heading-24-color);
-	font-size: var(--rux-text-heading-24-size);
-	font-weight: var(--rux-text-heading-24-weight);
-	letter-spacing: var(--rux-text-heading-24-tracking);
-	line-height: var(--rux-text-heading-24-line-height);
+	color: var(--rux-text-heading-16-color);
+	font-size: var(--rux-text-heading-16-size);
+	font-weight: var(--rux-text-heading-16-weight);
+	letter-spacing: var(--rux-text-heading-16-tracking);
+	line-height: var(--rux-text-heading-16-line-height);
 }
 
 /* Wraps, unlike .rux-card__title — a section heading is copy, and copy that

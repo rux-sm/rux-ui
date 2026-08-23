@@ -49,7 +49,15 @@
    once in card.css alongside .rux-card__title and .rux-panel__title — which
    also makes it tag-agnostic, so demoting it from <h1> to <h2> under a shell
    header that owns the page heading changes nothing visually. */
+/* heading-24, where a panel titles at 20 and a card at 16. A workspace names
+   the page the panels sit on; until typography.md §3.5 it read heading-16 and
+   so titled SMALLER than the panels nested inside it. §3.5 step 64. */
 .rux-workspace__title {
+	color: var(--rux-text-heading-24-color);
+	font-size: var(--rux-text-heading-24-size);
+	font-weight: var(--rux-text-heading-24-weight);
+	letter-spacing: var(--rux-text-heading-24-tracking);
+	line-height: var(--rux-text-heading-24-line-height);
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
