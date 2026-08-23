@@ -249,9 +249,15 @@
 	gap: var(--rux-space-2);
 }
 
-/* Shared warn/ok tint — also used by renderDayStatsGrid's over-limit outputs */
+/* Shared warn/ok tint — also used by renderDayStatsGrid's over-limit outputs.
+   --warn reads --rux-warning, not --rux-danger: an hours total over its limit
+   is a measurement to notice, and the destructive control sitting beside it in
+   the same boundary row (Delete boundary) is what --rux-danger means. The two
+   resolved to the same red, so one row said "over limit" and "this destroys
+   something" in one colour. Its sibling --ok already read --rux-success.
+   docs/foundations/color.md §3.2 publishes the four as distinct roles. */
 .sched-trip-itinerary__seg-stat--warn {
-	color: var(--rux-danger);
+	color: var(--rux-warning);
 	font-weight: var(--rux-weight-400);
 }
 
