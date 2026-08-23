@@ -1,10 +1,10 @@
 # Rux UI Foundations — Motion
 
-**Contract version: 1.4.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.5.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 4 steps: **4 done**
+**Status** · 5 steps: **5 done**
 This document is canonical for **how long a change takes and what curve it follows** — the
 duration and easing scales, which curve an entrance, an exit and a continuous movement each
 take, what may be animated at all, and what must keep working when motion is switched off.
@@ -62,10 +62,17 @@ exists to prevent.
 | `--rux-ease-out` | `cubic-bezier(0.22, 1, 0.36, 1)` |
 | `--rux-ease-in-out` | `cubic-bezier(0.4, 0, 0.2, 1)` |
 
-`--rux-ease-out` is **not** the entrance curve under another name: it overshoots toward 1
-early, where the productive entrance curve does not. These are different motion characters,
-and Q1 established that the difference is the point rather than an accident — an overshooting
-curve is right for a control answering a pointer and wrong for a panel arriving.
+`--rux-ease-out` is **not** the entrance curve under another name. Both its control points
+sit at **y = 1**, so it rises steeply and flattens: the value arrives early and holds, where
+the productive entrance curve (y2 = 0.9) approaches more evenly. These are different motion
+characters, and Q1 established that the difference is the point rather than an accident — a
+front-loaded curve is right for a control answering a pointer and wrong for a panel arriving.
+
+> **Correction, step 5.** This paragraph said `--rux-ease-out` *"overshoots toward 1 early"*.
+> **It does not overshoot**, and the word matters now that rule 2.4 has a checkable
+> definition: a curve overshoots only when a control point's y falls **outside** [0, 1], and
+> this one sits exactly **on** the boundary. Calling a legal curve by the name of the thing
+> 2.4 forbids is how a rule and its own document drift apart.
 
 ### 1.3 The semantic layer
 
@@ -91,11 +98,26 @@ duration, delay, or easing curve as a literal value. *(R6's motion half. Enforce
 uses the entrance curve, a surface leaving uses the exit curve, and a control moving with an
 already-visible surface uses the standard curve. *(Enforced for panels.)*
 
-**2.3 Animate only what explains the state change.** Normally `transform`, `translate`,
-`opacity`, `clip-path`, or a surface's own layout dimension. *(**Not enforced.**)*
+**2.3 Animate only what explains the state change.** *(**Guidance, not a rule** — restated by
+step 5, which measured it and found it false as written.)*
+
+The original text named `transform`, `translate`, `opacity`, `clip-path` and layout
+dimensions as though they were the permitted set. **63 of the layer's 122 property
+transitions fall outside that list**, and the largest groups are `background-color` (12),
+`box-shadow` (12), `border-color` (7) and `color` (6) — hover and focus feedback on controls,
+which is exactly what a component's `--rux-*-transition` token exists for. A rule violated by
+half the layer for good reasons is not a rule.
+
+What survives is a judgement, and it is written as one: **animate the property that carries
+the meaning of the change, not one that merely happens to differ between the two states.**
+Whether a given property does that cannot be decided by reading a stylesheet, which is why
+this is guidance and why no test is owed.
 
 **2.4 No spring, bounce, or overshoot** on shell navigation, panels, dialogs, or menus.
-Productive motion is not expressive motion. *(**Not enforced** — see §4 D3.)*
+Productive motion is not expressive motion. **A curve overshoots exactly when a control
+point's y falls outside `[0, 1]`** — below 0 it reverses before starting, above 1 it passes
+its target and returns; x is unconstrained, since a curve may take any pace through time
+without overshooting. *(Enforced: `tests/motion-contract.test.mjs`.)*
 
 **2.5 Direct manipulation is never animated.** A resize separator tracks the pointer
 one-to-one with no transition, threshold, snap, or spring, and keyboard Arrow, Home and End
@@ -152,7 +174,7 @@ assert rule 2.1 generally: a literal `200ms` in a stylesheet no test reads would
 | D1 | ~~**Two duration and easing vocabularies coexist with different values.**~~ **Not a defect — closed by Q1, step 2.** They are two motion characters for two interaction classes: surfaces arriving and leaving, against things changing in place. `../audit/design-system-audit.md` §4's proposal to make one a thin alias of the other would have changed what renders on every control that reads it. **What survives as real** is narrower and is now D5. | **closed, step 2** |
 | D5 | **Accepted debt, step 4 — measured and declined.** **The names do not say which scale does which job.** `--rux-duration-fast` and `--rux-motion-duration-fast-02` are indistinguishable at a call site, and nothing tells an author that one is for controls and the other for surfaces. Two dead tokens make it worse: `--rux-duration-productive` bridges the scales with zero consumers, which actively implies they are interchangeable, and `--rux-motion-duration-moderate-02` is unread. | step 4 — Class C |
 | D2 | `../motion.md` states **foundation values** — the 70/110/150/240ms table — at the component tier, which `CLAUDE.md`'s one-home rule puts here. | step 3 |
-| D3 | Rules 2.3 and 2.4 have **no test**. A spring curve or an animated `width` would pass every suite. | needs its own step |
+| D3 | ~~Rules 2.3 and 2.4 have **no test**.~~ **Closed, step 5 — in two different ways.** **2.4** gained a definition it could be checked against (a control point's y outside `[0, 1]`) and is now enforced, with no exception list. **2.3** was measured and **is not a rule**: 63 of 122 property transitions fall outside its list, almost all of them colour feedback on controls. It is restated as guidance, and no test is owed for a judgement. | **closed, step 5** |
 | D4 | **Downgraded by step 4**: the application's 47 motion declarations resolve to 5 patterns, 41 of them two, so it is already consistent and a semantic tier would add indirection without a decision point. **92 application rules consume motion primitives directly** rather than a component semantic token, which is two thirds of the short set's use. The portable layer models this correctly — `--rux-button-transition-*`, `--rux-panel-motion-duration` — and the application skipped the tier. | recorded; belongs to `../portability-audit.md` |
 
 ---
@@ -167,6 +189,7 @@ Ordered by dependency. Every step records what it deliberately did **not** do.
 | 2 | Answer Q1 | **done · Class A** | **Answered 2026-08-22, and the answer is that the question was wrong.** The step was written as *converge on one vocabulary*; measuring per-token usage showed convergence is the mistake. **Neither set is retired.** §6 Q1 carries the reasoning. **What the measurement found**, none of which was visible from the totals this document was founded on: `--rux-duration-productive` — the one token bridging the scales — has **zero** consumers, as does `--rux-motion-duration-moderate-02`; the short set's 139 references are **21** component semantic definitions, **24** portable rules and **92** application rules, so the portable layer's real stake is 45 against the Carbon set's 18 rather than 139 against 18; and the two sets divide cleanly by **what they animate** — the Carbon set times surfaces arriving and leaving through the `--rux-panel-*` aliases, and the short set times things changing in place, feeding `--rux-button-transition-*`, `--rux-input-transition`, `--rux-switch-transition`, `--rux-choicebox-transition` and their peers. **A control answering a pointer and a panel arriving are different motions, and an overshooting `--rux-ease-out` against a productive entrance curve is exactly that difference expressed.** Aliasing either onto the other would change what renders on every site that reads it, which is why `../audit/design-system-audit.md` §4's *legacy becomes thin aliases* was never as cheap as it sounded. **Deliberately did not execute anything.** The real defect the answer leaves behind — the names not saying which scale does which job, and two dead tokens implying they are interchangeable — is D5 and Class C, so it stops and proposes as step 4. **Deliberately did not fold D4 in**: an application consuming primitives past its own semantic tier is `../portability-audit.md`'s, not a motion rule. Contract 1.0.0 → 1.1.0. |
 | 3 | **Consolidate** — move `../motion.md`'s Foundation Tokens table here; convert it to a pointer | **done · Class A** | **Executed 2026-08-22.** Both sources named in the step are now pointers. **`../motion.md` § Foundation Tokens** stated the Carbon table's values at the component tier; it now links §1 and states none, and its pointer carries the two things that section used to get wrong — that there are **two** scales rather than one, and that the set the layer actually reaches for **139 times** was never mentioned there at all. Its component recipes and verification checklist are untouched; they are correct and they are that document's job. **`../audit/design-system-audit.md` §5 rule 6** is now a pointer for both moved halves, colour to `color.md` and duration/easing here. **Splitting one rule twice exposed a third piece nobody had noticed.** R6 reads *no literal duration, easing, or z-index* — and **z-index has no home**. Five tokens are published (`--rux-z-base`, `-dropdown`, `-overlay`, `-modal`, `-sticky`), **no foundation document mentions z-index at all**, and nothing enforces it. **Deliberately did not claim it here.** Stacking order is not motion; the natural home is `layout.md`, which already owns the Materials elevation presets, and z-index is the ordering half of the same idea — but routing a rule into another document is that document's to accept, so it is proposed as `layout.md` step 13 rather than assigned. **With this step, every rule in §5 that had a foundation destination has reached it**, and what remains there is R9, R10 and that orphan. Contract 1.1.0 → 1.2.0. |
 | 4 | Name each scale for its job; retire the two dead tokens (D5) | **done · Class A — the rename is declined; the two deletions stay proposed** | **Measured 2026-08-22, then declined.** D5 is real: the names describe *speed* where Q1 established the distinction is *what moves*. **The fix does not earn its cost.** The rename spans **310 occurrences** across `--rux-menu`-free ground — `--rux-duration-*` 80, `--rux-ease-*` 78, `--rux-motion-*` 25 in this repository — and buys naming accuracy with no behavioural change and no consumer impact (**zero** consumer-owned references). It would also make every call site **longer**, spending the short set's readability, which Q1 recorded as its genuine strength. **The step's own candidate direction was tested and abandoned too.** *Route the application's rules through component semantics first, then re-read D5* assumed the application is inconsistent. It is not: its **47** motion declarations resolve to **5** patterns, and **41 of those are two** — `fast + ease-out` and `base + ease-out`. The primitives already are the shared vocabulary; a semantic tier between the rule and the token would add indirection without adding a decision point, because the application has no consumer that would ever retune it. **D4 is therefore downgraded, not scheduled.** **The two dead tokens were a different matter and were taken separately — and only one of them survived the check.** `--rux-duration-productive` is retired (`../portability-audit.md` entry 25): zero readers, and a second reason beyond being unused, since a dead alias between two scales asserts the interchangeability Q1 had just disproved. **`--rux-motion-duration-moderate-02` is kept.** Proposing it here was wrong: it is the fourth rung of a complete four-rung ladder, and ledger entry 16 already decided that case — *the unused rungs of a complete scale or palette were kept, a design system ships whole ladders*. This step bundled the two because both measured as unread; **unread is not the same claim as unwanted**, and only one had the second reason. Contract 1.3.0 → 1.4.0. |
+| 5 | Give 2.3 and 2.4 definitions, then enforce what can be (D3) | **done · Class A** | **Executed 2026-08-22, and the two halves went opposite ways — which is the finding.** **2.4 had a precise definition available and nobody had reached for it.** A cubic-bezier overshoots exactly when a control point's **y** leaves `[0, 1]`; below 0 the value reverses before it starts, above 1 it passes its target and comes back. Spring and bounce are that same fault named differently. **x is deliberately unchecked** — the spec already bounds it, and a curve may take any pace through time without overshooting. The layer holds **five distinct curves** and every y is inside the range, so `motion-contract` gained the assertion **with no exception list**, and it was verified to fail first: a planted `cubic-bezier(0.5, 1.6, 0.4, 1)` went red naming the file, the curve and the offending control point. **The test checks both layers rather than the four surfaces 2.4 names**, because scoping to *shell navigation, panels, dialogs and menus* means inferring which stylesheet styles a dialog — the inference `naming.md` step 2 records as how a check ends up measuring its own allow-list. Nothing productive should overshoot, so the wider assertion is also the simpler one. **2.3 went the other way: measuring it proved it false.** It read as a permitted set — `transform`, `translate`, `opacity`, `clip-path`, layout dimensions — and **63 of the layer's 122 property transitions fall outside it**, led by `background-color`, `box-shadow`, `border-color` and `color`. Those are hover and focus feedback, exactly what a component's `--rux-*-transition` token exists for. **A rule violated by half the layer for good reasons is not a rule**, so it is restated as guidance and owes no test. **The measurement cleared a suspect too**: two `display` transitions looked like a defect and are the `transition-behavior: allow-discrete` pattern in `menu.css`, which is correct and deliberate. **§1.2 is corrected in the same step** — it called `--rux-ease-out` *overshooting*, and both its control points sit **on** y = 1 rather than outside it. Once 2.4 has a checkable definition, describing a legal curve with the word the rule forbids is how a document drifts from its own rule. Contract 1.4.0 → 1.5.0. |
 
 ---
 

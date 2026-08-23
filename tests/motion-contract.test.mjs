@@ -186,3 +186,61 @@ test("motion remains optional for accessibility and documented centrally", () =>
 	assert.match(motionDocs, /Opening uses the entrance curve/);
 	assert.match(motionDocs, /Repeated toggling cannot leave stale open/);
 });
+
+/* Rule 2.4 — no spring, bounce, or overshoot on shell navigation, panels,
+ * dialogs, or menus. Enforces docs/foundations/motion.md rule 2.4, written by
+ * its step 5 once the rule had a definition a checker could hold.
+ *
+ * OVERSHOOT HAS A PRECISE DEFINITION and that is the whole reason this test
+ * exists: a cubic-bezier overshoots exactly when a control point's Y falls
+ * outside [0, 1], because Y is the progress axis. Below 0 the value reverses
+ * before it starts; above 1 it passes its target and comes back. Spring and
+ * bounce are the same fault by another name.
+ *
+ * X is deliberately NOT checked. The spec already constrains it to [0, 1], and
+ * a curve can be as slow or as sudden as it likes along time without ever
+ * overshooting.
+ *
+ * The rule names four surfaces, and this checks every curve in both layers
+ * instead. Scoping to those four would mean resolving which stylesheet styles
+ * a dialog, which is the kind of inference naming.md step 2 records as the way
+ * a check ends up measuring its own exception list. Nothing in a productive
+ * system should overshoot, so the wider assertion is also the simpler one. */
+const cssBundle = [
+	"rux-ui/css/tokens.css",
+	"rux-ui/css/base/menu.css",
+	"rux-ui/css/base/drawer.css",
+	"rux-ui/css/base/side-nav.css",
+	"rux-ui/css/base/panel.css",
+	"rux-ui/css/base/popover.css",
+	"rux-ui/css/base/feedback.css",
+	"rux-ui/css/base/navigation.css",
+	"rux-ui/css/base/controls.css",
+	"rux-ui/css/base/form.css",
+	"scheduler/css/tokens.css",
+	"scheduler/css/layout/scheduler.css",
+	"scheduler/css/layout/scheduler-app.css",
+].map((path) => ({ path, css: read(path) }));
+
+test("no easing curve overshoots (rule 2.4)", () => {
+	const offenders = [];
+	for (const { path, css } of cssBundle) {
+		for (const match of css.matchAll(/cubic-bezier\(([^)]*)\)/g)) {
+			const parts = match[1].split(",").map((n) => Number(n.trim()));
+			if (parts.length !== 4 || parts.some(Number.isNaN)) {
+				offenders.push(`${path}: unparseable ${match[0]}`);
+				continue;
+			}
+			const [, y1, , y2] = parts;
+			for (const [label, y] of [["y1", y1], ["y2", y2]]) {
+				if (y < 0 || y > 1) offenders.push(`${path}: ${match[0]} — ${label}=${y} is outside [0, 1]`);
+			}
+		}
+	}
+	assert.deepEqual(
+		offenders,
+		[],
+		`easing curves that overshoot their target — rule 2.4 forbids spring,\n` +
+			`bounce and overshoot on productive surfaces:\n\n${offenders.join("\n")}`,
+	);
+});
