@@ -189,11 +189,6 @@
    double-spaced by its own margin stacking on the card's gap; using margin
    throughout means a specific row (like the section label below) can get
    its own spacing without fighting a shared gap value. */
-/* Standalone labels outside the standard card anatomy retain a compact gap. */
-.rux-card--stack > .sched-scope-trip__section-label + * {
-	margin-top: var(--rux-section-label-gap);
-}
-
 /* — Form layout helpers — */
 
 .sched-scope-trip__cols-2,
@@ -311,24 +306,6 @@
 	display: none;
 }
 
-.sched-scope-trip__section-label {
-	font-size: var(--rux-text-label-12-size);
-	font-weight: var(--rux-text-label-12-weight);
-	color: var(--rux-text-label-12-color);
-	letter-spacing: var(--rux-text-label-12-tracking);
-	padding-bottom: var(--rux-space-2);
-	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
-	line-height: var(--rux-text-label-12-line-height);
-}
-.sched-scope-trip__section-label--minor {
-	color: var(--rux-text-secondary);
-	border-bottom-color: transparent;
-	padding-bottom: 0;
-}
-.sched-scope-trip__section-label--requirements {
-	margin-top: var(--rux-space-2);
-}
-
 /* — Billing workflow — */
 /* Balance's four states (js/panels/trip-panel.js's sync()): nothing paid
    yet (red — the full quoted price is still owed), a partial payment in
@@ -387,11 +364,6 @@
 }
 .sched-scope-trip__billing-step-row .rux-switch {
 	flex: none;
-}
-.sched-scope-trip__billing-step-help {
-	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-12);
-	line-height: var(--rux-line-height-16);
 }
 .sched-scope-trip__po-details {
 	display: grid;
@@ -672,11 +644,6 @@
 .sched-scope-trip__bus-head .rux-select {
 	flex: 1;
 }
-.sched-scope-trip__bus-hint {
-	font-size: var(--rux-size-12);
-	color: var(--rux-text-disabled);
-}
-
 /* — Driver rows — */
 
 .sched-scope-trip__driver-rows {
@@ -693,16 +660,6 @@
 .sched-scope-trip__driver-row[hidden] {
 	display: none;
 }
-.sched-scope-trip__driver-row--head {
-	background: var(--rux-surface-1);
-}
-.sched-scope-trip__driver-row--head span {
-	font-size: var(--rux-size-12);
-	font-weight: var(--rux-weight-400);
-	color: var(--rux-text-disabled);
-	letter-spacing: var(--rux-tracking-normal);
-}
-
 /* A labeled sub-section within its own bus-group's box, not a second nested
    box of its own — a thin top divider is enough to separate it from the
    driver-select/pay row above (Carbon-style: sub-sections inside a boxed
