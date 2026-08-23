@@ -433,12 +433,18 @@
    stop, so this selector has to name both or their marker falls back to
    the bare 12px rail-strip sizing above (stretched to the row's full
    height instead of a fixed, centered 28×28 badge). */
+/* The badge takes --rux-button-height-standard, the same rung as the delete
+   and drag controls facing it across the header, so the row's three boxes line
+   up. It read --rux-control-height until 2026-08-23: a 44px box around an 18px
+   pin, which is where the header's excess space came from. The comment above
+   claimed 28x28 the whole time — the intent was always a badge, not a touch
+   target, and 32 is the published rung nearest it. */
 .sched-trip-itinerary__stop .sched-trip-itinerary__marker,
 .sched-trip-itinerary__dwell-footer .sched-trip-itinerary__marker {
 	align-self: center;
 	align-items: center;
-	width: var(--rux-control-height);
-	height: var(--rux-control-height);
+	width: var(--rux-button-height-standard);
+	height: var(--rux-button-height-standard);
 	padding-top: 0;
 }
 
@@ -595,12 +601,29 @@
 	display: none;
 }
 
+/* Date over time, not beside it. Side by side, a stop's two pairs put four
+   controls across one row: at the panel's normal width that is 95px each, and
+   a date input's intrinsic width is 127px, so every date rendered truncated
+   ("08/21/202"). Stacking inside the pair gives each control the pair's full
+   width — about 198px — clearing the intrinsic minimum without needing a
+   breakpoint to hold it. */
 .sched-trip-itinerary__datetime {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: var(--rux-space-2);
 	flex: 1;
 	min-width: 0;
+}
+
+/* Stack date over time ONLY where two pairs share a row. Side by side that is
+   four controls across ~404px — 95px each — and a date input's intrinsic width
+   is 127px, so every date rendered truncated ("08/21/202"). Stacking gives each
+   control the pair's full ~198px. A lone pair (the yard rows, a pickup's Spot)
+   already has the whole width, so half of it clears 127 comfortably and
+   stacking there would spend two rows where one does. */
+.sched-trip-itinerary__time-row:not(.sched-trip-itinerary__time-row--single)
+	.sched-trip-itinerary__datetime {
+	grid-template-columns: minmax(0, 1fr);
 }
 
 /* The label sits in the pair's own grid spanning both columns, rather than in
