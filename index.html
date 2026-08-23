@@ -2176,14 +2176,14 @@
 								id="tp-btn-delete"
 								disabled
 							>
-								<span class="rux-icon">event_busy</span
-								><span class="rux-button__label">Cancel</span>
+								<span class="rux-icon" aria-hidden="true">event_busy</span
+								><span class="rux-button__label">Cancel Trip</span>
 							</button>
 							<button
 								class="rux-button rux-button--default"
 								id="tp-btn-clear"
 							>
-								<span class="rux-icon">backspace</span
+								<span class="rux-icon" aria-hidden="true">backspace</span
 								><span class="rux-button__label"> Clear</span>
 							</button>
 							<button
@@ -7133,7 +7133,7 @@
 
 			document
 				.getElementById("trip-dialog-close-btn")
-				?.addEventListener("click", closeTripDialog);
+				?.addEventListener("click", () => closeTripDialog());
 			// Manual opener for the floating trip editor — same blank-form path
 			// as every other trips:new producer (global search, nav).
 			document
@@ -7205,10 +7205,14 @@
 				},
 			};
 
-			function closeTripDialog() {
+			// skipDirtyCheck is for the post-save path only: the form is dirty
+			// against its last snapshot at that moment, but the data is in the
+			// database, so prompting to "discard unsaved changes" would be false.
+			function closeTripDialog(skipDirtyCheck = false) {
 				if (!tripEditorDialogEl || tripEditorDialogEl.hidden)
 					return true;
 				if (
+					!skipDirtyCheck &&
 					tripDBHandle?.isFormDirty?.() &&
 					!confirm("Discard unsaved changes?")
 				)
@@ -9243,6 +9247,7 @@
 
 			tripPanel.addEventListener("rux:trip-saved", () => {
 				loadTripsFromDB();
+				closeTripDialog(true);
 				resetTripPanelView();
 			});
 			tripPanel.addEventListener("rux:trip-cancelled", async (e) => {
