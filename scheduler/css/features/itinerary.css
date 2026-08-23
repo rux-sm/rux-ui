@@ -51,10 +51,13 @@
    cards. .sched-trip-itinerary__stops below restores its own margin-top —
    the dynamic day-group list is a different kind of region and still wants
    normal breathing room before it starts. */
+/* layout.md §9.1: sibling cards in a pane take the 16px card rhythm. These
+   ran at 0 — Trip Summary butted directly into Day 1 — because they inherited
+   --rux-panel-content-gap, which resolves to --rux-space-0. */
 .sched-trip-itinerary {
 	display: flex;
 	flex-direction: column;
-	gap: 0;
+	gap: var(--rux-card-content-gap);
 }
 
 /* Fixed and calculated itinerary values remain selectable/readable, but use
@@ -79,8 +82,7 @@
 .sched-trip-itinerary__stops {
 	display: flex;
 	flex-direction: column;
-	gap: 0;
-	margin-top: var(--rux-panel-content-gap);
+	gap: var(--rux-card-content-gap);
 }
 
 /* — Summary strip — */

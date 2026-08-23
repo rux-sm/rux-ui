@@ -526,9 +526,14 @@ test("a card header grows for a subtitle instead of spilling past the shell", ()
 		cardStyles,
 		/\.rux-card__header:has\(\.rux-card__subtitle\)\s*\{[^}]*padding-block:\s*var\(--rux-space-2\);/s,
 	);
+	// Block inset must stay 0 here for the reason above; the inline inset is
+	// --rux-space-4 on BOTH sides so a header's actions share the body's frame
+	// rather than sitting flush to the card edge. It was 0 on the right until
+	// layout.md step 19, which was invisible only while the header had a
+	// background band of its own.
 	assert.match(
 		tokens,
-		/--rux-card-header-padding:\s*var\(--rux-space-0\)\s+var\(--rux-space-0\)\s+var\(--rux-space-0\)\s+var\(--rux-space-4\);/,
+		/--rux-card-header-padding:\s*var\(--rux-space-0\)\s+var\(--rux-space-4\);/,
 	);
 
 	// The header owns the inline inset for every child it holds, so the title's

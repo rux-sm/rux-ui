@@ -1256,7 +1256,12 @@
 	   app-wide. The single-line band gets its optical slack from centering
 	   instead, and the one case that genuinely needs block padding — a stacked
 	   title + subtitle — takes it in card.css, scoped to itself. */
-	--rux-card-header-padding: var(--rux-space-0) var(--rux-space-0) var(--rux-space-0) var(--rux-space-4);
+	/* The same inset as the body on both sides. This was 0 on the right, so a
+	   header's actions sat flush to the card edge while body content was
+	   inset 16 — invisible while the header had its own background band, and
+	   plain once step 17 removed it. Vertical stays 0: --rux-card-header-height
+	   is a min-height floor and governs the band. */
+	--rux-card-header-padding: var(--rux-space-0) var(--rux-space-4);
 	/* Same surface as the body: Geist's Fieldset treats header and body as one
 	   region. This was --rux-surface-0, pure black against a dark-grey body,
 	   which banded every header. */
