@@ -1164,7 +1164,11 @@
 	   into the body. Centring the inset keeps a title-only header at the same
 	   40px total (24 + 8 + 8) and lets a header carrying a control grow around
 	   it evenly instead. */
-	--rux-panel-attached-header-padding: var(--rux-space-2) var(--rux-space-4) var(--rux-space-2) var(--rux-space-4);
+	/* Inline half points at the shared --rux-panel-header-padding rather than
+	   restating a number: this rule sets the `padding` shorthand, which beats
+	   the base header's `padding-inline`, so a literal here silently forked the
+	   inline inset for attached panels only. layout.md step 21. */
+	--rux-panel-attached-header-padding: var(--rux-space-2) var(--rux-panel-header-padding);
 	--rux-panel-attached-footer-bg:     var(--rux-surface-0);
 	--rux-panel-attached-footer-border: 1px solid var(--rux-card-border);
 	--rux-panel-attached-footer-shadow: var(--rux-shadow-1); /* while scrolled */

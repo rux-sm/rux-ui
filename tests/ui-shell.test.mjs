@@ -562,9 +562,14 @@ test("a panel header contains its controls instead of spilling them into the bod
 
 	// Symmetric block inset. The old 16px-top / 0-bottom value fit a 24px title
 	// in the 40px band exactly and left nothing for a taller trailing control.
+	// The inline half must reference --rux-panel-header-padding, not a literal
+	// step: this rule sets the `padding` shorthand, which overrides the base
+	// header's `padding-inline`, so a literal forks the inline inset for
+	// attached panels and misaligns the header against its own body.
+	// docs/foundations/layout.md step 21.
 	assert.match(
 		tokens,
-		/--rux-panel-attached-header-padding:\s*var\(--rux-space-2\)\s+var\(--rux-space-4\)\s+var\(--rux-space-2\)\s+var\(--rux-space-4\);/,
+		/--rux-panel-attached-header-padding:\s*var\(--rux-space-2\)\s+var\(--rux-panel-header-padding\);/,
 	);
 });
 
