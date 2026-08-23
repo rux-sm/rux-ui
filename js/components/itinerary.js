@@ -1444,6 +1444,13 @@
 			let dayExpandableCount = 0;
 			let dayExpandedCount = 0;
 			let dayHasSummary = false;
+			// A day is an editorial grouping, not a calendar day: a stop's own
+			// dates roll past midnight independently (see the departPrevDate /
+			// arriveDate derivation), so Day 1 legitimately contains stops dated
+			// the following morning. The heading derives its date from the trip
+			// start and would otherwise assert one date for a group that spans
+			// two. This tracks what the day actually reaches.
+			let dayLastDate = "";
 			const dayCards = [];
 			const closeDayCard = () => {
 				if (!daySections) return;
@@ -1458,7 +1465,7 @@
 				dayCards.push(`
 					<article class="rux-card sched-trip-itinerary__day-group" data-day-number="${dayNumber}">
 						<div class="rux-card__header">
-							<h3 class="rux-card__title">Day ${dayNumber}${dayDate ? `<span class="sched-trip-itinerary__day-date">${escHtml(formatBoundaryDate(dayDate))}</span>` : ""}</h3>
+							<h3 class="rux-card__title">Day ${dayNumber}${dayDate ? `<span class="sched-trip-itinerary__day-date">${escHtml(formatBoundaryDate(dayDate))}${dayLastDate && dayLastDate > dayDate ? ` – ${escHtml(formatBoundaryDate(dayLastDate))}` : ""}</span>` : ""}</h3>
 							${dayExpandableCount > 0 ? `<div class="rux-u-cluster">
 				<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-expand aria-expanded="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount}" aria-label="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount ? "Collapse" : "Expand"} Day ${dayNumber} statistics"><span class="rux-icon rux-button__disclosure-icon" aria-hidden="true">keyboard_arrow_down</span></button>
 							</div>` : ""}
@@ -1472,6 +1479,7 @@
 				dayExpandableCount = 0;
 				dayExpandedCount = 0;
 				dayHasSummary = false;
+				dayLastDate = "";
 				dayNumber += 1;
 			};
 
@@ -1493,6 +1501,9 @@
 				} else {
 					daySections += renderStop(item, idx, stops);
 					daySections += renderDwellSummaryCard(item, idx, stops);
+					for (const iso of [item.departPrevDate, item.arriveDate, item.spotDate]) {
+						if (isIsoDate(iso) && iso > dayLastDate) dayLastDate = iso;
+					}
 				}
 				if (item.type === "day") closeDayCard();
 			});
