@@ -289,14 +289,6 @@
 
 	// Name of the stop that precedes index idx (skipping day items).
 	// Returns null if idx is the first real stop (origin = yard).
-	function prevStopName(stops, idx) {
-		for (let i = idx - 1; i >= 0; i--) {
-			if (stops[i].type === "pickup" && stops[i].originMode === "yard") return getYard().name || "Yard";
-			if (stops[i].type !== "day") return stops[i].name || "previous stop";
-		}
-		return null;
-	}
-
 	function fromYardText() {
 		const yard = getYard();
 		return `From ${yard.name || "yard"}`;
@@ -1029,6 +1021,21 @@
 		const visibleAddress = displayAddress(stop.address);
 		const visibleSleeperAddr = displayAddress(sleeperAddr);
 		const addrFieldId = `itin-addr-${idx}`;
+		// The place name was stored on every stop and shown almost nowhere: it
+		// is what auto-save uses as a saved location's label, so without a field
+		// here the directory fills with whatever Mapbox happened to call a
+		// place. Sleeper and Return are excluded — neither has a location of its
+		// own to name. Shaped like the address input rather than a .rux-field
+		// with a visible label, because the address beside it has none and a
+		// label row would add height to an already dense card.
+		const namePlaceholder = type === "pickup"
+			? `${TYPE_LABEL[type]} Name`
+			: `Stop ${stopNumberFor(stops, idx)} Name`;
+		const nameEl = type === "sleeper" || isReturn
+			? ""
+			: `<input class="rux-input sched-trip-itinerary__name" type="text" data-field="name"
+					  value="${escHtml(stop.name || "")}" placeholder="${namePlaceholder}"
+					  aria-label="${escHtml(fieldLabelFor(stops, idx, type))} name" />`;
 		const addrEl = type === "sleeper"
 			? `<div class="sched-trip-itinerary__address-wrap">
                <input id="${addrFieldId}" class="rux-input" type="text" value="${escHtml(visibleSleeperAddr)}" readonly
@@ -1100,6 +1107,7 @@
 		  </header>
 		  <div class="sched-trip-itinerary__stop-body">
 		  <div class="sched-trip-itinerary__fields">
+			${nameEl}
 			${addrEl}
           </div>
 		  <div class="sched-trip-itinerary__time-row${isPickup ? " sched-trip-itinerary__time-row--single" : ""}">
@@ -1594,18 +1602,6 @@
 
 		// Update just the "From …" labels without re-rendering the whole list.
 		// Called on name-field blur so the user doesn't lose focus while typing.
-		function updateFromLabels() {
-			stopsEl.querySelectorAll("[data-stop-idx]").forEach((el) => {
-				const idx = parseInt(el.dataset.stopIdx, 10);
-				const stop = stops[idx];
-				if (!stop || stop.type === "day") return;
-				const fromEl = el.querySelector(".sched-trip-itinerary__from");
-				if (!fromEl) return;
-				const prev = prevStopName(stops, idx);
-				fromEl.textContent = prev ? `From ${prev}` : fromYardText();
-			});
-		}
-
 		let dragSrcIdx = null;
 		let dragFromHandle = false;
 
@@ -1980,7 +1976,6 @@
 			stop.milesSource = stop.milesSource === "manual" ? "manual" : "estimated";
 			stop.driveSource = stop.driveSource === "manual" ? "manual" : "estimated";
 			renderStopList();
-			updateFromLabels();
 			await estimateLeg(idx);
 			const nextIdx = nextRealStopIndex(idx);
 			if (nextIdx >= 0) await estimateLeg(nextIdx);
@@ -2149,15 +2144,6 @@
 			activeAddressIdx = idx;
 			addressSessionToken = uuid();
 		});
-
-		// Update "From" labels after the user finishes editing a name field
-		stopsEl.addEventListener(
-			"blur",
-			(e) => {
-				if (e.target.dataset.field === "name") updateFromLabels();
-			},
-			true,
-		);
 
 		// Re-render when a time field commits (after native picker closes or field blurs)
 		// so that day-segment stats stay current without fighting the time picker.
@@ -2368,7 +2354,6 @@
 				stop.lng = yard.lng ?? null;
 				stop.routeStatus = "stale";
 			});
-			updateFromLabels();
 			renderStopList();
 			const returnIdx = stops.findIndex((stop) => stop.type === "return");
 			if (returnIdx >= 0) estimateLeg(returnIdx);

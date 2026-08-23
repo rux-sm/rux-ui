@@ -493,6 +493,9 @@
 	grid-template-columns: minmax(0, 1fr);
 	align-items: center;
 	column-gap: var(--rux-space-2);
+	/* The name sits above the address in the same column, so this grid needed
+	   a row gap it never had while it held a single child. */
+	row-gap: var(--rux-control-content-gap);
 }
 
 .sched-trip-itinerary__fields--pair {
