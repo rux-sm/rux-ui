@@ -1257,8 +1257,14 @@
 	   instead, and the one case that genuinely needs block padding — a stacked
 	   title + subtitle — takes it in card.css, scoped to itself. */
 	--rux-card-header-padding: var(--rux-space-0) var(--rux-space-0) var(--rux-space-0) var(--rux-space-4);
-	--rux-card-header-bg:     var(--rux-surface-0);
-	--rux-card-header-border: 1px solid var(--rux-card-border);
+	/* Same surface as the body: Geist's Fieldset treats header and body as one
+	   region. This was --rux-surface-0, pure black against a dark-grey body,
+	   which banded every header. */
+	--rux-card-header-bg:     var(--rux-card-body-bg);
+	/* Geist draws no rule under a Fieldset's header: its header and body are
+	   one region and only the footer is separated, by a top border AND a
+	   recessed background. Measured on vercel.com/geist/fieldset 2026-08-23. */
+	--rux-card-header-border: none;
 	--rux-card-header-shadow: none;
 
 	/* — card body — owns content fill, padding, and internal rhythm. */
