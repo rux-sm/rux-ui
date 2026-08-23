@@ -316,8 +316,17 @@
 	padding: var(--rux-card-padding);
 }
 
+/* layout.md §9.1: content rows inside a stacked card body take the 16px card
+   rhythm, via the component token rather than a literal. The stacked groups
+   here — the name/address fields, the time row, the dwell controls — ran at
+   --rux-stack-gap (8px), the same rung as the gaps INSIDE each group, so
+   nothing read as a group. §9.2 allows the tighter rung only for a dense
+   repeating list of short rows and names the two contexts that qualify; this
+   is not one of them, and that section says outright it is not to be used as
+   a general "make it more compact" adjustment. The 8px stays where it
+   belongs: between fields within one group. */
 .sched-trip-itinerary__stop-body > * + * {
-	margin-top: var(--rux-stack-gap);
+	margin-top: var(--rux-card-content-gap);
 }
 
 /* Trip Start uses the tighter 8px field gap throughout — address, meet, and
@@ -326,10 +335,6 @@
 	display: flex;
 	flex-direction: column;
 	gap: 0;
-}
-
-.sched-trip-itinerary__stop--yard .sched-trip-itinerary__stop-body > * + * {
-	margin-top: var(--rux-space-2);
 }
 
 /* — Rail marker — */
@@ -565,6 +570,15 @@
 	gap: var(--rux-space-2);
 	flex: 1;
 	min-width: 0;
+}
+
+/* The label sits in the pair's own grid spanning both columns, rather than in
+   a .rux-field wrapper around it: the time row selects .__datetime as a direct
+   child in two places — once for the side-by-side layout and again inside the
+   narrow container query — and a wrapper would break both. The grid's existing
+   8px gap separates label from inputs, which is the within-a-group rung. */
+.sched-trip-itinerary__datetime-label {
+	grid-column: 1 / -1;
 }
 
 .sched-trip-itinerary__time-row > .sched-trip-itinerary__datetime + .sched-trip-itinerary__datetime {

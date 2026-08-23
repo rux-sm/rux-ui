@@ -841,8 +841,8 @@
 				</div>
 			</div>
 			<div class="sched-trip-itinerary__yard-times${mode === "yard" ? " sched-trip-itinerary__yard-times--meet" : ""}">
-				<div class="rux-field" data-yard-meet-row${mode === "yard" ? "" : " hidden"}><div class="sched-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-meet-date value="${escHtml(pickup?.spotDate || startDate || "")}" aria-label="Calculated customer meet date" readonly /><input class="rux-input" type="time" data-yard-meet-time value="${escHtml(pickup?.spot || "")}" aria-label="Calculated customer meet time" readonly /></div></div>
-				<div class="rux-field"><div class="sched-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-depart-date value="${escHtml(pickup?.departPrevDate || startDate || "")}" aria-label="Yard departure date" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /><input class="rux-input" type="time" data-yard-depart-time value="${escHtml(pickup?.departPrev || "")}" aria-label="Yard departure time" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /></div></div>
+				<div class="rux-field" data-yard-meet-row${mode === "yard" ? "" : " hidden"}><span class="rux-field__label">Customer meet</span><div class="sched-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-meet-date value="${escHtml(pickup?.spotDate || startDate || "")}" aria-label="Calculated customer meet date" readonly /><input class="rux-input" type="time" data-yard-meet-time value="${escHtml(pickup?.spot || "")}" aria-label="Calculated customer meet time" readonly /></div></div>
+				<div class="rux-field"><span class="rux-field__label">Departs yard</span><div class="sched-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-depart-date value="${escHtml(pickup?.departPrevDate || startDate || "")}" aria-label="Yard departure date" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /><input class="rux-input" type="time" data-yard-depart-time value="${escHtml(pickup?.departPrev || "")}" aria-label="Yard departure time" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /></div></div>
 			</div>
 			</div>
 		</section>`;
@@ -997,11 +997,14 @@
 		const showDwellStatus = type !== "sleeper" && type !== "return" && !!nextTravelStop;
 		const dwellStatus = ["off", "sleeper", "on"].includes(stop.dwellStatus) ? stop.dwellStatus : "on";
 
-		const time1Label = type === "sleeper" ? "Str" : "Dep";
+		// Shown as well as spoken since the visible labels landed, so these are
+		// words rather than the "Dep"/"Arr"/"Spt" abbreviations they were while
+		// only a screen reader ever reached them.
+		const time1Label = type === "sleeper" ? "Starts" : "Departs";
 		const time2 =
-			type === "pickup"  ? { label: "Spt", field: "spot", dateField: "spotDate" } :
-			type === "sleeper" ? { label: "End", field: "arrive", dateField: "arriveDate" } :
-			                     { label: "Arr", field: "arrive", dateField: "arriveDate" };
+			type === "pickup"  ? { label: "Spot", field: "spot", dateField: "spotDate" } :
+			type === "sleeper" ? { label: "Ends", field: "arrive", dateField: "arriveDate" } :
+			                     { label: "Arrives", field: "arrive", dateField: "arriveDate" };
 
 		const isVerified = !!(stop.lat && stop.lng);
 		const showAddrIcon = isStale || isVerified;
@@ -1112,10 +1115,12 @@
           </div>
 		  <div class="sched-trip-itinerary__time-row${isPickup ? " sched-trip-itinerary__time-row--single" : ""}">
 			${isPickup ? "" : `<div class="sched-trip-itinerary__datetime">
+				<span class="rux-field__label sched-trip-itinerary__datetime-label">${time1Label}</span>
 				<input class="rux-input" type="date" data-field="departPrevDate" value="${escHtml(stop.departPrevDate)}" aria-label="${time1Label} date" />
 				<input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}" aria-label="${time1Label} time" />
 			</div>`}
 			<div class="sched-trip-itinerary__datetime">
+				<span class="rux-field__label sched-trip-itinerary__datetime-label">${time2.label}</span>
 				<input class="rux-input" type="date" data-field="${time2.dateField}" value="${escHtml(stop[time2.dateField])}" aria-label="${time2.label} date" ${isPickup ? "readonly" : ""} />
 				<input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}" aria-label="${isPickup ? "Spot time — calculated from Stop 1" : `${time2.label} time`}" ${isPickup ? "readonly" : ""} />
 			</div>
