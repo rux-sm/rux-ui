@@ -394,27 +394,19 @@ See [Button Components](docs/buttons.md) for composition examples and usage rule
 
 ### Forms
 
-Forms are data-entry surfaces, not action controls. They use the same type scale and radius family as buttons, but they sit slightly lower in the interface: sunken background, visible hairline edge, and an inset field shadow.
+**Canonical: [`docs/foundations/forms.md`](docs/foundations/forms.md).** That document owns
+how a control is composed, what its label says, how placeholders and help text behave, when
+each control is the right one, and the rules governing all of it. It carries a contract
+version and its own amendment log. **This section states no rules and no values** — it
+describes the character the rules produce, and nothing here is authority.
 
-| Element                     |                                                                                      Token / value | Rule                                              |
-| --------------------------- | -------------------------------------------------------------------------------------------------: | ------------------------------------------------- |
-| `.rux-input`, `.rux-select` |                                                                        `--rux-field-height` `36px` | Standard text-entry height                        |
-| `.rux-textarea`             |                                                                 `--rux-textarea-min-height` `84px` | Minimum height; vertical resize allowed           |
-| `.rux-field`                |                                                                         `gap: --rux-space-2` `8px` | Space between label, control, and help/error text |
-| `.rux-field__label`         | `--rux-field-label-size` (`--rux-size-12`), `--rux-field-label-weight` (`--rux-weight-400`) | Muted, Title Case, no trailing period             |
-| placeholder                 |                                                                              `--rux-text-disabled` | Hint only; never required information             |
-| help text                   |                                                             `--rux-size-12`, `--rux-field-help-fg` | One short sentence when useful                    |
-| error text                  |                                                            `--rux-size-12`, `--rux-field-error-fg` | Direct recovery instruction                       |
+Forms are data-entry surfaces, not action controls. They use the same type scale and radius
+family as buttons, and read as quieter: a transparent well, a hairline edge, and no shadow of
+their own.
 
-- Field height remains `36px`, standard action buttons are `32px`, and persistent header actions are `44px`. Choose the semantic size role instead of forcing adjacent controls to match.
-- Labels sit above fields. Do not use placeholder text as the only label.
-- Labels use Title Case and no trailing punctuation: `Driver Name`, not `Driver name`.
-- Placeholder text describes format or an example value. Keep it short: `Ada Lovelace`, `name@example.com`, `Anything to remember…`.
-- Help text appears below the control and should explain how the value is used, not repeat the label.
-- Invalid fields use `aria-invalid="true"`, which switches the border to `--rux-input-invalid-border`. The error message belongs directly under the field.
-- Focus rings compose with the inset field shadow. A focused field should still read as recessed, not lifted.
-- Inputs and selects use `--rux-well-bg`, `--rux-input-border` (`--rux-card-border`), `--rux-input-border-radius`, and `--rux-size-14`.
-- Checkboxes and switches are 32px target-height controls so they align with button rows and repeated settings lists.
+The field's own dimensions live in [`layout.md` §10](docs/foundations/layout.md); the label's
+type in [`typography.md`](docs/foundations/typography.md); the rhythm between grouped fields
+in [`layout.md` §9.1](docs/foundations/layout.md).
 
 ### Optical radius
 

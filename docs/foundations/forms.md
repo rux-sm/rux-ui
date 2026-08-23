@@ -1,14 +1,15 @@
 # Rux UI Foundations — Forms
 
-**Contract version: 1.0.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.2.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 2 steps: **1 done · 1 ready**
+**Status** · 3 steps: **3 done**
 This document is canonical for **how a form control is composed (§2.1), what its label says
 (§2.2–2.4), and when each control is the right one (§2.8)**. It states no sizes, no colours
-and no spacing values: those belong to `layout.md`, `color.md` and `typography.md`, and §1
-points at them rather than repeating them.
+and no spacing values: the label's type is `typography.md`'s, the group rhythm is
+`layout.md` §9.1's, and the field's own height and the textarea's floor are `layout.md`
+§10's, claimed there by its step 16. §1 points at each rather than repeating it.
 
 **This is the set's first component-family document**, and it is worth saying why that is
 allowed rather than a category error. [`README.md`](README.md) §1 settles it: *"These
@@ -123,6 +124,19 @@ rung there, and §9.2 for the one case that runs tighter.
 | `.rux-suggestions` | the value comes from a known list the user filters by typing |
 | `.rux-select` | the value comes from a short fixed list the user does not filter |
 
+**2.9 A control does not paint its own surface.** *[README]* The field's background, border
+and radius come from `--rux-well-bg`, `--rux-input-border` and `--rux-input-border-radius`;
+a feature stylesheet that reaches past them to set its own is the divergence
+`.sched-scope-trip__doc-content` was. A checkbox or switch fills
+`--rux-checkbox-target-height` so it lines up with the button rows beside it —
+[`layout.md` §10](layout.md) publishes that height, as it does the field's.
+
+**2.10 An invalid field is marked, and its message sits under it.** `[aria-invalid="true"]`
+switches the border to `--rux-input-invalid-border`, and the message goes directly beneath
+the control in `.rux-field__error`. **Which attribute carries the state is
+[`state.md`](state.md)'s**, not this document's — §2.10 says only what a *field* does when it
+is set.
+
 ---
 
 ## 3. Current state
@@ -168,7 +182,8 @@ The gaps are concentrated, not spread:
 | # | Step | Status | Notes |
 |---|---|---|---|
 | 1 | Establish this document; relocate README § Forms and adopt Geist's Input and Fieldset rules | **done · Class A** | Founding entry, 2026-08-23. Written after labelling the Itinerary tab, which cited `layout.md` §9.1 for spacing and `references/interaction-a11y.md` for labels and had nothing to cite for label copy, placeholder policy, field composition or control selection. **The framing this document was started with was wrong and is corrected here:** forms were not ungoverned. `../../README.md` § Forms already stated labels-above-fields, Title Case, no-placeholder-as-label and help-text placement, with a table of values beside them. What was missing was a foundation home — a contract version, an amendment log, and precedence over downstream specifications — not the rules. §2 marks each rule **[README]**, **[Geist]** or **[this system]** so the relocation is legible instead of reading as discovery. **Nothing is invented:** §2.1–2.4 are README's, sharpened where Geist says more (that a label is a *noun*; that helper text is sentence case with a period and wired through `aria-describedby`); §2.5, §2.7 and §2.8 are Geist's, which README had no counterpart for; §2.6 is this system's a11y reference plus the group-label half, found by building one. **Values are deliberately absent** — §1 points at `typography.md` for the label's type and `layout.md` §9.1 for group rhythm, because a value stated twice is a value that will drift. That leaves Q3 open rather than answered. **Deliberately not done:** README § Forms is untouched. `CLAUDE.md` puts consolidation last, and stripping it before this document has settled would delete the only statement of a rule; step 2 carries it. No migration step either — D1's three panels and D2's 74 placeholders are recorded with their scope measured, and each becomes its own step when taken. |
-| 2 | Consolidate: turn README § Forms into a pointer | **ready** | Blocked on nothing but time-in-service. `CLAUDE.md`: consolidation is the last step of each foundation document, and stripping README before this one has settled deletes the only statement of a rule. When taken, README § Forms keeps its orientation paragraph, loses the seven-row value table and the eight rule bullets, and gains **Canonical: `docs/foundations/forms.md`** the way § Backgrounds & Color and § Typography already read. The value table cannot simply be deleted — Q3 has to be answered first, or the 36px and 84px it carries lose their only home. |
+| 3 | Recover the rules step 2 stripped without a home; correct README's stale description | **done · Class A** | **Executed 2026-08-23, immediately after step 2 and because of it.** Step 2 removed README's eight rule bullets on the assumption §2 covered them. It did not cover four: the field's surface tokens, the checkbox and switch hit-target height, the invalid-border switch, and where an error message sits. Grepping the foundation set for each found `aria-invalid` in `state.md` and **nothing at all** for the other three — which is precisely the failure `CLAUDE.md` warns consolidation causes, committed here by me and caught by checking rather than by assuming. §2.9 and §2.10 carry them now, and `layout.md` step 16 took the hit-target height with the other two dimensions. **Two of README's claims were stale and were not recovered, deliberately:** it described fields as having a *"sunken background"* and an *"inset field shadow"*, and `tokens.css` resolves `--rux-well-bg` to `transparent` and `--rux-input-shadow` to `none`, each declared once with no theme override. A field is transparent with a hairline border and no shadow. The orientation prose in README said otherwise, and so did the first draft of the pointer that replaced it — both now describe what renders. Contract 1.1.0 → 1.2.0. |
+| 2 | Consolidate: turn README § Forms into a pointer | **done · Class A** | **Executed 2026-08-23**, once Q3 was answered and not before. `CLAUDE.md` puts consolidation last because stripping a section before its document has settled deletes the only statement of a rule, and this section carried two values — 36px and 84px — that nothing else stated. `layout.md` step 16 claimed both into §10 first; only then could the table go. README § Forms now keeps its orientation paragraph and the visual character it describes, and points here for the rules. **What moved:** the eight rule bullets and the seven-row value table. **What stayed:** nothing that states a rule — the remaining prose says what a form *is* in this system, which is orientation, not authority. Contract 1.0.0 → 1.1.0. |
 
 ---
 
@@ -190,12 +205,13 @@ like this one, or whether one document covers the family layer with a section pe
 The answer matters mostly for `README.md` §1's table, which currently reads as a list of
 visual concerns and would stop reading that way after three or four more of these.
 
-**Q3 — Who owns the field's dimensions?** `../../README.md` § Forms states
-`--rux-field-height` 36px, `--rux-textarea-min-height` 84px and the field's 8px internal gap.
-This document deliberately states none of them, because §1 routes values to the concern that
-owns them — and no concern clearly does. `layout.md` §10 publishes fixed dimensions the
-portable layer owns and would be the natural home for the two heights; the 8px gap is a
-spacing role of the kind `layout.md` §7.1 claimed on 2026-08-22. But neither has claimed
-them, so today they are stated only in an orientation summary that is supposed to hold no
-values. **Step 2 cannot complete until this is answered**, which is the practical reason it
-is worth answering rather than noting.
+**Q3 — Who owns the field's dimensions?** **Answered 2026-08-23: `layout.md`.** Its §10 is
+*"widths and heights the portable layer publishes as tokens"*, which is exactly what
+`--rux-field-height` and `--rux-textarea-min-height` are, and its step 16 claimed both. The
+field's internal gap needed no claim: `--rux-field-gap` resolves to `--rux-stack-gap`, which
+§7.1 had already taken. Worth recording alongside the answer — measured on
+[Geist's Input page](https://vercel.com/geist/input) the same day, **36px is Geist's default
+input height** (18 of 22 rendered inputs, against 2 at 32 and 2 at 40), so this system's
+field height is conformance rather than a house number. Geist publishes three rungs there and
+this system publishes one; whether the other two are wanted is not settled here. The 84px
+textarea floor is ours — Geist's specimen renders at 100px with `min-height: auto`.
