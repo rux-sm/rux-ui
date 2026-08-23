@@ -533,7 +533,7 @@ test("a card header grows for a subtitle instead of spilling past the shell", ()
 	// background band of its own.
 	assert.match(
 		tokens,
-		/--rux-card-header-padding:\s*var\(--rux-space-0\)\s+var\(--rux-space-4\);/,
+		/--rux-card-header-padding:\s*var\(--rux-space-0\)\s+var\(--rux-space-5\);/,
 	);
 
 	// The header owns the inline inset for every child it holds, so the title's

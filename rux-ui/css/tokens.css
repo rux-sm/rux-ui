@@ -1270,7 +1270,11 @@
 	   inset 16 — invisible while the header had its own background band, and
 	   plain once step 17 removed it. Vertical stays 0: --rux-card-header-height
 	   is a min-height floor and governs the band. */
-	--rux-card-header-padding: var(--rux-space-0) var(--rux-space-4);
+	/* Inline is --rux-space-5, matching Geist's Fieldset and the panel header's
+	   inset. It must stay equal to --rux-card-padding-inline: layout.md §9.1
+	   says a header shares the body's inline inset, and the header is the same
+	   region as the body, not a band above it. layout.md step 22. */
+	--rux-card-header-padding: var(--rux-space-0) var(--rux-space-5);
 	/* Same surface as the body: Geist's Fieldset treats header and body as one
 	   region. This was --rux-surface-0, pure black against a dark-grey body,
 	   which banded every header. */
@@ -1296,7 +1300,9 @@
 	--rux-card-bg-elevated:   oklch(20.57% 0 0);
 	--rux-card-bg-recessed:   oklch(8.57% 0 0);
 	--rux-card-padding-block: var(--rux-space-4);
-	--rux-card-padding-inline: var(--rux-space-4);
+	/* Inline 20 / block 16 is deliberate, not a slip: step 22 moved the inline
+	   inset to Geist's 20px and left the vertical rhythm alone. */
+	--rux-card-padding-inline: var(--rux-space-5);
 	--rux-card-padding:       var(--rux-card-padding-block) var(--rux-card-padding-inline);
 	--rux-card-content-gap:   var(--rux-space-4);
 	/* Divider for flat sections composed inside a card body. */
