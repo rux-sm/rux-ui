@@ -400,7 +400,6 @@
 	--rux-duration-instant: 80ms;
 	--rux-duration-fast:    140ms;
 	--rux-duration-base:    220ms;
-	--rux-duration-productive: var(--rux-motion-duration-moderate-01);
 	--rux-duration-slow:    720ms;
 
 	--rux-ease-out:             cubic-bezier(0.22, 1, 0.36, 1);

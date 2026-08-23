@@ -240,10 +240,6 @@ test("side navigation uses productive non-persistent overlay motion", () => {
 	assert.match(tokensCss, /--rux-motion-duration-moderate-01:\s+150ms;/);
 	assert.match(
 		tokensCss,
-		/--rux-duration-productive:\s+var\(--rux-motion-duration-moderate-01\);/,
-	);
-	assert.match(
-		tokensCss,
 		/--rux-side-nav-motion-duration:\s+var\(--rux-motion-duration-fast-02\);/,
 	);
 	assert.match(
