@@ -1085,9 +1085,9 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		li.dataset.docPath = doc.file_path;
 		li.dataset.docLabel = doc.label;
 		li.innerHTML = `
-			<button type="button" class="sched-scope-trip__doc-content" data-doc-open title="${escHtml(doc.file_name)}" aria-label="View ${escHtml(displayLabel)}${uploadedDate ? `, ${isUpdate ? "updated" : "uploaded"} ${escHtml(uploadedDate)}` : ""}">
+			<button type="button" class="rux-button rux-button--accent rux-button--block sched-scope-trip__doc-content" data-doc-open title="${escHtml(doc.file_name)}" aria-label="View ${escHtml(displayLabel)}${uploadedDate ? `, ${isUpdate ? "updated" : "uploaded"} ${escHtml(uploadedDate)}` : ""}">
 				<span class="rux-icon" aria-hidden="true">${icon}</span>
-				<span class="sched-scope-trip__doc-name">View ${escHtml(displayLabel)}</span>
+				<span class="rux-button__label sched-scope-trip__doc-name">View ${escHtml(displayLabel)}</span>
 				${dateText ? `<time class="sched-scope-trip__doc-date" datetime="${escHtml(doc.created_at)}">${escHtml(dateText)}</time>` : ""}
 			</button>
 			<button type="button" class="sched-scope-trip__doc-select" data-doc-select aria-label="Delete ${escHtml(displayLabel)}">

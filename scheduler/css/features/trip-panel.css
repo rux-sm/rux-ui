@@ -745,40 +745,25 @@
 .sched-scope-trip__doc-row {
 	display: flex;
 	align-items: center;
-	min-height: var(--rux-control-height);
+	min-height: var(--rux-button-height-standard);
 	user-select: none;
 }
+/* .rux-button--accent supplies the fill, radius, border, hover overlay,
+   focus ring, Geist face and the button-14 label type — this row used to
+   hand-roll every one of them off the --rux-button-* tokens, which is how
+   its text ended up in the UA default face instead of Geist. What stays
+   here is the row's own anatomy: fill the row, and start-align so the name
+   reads left with the date at the end. */
 .sched-scope-trip__doc-content {
-	display: flex;
-	align-items: center;
-	gap: var(--rux-control-content-gap);
 	flex: 1;
 	min-width: 0;
-	height: var(--rux-control-height);
-	padding: 0 var(--rux-control-padding-inline);
-	border: var(--rux-button-accent-border);
-	border-radius: var(--rux-button-radius);
-	background: var(--rux-button-accent-background);
-	color: var(--rux-button-accent-text);
-	cursor: pointer;
-	-webkit-backdrop-filter: blur(var(--rux-backdrop-blur));
-	backdrop-filter: blur(var(--rux-backdrop-blur));
-	transition: background-color var(--rux-duration-fast) var(--rux-ease-out), width var(--rux-duration-base) var(--rux-ease-out);
-}
-.sched-scope-trip__doc-row:hover .sched-scope-trip__doc-content {
-	background-image: linear-gradient(
-		var(--rux-button-hover-overlay),
-		var(--rux-button-hover-overlay)
-	);
+	justify-content: flex-start;
 }
 .sched-scope-trip__doc-content > .rux-icon {
 	color: currentColor;
 }
 .sched-scope-trip__doc-name {
 	flex: 1;
-	font-size: var(--rux-text-label-14-size);
-	font-weight: var(--rux-text-label-14-weight);
-	line-height: var(--rux-text-label-14-line-height);
 	color: currentColor;
 	overflow: hidden;
 	text-overflow: ellipsis;
