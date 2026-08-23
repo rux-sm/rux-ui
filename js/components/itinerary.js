@@ -1141,6 +1141,7 @@
 		  </div>
 		  ${dwellControl}
 		  </div>
+		  ${renderDwellSummaryCard(stop, idx, stops)}
 	  </section>`;
 	}
 
@@ -1191,7 +1192,7 @@
 		}
 
 		return `
-	  <section class="sched-trip-itinerary__dwell-card" data-stop-idx="${idx}"${stop.type === "pickup" && stop.originMode === "yard" ? " hidden" : ""}>
+	  <footer class="rux-card__footer sched-trip-itinerary__dwell-footer" data-stop-idx="${idx}"${stop.type === "pickup" && stop.originMode === "yard" ? " hidden" : ""}>
 		  <header class="sched-trip-itinerary__stop-header">
 			<div class="sched-trip-itinerary__stop-heading">
 			  <span class="sched-trip-itinerary__marker"><span class="rux-icon sched-trip-itinerary__marker-pin sched-trip-itinerary__marker-pin--${status === "sleeper" ? "sleeper" : "off"}" aria-hidden="true">${icon}</span></span>
@@ -1199,10 +1200,8 @@
 			</div>
 			<output class="rux-output rux-output--solid sched-trip-itinerary__dwell-total" aria-label="Total ${escHtml(label)} time"><span>${escHtml(totalVal)} <span class="sched-trip-itinerary__unit">hr</span></span><span class="rux-status-text ${resetsClock ? "rux-status-text--success" : "rux-status-text--warning"}">${resetsClock ? "Reset" : "Not Reset"}</span></output>
 		  </header>
-		  <div class="sched-trip-itinerary__stop-body">
 		  ${sessionBlock}
-		  </div>
-	  </section>`;
+	  </footer>`;
 	}
 
 	/* ── Init ────────────────────────────────────────────────────────────── */
@@ -1500,7 +1499,6 @@
 					dayHasSummary = activityAtBoundaryIsMoving(stops, idx) && !!boundarySection;
 				} else {
 					daySections += renderStop(item, idx, stops);
-					daySections += renderDwellSummaryCard(item, idx, stops);
 					for (const iso of [item.departPrevDate, item.arriveDate, item.spotDate]) {
 						if (isIsoDate(iso) && iso > dayLastDate) dayLastDate = iso;
 					}

@@ -276,7 +276,7 @@
    surface. Covers every row type that can appear in the list: stops,
    dwell/off-duty summaries, and the Day-boundary row. */
 .sched-trip-itinerary__day-group-body > .sched-trip-itinerary__stop,
-.sched-trip-itinerary__day-group-body > .sched-trip-itinerary__dwell-card,
+.sched-trip-itinerary__day-group-body > .sched-trip-itinerary__dwell-footer,
 .sched-trip-itinerary__day-group-body > .sched-trip-itinerary__day {
 	border-top: var(--rux-border-width) solid var(--rux-card-border);
 }
@@ -293,6 +293,15 @@
 
 /* Own padding/height now — previously inherited from the shared
    .rux-card__header this row no longer wears (see file header comment). */
+/* Separation between sibling stops. A stop had no border, background, padding
+   or margin of its own, so four of them read as one continuous column with
+   only a heading to break them up — three semantic levels (day, stop, dwell)
+   sharing two visual weights. layout.md step 17 took the rule off card
+   headers; this is where that separation actually belongs. */
+.sched-trip-itinerary__stop + .sched-trip-itinerary__stop {
+	border-top: var(--rux-border-width) solid var(--rux-card-border);
+}
+
 .sched-trip-itinerary__stop-header {
 	position: relative;
 	display: flex;
@@ -354,7 +363,25 @@
    and should read as part of that same input-sized line, not stand out at
    its own weight. Only size/weight change; --success/--warning still carry
    the actual reset-vs-not color. */
-.sched-trip-itinerary__dwell-card .rux-output--solid .rux-status-text {
+/* The dwell summary is the stop's footer, not a card after it. It was a
+   sibling <section> with its own header and body, which put a derived,
+   read-only block at the same level as the editable stop that produced it —
+   so toggling Sleeper or Off Duty appeared to add a whole new section. As a
+   .rux-card__footer it is subordinate by construction, and it inherits the
+   recessed background and top rule the card contract now gives every footer.
+   Geist's Fieldset is this shape: summary content in a footer, separated by a
+   border AND a darker surface. */
+.sched-trip-itinerary__dwell-footer {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-control-content-gap);
+}
+
+.sched-trip-itinerary__dwell-footer .sched-trip-itinerary__stop-header {
+	padding: 0;
+}
+
+.sched-trip-itinerary__dwell-footer .rux-output--solid .rux-status-text {
 	font-size: inherit;
 	font-weight: inherit;
 }
@@ -365,8 +392,11 @@
    both) rather than one fixed width and the other shrink-to-content —
    scoped to this card only, so the regular stop header (heading + fixed-
    width actions) elsewhere in the itinerary is untouched. */
-.sched-trip-itinerary__dwell-card .sched-trip-itinerary__stop-heading {
-	flex: 1 1 0%;
+/* Sized to its label, not sharing the row equally with the total: as a card
+   the heading had a full-width row to itself, and in a footer `flex: 1 1 0%`
+   against the total truncated "Sleeper" to "Sle…". */
+.sched-trip-itinerary__dwell-footer .sched-trip-itinerary__stop-heading {
+	flex: 0 0 auto;
 }
 
 .sched-trip-itinerary__dwell-total {
@@ -398,12 +428,12 @@
 .sched-trip-itinerary__marker-pin--off         { color: var(--sched-itinerary-status-off-duty); }
 
 /* Dwell cards (Sleeper/Off Duty) need the same treatment — they use their
-   own .sched-trip-itinerary__dwell-card wrapper, not .sched-trip-itinerary__
+   own .sched-trip-itinerary__dwell-footer wrapper, not .sched-trip-itinerary__
    stop, so this selector has to name both or their marker falls back to
    the bare 12px rail-strip sizing above (stretched to the row's full
    height instead of a fixed, centered 28×28 badge). */
 .sched-trip-itinerary__stop .sched-trip-itinerary__marker,
-.sched-trip-itinerary__dwell-card .sched-trip-itinerary__marker {
+.sched-trip-itinerary__dwell-footer .sched-trip-itinerary__marker {
 	align-self: center;
 	align-items: center;
 	width: var(--rux-control-height);
@@ -559,7 +589,7 @@
 /* These rows stay mounted so changing a segmented value never rebuilds the
    control (and therefore never restarts every indicator in the itinerary). */
 .sched-trip-itinerary__stop[hidden],
-.sched-trip-itinerary__dwell-card[hidden],
+.sched-trip-itinerary__dwell-footer[hidden],
 .sched-trip-itinerary__yard-times > .rux-field[hidden] {
 	display: none;
 }

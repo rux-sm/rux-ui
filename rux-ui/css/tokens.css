@@ -1289,7 +1289,11 @@
 	--rux-card-section-border: 1px solid var(--rux-card-border);
 
 	/* — card footer — owns action-row fill and the body divider. */
-	--rux-card-footer-bg:     transparent;
+	/* Recessed, not transparent: Geist's Fieldset earns its footer rule by
+	   also dropping the background a step below the body — measured at
+	   background-100 body against a black footer. --rux-surface-0 is that
+	   relationship here, and step 17 freed it by taking it off the header. */
+	--rux-card-footer-bg:     var(--rux-surface-0);
 	--rux-card-footer-border: var(--rux-card-border-width) solid var(--rux-card-border);
 
 	/* No level system anymore — one card color for every nesting depth,
