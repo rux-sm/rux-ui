@@ -40,7 +40,7 @@
 		<!-- The design system's public entrypoint: tokens, typography, webfonts,
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
-		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=94" />
+		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=96" />
 		<link rel="stylesheet" href="./scheduler/css/components.css?v=338" />
 		<link
 			rel="stylesheet"
@@ -883,7 +883,7 @@
 							data-trip-dialog-header
 						>
 							<h2
-								class="rux-card__title"
+								class="rux-panel__title"
 								id="trip-editor-dialog-title"
 							>
 								New Trip
@@ -3098,7 +3098,7 @@
 								data-fleet-dialog-header
 							>
 								<h2
-									class="rux-card__title"
+									class="rux-panel__title"
 									id="fleet-editor-dialog-title"
 								>
 									Vehicle
@@ -3785,7 +3785,7 @@
 								data-driver-dialog-header
 							>
 								<h2
-									class="rux-card__title"
+									class="rux-panel__title"
 									id="driver-editor-dialog-title"
 								>
 									Driver
@@ -4966,7 +4966,7 @@
 								data-customer-dialog-header
 							>
 								<h2
-									class="rux-card__title"
+									class="rux-panel__title"
 									id="customer-editor-dialog-title"
 								>
 									Customer
@@ -5261,7 +5261,7 @@
 							id="request-detail-header"
 						>
 							<h2
-								class="rux-card__title"
+								class="rux-panel__title"
 								id="request-detail-title"
 							>
 								Request
@@ -6431,7 +6431,7 @@
 		<script src="./rux-ui/js/controls.js?v=9"></script>
 		<script src="./js/core/billing-config.js?v=8"></script>
 		<script src="./rux-ui/js/floating-window.js?v=7"></script>
-		<script src="./js/core/doc-viewer.js?v=13"></script>
+		<script src="./js/core/doc-viewer.js?v=15"></script>
 		<script src="./rux-ui/js/suggestions.js?v=9"></script>
 		<!-- Rux.boot(root) — attaches the scanning modules (theme, utilities,
 		     controls, ui-shell) to a subtree rendered after page load. Loads
@@ -6448,7 +6448,7 @@
 		<script src="./js/panels/request-inbox.js?v=10" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=12" defer></script>
 		<script src="./js/panels/print-schedule.js?v=36" defer></script>
-		<script src="./js/panels/trip-envelope.js?v=19" defer></script>
+		<script src="./js/panels/trip-envelope.js?v=21" defer></script>
 		<script type="module" src="./js/core/app-reload.js?v=4"></script>
 		<script
 			type="module"
@@ -11517,7 +11517,7 @@
 			hidden
 		>
 			<header class="rux-panel__header">
-				<p class="rux-card__title" id="manifest-window-title">
+				<p class="rux-panel__title" id="manifest-window-title">
 					Manifest
 				</p>
 				<button
@@ -12102,7 +12102,7 @@
 			hidden
 		>
 			<header class="rux-panel__header sched-scope-trip-finder__header">
-				<p class="rux-card__title">Trip Finder</p>
+				<p class="rux-panel__title">Trip Finder</p>
 				<button
 					type="button"
 					class="rux-button rux-button--ghost rux-button--icon rux-button--lg"

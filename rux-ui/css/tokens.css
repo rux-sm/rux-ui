@@ -1122,10 +1122,15 @@
 	/* — header — */
 	/* A floor, not a fixed height (see panel.css), matching the card header:
 	   a header carrying a control taller than its title grows around it. */
-	--rux-panel-header-height: 40px;
+	/* Not in the <=500px touch block below: that block exists to GROW targets,
+	   and this floor already exceeds its 44px, so listing it there would shrink
+	   the header by 20px on the narrowest screens — the one place it should
+	   never get smaller. */
+	--rux-panel-header-height: 64px;
 	--rux-panel-header-weight: var(--rux-weight-400);
 	--rux-panel-header-border: none;
 	--rux-panel-header-gap:    var(--rux-space-4); /* header's own internal gap, distinct from --content-gap below */
+	--rux-panel-header-padding: var(--rux-space-5);
 
 	/* — nav / tabs — tab strip itself reads --rux-tabs-attached-* (below) */
 	--rux-panel-nav-bg:        var(--rux-surface-0);
@@ -2257,7 +2262,6 @@
 		--rux-ui-header-height:            44px;
 		--rux-workspace-header-min-height: 44px;
 		--rux-card-header-height:          44px;
-		--rux-panel-header-height:         44px;
 		--rux-tab-height:                  44px;
 	}
 }

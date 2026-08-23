@@ -46,11 +46,22 @@
 	min-height: var(--rux-panel-header-height);
 	font-weight: var(--rux-panel-header-weight);
 	border-bottom: var(--rux-panel-header-border);
+	padding-inline: var(--rux-panel-header-padding);
 }
 
 /* Typography (color/size/weight/letter-spacing/line-height) shared with
    every other panel/card title — see card.css. */
+/* heading-20, where a card or workspace title is heading-16. A panel header
+   names a whole surface — a dialog, a docked rail — rather than a section
+   inside one, and Geist sets its Modal title at text-heading-20 for the same
+   reason. Split out of the shared recipe in card.css, which had carried all
+   three at heading-16 since typography.md step 51. */
 .rux-panel__title {
+	color: var(--rux-text-heading-20-color);
+	font-size: var(--rux-text-heading-20-size);
+	font-weight: var(--rux-text-heading-20-weight);
+	letter-spacing: var(--rux-text-heading-20-tracking);
+	line-height: var(--rux-text-heading-20-line-height);
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;

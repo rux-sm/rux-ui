@@ -205,13 +205,14 @@
 
    The utility that applies this role, .rux-text-heading-16, shared this rule
    until step 51 moved it to base/text.css with every other .rux-text-* class.
-   The three component classes stay here and read the same role, so nothing
-   resolves differently. docs/foundations/typography.md §5 step 51. */
+   Two of the three component classes stay here and read the same role.
+   .rux-panel__title left for heading-20 in panel.css on 2026-08-23: a panel
+   header names a whole surface, not a section inside one.
+   docs/foundations/typography.md §5 step 51. */
 /* The 16/24 semibold heading recipe, shared with .rux-ui-header__title.
    Tracking is negative rather than zeroed: at this size the tighter setting
    is what keeps a title reading as a heading instead of as body copy. */
 .rux-card__title,
-.rux-panel__title,
 .rux-workspace__title {
 	color: var(--rux-text-heading-16-color);
 	font-size: var(--rux-text-heading-16-size);
@@ -233,7 +234,6 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	padding-left: var(--rux-space-4);
 }
 
 /* Shared "muted subtitle" typography — see rux-ui/css/base/workspace.css,

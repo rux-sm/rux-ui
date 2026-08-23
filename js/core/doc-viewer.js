@@ -33,7 +33,7 @@
 			<header class="rux-panel__header sched-doc-viewer__header">
 				<div class="sched-doc-viewer__title-group">
 					<span class="rux-icon" aria-hidden="true" data-doc-viewer-icon>description</span>
-					<p class="rux-card__title sched-doc-viewer__title" data-doc-viewer-title></p>
+					<p class="rux-panel__title sched-doc-viewer__title" data-doc-viewer-title></p>
 				</div>
 				<a class="rux-button rux-button--default rux-button--icon" data-doc-viewer-external target="_blank" rel="noopener" aria-label="Open document externally" title="Open externally">
 					<span class="rux-icon" aria-hidden="true">open_in_new</span>
