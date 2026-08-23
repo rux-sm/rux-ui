@@ -1671,7 +1671,7 @@
 		let locationsDbPromise = null;
 
 		const suggestionsEl = document.createElement("div");
-		suggestionsEl.className = "sched-trip-itinerary__suggestions";
+		suggestionsEl.className = "rux-suggestions sched-trip-itinerary__suggestions";
 		suggestionsEl.hidden = true;
 		suggestionsEl.setAttribute("role", "listbox");
 		suggestionsEl.setAttribute("aria-label", "Address suggestions");
@@ -1734,9 +1734,9 @@
 					: suggestion.place_formatted || suggestion.full_address || "";
 				return `
 					<div class="sched-trip-itinerary__suggestion-row${isSaved ? " is-saved" : ""}">
-						<button class="sched-trip-itinerary__suggestion" type="button" role="option" data-suggestion-idx="${i}">
-							<span class="sched-trip-itinerary__suggestion-name">${escHtml(name)}</span>
-							<span class="sched-trip-itinerary__suggestion-address">${isSaved ? "Saved · " : ""}${escHtml(address)}</span>
+						<button class="rux-suggestions__item sched-trip-itinerary__suggestion" type="button" role="option" data-suggestion-idx="${i}">
+							<span class="rux-suggestions__label sched-trip-itinerary__suggestion-name">${escHtml(name)}</span>
+							<span class="rux-suggestions__sublabel sched-trip-itinerary__suggestion-address">${isSaved ? "Saved · " : ""}${escHtml(address)}</span>
 						</button>
 						${isSaved ? "" : `<button class="rux-button rux-button--ghost rux-button--icon sched-trip-itinerary__suggestion-save" type="button" data-save-suggestion-idx="${i}" aria-label="Use and save ${escHtml(name)}" title="Use and save location"><span class="rux-icon" aria-hidden="true">bookmark_add</span></button>`}
 					</div>`;
