@@ -41,7 +41,7 @@
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=86" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=313" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=315" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=15"
@@ -1320,14 +1320,13 @@
 													class="sched-scope-trip__doc-empty"
 													role="status"
 												>
-													<span
-														class="rux-icon"
-														aria-hidden="true"
-														>description</span
-													>
-													<span
-														>No files uploaded</span
-													>
+													<span class="sched-scope-trip__empty-icon" aria-hidden="true">
+														<span class="rux-icon">description</span>
+													</span>
+													<div class="sched-scope-trip__empty-copy">
+														<p class="sched-scope-trip__empty-title">No Files Uploaded</p>
+														<p class="sched-scope-trip__empty-text">Upload an itinerary or contract to attach it to this trip.</p>
+													</div>
 												</li>
 											</ul>
 										</div>
@@ -1607,16 +1606,13 @@
 												class="sched-scope-trip__payment-empty"
 												role="status"
 											>
-												<span
-													class="rux-icon"
-													aria-hidden="true"
-													>confirmation_number</span
-												>
-												<span
-													>No priced options —
-													passengers use a manual Owed
-													amount</span
-												>
+												<span class="sched-scope-trip__empty-icon" aria-hidden="true">
+													<span class="rux-icon">confirmation_number</span>
+												</span>
+												<div class="sched-scope-trip__empty-copy">
+													<p class="sched-scope-trip__empty-title">No Priced Options</p>
+													<p class="sched-scope-trip__empty-text">Passengers use a manual Owed amount.</p>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -1916,12 +1912,13 @@
 												class="sched-scope-trip__payment-empty"
 												role="status"
 											>
-												<span
-													class="rux-icon"
-													aria-hidden="true"
-													>payments</span
-												>
-												<span>No payments yet</span>
+												<span class="sched-scope-trip__empty-icon" aria-hidden="true">
+													<span class="rux-icon">payments</span>
+												</span>
+												<div class="sched-scope-trip__empty-copy">
+													<p class="sched-scope-trip__empty-title">No Payments Yet</p>
+													<p class="sched-scope-trip__empty-text">Record a deposit or final payment to track the balance.</p>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -11896,12 +11893,13 @@
 											class="sched-scope-trip__payment-empty"
 											role="status"
 										>
-											<span
-												class="rux-icon"
-												aria-hidden="true"
-												>payments</span
-											>
-											<span>No payments yet</span>
+											<span class="sched-scope-trip__empty-icon" aria-hidden="true">
+												<span class="rux-icon">payments</span>
+											</span>
+											<div class="sched-scope-trip__empty-copy">
+												<p class="sched-scope-trip__empty-title">No Payments Yet</p>
+												<p class="sched-scope-trip__empty-text">Record a deposit or final payment to track the balance.</p>
+											</div>
 										</div>
 									</div>
 									<div class="rux-field">

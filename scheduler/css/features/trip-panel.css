@@ -435,36 +435,66 @@
 	flex-direction: column;
 	gap: var(--rux-control-content-gap);
 }
+/* Geist's EmptyState anatomy — icon chip, title, description, centred in a
+   hairline box — at card scale instead of region scale. Geist's specimen
+   pads 48px/70px because it fills a page; this slot is a section inside a
+   card, so the padding and the chip step down while the structure and the
+   type roles stay put.
+
+   What this replaced was a disabled-input costume: input border, disabled
+   fill and cursor: not-allowed on an element that is a status message and
+   never was a control. The title takes heading-16 at the weight this system
+   publishes (600); Geist's own component overrides its heading-16 to 500
+   with font-medium, which is a divergence to settle if .rux-empty-state is
+   ever promoted out of the app layer. */
 .sched-scope-trip__payment-empty,
 .sched-scope-trip__doc-empty {
 	box-sizing: border-box;
 	display: flex;
 	width: 100%;
-	min-height: var(--rux-input-height);
+	flex-direction: column;
 	align-items: center;
-	gap: var(--rux-control-content-gap);
-	padding-inline: var(--rux-control-padding-inline);
-	background-color: var(--rux-input-disabled-bg);
-	color: var(--rux-input-disabled-fg);
-	border: var(--rux-input-border);
-	border-color: var(--rux-input-disabled-border);
-	border-radius: var(--rux-input-border-radius);
-	font-size: var(--rux-text-label-14-size);
-	font-weight: var(--rux-text-label-14-weight);
-	line-height: var(--rux-text-label-14-line-height);
-	cursor: not-allowed;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-6) var(--rux-space-4);
+	border: var(--rux-border-width) solid var(--rux-card-border);
+	border-radius: var(--rux-radius-md);
+	text-align: center;
 }
-.sched-scope-trip__payment-empty > .rux-icon,
-.sched-scope-trip__doc-empty > .rux-icon {
+/* The chip is a wrapper, not the glyph: .rux-icon pins its own width and
+   height to --_icon-size and clips overflow, so padding on it does nothing.
+   Geist decomposes this the same way, with EmptyStateIcon wrapping the icon. */
+.sched-scope-trip__empty-icon {
+	display: flex;
 	flex: none;
+	align-items: center;
+	justify-content: center;
+	padding: var(--rux-space-2);
+	color: var(--rux-text-secondary);
+	border: var(--rux-border-width) solid var(--rux-card-border);
+	border-radius: var(--rux-radius-md);
 }
-.sched-scope-trip__payment-empty > :last-child,
-.sched-scope-trip__doc-empty > :last-child {
-	flex: 1;
-	min-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+.sched-scope-trip__empty-icon > .rux-icon {
+	--_icon-size: var(--rux-icon-lg);
+}
+.sched-scope-trip__empty-copy {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+}
+.sched-scope-trip__empty-title {
+	margin: 0;
+	color: var(--rux-text-primary);
+	font-size: var(--rux-text-heading-16-size);
+	font-weight: var(--rux-text-heading-16-weight);
+	line-height: var(--rux-text-heading-16-line-height);
+	letter-spacing: var(--rux-text-heading-16-tracking);
+}
+.sched-scope-trip__empty-text {
+	margin: 0;
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-text-copy-14-size);
+	font-weight: var(--rux-text-copy-14-weight);
+	line-height: var(--rux-text-copy-14-line-height);
 }
 .sched-scope-trip__payment-rows:has([data-payment-row]) > .sched-scope-trip__payment-empty,
 .sched-scope-trip__payment-rows:has([data-ticket-option-row]) > .sched-scope-trip__payment-empty {
