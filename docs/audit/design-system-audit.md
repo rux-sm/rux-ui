@@ -530,12 +530,12 @@ renames marked ⚠ are breaking and must go through the ledger + vendored-consum
 > domain move there and this list keeps only the test mapping. Rule 10's "the ledger is how
 > it changes" is the principle `docs/foundations/` generalizes.
 >
-> **Moved so far:** **R6**'s colour half to `color.md` (rule 2.1); **R1, R2, R4 and R5** to
-> `naming.md` by its step 4; **R3, R7 and R8** to `state.md` by its step 5. **Still stated
-> here:** only **R6**'s duration/easing half, waiting on `motion.md`, and **R9** and **R10**,
-> whose homes are `CLAUDE.md` and `../portability-audit.md` rather than any foundation
-> document. **Eight of the ten have left**, and the two that remain are the two whose
-> destination does not exist or is not a foundation document at all.
+> **Moved so far:** **R6**'s colour half to `color.md` and its duration/easing half to
+> `motion.md`; **R1, R2, R4 and R5** to `naming.md` by its step 4; **R3, R7 and R8** to
+> `state.md` by its step 5. **Still stated here:** only **R9** and **R10**, whose homes are
+> `CLAUDE.md` and `../portability-audit.md` rather than any foundation document — and
+> **R6's z-index third, which has no home at all** and which splitting the rule twice is what
+> exposed. **Every rule with a foundation destination has reached it.**
 >
 > **Every ★ below is spent.** All four tests it marked as worth writing now exist —
 > `state-contract`, `focus-contract`, `motion-contract` and `gallery-coverage` — so the
@@ -567,13 +567,17 @@ history, where it is a record rather than a plan.
 5. **Every emitted class resolves.** **Moved** to
    [`naming.md`](../foundations/naming.md) rule 2.6.
    *(`tests/class-resolution` — written since, and its accepted-unresolved list is empty)*
-6. **Tokens only, both themes.** No literal duration, easing, or z-index in any rule.
-   **The colour half of this rule has moved** to
-   [`docs/foundations/color.md`](../foundations/color.md) rule 2.1, as this document's own
-   status note committed it to — that document states it, and
-   `tests/color-contract` enforces the absolute-lightness half it used to leave unchecked.
-   The duration/easing half stays here until `motion.md` claims it.
-   *(`tests/motion-contract`; colour: `tests/color-contract` + `tests/color-scales`)*
+6. **Tokens only, both themes.** **Moved, in two pieces.** The colour half is
+   [`color.md`](../foundations/color.md) rule 2.1; the duration and easing half is
+   [`motion.md`](../foundations/motion.md) rule 2.1, taken by that document's step 3.
+   **One third of this rule never had a home and still does not: z-index.** Splitting it
+   twice is what made that visible — `--rux-z-base`, `-dropdown`, `-overlay`, `-modal` and
+   `-sticky` are published, no foundation document claims them, and stacking order is
+   arguably [`layout.md`](../foundations/layout.md)'s, since that document already owns the
+   Materials elevation presets and z-index is the ordering half of the same idea. Routing it
+   is that document's to accept, not this one's to assign.
+   *(colour: `tests/color-contract` + `tests/color-scales`; motion: `tests/motion-contract`;
+   z-index: nothing)*
 7. **One overlay kernel.** **Moved** to
    [`state.md`](../foundations/state.md) rule 2.5, which also **narrowed** it: its Q2
    established that the kernel owns outside-press and Escape, not every path that closes a

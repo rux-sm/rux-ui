@@ -9,18 +9,18 @@ surface came from and where it went without making the user wait.
 
 ## Foundation Tokens
 
-| Token | Value | Role |
-| --- | ---: | --- |
-| `--rux-motion-duration-fast-01` | `70ms` | Small icon or state response |
-| `--rux-motion-duration-fast-02` | `110ms` | Menus and compact transient surfaces |
-| `--rux-motion-duration-moderate-01` | `150ms` | Frequently used shell panels and structural changes |
-| `--rux-motion-duration-moderate-02` | `240ms` | Larger or more deliberate structural changes |
-| `--rux-motion-easing-entrance-productive` | `cubic-bezier(0, 0, 0.38, 0.9)` | Surfaces entering the interface |
-| `--rux-motion-easing-exit-productive` | `cubic-bezier(0.2, 0, 1, 0.9)` | Surfaces leaving the interface |
-| `--rux-motion-easing-standard-productive` | `cubic-bezier(0.2, 0, 0.38, 0.9)` | Continuous movement between visible states |
+Canonical: **[`foundations/motion.md` §1](foundations/motion.md)** — the duration and easing
+scales and their values. **Not restated here.**
 
-These are foundational values. Component CSS should normally consume the
-semantic aliases below so a component's motion contract stays explicit.
+Two things that section says and this one used to get wrong. There are **two** scales, not
+one: the Carbon-derived `--rux-motion-*` set that the table here used to publish alone, and
+the `--rux-duration-*` / `--rux-ease-*` set the layer actually reaches for **139 times** and
+this document never mentioned. And they are **not aliases** — their values differ, and its
+Q1 established that the difference is deliberate: one times surfaces arriving and leaving,
+the other times things changing in place.
+
+Component CSS should still consume the semantic aliases below rather than either scale
+directly, which is what the rest of this document describes.
 
 ## Component Contracts
 
