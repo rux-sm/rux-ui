@@ -1,10 +1,10 @@
 # Rux UI Foundations — Layout
 
-**Contract version: 1.11.0** · Stamped at the top so a downstream document can state the
+**Contract version: 2.0.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 14 steps: **14 done**
+**Status** · 15 steps: **15 done**
 This document is canonical for **breakpoints (§1), the space scale (§7), and the radius
 scale and Materials presets (§8)**. Steps 4 and 5 brought the last two in, and **step 9
 adopted the elevation presets**, which was the last thing §8 had measured but not applied.
@@ -184,6 +184,7 @@ do.
 | 12 | Source Geist's light-theme Materials values; correct §8.1 (unblocks 9) | **done · Class A** | **Executed 2026-08-22 as §8.1.1.** §8.1 asserted the light branch was *not obtainable*, and **that assertion was wrong**. It was measured off the rendered specimen boxes, which are pinned to `#0a0a0a` and answer no theme signal — but Geist also publishes the same values as `--ds-shadow-*` custom properties on `:root`, and **those do answer `prefers-color-scheme`**. Reading `getComputedStyle(document.documentElement)` under an emulated light scheme and again under dark returns both branches directly. **The dark figures were confirmed, not replaced** — every one matches the specimen reading to the code value, which is the argument for recording the method and not only the number. Also corrected: §8.1 called the stroke *constant*; it is theme-varying (`rgba(0,0,0,.08)` light against `rgba(255,255,255,.145)` dark), as is the backdrop fill, and both now have their own table. **Class A** — it publishes a source and corrects a record; no token moves and nothing renders differently. **Deliberately did not adopt anything**, which is step 9's job and was left to it even though both landed the same day. Contract 1.6.1 → 1.7.0. |
 | 13 | Claim z-index (R6's homeless third) | **done · Class A** | **Executed 2026-08-22 as §11. Claimed, not declined.** The competing claim was `state.md` rule 2.5's layer-promotion helper, and **the code had already settled it**: `promoteLayer()` toggles a `data-rux-modal-layer` attribute and **never writes `z-index`**, while CSS reads that attribute and applies `calc(var(--rux-z-modal) + 1)`. The kernel decides *when* a surface is promoted, the scale decides *how high* — the same division §8 and `state.md` already use for elevation, where this document owns the Materials presets and that one owns what opens. **The rule was restated rather than inherited, because R6's version was false.** *No literal z-index in any rule* is contradicted by the code **43 times** — but **39 of those are 0 to 5**, lifting a pseudo-element over its own parent or ordering two children inside one component, which has nothing to do with whether a modal sits above a drawer. Importing R6 as written would have made this document publish a rule that is violated on arrival and unenforceable, which is the trap `naming.md` step 2 spent its life avoiding. §11.3 splits it: cross-component stacking uses the scale, local stacking does not. **Two real outliers found and recorded rather than fixed** (D6): `.rux-splash` at **9999** is *above everything* written as a magic number, and `.rux-resize-gutter` at **10** seats itself between the base rung and dropdowns with no name for where it sits. **Deliberately did not add rungs for either** — inventing `--rux-z-splash` inside the step that claims the scale would be deciding its shape while writing its charter. **Deliberately did not write a test**: §11.3.2 means a checker must tell local stacking from global, and no regex reads that distinction; D6 records it as needing a definition first. Contract 1.9.0 → 1.10.0. |
 | 14 | Give §11 a checkable floor and enforce it (D6) | **done · Class A + Class B** | **Executed 2026-08-22.** Step 13 claimed z-index and deliberately left two things: no test, and two declarations outside the scale. **The blocker was real and is not solved — it is bounded.** A checker still cannot tell 11.3.1's cross-component stacking from 11.3.2's local stacking; that needs the stacking context a selector renders inside, which no regex reads. **What changed is where the line came from.** The obvious move was to fit one to the data — literals cluster at 0–5 with outliers at 10 and 9999, so *≤ 5 is local* looks clean and is **curve-fitting**: the boundary would move the first time a component legitimately needed a sixth layer. The line §11.3.3 takes instead comes from the **scale's own rungs** — 1, 100, 200, 300, 400, 500 — so a literal at or above **100** shares numeric space with the global layers and interleaves with them regardless of intent, while anything below 100 can collide with nothing but base. That holds whatever the code does next. **It is deliberately weaker than the prose it enforces**, and §11.3.3 says so: a floor for the unambiguous case, not the rule made executable. **`.rux-splash` was the only violation**, and it was reaching for `9999` because the scale had no rung for *above everything* — so the fix was to publish one. `--rux-z-splash: 500` is **Class A** (additive) and repointing `.rux-splash` is **Class B** (`9999` → `500`, both above every other layer, so nothing reorders). **`.rux-resize-gutter`'s `10` is legal and stays**, recorded rather than quietly tidied: it sits below every global rung, and 11.3.2 leaves that to the author. **Verified to fail before being accepted** — a planted `z-index: 250` in `popover.css` went red naming the file and the value, and the revert was confirmed clean. Contract 1.10.0 → 1.11.0. |
+| 15 | Claim §7's role layer; retire `--rux-section-label-gap` (R7.1b) | **done · Class A + Class C** | **Executed 2026-08-22.** Two halves, and the first is why the second had anywhere to be recorded. **Class A:** the semantic spacing roles were unowned — §7 stopped at the `--rux-space-*` rungs, and a grep of every foundation document for `--rux-stack-gap`, `--rux-control-content-gap` or `--rux-control-padding-inline` returned nothing. §7.1 now claims them, the same move step 13 made for z-index, and states the two rules that make the layer checkable. **Class C:** `--rux-section-label-gap` is removed. Its only reader was `.rux-card--stack > .sched-scope-trip__section-label + *`, deleted the same day as dead CSS — that class had never appeared in markup in the repository's history, so the token had been reachable but unread for as long as it existed. `.rux-u-section-label`, the utility that actually renders section labels, never read it. **The consumer gate was run before and after, not reasoned about:** `tools/check-consumer.mjs --app ../infor-ln-docs --design-system ./rux-ui` reports the identical 12 findings in both states — 5 classes and 7 tokens, every one of them inside the consumer's `_archive/guide_runner/`, and none naming this token. The consumer's own vendored `tokens.css` carries the declaration, which is a copy of this file rather than a use, and is exactly the distinction that tool exists to draw. **So no consumer-migration step is owed, and that is why there is not one** — the protocol requires the migration to be recorded as its own step *when there is one to record*. **Deliberately not done:** the other four roles stay. All four are read — `--rux-stack-gap` 5 times, `--rux-stack-gap-tight` 3, `--rux-control-padding-inline` 10, `--rux-control-content-gap` 25 — so R7.1b does not reach them, and removing a role for tidiness is the opposite of what that rule says. **Major, not minor:** README §2.5 — any Class C takes a major, and this document does not adopt the pre-1.0 allowance in `design-system-distribution.md` §1 that would let a minor carry it. Contract 1.11.0 → 2.0.0. |
 
 ---
 
@@ -282,6 +283,32 @@ document existed. Geist publishes a Materials page (§8) covering radius and ele
 **no spacing page**, so there is no specimen to measure against. Recording that plainly is
 the point of this section: a reader comparing this system to Geist should know which scales
 are conformance and which are ours.
+
+### 7.1 Semantic spacing roles
+
+Above the scale sit a handful of named roles, in `tokens.css` under
+`SPACING · shared roles`. Until step 15 no foundation document claimed them: §7 covered
+the `--rux-space-*` rungs and stopped there, so the layer built directly on top of it had
+no home. This section is that home.
+
+| Role | Resolves to |
+|---|---|
+| `--rux-stack-gap` | `--rux-space-2` |
+| `--rux-stack-gap-tight` | `--rux-space-px` |
+| `--rux-control-padding-inline` | `--rux-space-2` |
+| `--rux-control-content-gap` | `--rux-space-2` |
+
+Two rules, and both are about keeping the layer honest rather than adding to it:
+
+**R7.1a — a role MUST resolve to a rung, never to a literal.** The point of the layer is to
+name *why* a gap exists while the scale keeps saying *how big* it is. A role holding its own
+px value is a second scale wearing a first scale's clothes.
+
+**R7.1b — a role with no consumer is removed, not kept for symmetry.** A named role is a
+claim that some recurring need exists; when the last reader goes, the claim is false, and an
+unread token that still ships is something a downstream author can adopt in good faith and
+be broken by later. Removing one is Class C and takes the full protocol — see step 15, which
+is the worked example.
 
 ---
 

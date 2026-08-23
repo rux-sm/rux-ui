@@ -920,7 +920,6 @@
 
 	--rux-stack-gap:              var(--rux-space-2);
 	--rux-stack-gap-tight:        var(--rux-space-px);
-	--rux-section-label-gap:      var(--rux-space-2);
 	--rux-control-padding-inline: var(--rux-space-2);
 	--rux-control-content-gap:    var(--rux-space-2);
 
