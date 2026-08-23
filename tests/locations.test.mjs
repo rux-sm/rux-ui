@@ -76,6 +76,20 @@ test("Configuration owns the directory and itinerary searches it before Mapbox",
 	);
 });
 
+test("the configured yard is not auto-saved into the directory", () => {
+	/* Every trip ends with an auto-generated return-to-yard leg carrying the
+	   depot's address, so without an exclusion the directory's most-repeated
+	   entry is the company's own yard -- which Settings already owns and which
+	   nobody needs autocompleted. Matched on address, not on stop type, so a
+	   trip that genuinely returns somewhere else still gets that address. */
+	const tripDb = readFileSync(
+		new URL("../js/data/trip-db.js", import.meta.url),
+		"utf8",
+	);
+	assert.match(tripDb, /RuxSettings\?\.getYard\?\.\(\)\?\.address/);
+	assert.match(tripDb, /!==\s*yardAddress/);
+});
+
 test("every write to the shared locations blob re-reads the server first", () => {
 	/* The whole directory is one row (settings/locations-v1) upserted whole,
 	   and the client is anon, so it is one list for everybody. A write built

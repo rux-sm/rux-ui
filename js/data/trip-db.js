@@ -1345,8 +1345,21 @@ import {
 			// bulk call rather than one per stop, because the saved list is a
 			// single shared row that gets rewritten whole on every write.
 			try {
+				// The auto-generated return-to-yard leg carries the depot's address
+				// on every trip -- 233 of the 485 verified stop rows in the live
+				// project, all of them type "return" -- so without this the
+				// directory's most-repeated entry would be the company's own yard,
+				// which is configured in Settings and never needs autocompleting.
+				// Matched on address rather than on stop type on purpose: a trip
+				// that genuinely returns somewhere else still gets that saved.
+				// Falls open when Settings has not loaded, since an empty yard
+				// address matches no stop.
+				const yardAddress = String(window.RuxSettings?.getYard?.()?.address || "")
+					.trim()
+					.toLowerCase();
 				const stopLocations = savedStopsData
 					.filter((stop) => stop.address && stop.lat != null && stop.lng != null)
+					.filter((stop) => stop.address.trim().toLowerCase() !== yardAddress)
 					.map((stop) => ({
 						name: stop.name || stop.address,
 						address: stop.address,
