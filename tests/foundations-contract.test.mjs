@@ -63,7 +63,10 @@ test("the Status block agrees with the amendment log it summarizes", () => {
 		const block = md.match(/\*\*Status\*\*[^\n]*\n?[^\n]*/)?.[0];
 		assert.ok(block, `${name} has no Status block`);
 
-		const declaredTotal = Number(block.match(/(\d+)\s+steps/)?.[1]);
+		/* `steps?` so a founding document can say "1 step" without being made
+		   to write "1 steps" to satisfy the parser. Surfaced by forms.md,
+		   the first document added since this test was written. */
+		const declaredTotal = Number(block.match(/(\d+)\s+steps?\b/)?.[1]);
 		assert.equal(
 			declaredTotal,
 			total,

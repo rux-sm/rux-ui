@@ -21,6 +21,7 @@ roles onto that vocabulary.
 | [`motion.md`](motion.md) | 1.5.0 | 5 done | — |
 | [`naming.md`](naming.md) | 1.18.0 | 15 done | — |
 | [`state.md`](state.md) | 1.7.0 | 9 done | — |
+| [`forms.md`](forms.md) | 1.0.0 | 1 done · 1 ready | — |
 
 `../motion.md` stays at the component tier — which token a panel, menu or scrim consumes,
 and the verification checklist for each. [`motion.md`](motion.md) owns the scales those
@@ -39,6 +40,7 @@ the worked example; the unwritten documents follow the same method.
 | [`layout.md`](layout.md) | **none — originated here** | written, breakpoints only. Geist publishes four foundations and **no breakpoint page**, so this is the first foundation rule this repo originates rather than adopts. Its remaining scope (space scale, radius, Materials elevation) is measured from Geist and is recorded as open steps |
 | [`motion.md`](motion.md) | **none — originated here** | written. Geist publishes **no motion page**, so this is the **second** foundation rule this repository originates rather than adopts, after `layout.md`'s breakpoints. Every value in it is measured from this repository's own tokens, and its §6 Q1 has no upstream to defer to |
 | `spacing.md` | [vercel.com/geist/materials](https://vercel.com/geist/materials) | reviewed, not written — and **may not be needed**: `layout.md` steps 4 and 5 already claim the space scale, radius, and the eight elevation presets. Fold or keep is `layout.md` Q4's to settle |
+| [`forms.md`](forms.md) | [vercel.com/geist/input](https://vercel.com/geist/input) + [fieldset](https://vercel.com/geist/fieldset) | written (step 1). Content, behaviour and control-selection rules adopted; Geist publishes these as prose on the component pages rather than as a foundation page |
 | component specs | the [component index](https://vercel.com/geist) and its 71 pages | **censused, not adopted** — [`naming.md`](naming.md) §7 publishes Geist's component vocabulary and maps it against this system's blocks. It is a name census: it renames nothing, and its central finding is that Geist publishes **no class vocabulary** to converge on. Read §7.3 for the mapping, including the `switch`/`toggle` crossing |
 
 **The values are not published.** Vercel's pages name the classes and say the numbers come
@@ -66,6 +68,7 @@ document once one claims them.
 | `color.md` | **R6**, the color half — tokens only, both themes | written — rule 2.1 |
 | [`motion.md`](motion.md) | **R6**, the duration/easing half | written — and it **originates** rather than adopts |
 | [`naming.md`](naming.md) | **R1, R2, R4, R5** — one block per component, one modifier vocabulary, namespaces, every emitted class resolves | written |
+| [`forms.md`](forms.md) | **none — new territory.** R1–R10 predate it and none of them reaches forms | written — composition, label copy, control selection |
 | [`state.md`](state.md) | **R3, R7, R8** — aria is the state of record, one overlay kernel, focus is visible everywhere | written |
 
 **R9 and R10 are deliberately absent.** The gallery as contract surface and "docs cite
