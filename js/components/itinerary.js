@@ -1011,7 +1011,7 @@
 		// "Pick-up Address" / "Stop 2 Address" instead of a bare "Address" —
 		// tells you which stop you're filling in without needing to glance
 		// back at the badge, especially useful once a list has several Stops.
-		const addressPlaceholder = type === "pickup" ? `${TYPE_LABEL[type]} Address` : `Stop ${stopNumberFor(stops, idx)} Address`;
+		const addressLabel = type === "pickup" ? `${TYPE_LABEL[type]} Address` : `Stop ${stopNumberFor(stops, idx)} Address`;
 		// Sleeper always sits at whatever location the previous stop is at —
 		// shown read-only (like Return's) instead of empty space, since it's
 		// a time block at an inherited place, not a place of its own to edit.
@@ -1031,34 +1031,43 @@
 		// own to name. Shaped like the address input rather than a .rux-field
 		// with a visible label, because the address beside it has none and a
 		// label row would add height to an already dense card.
-		const namePlaceholder = type === "pickup"
+		const nameLabel = type === "pickup"
 			? `${TYPE_LABEL[type]} Name`
 			: `Stop ${stopNumberFor(stops, idx)} Name`;
+		const nameFieldId = `itin-name-${idx}`;
 		const nameEl = type === "sleeper" || isReturn
 			? ""
-			: `<input class="rux-input sched-trip-itinerary__name" type="text" data-field="name"
-					  value="${escHtml(stop.name || "")}" placeholder="${namePlaceholder}"
-					  aria-label="${escHtml(fieldLabelFor(stops, idx, type))} name" />`;
+			: `<div class="rux-field">
+					<label class="rux-field__label" for="${nameFieldId}">${escHtml(nameLabel)}</label>
+					<input id="${nameFieldId}" class="rux-input sched-trip-itinerary__name" type="text"
+						   data-field="name" value="${escHtml(stop.name || "")}" />
+			   </div>`;
 		const addrEl = type === "sleeper"
-			? `<div class="sched-trip-itinerary__address-wrap">
+			? `<div class="rux-field">
+                 <label class="rux-field__label" for="${addrFieldId}">Resting at</label>
+                 <div class="sched-trip-itinerary__address-wrap">
                <input id="${addrFieldId}" class="rux-input" type="text" value="${escHtml(visibleSleeperAddr)}" readonly
                       placeholder="Inherits previous stop's address"
                       aria-label="${visibleSleeperAddr ? `Resting at ${escHtml(visibleSleeperAddr)}` : "Resting location — inherits previous stop's address"}" />
-             </div>`
+             </div></div>`
 			: isReturn
-				? `<div class="sched-trip-itinerary__address-wrap">
+				? `<div class="rux-field">
+                 <label class="rux-field__label" for="${addrFieldId}">Address</label>
+                 <div class="sched-trip-itinerary__address-wrap">
                <input id="${addrFieldId}" class="rux-input" type="text" value="${escHtml(visibleAddress)}" readonly
                       aria-label="${escHtml(stop.name)} — ${escHtml(visibleAddress)}" />
-             </div>`
-				: `<div class="sched-trip-itinerary__address-wrap${showAddrIcon ? " is-verified" : ""}">
+             </div></div>`
+				: `<div class="rux-field">
+				 <label class="rux-field__label" for="${addrFieldId}">${escHtml(addressLabel)}</label>
+				 <div class="sched-trip-itinerary__address-wrap${showAddrIcon ? " is-verified" : ""}">
 			   <input id="${addrFieldId}" class="rux-input" type="text" data-field="address" autocomplete="street-address"
-					  value="${escHtml(visibleAddress)}" placeholder="${addressPlaceholder}" aria-label="${escHtml(fieldLabelFor(stops, idx, type))} address" />
+					  value="${escHtml(visibleAddress)}" />
                ${isStale
 				? '<span class="rux-icon sched-trip-itinerary__addr-check sched-trip-itinerary__addr-check--stale">priority_high</span>'
 				: isVerified
 					? '<span class="rux-icon sched-trip-itinerary__addr-check">check</span>'
 					: ""}
-             </div>`;
+             </div></div>`;
 
 		const isDraggable = type !== "pickup" && type !== "return";
 		const deleteControl = isDraggable
