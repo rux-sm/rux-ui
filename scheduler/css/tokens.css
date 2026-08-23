@@ -151,6 +151,52 @@
 	   references another freezes at the element where it's declared rather
 	   than resolving live per-descendant, so at :root it would lock to the
 	   xs default before any size-tier override could run. */
+
+	/* Moved from rux-ui/css/tokens.css 2026-08-22 — a calendar is a domain
+	   noun, so §4.7 puts these under --sched-*. They were declared in the
+	   portable layer and vendored to every consumer, none of which has a
+	   calendar. portability-audit.md entry 26. */
+	/* ─── COMPONENT · calendar ───────────────────────────────────────────── */
+	/* The viewport owns the chrome; the inner scheduler remains a scrolling grid. */
+
+	/* — shell — */
+	--sched-calendar-bg:         var(--rux-surface-0);
+	--sched-calendar-border:     1px solid var(--rux-card-border); /* calender outline border*/
+	/* Routed through the container role (currently also 0) rather than
+	   hardcoded — see --rux-workspace-radius above for why. */
+	--sched-calendar-radius: var(--rux-radius-0);
+	/* A fill that carries a white label (--sched-calendar-now-line-label-bg reads
+	   this, and -label-fg is --rux-fg-on-accent), so rule 2.11 applies: white on
+	   the 700 step measures 4.44 and fails. 800 it is. */
+	--sched-calendar-now-line-color:    var(--rux-accent-800);
+	--sched-calendar-now-line-label-bg: var(--sched-calendar-now-line-color);
+	--sched-calendar-now-line-label-fg: var(--rux-fg-on-accent);
+	/* Text on the canvas, so it takes the accent scale's text step, not a fill
+	   step: 700 measures 4.73/4.26 where 900 measures 8.40/5.09. */
+	--sched-calendar-today-fg:          var(--rux-accent-900);
+
+
+	/* — header — */
+	/* Header cells share one flat plane; borders provide separation without
+	   repeating elevation or rim lighting across every grid cell. */
+	--sched-calendar-header-bg:     var(--rux-surface-0);
+	--sched-calendar-header-border: 1px solid var(--rux-grid-guide); /* row header dividers*/
+	/* Same reasoning/role as --sched-calendar-radius just above — a sub-region
+	   of the same container shape, not its own control. */
+	--sched-calendar-header-radius: var(--rux-radius-container);
+	--sched-calendar-header-height: 32px;
+	--sched-calendar-header-row-width: 32px;
+	--sched-calendar-header-shadow:        none;
+	--sched-calendar-header-divider:      1px solid var(--rux-grid-guide); /* column header dividers*/
+
+	/* — grid — */
+	--sched-calendar-grid: 1px solid var(--rux-grid-guide);
+
+	/* — row header (sticky bus-number rail) — */
+	/* These stack vertically, so repeated elevation would make every row read
+	   as a separate raised button instead of one flat rail. */
+	--sched-calendar-row-header-shadow:      none;
+	--sched-calendar-row-header-end-shadow:  none;
 }
 
 /* Light theme deepens the bar beneath dark metadata text; dark mode is the
@@ -165,4 +211,11 @@
 	--sched-trip-bar-tail-pressed-opacity:   64%;
 	--sched-trip-bar-tail-selected-opacity:  64%;
 	--sched-trip-bar-meta-bg: oklch(from var(--rux-white) l c h / 0%);
+
+	/* Calendar light overrides, moved with the block above. */
+	--sched-calendar-grid:           var(--rux-border-width) solid var(--rux-grid-guide);
+	--sched-calendar-border:         var(--sched-calendar-grid);
+	--sched-calendar-header-border:  var(--sched-calendar-grid);
+	--sched-calendar-header-divider: var(--sched-calendar-grid);
+	--sched-calendar-header-bg: var(--rux-surface-0);
 }

@@ -1084,48 +1084,6 @@
 	--rux-workspace-header-min-height: 40px;
 	--rux-workspace-header-gap: 0;
 
-	/* ─── COMPONENT · calendar ───────────────────────────────────────────── */
-	/* The viewport owns the chrome; the inner scheduler remains a scrolling grid. */
-
-	/* — shell — */
-	--rux-calendar-bg:         var(--rux-surface-0);
-	--rux-calendar-border:     1px solid var(--rux-card-border); /* calender outline border*/
-	/* Routed through the container role (currently also 0) rather than
-	   hardcoded — see --rux-workspace-radius above for why. */
-	--rux-calendar-radius: var(--rux-radius-0);
-	/* A fill that carries a white label (--rux-calendar-now-line-label-bg reads
-	   this, and -label-fg is --rux-fg-on-accent), so rule 2.11 applies: white on
-	   the 700 step measures 4.44 and fails. 800 it is. */
-	--rux-calendar-now-line-color:    var(--rux-accent-800);
-	--rux-calendar-now-line-label-bg: var(--rux-calendar-now-line-color);
-	--rux-calendar-now-line-label-fg: var(--rux-fg-on-accent);
-	/* Text on the canvas, so it takes the accent scale's text step, not a fill
-	   step: 700 measures 4.73/4.26 where 900 measures 8.40/5.09. */
-	--rux-calendar-today-fg:          var(--rux-accent-900);
-
-
-	/* — header — */
-	/* Header cells share one flat plane; borders provide separation without
-	   repeating elevation or rim lighting across every grid cell. */
-	--rux-calendar-header-bg:     var(--rux-surface-0);
-	--rux-calendar-header-border: 1px solid var(--rux-grid-guide); /* row header dividers*/
-	/* Same reasoning/role as --rux-calendar-radius just above — a sub-region
-	   of the same container shape, not its own control. */
-	--rux-calendar-header-radius: var(--rux-radius-container);
-	--rux-calendar-header-height: 32px;
-	--rux-calendar-header-row-width: 32px;
-	--rux-calendar-header-shadow:        none;
-	--rux-calendar-header-divider:      1px solid var(--rux-grid-guide); /* column header dividers*/
-
-	/* — grid — */
-	--rux-calendar-grid: 1px solid var(--rux-grid-guide);
-
-	/* — row header (sticky bus-number rail) — */
-	/* These stack vertically, so repeated elevation would make every row read
-	   as a separate raised button instead of one flat rail. */
-	--rux-calendar-row-header-shadow:      none;
-	--rux-calendar-row-header-end-shadow:  none;
-
 	/* ── Elevation, Panel, Card — grouped together; most of their own
 	   tokens ultimately alias one of these. ── */
 
@@ -2262,13 +2220,6 @@
 	--rux-shadow-rim-color:     oklch(from var(--rux-neutral) l c h / 0%);
 
 	/* ─── Component overrides ─────────────────────────────────────────────── */
-	--rux-calendar-grid:           var(--rux-border-width) solid var(--rux-grid-guide);
-	--rux-calendar-border:         var(--rux-calendar-grid);
-	--rux-calendar-header-border:  var(--rux-calendar-grid);
-	--rux-calendar-header-divider: var(--rux-calendar-grid);
-	--rux-calendar-header-bg: var(--rux-surface-0);
-
-
 	--rux-button-disabled-text:       var(--rux-text-disabled);
 	--rux-button-disabled-border:     none;
 }

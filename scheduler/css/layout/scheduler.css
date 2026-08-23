@@ -37,8 +37,8 @@
    ========================================================================== */
 
 .sched-scheduler {
-	--sched-scheduler-col-head-width: var(--rux-calendar-header-row-width);
-	--sched-scheduler-head-height: var(--rux-calendar-header-height);
+	--sched-scheduler-col-head-width: var(--sched-calendar-header-row-width);
+	--sched-scheduler-head-height: var(--sched-calendar-header-height);
 	--sched-scheduler-days: 7;
 	--sched-scheduler-day-min-width: 14rem;
 	--sched-scheduler-header-color: var(--rux-text-secondary);
@@ -91,14 +91,14 @@
 	   clip-path — cannot mask it, so without this rule the sticky header
 	   corner paints square past the viewport's rounded corner. Verified by
 	   toggling this rule in-browser. Must match the viewport's radius. */
-	border-radius: var(--rux-calendar-header-radius);
+	border-radius: var(--sched-calendar-header-radius);
 	/* Trip bars are GPU-composited (their base rule lists "transform" in its
 	   transition), which puts them on their own layer that escapes the
 	   border-radius + overflow clip above — they paint square over the rounded
 	   corner as they scroll. clip-path clips the scroller's own rendering
 	   (composited child layers included) to the rounded shape, which
 	   border-radius alone cannot reach. */
-	clip-path: inset(0 round var(--rux-calendar-header-radius));
+	clip-path: inset(0 round var(--sched-calendar-header-radius));
 }
 
 .sched-scheduler::-webkit-scrollbar {
@@ -245,9 +245,9 @@
 	gap: 0;
 	min-height: var(--sched-scheduler-head-height);
 	padding: 0 var(--rux-space-3);
-	background: var(--rux-calendar-header-bg);
-	border-inline-end: var(--rux-calendar-header-divider);
-	border-block-end: var(--rux-calendar-header-border);
+	background: var(--sched-calendar-header-bg);
+	border-inline-end: var(--sched-calendar-header-divider);
+	border-block-end: var(--sched-calendar-header-border);
 	color: var(--sched-scheduler-header-color);
 }
 
@@ -300,7 +300,7 @@
 /* Header cells remain on one flat plane; their grid borders provide the
    separation instead of repeating elevation on every cell. */
 .sched-scheduler__day-head {
-	box-shadow: var(--rux-calendar-header-shadow);
+	box-shadow: var(--sched-calendar-header-shadow);
 }
 
 .sched-scheduler__day-label {
@@ -309,7 +309,7 @@
 	justify-content: center;
 	gap: var(--rux-space-1);
 	padding: var(--rux-space-1) var(--rux-space-2);
-	background: var(--rux-calendar-header-bg);
+	background: var(--sched-calendar-header-bg);
 	border-radius: var(--rux-radius-full);
 	height: 28px;
 	white-space: nowrap;
@@ -319,7 +319,7 @@
    other column's, so the accent lands on the one glyph that identifies today
    instead of washing the whole label. */
 .sched-scheduler__day-head--today .sched-scheduler__day-number {
-	color: var(--rux-calendar-today-fg);
+	color: var(--sched-calendar-today-fg);
 }
 
 /* ---------- Time-aligned mode ---------- */
@@ -346,7 +346,7 @@
 	color: var(--rux-text-disabled);
 	letter-spacing: var(--rux-text-label-12-tracking);
 	line-height: var(--rux-text-label-12-line-height);
-	background: var(--rux-calendar-header-bg);
+	background: var(--sched-calendar-header-bg);
 	min-width: 20px;
 	text-align: center;
 }
@@ -405,7 +405,7 @@
 	/* Sticky cells paint on a composited layer that escapes the scroller's
 	   rounded clip (see the .sched-scheduler border-radius note above), so the
 	   corner cell carries its own top-left radius to match the viewport. */
-	border-start-start-radius: var(--rux-calendar-header-radius);
+	border-start-start-radius: var(--sched-calendar-header-radius);
 }
 
 /* Same voice as .sched-scheduler__day-name — this is the header of the bus
@@ -427,14 +427,14 @@
 	justify-content: center;
 	min-height: var(--_row-height);
 	padding: var(--sched-scheduler-row-block-inset) 0;
-	background: var(--rux-calendar-header-bg);
-	border-inline-end: var(--rux-calendar-header-border);
-	border-block-end: var(--rux-calendar-header-border);
+	background: var(--sched-calendar-header-bg);
+	border-inline-end: var(--sched-calendar-header-border);
+	border-block-end: var(--sched-calendar-header-border);
 	border-inline-start: none;
 	color: var(--sched-scheduler-row-head-color);
 	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
-	box-shadow: var(--rux-calendar-row-header-shadow);
+	box-shadow: var(--sched-calendar-row-header-shadow);
 	transition: min-height var(--rux-duration-base) var(--rux-ease-out);
 }
 
@@ -515,7 +515,7 @@
 .sched-scheduler__row:last-child .sched-scheduler__row-head,
 .sched-scheduler__row:has(+ .sched-scheduler__row--unassigned[hidden]) .sched-scheduler__row-head {
 	border-block-end: none;
-	box-shadow: var(--rux-calendar-row-header-end-shadow);
+	box-shadow: var(--sched-calendar-row-header-end-shadow);
 }
 
 .sched-scheduler__row:last-child .sched-scheduler__track,
@@ -531,7 +531,7 @@
 	position: relative;
 	grid-column: span var(--sched-scheduler-days, 7);
 	min-height: var(--_row-height);
-	border-block-end: var(--rux-calendar-grid);
+	border-block-end: var(--sched-calendar-grid);
 	transition: min-height var(--rux-duration-base) var(--rux-ease-out);
 }
 
@@ -565,7 +565,7 @@
 }
 
 .sched-scheduler__track-day {
-	border-inline-end: var(--rux-calendar-grid);
+	border-inline-end: var(--sched-calendar-grid);
 }
 
 .sched-scheduler__track-day:last-child {
@@ -578,7 +578,7 @@
 	top: 0;
 	bottom: 0;
 	width: 2px;
-	background: var(--rux-calendar-now-line-color);
+	background: var(--sched-calendar-now-line-color);
 	z-index: var(--sched-scheduler-now-line-z-index);
 	pointer-events: auto;
 	opacity: 0.8;
@@ -603,8 +603,8 @@
 	font-weight: var(--rux-weight-400);
 	line-height: 1;
 	white-space: nowrap;
-	color: var(--rux-calendar-now-line-label-fg);
-	background: var(--rux-calendar-now-line-label-bg);
+	color: var(--sched-calendar-now-line-label-fg);
+	background: var(--sched-calendar-now-line-label-bg);
 	padding: var(--rux-space-1) var(--rux-space-2);
 	border-radius: var(--rux-radius-sm);
 	opacity: 0;

@@ -1047,10 +1047,10 @@
 .calendar-app__viewport {
 	position: relative;
 	overflow: hidden;
-	background: var(--rux-calendar-bg);
-	border: var(--rux-calendar-border);
-	border-bottom: var(--rux-calendar-border);
-	border-radius: var(--rux-calendar-radius);
+	background: var(--sched-calendar-bg);
+	border: var(--sched-calendar-border);
+	border-bottom: var(--sched-calendar-border);
+	border-radius: var(--sched-calendar-radius);
 }
 
 /* The pull-to-change-week hint moved to layout/scheduler.css, which owns
