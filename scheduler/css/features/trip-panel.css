@@ -245,7 +245,7 @@
 	justify-content: center;
 	flex: none;
 	width: 0;
-	height: var(--rux-field-height);
+	height: var(--rux-button-height-standard);
 	margin-left: 0;
 	overflow: hidden;
 	opacity: 0;
@@ -265,14 +265,14 @@
 }
 #tp-contacts-list .sched-scope-trip__contact-row:focus-within .sched-scope-trip__contact-select,
 #tp-contacts-list .sched-scope-trip__contact-select:focus-visible {
-	width: var(--rux-field-height);
+	width: var(--rux-button-height-standard);
 	margin-left: var(--rux-space-2);
 	opacity: 1;
 	pointer-events: auto;
 }
 @media (hover: hover) {
 	#tp-contacts-list .sched-scope-trip__contact-row:hover .sched-scope-trip__contact-select {
-		width: var(--rux-field-height);
+		width: var(--rux-button-height-standard);
 		margin-left: var(--rux-space-2);
 		opacity: 1;
 		pointer-events: auto;
@@ -280,7 +280,7 @@
 }
 @media (hover: none) {
 	#tp-contacts-list .sched-scope-trip__contact-select {
-		width: var(--rux-field-height);
+		width: var(--rux-button-height-standard);
 		margin-left: var(--rux-space-2);
 		opacity: 1;
 		pointer-events: auto;
@@ -288,7 +288,7 @@
 }
 #tp-contacts-list.is-selecting .sched-scope-trip__contact-select,
 #dp-timeoff-rows.is-selecting .sched-scope-trip__contact-select {
-	width: var(--rux-field-height);
+	width: var(--rux-button-height-standard);
 	margin-left: var(--rux-space-2);
 	opacity: 1;
 	pointer-events: auto;
@@ -563,7 +563,7 @@
 	justify-content: center;
 	flex: none;
 	width: 0;
-	height: var(--rux-field-height);
+	height: var(--rux-button-height-standard);
 	margin-left: 0;
 	overflow: hidden;
 	opacity: 0;
@@ -788,7 +788,7 @@
 	justify-content: center;
 	flex: none;
 	width: 0;
-	height: var(--rux-field-height);
+	height: var(--rux-button-height-standard);
 	margin-left: 0;
 	overflow: hidden;
 	opacity: 0;
@@ -811,7 +811,7 @@
 .sched-scope-trip__payment-select:focus-visible,
 #tp-ticket-options-list .sched-scope-trip__contact-row:focus-within .sched-scope-trip__contact-select,
 #tp-ticket-options-list .sched-scope-trip__contact-select:focus-visible {
-	width: var(--rux-field-height);
+	width: var(--rux-button-height-standard);
 	margin-left: var(--rux-space-2);
 	opacity: 1;
 	pointer-events: auto;
@@ -821,7 +821,7 @@
 	.sched-scope-trip__doc-row:hover .sched-scope-trip__doc-select,
 	.sched-scope-trip__payment-row:hover .sched-scope-trip__payment-select,
 	#tp-ticket-options-list .sched-scope-trip__contact-row:hover .sched-scope-trip__contact-select {
-		width: var(--rux-field-height);
+		width: var(--rux-button-height-standard);
 		margin-left: var(--rux-space-2);
 		opacity: 1;
 		pointer-events: auto;
@@ -832,7 +832,7 @@
 	.sched-scope-trip__doc-select,
 	.sched-scope-trip__payment-select,
 	#tp-ticket-options-list .sched-scope-trip__contact-select {
-		width: var(--rux-field-height);
+		width: var(--rux-button-height-standard);
 		margin-left: var(--rux-space-2);
 		opacity: 1;
 		pointer-events: auto;
