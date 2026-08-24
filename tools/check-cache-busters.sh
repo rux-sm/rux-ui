@@ -32,6 +32,15 @@
 # your work. If a second session or a stray edit is live, bump your own asset's
 # ?v= by hand and re-run --staged to confirm. The guard's own message points at
 # --fix because the common case is a clean tree; it cannot see when it isn't.
+#
+# BLIND SPOT: this reads *.html and nothing else. A versioned import inside a
+# .js file — js/panels/tasks-panel.js's `../data/trip-db.js?v=24`, and five more
+# like it — is invisible here: never reported stale, never required to bump. So
+# --fix on a module imported from BOTH a page and a script moves the page's
+# number and leaves the script's behind, splitting one URL into two, which is
+# two module instances of something that was one. Hit live on 2026-08-24 with
+# fleet-db.js; bump the JS side by hand in that case. docs/todo.md T1 and T2
+# carry the accumulated drift and the decision about which way to fix it.
 
 set -uo pipefail
 cd "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
