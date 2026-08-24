@@ -165,9 +165,14 @@ such as search, messages, notifications, and profile. The control is transparent
 at rest, receives a neutral surface on hover and press, and remains highlighted
 while `aria-expanded="true"`.
 
-Personal application settings, including theme, belong under Profile →
-Preferences. They should not permanently occupy the global-action bar or be
-coupled to a view-specific tool panel such as Calendar Tools.
+Personal application settings, including theme, are placed by
+[`foundations/shell.md`](foundations/shell.md) § Action Placement, which also rules
+that the theme control is placed **once** per application. **This is a pointer and
+states no placement of its own.** It stated one until `shell.md` step 3, and had
+already drifted from the document it duplicated: it named Profile → Preferences
+alone, where § Action Placement permits the profile menu or the Preferences surface
+reached from it. Which control a theme picker must be is
+[`foundations/forms.md`](foundations/forms.md) §2.8's.
 
 Every icon-only action needs an `aria-label` and a discoverable tooltip or
 `title`. Menu and panel triggers also need `aria-haspopup`, `aria-controls`, and

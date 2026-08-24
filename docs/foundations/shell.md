@@ -1,21 +1,31 @@
 # Rux UI Foundations — Shell
 
-**Contract version: 1.1.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.2.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 2 steps: **2 done**
+**Status** · 3 steps: **3 done**
 Founding entry — a **promotion, not a rewrite**: this content governed as
 `docs/layout-composition.md` since before the foundation set existed, carrying more MUSTs
 than any foundation document and none of the machinery (`composition.md` D1). It moved here
 whole; the old path is a pointer stub so every existing reference still resolves.
 
-**Source: originated here.** Geist publishes no shell-assembly layer — the fourth
+**Source: originated here; gap source
+[Cloudscape](https://cloudscape.design/patterns/general/service-navigation/), guidance-only
+(step 3).** Geist publishes no shell-assembly layer — the fourth
 foundation this repository originates rather than adopts, after `layout.md`'s breakpoints,
 `motion.md`, and `composition.md`. Where `composition.md` says **which anatomy a view
 gets**, this document says **how the shell those views sit in is assembled** — containment,
 ordering, and the ARIA relationships between its parts. Product-specific behavior such as
 Calendar drawer resizing remains in the consuming application's layout CSS.
+
+Where Geist is silent on shell assembly, **Cloudscape's service-navigation patterns are the
+reference this document checks itself against** — the same genre, and the same stance
+`composition.md` step 2 and `motion.md` step 6 took on 2026-08-23. Guidance-only under the
+standing rule: its insights are translated into this system's vocabulary, its names and
+values are never adopted, and **Geist still wins wherever it publishes anything**. §
+Action Placement's theme-control rule is the worked example of that precedence — Geist
+publishes there, so Cloudscape is not consulted for it.
 
 The terms **MUST**, **SHOULD**, **MAY**, and **MUST NOT** describe required,
 preferred, optional, and prohibited behavior.
@@ -296,6 +306,25 @@ tokens rather than defining their own duration or easing values.
 | One content group's action | Card header or footer |
 | One field's state or action | Beside that field |
 
+**Utility navigation MUST NOT sit in the side navigation.** *[Cloudscape]* Account,
+settings, sign-out and their kin belong in the UI header, where users expect to find them;
+the side navigation carries structural destinations only. The table above implied this by
+giving every row one home and never giving one row two — but an implication is not a rule,
+and this one did not survive being asked. Verified live on Cloudscape's service-navigation
+pattern, 2026-08-24: *"Don't place utility navigation (such as links to account, settings,
+or sign out) in the side navigation. Users expect to find this in the top navigation."*
+
+**The theme control is placed once per application.** *[Geist]* Geist publishes a Theme
+Switcher **and its placement**, so this rule is Geist's and Cloudscape is not consulted for
+it: *"Place it once per app, in the footer or settings, not duplicated across pages."* Two
+homes are named and a third is implied — Geist sizes the control `small` for *"dense chrome
+(footers, dropdowns)"*, which only reads as guidance if a dropdown is somewhere it may
+live. **The profile menu is therefore a valid home**, and this system has no application
+footer, so the choice is that menu or the Preferences surface reached from it. **Once is
+the binding half**: whichever is chosen, the other MUST NOT also carry one. **Which control
+it must be is [`forms.md`](forms.md) §2.8's** — that document answers *what*, this one
+answers *where*.
+
 ## Invalid Compositions
 
 - A centered floating workspace with decorative gaps to side panels.
@@ -320,9 +349,30 @@ See `../../examples/app-layout.html` for the smallest complete reference composi
 | # | Step | Status | Notes |
 |---|---|---|---|
 | 1 | Establish this document — promote `docs/layout-composition.md` | **done · Class A** | **Executed 2026-08-23**, closing `composition.md` D1. A relocation of authority, not a change to it: every rule moved verbatim, and `tests/layout-contract.test.mjs` — which asserts against this content — moved its read path and nothing else, so the rules were enforced continuously through the move. **One correction rode along, because leaving it would have promoted a falsehood**: the header bullet stated a literal `44px` control contract, while `--rux-ui-header-height` resolves **40px** on desktop and 44px only in the ≤500px touch block — the same literal-beside-a-token drift step 7 of `composition.md` deleted from `../ui-header.md` the same day. The bullet now cites the token, and `layout.md` step 27 claims it in §10. **Links re-aimed for the new directory** (`layout.md`, `state.md`, `../motion.md`, `../ui-header.md`, `../cards.md`); the § Spacing and § Responsive pointers stay pointers, stating no values. **Deliberately not done**: no renumbering of the sections into the §1–§6 skeleton the younger foundations use — the headings are load-bearing for the enforcement suite's regexes, and a cosmetic renumber that risks silent test drift is a bad trade on a founding step. |
+| 3 | Adopt Cloudscape as the gap source, guidance-only; two placement rules land | **done · Class A** | **Executed 2026-08-24, at the owner's direction**, and the step exists because the gap was found the hard way: asked where a theme control and a build stamp belong, this document had no answer and — alone among the originated foundations — **no gap source to escalate to**. `composition.md` step 2 and `motion.md` step 6 both adopted Cloudscape on 2026-08-23; the one document governing app chrome did not, so the question dead-ended at "not covered" instead of at a source. That is the defect this step closes; the two rules are what fell out of closing it. **Sources verified live, not recalled (2026-08-24).** Cloudscape's service-navigation pattern publishes the utility-vs-structural split as an explicit **Don't**, and its top-navigation pattern orders the utility cluster Notifications → Settings → User management with the profile menu nested Profile → Preferences → Sign out last — which is the composition `index.html` already ships, so the adoption **confirms § Action Placement rather than amending it**. **Geist was checked first and won where it publishes:** it has no shell layer, but it *does* publish a Theme Switcher with placement guidance, so that rule is Geist's and Cloudscape was not consulted for it — the precedence order working in the one case where both had something to say. **Two rules land**: utility navigation MUST NOT sit in side navigation *[Cloudscape]*, and the theme control is placed once per application *[Geist]*. **The build stamp is the opposite finding, recorded as such:** both sources are silent, so a rule for it would originate here — **Q3** carries it rather than a source-adoption step inventing one. **Deliberately not done:** § Action Placement was **not** re-audited against Cloudscape's full navigation guidance — its four-control utility cap and its cluster ordering are unmeasured against this application's five header controls, and that audit is real work, recorded as **Q2** rather than rushed, exactly as `composition.md` step 2 recorded its own §2 audit as Q5 instead of bundling it. **One downstream correction rides along, because the rule required it.** `../ui-header.md` stated the theme placement itself — *"Personal application settings, including theme, belong under Profile → Preferences"* — a second home for a rule this document already owned, and it **had already drifted**: it named Preferences alone where § Action Placement now permits the profile menu or the Preferences surface reached from it. It is a pointer now, corrected in this change rather than left to disagree, per `CLAUDE.md`'s precedence rule. That is the one-home failure observed rather than argued, in the same file that prompted the question. **Deliberately not done:** no app change, and no move of the theme control — this step says where it *may* live, and `forms.md` D6 records that *what* ships is the wrong control anyway, which is a Class B decision of its own. No existing rule changed, no name moved, nothing renders differently. Contract 1.1.0 → 1.2.0. |
 | 2 | Close D1 — the example regains its page `<h1>` | **done · Class A** | **Executed 2026-08-23.** One element: `<h1 class="rux-ui-header__title">Trips</h1>` between brand and actions, per `../ui-header.md`'s contract and `typography.md` §3.5 — the module name lives in the header, written by the router in the reference app and stated once in a static example. The label matches the nav item carrying `aria-current`, which the old file did not (it marked Trips current while titling nothing). **The fix is enforced, not just made**: the example-composition test now requires the h1, so the regression class that created D1 — removing a title's last wearer without noticing the example wore it — fails a named test instead of a protocol grep. Verified rendered: the title sets at heading-16 beside the brand, the nav toggle still operates, both themes probed. |
 
 ## Open questions
+
+**Q2 — Does § Action Placement survive an audit against Cloudscape's navigation guidance?**
+Step 3 adopted the source and took the one rule the live question forced; it did not audit
+the rest, deliberately. Two measurable claims are outstanding: Cloudscape caps the utility
+cluster at **four controls** and orders it Notifications → Settings → User management, and
+`index.html` renders **five** — search, chat, notifications, a bug action, profile — in a
+different order. Whether that is a defect, a justified divergence, or a miscount of what
+belongs in the cluster needs the header read against the pattern rather than argued from
+this sentence.
+
+**Q3 — Where does a build or version stamp belong?** Asked 2026-08-24, unanswered on
+purpose. Step 3 established that **both sources are silent** — Geist publishes nothing on
+version, build or commit display, and Cloudscape reaches it in neither its pattern index
+nor its layout foundation — so any rule here originates, as the shell layer itself did.
+Originating one costs more than choosing a location: this system has no footer region, the
+UI header is the documented home for *"global utility or identity"* but is already carrying
+Q2's control-count question, and Preferences needs no new shell vocabulary at all. The
+prior question is whether the stamp is chrome or a record on a preference surface; the
+placement follows from that, and answering it in a source-adoption step would have been
+inventing a rule rather than finding one.
 
 **Q1 — Does § Modal Headers belong here?** It is the one section about a *floating* surface
 in a document otherwise about the attached shell, and it consumes `--rux-modal-*` tokens no
