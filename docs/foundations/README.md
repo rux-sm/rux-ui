@@ -15,7 +15,7 @@ roles onto that vocabulary.
 
 | Document | Contract | Status | Blocked on |
 |---|---|---|---|
-| [`typography.md`](typography.md) | 5.0.0 | 62 done · 1 deferred · 3 withdrawn | — |
+| [`typography.md`](typography.md) | 5.0.0 | 63 done · 1 deferred · 3 withdrawn | — |
 | [`layout.md`](layout.md) | 2.12.0 | 27 done | — |
 | [`color.md`](color.md) | 3.1.0 | 21 done | — |
 | [`motion.md`](motion.md) | 1.6.0 | 6 done | — |
@@ -239,7 +239,7 @@ counts.
 | [`naming.md`](naming.md) | 0 | 2 | 0 |
 | [`shell.md`](shell.md) | 3 | 0 | 0 |
 | [`state.md`](state.md) | 1 | 0 | 1 |
-| [`typography.md`](typography.md) | 1 | 0 | 0 |
+| [`typography.md`](typography.md) | 1 | 5 | 0 |
 | **total** | **18** | **9** | **3** |
 
 *Forms' defects counted zero until 2026-08-24 — not because they were fixed, but because

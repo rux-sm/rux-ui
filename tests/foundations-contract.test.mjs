@@ -183,10 +183,22 @@ function questions(md) {
 	return { open, answered, numbers: state.size, state };
 }
 
+/* The id cell is matched with the emphasis OPTIONAL, and that is the whole point.
+   This regex required a plain `| D1 |`, so `color.md` and `typography.md` — which
+   both wrote `| **D1** |` — had every row skipped: not counted open, not accepted,
+   not resolved, just invisible. Both published a rollup of 0 open defects and both
+   were wrong; color.md's was right by accident and typography.md's was hiding five
+   live ones (D8, D10, D17, D19, D22).
+
+   It was repaired by hand twice — `forms.md` step 4 and `color.md` step 21 — and a
+   third document still had it. A checker that silently ignores what it cannot parse
+   is worse than no checker, because the number it prints looks the same either way.
+   Accepting both spellings ends it: no document has to remember which one this file
+   prefers, and a new one cannot get it wrong. */
 function defects(md) {
 	let open = 0, accepted = 0, resolved = 0;
 	for (const line of md.split("\n")) {
-		if (!/^\|\s*D\d+\s*\|/.test(line)) continue;
+		if (!/^\|\s*\*{0,2}D\d+\*{0,2}\s*\|/.test(line)) continue;
 		if (line.includes("~~")) resolved++;
 		else if (/accepted\s+(?:as\s+)?debt|downgraded by step|measured and declined/i.test(line)) accepted++;
 		else open++;
