@@ -216,3 +216,37 @@ its title, and the table in §1 rolls those up. Both are *derived* from the log,
 authored independently, and `tests/foundations-contract.test.mjs` fails when a Status block
 disagrees with the log it summarizes. Derived-and-checked is the only duplication this
 system accepts.
+
+### The open work
+
+§1's table glances at **steps**. This one glances at what blocks them: the questions each
+document has not answered, and the defects it has not fixed. Same contract as the Status
+blocks — derived from the documents, never authored here, and
+`tests/foundations-contract.test.mjs` fails when a number disagrees with the document it
+counts.
+
+| Document | Open questions | Open defects | Accepted debt |
+|---|---|---|---|
+| [`color.md`](color.md) | 2 | 0 | 0 |
+| [`composition.md`](composition.md) | 0 | 0 | 0 |
+| [`forms.md`](forms.md) | 2 | 0 | 0 |
+| [`layout.md`](layout.md) | 2 | 0 | 0 |
+| [`motion.md`](motion.md) | 1 | 1 | 2 |
+| [`naming.md`](naming.md) | 0 | 2 | 0 |
+| [`shell.md`](shell.md) | 1 | 0 | 0 |
+| [`state.md`](state.md) | 3 | 1 | 0 |
+| [`typography.md`](typography.md) | 9 | 0 | 0 |
+| **total** | **20** | **4** | **2** |
+
+**Accepted debt is not a to-do.** Those rows record a defect measured and deliberately left
+— the reasoning is in the row. They are counted apart so the backlog does not cry wolf.
+
+**A question's number appears twice in its document once it is answered**, and that is the
+convention working: the answer goes first, the original text is preserved beneath it so the
+reasoning survives the decision. The counter keys on the number rather than the occurrence,
+which is why these totals are lower than a naive grep — a grep reads every preserved
+original as an unanswered question.
+
+*Start here.* The fastest useful opener for a new session is this table plus a document's §6
+— `do Q4 in color.md`, `fix D2 in motion.md`. Each carries its own evidence and blocking
+notes, so the instruction needs no other context.

@@ -107,3 +107,77 @@ test("the README index agrees with each document it lists", () => {
 		);
 	}
 });
+
+/* ── open-work rollup ────────────────────────────────────────────────────────
+   README.md's rollup is derived text, like the Status blocks above, so it gets
+   the same treatment: the counters live here and the table is checked against
+   them. Hand-maintained counts across nine documents drift within a week.
+
+   Counting is scoped to the open-questions section and keyed by NUMBER, not by
+   occurrence, because two conventions would otherwise inflate it. An answered
+   question keeps its original text below the answer, so its number appears
+   twice on purpose — that is the reasoning surviving the decision, not a
+   duplicate. And a Status block may summarise a question by number long before
+   §6 states it. Both were live in these documents when this was written.
+
+   A question counts as answered when any of its occurrences says so, in either
+   spelling the set uses: `— ANSWERED:` inside the heading, or a following
+   `**Answered …**` run.
+
+   A defect is RESOLVED when its row is struck through. That is not a guess:
+   across all nine documents every resolved defect carries `~~` and no live one
+   does. Live defects then split by whether the row records a decision to live
+   with them — accepted debt is not a to-do, and rolling it up as one would
+   make the backlog cry wolf. */
+function questionSection(md) {
+	const m = md.match(/\n##\s*(?:\d+\.\s*)?Open questions\s*\n/i);
+	return m ? md.slice(m.index) : "";
+}
+
+function questions(md) {
+	const section = questionSection(md);
+	const state = new Map();
+	for (const m of section.matchAll(/\*\*Q(\d+)\b([\s\S]{0,400}?)\*\*(\s*\*\*Answered\b)?/g)) {
+		const [, num, heading, following] = m;
+		const answered = /ANSWERED/i.test(heading) || Boolean(following);
+		state.set(num, (state.get(num) ?? false) || answered);
+	}
+	let open = 0, answered = 0;
+	for (const isAnswered of state.values()) isAnswered ? answered++ : open++;
+	return { open, answered, numbers: state.size };
+}
+
+function defects(md) {
+	let open = 0, accepted = 0, resolved = 0;
+	for (const line of md.split("\n")) {
+		if (!/^\|\s*D\d+\s*\|/.test(line)) continue;
+		if (line.includes("~~")) resolved++;
+		else if (/accepted debt|downgraded by step|measured and declined/i.test(line)) accepted++;
+		else open++;
+	}
+	return { open, accepted, resolved };
+}
+
+test("every foundation document has an open-questions section to roll up", () => {
+	for (const [name, md] of Object.entries(docs)) {
+		assert.ok(questionSection(md), `${name} has no "Open questions" section`);
+	}
+});
+
+test("README's open-work rollup agrees with the documents", () => {
+	const rows = new Map();
+	for (const line of readme.split("\n")) {
+		const m = line.match(/^\|\s*\[`([a-z-]+\.md)`\][^|]*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*$/);
+		if (m) rows.set(m[1], { open: +m[2], defects: +m[3], accepted: +m[4] });
+	}
+	assert.ok(rows.size > 0, "no rollup rows found in README.md — is the table still there?");
+	for (const [name, md] of Object.entries(docs)) {
+		const q = questions(md), d = defects(md);
+		const row = rows.get(name);
+		assert.ok(row, `${name} is missing from the open-work rollup`);
+		assert.equal(row.open, q.open, `${name}: rollup says ${row.open} open questions, the document has ${q.open}`);
+		assert.equal(row.defects, d.open, `${name}: rollup says ${row.defects} open defects, the document has ${d.open}`);
+		assert.equal(row.accepted, d.accepted, `${name}: rollup says ${row.accepted} accepted, the document has ${d.accepted}`);
+	}
+	assert.equal(rows.size, Object.keys(docs).length, "the rollup lists a document that no longer exists, or omits one");
+});
