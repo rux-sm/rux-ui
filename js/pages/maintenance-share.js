@@ -73,10 +73,14 @@ function changesForDisplayedRange(rows, data) {
 	const end = date(data.rangeEnd);
 	const displayedTrips = data.trips || [];
 	const displayedIds = new Set(displayedTrips.map((trip) => String(trip.id || "")).filter(Boolean));
-	const displayedRefs = new Set(displayedTrips.map((trip) => String(trip.tripRef || "")).filter(Boolean));
+	// Matched by id, then by dates — never by trip_ref. A ref is not unique:
+	// the live table holds refs shared by two distinct trips, so a ref match
+	// can attribute one trip's change to another and print it on a page the
+	// dispatcher shares outside the office. It also caught nothing the other
+	// two conditions miss — a row carrying a ref that is on display carries
+	// the dates that put it in range too.
 	return (rows || []).filter((row) => {
 		if (row.tripId && displayedIds.has(String(row.tripId))) return true;
-		if (row.tripRef && displayedRefs.has(String(row.tripRef))) return true;
 		const tripStart = date(row.tripStartDate);
 		const tripEnd = date(row.tripEndDate) || tripStart;
 		return Boolean(start && end && tripStart && tripEnd && tripStart <= end && tripEnd >= start);
