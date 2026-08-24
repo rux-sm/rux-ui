@@ -69,24 +69,31 @@
    it, replacing the day-group card that used to wrap them (a card nesting
    cards). Type comes from the shared .rux-text-heading-16 recipe in the
    markup; this block owns only the spacing. */
+/* Padding removed with the .rux-section migration: the primitive's own flex
+   gap now sets the distance from the heading to the first card, so the old
+   padding-block would add to it. */
 .sched-tasks__day-title {
 	margin: 0;
-	padding-block: var(--rux-space-1) var(--rux-space-2);
 }
 
-/* Breathing room before every day after the first. */
-* + .sched-tasks__day-title {
+/* Breathing room before every day after the first. Keys on the group now
+   rather than the title, which is no longer a sibling of the previous day's
+   last card — it sits inside .rux-section__header. */
+* + .sched-tasks__day-group {
 	margin-block-start: var(--rux-space-5);
 }
 
-/* Only between trip entries in the Trips (day) view, where the cards are
-   flat siblings under a day heading — the ~ guard keys on such a heading
-   existing, which the Post Trip view has none of: its cards deliberately
-   stack border-to-border and take no margin. Both views' cards share the
-   same classes, so sibling structure is what tells them apart. */
-.sched-tasks__day-title ~ .sched-tasks__trip + .sched-tasks__trip {
-	margin-top: var(--rux-space-4);
-}
+/* The rule that used to sit here set --rux-space-4 between adjacent trip
+   cards in the day view, guarded by a `~` on the day heading so it would not
+   reach the Post Trip view, whose cards were described as stacking
+   border-to-border with no margin.
+
+   Both halves of that were untrue, and measuring is what showed it. The value
+   it set was the same 16px `.rux-card + .rux-card` already supplies from
+   card.css, and the real Post Trip view renders its cards at 0/16/16 — the
+   identical spacing — because that base rule reaches them too. The guard
+   distinguished nothing and the rule changed nothing. Deleted rather than
+   ported. */
 
 .sched-tasks__trip--empty > .rux-card__body {
 	display: flex;

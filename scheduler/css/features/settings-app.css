@@ -37,29 +37,26 @@
 	padding: var(--rux-space-5);
 }
 
+/* Width only. Surface, border, radius and clipping now come from .rux-card —
+   this was a hand-rolled parallel card, one of three the typography.md §3.5
+   census found, and it carried its own background/border/radius that had to be
+   kept in step with card.css by hand. */
 .settings-app__panel {
 	flex: none;
 	width: min(100%, 46rem);
 	max-width: 46rem;
-	background: var(--rux-surface-1);
-	border: var(--rux-border-width) solid var(--rux-card-border);
-	border-radius: var(--rux-radius-md);
-	overflow: hidden;
 }
 
+/* The bordered header is gone with the migration, not by preference:
+   layout.md step 17 removed the rule under card headers system-wide and set
+   --rux-card-header-border: none, but this header was hand-built and never
+   received it. §9.1 — "a header is not a separate surface; a footer is."
+   Layout (the badge sitting opposite a stacked title + copy) still belongs
+   here; .rux-card__header centres its content, and this one leads. */
 .settings-app__panel-header {
-	display: flex;
 	align-items: flex-start;
-	justify-content: space-between;
-	gap: var(--rux-space-4);
-	padding: var(--rux-space-5);
-	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
-	background: var(--rux-surface-1);
 }
 
-/* Typography shared with every other panel/card title — see card.css.
-   This previously used --rux-text-default; now --rux-text-heading like
-   the rest of the group. */
 .settings-app__panel-title {
 	margin: 0;
 }

@@ -44,6 +44,16 @@
 	line-height: var(--rux-text-heading-16-line-height);
 }
 
+/* .rux-section spaces its children with a flex gap, and .rux-card carries its
+   own adjacent-sibling margin for when cards stack outside one. Inside a
+   section the two compound to 32px, which is what a run of cards under a
+   heading actually looks like — measured, not assumed. The gap wins here: it
+   is the primitive's own contract. Latent until the section had a caller
+   holding more than one card. */
+.rux-section > .rux-card + .rux-card {
+	margin-top: 0;
+}
+
 /* Wraps, unlike .rux-card__title — a section heading is copy, and copy that
    silently ellipsises is worse than copy that runs to a second line. */
 .rux-section__description {

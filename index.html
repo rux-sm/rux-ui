@@ -40,7 +40,7 @@
 		<!-- The design system's public entrypoint: tokens, typography, webfonts,
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
-		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=108" />
+		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=112" />
 		<link rel="stylesheet" href="./scheduler/css/components.css?v=342" />
 		<link
 			rel="stylesheet"
@@ -64,7 +64,7 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/settings-app.css?v=12"
+			href="./scheduler/css/features/settings-app.css?v=14"
 		/>
 		<link
 			rel="stylesheet"
@@ -112,7 +112,7 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/tasks-panel.css?v=48"
+			href="./scheduler/css/features/tasks-panel.css?v=52"
 		/>
 		<link
 			rel="stylesheet"
@@ -5698,18 +5698,18 @@
 
 						<div class="rux-workspace__body settings-app__body">
 							<section
-								class="settings-app__panel"
+								class="rux-card settings-app__panel"
 								aria-labelledby="settings-mapbox-title"
 							>
-								<header class="settings-app__panel-header">
+								<header class="rux-card__header settings-app__panel-header">
 									<div>
 										<h2
-											class="settings-app__panel-title rux-text-heading-16"
+											class="rux-card__title settings-app__panel-title"
 											id="settings-mapbox-title"
 										>
 											Mapbox
 										</h2>
-										<p class="settings-app__panel-copy">
+										<p class="rux-card__subtitle settings-app__panel-copy">
 											Used for address verification and
 											mileage estimates.
 										</p>
@@ -5721,7 +5721,7 @@
 									>
 								</header>
 
-								<div class="settings-app__form">
+								<div class="rux-card__body settings-app__form">
 									<div class="rux-field">
 										<label
 											class="rux-field__label"
@@ -5742,7 +5742,7 @@
 									</div>
 								</div>
 
-								<footer class="settings-app__footer">
+								<footer class="rux-card__footer settings-app__footer">
 									<p
 										class="settings-app__message"
 										id="settings-mapbox-message"
@@ -5764,25 +5764,25 @@
 							</section>
 
 							<section
-								class="settings-app__panel"
+								class="rux-card settings-app__panel"
 								aria-labelledby="settings-defaults-title"
 							>
-								<header class="settings-app__panel-header">
+								<header class="rux-card__header settings-app__panel-header">
 									<div>
 										<h2
-											class="settings-app__panel-title rux-text-heading-16"
+											class="rux-card__title settings-app__panel-title"
 											id="settings-defaults-title"
 										>
 											Trip Defaults
 										</h2>
-										<p class="settings-app__panel-copy">
+										<p class="rux-card__subtitle settings-app__panel-copy">
 											Default values applied when building
 											itineraries.
 										</p>
 									</div>
 								</header>
 
-								<div class="settings-app__form">
+								<div class="rux-card__body settings-app__form">
 									<div class="rux-field">
 										<label
 											class="rux-field__label"
@@ -5815,7 +5815,7 @@
 									</div>
 								</div>
 
-								<footer class="settings-app__footer">
+								<footer class="rux-card__footer settings-app__footer">
 									<div class="settings-app__actions">
 										<button
 											class="rux-button rux-button--accent"
@@ -5832,25 +5832,25 @@
 							</section>
 
 							<section
-								class="settings-app__panel"
+								class="rux-card settings-app__panel"
 								aria-labelledby="settings-integrations-title"
 							>
-								<header class="settings-app__panel-header">
+								<header class="rux-card__header settings-app__panel-header">
 									<div>
 										<h2
-											class="settings-app__panel-title rux-text-heading-16"
+											class="rux-card__title settings-app__panel-title"
 											id="settings-integrations-title"
 										>
 											Integrations
 										</h2>
-										<p class="settings-app__panel-copy">
+										<p class="rux-card__subtitle settings-app__panel-copy">
 											External app links used across the
 											scheduler.
 										</p>
 									</div>
 								</header>
 
-								<div class="settings-app__form">
+								<div class="rux-card__body settings-app__form">
 									<div class="rux-field">
 										<label
 											class="rux-field__label"
@@ -5871,7 +5871,7 @@
 									</div>
 								</div>
 
-								<footer class="settings-app__footer">
+								<footer class="rux-card__footer settings-app__footer">
 									<p
 										class="settings-app__message"
 										id="settings-integrations-message"
@@ -5893,18 +5893,18 @@
 							</section>
 
 							<section
-								class="settings-app__panel"
+								class="rux-card settings-app__panel"
 								aria-labelledby="settings-billing-title"
 							>
-								<header class="settings-app__panel-header">
+								<header class="rux-card__header settings-app__panel-header">
 									<div>
 										<h2
-											class="settings-app__panel-title rux-text-heading-16"
+											class="rux-card__title settings-app__panel-title"
 											id="settings-billing-title"
 										>
 											Billing Workflow
 										</h2>
-										<p class="settings-app__panel-copy">
+										<p class="rux-card__subtitle settings-app__panel-copy">
 											Rename or hide billing milestones,
 											and choose which statuses mark a
 											trip confirmed.
@@ -5912,7 +5912,7 @@
 									</div>
 								</header>
 
-								<div class="settings-app__form">
+								<div class="rux-card__body settings-app__form">
 									<p class="settings-req-section">
 										Workflow fields
 									</p>
@@ -5929,7 +5929,7 @@
 									></div>
 								</div>
 
-								<footer class="settings-app__footer">
+								<footer class="rux-card__footer settings-app__footer">
 									<p
 										class="settings-app__message"
 										id="settings-billing-message"
@@ -5961,18 +5961,18 @@
 							</section>
 
 							<section
-								class="settings-app__panel"
+								class="rux-card settings-app__panel"
 								aria-labelledby="settings-yard-title"
 							>
-								<header class="settings-app__panel-header">
+								<header class="rux-card__header settings-app__panel-header">
 									<div>
 										<h2
-											class="settings-app__panel-title rux-text-heading-16"
+											class="rux-card__title settings-app__panel-title"
 											id="settings-yard-title"
 										>
 											Yard Location
 										</h2>
-										<p class="settings-app__panel-copy">
+										<p class="rux-card__subtitle settings-app__panel-copy">
 											Used as the starting point for first
 											pickup and return mileage estimates.
 										</p>
@@ -5984,7 +5984,7 @@
 									>
 								</header>
 
-								<div class="settings-app__form">
+								<div class="rux-card__body settings-app__form">
 									<div class="rux-field">
 										<label
 											class="rux-field__label"
@@ -6053,7 +6053,7 @@
 									</div>
 								</div>
 
-								<footer class="settings-app__footer">
+								<footer class="rux-card__footer settings-app__footer">
 									<p
 										class="settings-app__message"
 										id="settings-yard-message"
@@ -6097,18 +6097,18 @@
 							</section>
 
 							<section
-								class="settings-app__panel"
+								class="rux-card settings-app__panel"
 								aria-labelledby="settings-locations-title"
 							>
-								<header class="settings-app__panel-header">
+								<header class="rux-card__header settings-app__panel-header">
 									<div>
 										<h2
-											class="settings-app__panel-title rux-text-heading-16"
+											class="rux-card__title settings-app__panel-title"
 											id="settings-locations-title"
 										>
 											Locations
 										</h2>
-										<p class="settings-app__panel-copy">
+										<p class="rux-card__subtitle settings-app__panel-copy">
 											Saved destinations appear before
 											Mapbox results when building an
 											itinerary.
@@ -6116,7 +6116,7 @@
 									</div>
 								</header>
 
-								<div class="settings-app__form">
+								<div class="rux-card__body settings-app__form">
 									<div
 										class="settings-locations-list"
 										id="settings-locations-list"
@@ -6190,7 +6190,7 @@
 									</div>
 								</div>
 
-								<footer class="settings-app__footer">
+								<footer class="rux-card__footer settings-app__footer">
 									<p
 										class="settings-app__message"
 										id="settings-locations-message"
@@ -6242,25 +6242,25 @@
 								</footer>
 							</section>
 							<section
-								class="settings-app__panel"
+								class="rux-card settings-app__panel"
 								aria-labelledby="settings-req-title"
 							>
-								<header class="settings-app__panel-header">
+								<header class="rux-card__header settings-app__panel-header">
 									<div>
 										<h2
-											class="settings-app__panel-title rux-text-heading-16"
+											class="rux-card__title settings-app__panel-title"
 											id="settings-req-title"
 										>
 											Requirements
 										</h2>
-										<p class="settings-app__panel-copy">
+										<p class="rux-card__subtitle settings-app__panel-copy">
 											Toggle any requirement off to hide
 											it in the trip editor. Add custom
 											requirements for your operation.
 										</p>
 									</div>
 								</header>
-								<div class="settings-app__form">
+								<div class="rux-card__body settings-app__form">
 									<div
 										id="settings-req-list"
 										class="settings-req-list"
@@ -6331,29 +6331,36 @@
 							</section>
 
 							<section
-								class="settings-app__panel"
+								class="rux-card settings-app__panel"
 								aria-labelledby="settings-refresh-title"
 							>
-								<header class="settings-app__panel-header">
+								<header class="rux-card__header settings-app__panel-header">
 									<div>
 										<h2
-											class="settings-app__panel-title rux-text-heading-16"
+											class="rux-card__title settings-app__panel-title"
 											id="settings-refresh-title"
 										>
 											App Updates
 										</h2>
-										<p class="settings-app__panel-copy">
-											Push an immediate reload to every
-											open tab — dispatch, driver, and
-											maintenance pages alike. Use right
-											after deploying a change everyone
-											needs now. Anyone with unsaved work
-											will lose it.
-										</p>
 									</div>
 								</header>
 
-								<footer class="settings-app__footer">
+								<!-- This panel has no form, so its copy is the
+								     body rather than a subtitle to one: a card
+								     frames only with a direct .rux-card__body
+								     (card.css), and the other seven get theirs
+								     from settings-app__form. -->
+								<div class="rux-card__body settings-app__form">
+									<p class="settings-app__panel-copy">
+										Push an immediate reload to every open
+										tab — dispatch, driver, and maintenance
+										pages alike. Use right after deploying a
+										change everyone needs now. Anyone with
+										unsaved work will lose it.
+									</p>
+								</div>
+
+								<footer class="rux-card__footer settings-app__footer">
 									<p
 										class="settings-app__message"
 										id="settings-force-refresh-message"
@@ -6465,7 +6472,7 @@
 			src="./js/panels/documents-panel.js?v=5"
 		></script>
 		<script type="module" src="./js/panels/trip-history.js?v=6"></script>
-		<script type="module" src="./js/panels/tasks-panel.js?v=66"></script>
+		<script type="module" src="./js/panels/tasks-panel.js?v=70"></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=24"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
 

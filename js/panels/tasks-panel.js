@@ -749,12 +749,23 @@ function emptyTripCard(text = "No Trips") {
 // spent two borders and two padding insets of an already-narrow panel on
 // chrome; the title alone carries the grouping. Repeated once per visible
 // day, same as before.
+//
+// That conclusion was reached here before the system had a name for it. It
+// now does: .rux-section is exactly "a heading over a run of surfaces"
+// (typography.md §3.5), and this was one of the three hand-built versions the
+// §3.5 census found. The bare h4 became the primitive's own anatomy; the
+// spacing that used to come from the title's padding and a sibling-margin
+// rule now comes from .rux-section's flex gap.
 function renderDayGroup(iso, entries) {
 	return `
-		<h4 class="rux-text-heading-16 sched-tasks__day-title">${formatDepartingTitle(iso)}</h4>
-		${entries.length
-			? entries.map(({ trip, leg }) => renderTrip(trip, leg)).join("")
-			: emptyTripCard()}
+		<section class="rux-section sched-tasks__day-group">
+			<div class="rux-section__header">
+				<h4 class="rux-section__title sched-tasks__day-title">${formatDepartingTitle(iso)}</h4>
+			</div>
+			${entries.length
+				? entries.map(({ trip, leg }) => renderTrip(trip, leg)).join("")
+				: emptyTripCard()}
+		</section>
 	`;
 }
 
