@@ -120,9 +120,26 @@ test("the README index agrees with each document it lists", () => {
    duplicate. And a Status block may summarise a question by number long before
    §6 states it. Both were live in these documents when this was written.
 
-   A question counts as answered when any of its occurrences says so, in either
-   spelling the set uses: `— ANSWERED:` inside the heading, or a following
-   `**Answered …**` run.
+   A question counts as answered when any of its occurrences says so, and the
+   set writes that in three placements, all of which count: `— ANSWERED` inside
+   the heading (typography Q10–Q12); an `**Answered …**` run on the same line,
+   straight after the heading's closing `**` (forms.md Q3); and the same run in
+   a blockquote BENEATH the question text, which is what typography.md does for
+   Q1–Q9. Matching is scoped to the question's own block — its mark to the next
+   question's mark — so a resolution counts for the question it sits under and
+   for no other.
+
+   The third placement is the fix for a miscount this counter shipped with. It
+   originally required the run to be adjacent to the heading, which caught
+   forms.md and nothing else, so typography.md's eight settled questions all
+   counted as open and its rollup read 9 open when 1 is.
+
+   The run MUST BEGIN its line, behind optional `>` and space, and that is
+   load-bearing rather than tidy. typography.md Q6 opens its blockquote **The
+   mechanism is answered; the mapping is not.** and is genuinely open — it still
+   blocks step 7. Searching the block for the word anywhere would close it. The
+   convention these documents keep is that `**Answered` in the LEADING position
+   means settled; prose about what is answered is not that marker.
 
    A defect is RESOLVED when its row is struck through. That is not a guess:
    across all nine documents every resolved defect carries `~~` and no live one
@@ -148,11 +165,19 @@ function questionSection(md) {
 function questions(md) {
 	const section = questionSection(md);
 	const state = new Map();
-	for (const m of section.matchAll(/\*\*Q(\d+)\b([\s\S]{0,400}?)\*\*(\s*\*\*Answered\b)?/g)) {
-		const [, num, heading, following] = m;
-		const answered = /ANSWERED/i.test(heading) || Boolean(following);
+	const marks = [...section.matchAll(/\*\*Q(\d+)\b([\s\S]{0,400}?)\*\*/g)];
+	marks.forEach((m, i) => {
+		const [, num, heading] = m;
+		/* A question owns the text from its own mark to the next one, so a
+		   resolution written beneath it is found wherever in that run it sits,
+		   and one written beneath the NEXT question never counts for this one. */
+		const rest = section
+			.slice(m.index, marks[i + 1]?.index ?? section.length)
+			.slice(m[0].length);
+		const answered =
+			/ANSWERED/i.test(heading) || /(?:^|\n)[ \t>]*\*\*Answered\b/i.test(rest);
 		state.set(num, (state.get(num) ?? false) || answered);
-	}
+	});
 	let open = 0, answered = 0;
 	for (const isAnswered of state.values()) isAnswered ? answered++ : open++;
 	return { open, answered, numbers: state.size };

@@ -235,17 +235,25 @@ counts.
 | [`naming.md`](naming.md) | 0 | 2 | 0 |
 | [`shell.md`](shell.md) | 1 | 0 | 0 |
 | [`state.md`](state.md) | 3 | 0 | 1 |
-| [`typography.md`](typography.md) | 9 | 0 | 0 |
-| **total** | **20** | **3** | **3** |
+| [`typography.md`](typography.md) | 1 | 0 | 0 |
+| **total** | **12** | **3** | **3** |
 
 **Accepted debt is not a to-do.** Those rows record a defect measured and deliberately left
 — the reasoning is in the row. They are counted apart so the backlog does not cry wolf.
 
-**A question's number appears twice in its document once it is answered**, and that is the
-convention working: the answer goes first, the original text is preserved beneath it so the
-reasoning survives the decision. The counter keys on the number rather than the occurrence,
-which is why these totals are lower than a naive grep — a grep reads every preserved
-original as an unanswered question.
+**An answered question keeps its original text, and the documents do that in two orders.**
+Either the answer leads and the original is preserved beneath it — so the number appears
+twice, on purpose — or the question stands as written and the resolution follows under it,
+opening with `**Answered`. Both keep the reasoning that survived the decision, and the
+counter accepts both: it keys on the number rather than the occurrence, and it reads the
+marker anywhere inside that question's own block. That is why these totals are lower than a
+naive grep, which reads every preserved original as an unanswered question.
+
+**The marker has to lead the run**, and a resolution that opens any other way stays counted
+as open. That is deliberate rather than a trap to route around: `typography.md` Q6 answers
+its mechanism in a blockquote beginning *"The mechanism is answered; the mapping is not"* and
+is still open on the mapping, which still blocks its step 7. Write `**Answered` only when the
+question is closed.
 
 *Start here.* The fastest useful opener for a new session is this table plus a document's §6
 — `do Q4 in color.md`, `fix D2 in motion.md`. Each carries its own evidence and blocking
