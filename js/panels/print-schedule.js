@@ -498,9 +498,20 @@
     const root = document.createElement("div");
     root.className = "sched-print-root";
 
+    // An inactive bus is off the printed page the same way it is off the live
+    // grid: it earns a row back only from a trip actually on it. The rule
+    // itself lives in js/core/bus-status.js and reaches this classic script
+    // through schedulerDemo, so print and grid cannot drift apart; with the
+    // helper absent, nothing is dropped. byTrack is already clipped to days
+    // 1-7, so "this week" here means the week being printed, not the live
+    // two-week view.
+    const isBusVisibleThisWeek = demo.isBusVisibleThisWeek || (() => true);
+    const printedBuses = buses.filter((bus) =>
+      isBusVisibleThisWeek(bus, (byTrack.get(trackIdForBusNumber(bus.number)) || []).length > 0));
+
     const busChunks = [];
-    for (let i = 0; i < buses.length; i += rowsPerPage) {
-      busChunks.push(buses.slice(i, i + rowsPerPage));
+    for (let i = 0; i < printedBuses.length; i += rowsPerPage) {
+      busChunks.push(printedBuses.slice(i, i + rowsPerPage));
     }
     if (!busChunks.length) busChunks.push([]);
 

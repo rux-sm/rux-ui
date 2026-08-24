@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import {
 	BUS_STATUSES,
 	deriveBusStatusLabel,
@@ -66,6 +67,30 @@ test("an inactive bus earns its row back only by having something on it", () => 
 
 test("an active bus keeps its row on an empty week", () => {
 	assert.equal(isBusVisibleThisWeek({ status: "active" }, false), true);
+});
+
+test("the printed page hides an inactive bus on the same terms the grid does", () => {
+	/* js/panels/print-schedule.js is a classic IIFE and cannot import this
+	   module, so index.html hands the rule over on schedulerDemo. Restating the
+	   status check there instead would be a second copy free to drift. */
+	const html = readFileSync("index.html", "utf8");
+	assert.match(
+		html,
+		/window\.schedulerDemo = \{[\s\S]*?\bisBusVisibleThisWeek,[\s\S]*?\n\t*\};/,
+		"schedulerDemo should hand isBusVisibleThisWeek to the print panel",
+	);
+
+	const print = readFileSync("js/panels/print-schedule.js", "utf8");
+	assert.match(
+		print,
+		/demo\.isBusVisibleThisWeek/,
+		"print-schedule.js should take the rule from schedulerDemo",
+	);
+	assert.doesNotMatch(
+		print,
+		/"(?:inactive|retired)"/,
+		"print-schedule.js should not carry its own copy of the status vocabulary",
+	);
 });
 
 /* ── Windows ───────────────────────────────────────────────────────────── */

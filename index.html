@@ -6408,7 +6408,7 @@
 		<script src="./js/panels/trip-finder.js?v=11" defer></script>
 		<script src="./js/panels/request-inbox.js?v=10" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=12" defer></script>
-		<script src="./js/panels/print-schedule.js?v=36" defer></script>
+		<script src="./js/panels/print-schedule.js?v=37" defer></script>
 		<script src="./js/panels/trip-envelope.js?v=21" defer></script>
 		<script type="module" src="./js/core/app-reload.js?v=4"></script>
 		<script
@@ -6455,6 +6455,7 @@
 			import {
 				indexOutOfServiceByBus,
 				isBusActive,
+				isBusVisibleThisWeek,
 				isOutOfServiceDuring,
 				outOfServiceOverlap,
 			} from "./js/core/bus-status.js";
@@ -11238,6 +11239,12 @@
 				get buses() {
 					return schedulerBuses;
 				},
+				// Print builds its own rows from `buses`, so it needs the same
+				// per-week visibility rule the grid applies in
+				// syncConditionalRows() — handed over rather than restated,
+				// since print-schedule.js is a classic script and cannot import
+				// js/core/bus-status.js itself.
+				isBusVisibleThisWeek,
 				layoutScheduler,
 				renderScheduler,
 				generateTripId,
