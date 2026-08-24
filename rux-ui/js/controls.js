@@ -211,6 +211,12 @@
 	/* ── Click ──────────────────────────────────────────────────────────────── */
 
 	document.addEventListener("click", function (e) {
+		// e.target is only guaranteed to be an EventTarget. A real click or
+		// keypress always lands on an Element, but an event dispatched straight
+		// at document — a plausible way to drive these controls programmatically —
+		// makes the target `document`, which has no .closest/.matches, and every
+		// handler below this line would throw on its first statement.
+		if (!(e.target instanceof Element)) return;
 		// [data-rux-toggle="#target"] — toggle .is-open on a target element
 		const toggle = e.target.closest("[data-rux-toggle]");
 		if (toggle) {
@@ -268,6 +274,12 @@
 	}
 
 	document.addEventListener("change", function (e) {
+		// e.target is only guaranteed to be an EventTarget. A real click or
+		// keypress always lands on an Element, but an event dispatched straight
+		// at document — a plausible way to drive these controls programmatically —
+		// makes the target `document`, which has no .closest/.matches, and every
+		// handler below this line would throw on its first statement.
+		if (!(e.target instanceof Element)) return;
 		if (e.target.matches('input[type="date"], input[type="time"], input[type="datetime-local"]')) {
 			syncDateInput(e.target);
 		}
@@ -348,6 +360,12 @@
 	/* ── Keyboard navigation ────────────────────────────────────────────────── */
 
 	document.addEventListener("keydown", function (e) {
+		// e.target is only guaranteed to be an EventTarget. A real click or
+		// keypress always lands on an Element, but an event dispatched straight
+		// at document — a plausible way to drive these controls programmatically —
+		// makes the target `document`, which has no .closest/.matches, and every
+		// handler below this line would throw on its first statement.
+		if (!(e.target instanceof Element)) return;
 		const dir = e.key === "ArrowRight" || e.key === "ArrowDown"
 			? 1
 			: e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
