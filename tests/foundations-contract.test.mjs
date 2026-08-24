@@ -180,7 +180,7 @@ function questions(md) {
 	});
 	let open = 0, answered = 0;
 	for (const isAnswered of state.values()) isAnswered ? answered++ : open++;
-	return { open, answered, numbers: state.size };
+	return { open, answered, numbers: state.size, state };
 }
 
 function defects(md) {
@@ -216,4 +216,56 @@ test("README's open-work rollup agrees with the documents", () => {
 		assert.equal(row.accepted, d.accepted, `${name}: rollup says ${row.accepted} accepted, the document has ${d.accepted}`);
 	}
 	assert.equal(rows.size, Object.keys(docs).length, "the rollup lists a document that no longer exists, or omits one");
+});
+
+/* ── log ↔ §6 ratchet ────────────────────────────────────────────────────────
+   The rollup above checks README against §6. Nothing above checks §6 against
+   the LOG — and that seam is where state.md drifted for two days: steps titled
+   "Answer Q2 …" and "Answer Q1 …" were done while §6 still presented both
+   questions as open and blocking the very steps that had executed. The counter
+   read §6 faithfully, README agreed with the counter, every test passed, and
+   the published rollup was wrong by two. Found 2026-08-24; recorded as
+   state.md step 11.
+
+   The ratchet: a done step whose TITLE claims a question is answered means §6
+   must say so too. Both title spellings the logs use are matched — "Answer Qn"
+   (state.md steps 2–3) and "Qn answered" (composition.md step 7) — and only
+   the title column, because notes freely discuss other questions in prose
+   ("Q3 answered: the ceiling is 600" inside typography step 6's note refers to
+   a question that IS answered, but matching notes would make the test's reach
+   depend on how chattily a step was written). A title that merely mentions a
+   question without claiming an answer — typography step 35, "Correct Q6's
+   breakpoint claim" — does not match, and Q6 is exactly the question that must
+   stay open.
+
+   One direction only, on purpose. A question answered in §6 with no
+   "Answer Qn" step is legitimate — answers arrive inside wider steps
+   (typography's Q1–Q5 fell out of steps that never carried the word in their
+   titles), so the inverse check would be false alarms. The log is the todo
+   list (README.md §3); this asserts the todo list's completions reach the
+   glance layer. */
+test("a done step that claims a question's answer is reflected in §6", () => {
+	for (const [name, md] of Object.entries(docs)) {
+		const { state } = questions(md);
+		for (const line of md.split("\n")) {
+			if (!/^\|\s*\d+\s*\|/.test(line)) continue;
+			const cells = line.split("|");
+			const title = cells[2] ?? "";
+			if (!/\bdone\b/i.test(cells[3] ?? "")) continue;
+			const claimed = new Set([
+				...[...title.matchAll(/\bAnswer\s+Q(\d+)\b/gi)].map((m) => m[1]),
+				...[...title.matchAll(/\bQ(\d+)\s+answered\b/gi)].map((m) => m[1]),
+			]);
+			for (const num of claimed) {
+				assert.ok(
+					state.has(num),
+					`${name}: a done step's title claims Q${num} is answered, but §6 has no Q${num}`,
+				);
+				assert.ok(
+					state.get(num),
+					`${name}: step "${title.trim().slice(0, 60)}" is done, but §6 still lists Q${num} as open`,
+				);
+			}
+		}
+	}
 });
