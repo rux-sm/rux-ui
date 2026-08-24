@@ -1,13 +1,15 @@
 # Rux UI Foundations — Composition
 
-**Contract version: 1.8.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.9.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 9 steps: **9 done**
-Founding entry. This document answers **which anatomy a view gets**, given what kind of
-content it holds. Every other foundation document answers *what a thing looks like*;
-none answered *what to build*, and §3's census is what that omission cost.
+**Status** · 10 steps: **10 done**
+Founding entry. This document answers **what to build**: which **floorplan** a shipped
+page takes (§2.9–2.10), and which **anatomy** a view inside the application gets
+(§2.1–2.6), given what kind of content each holds. Every other foundation document
+answers *what a thing looks like*; none answered *what to build*, and §3's census is
+what that omission cost.
 
 **Source: originated here; gap source [Cloudscape](https://cloudscape.design/patterns/),
 guidance-only (step 2).** Geist publishes four foundations and 71 component pages and
@@ -20,6 +22,14 @@ its insights are translated into `--rux-*` vocabulary, its names and values are 
 adopted, and **Geist still wins wherever it publishes anything**. §2's archetypes remain
 read off this application's own views — Cloudscape is the second opinion, not the author.
 Nothing in this document is imported.
+
+**The page tier (step 10) keeps the same stance.** Its one borrowed word — *floorplan* —
+is SAP Fiori's, whose floorplans name exactly this: a page-level anatomy chosen by what
+the page holds. Borrowed as vocabulary only, under the standing guidance-only rule; no
+Fiori shape, name, or value is imported. Cloudscape stays the pattern gap source and is
+silent here: the 59-pattern index step 2 verified live covers console interiors — tables,
+details, create/edit/delete, dashboards — and reaches no standalone page, so the tier
+originates in this repository like the archetypes before it.
 
 ---
 
@@ -39,6 +49,12 @@ A view is assembled from four parts, three of them optional:
 
 An **archetype** is a named combination of those parts, chosen by what the view's body
 holds. §2 publishes four.
+
+A **page** is one shipped HTML document. The application is one page among nine; the
+rest stand alone — share destinations, redirect stubs, internal specimens. A
+**floorplan** is a named page anatomy, chosen by what the page is for, the same way an
+archetype is chosen by what a view's body holds. §2.9 publishes four. Print is not a
+page — its surfaces live inside the application — and §2.10 governs it as a surface.
 
 ---
 
@@ -152,6 +168,54 @@ task completion" — translated, not copied: their panels are help/drawer/split 
 are option rails, but the principle transfers whole. A collapsed rail must cost convenience,
 not capability. The census found one violation the day this rule landed: D6.
 
+### 2.9 A page takes a floorplan; only the application composes views
+
+**Every shipped page MUST be one of the four floorplans below.** A page that fits none is
+a defect in this document, fixed by an amendment here — never by the page composing its
+own anatomy. The same rule as §2.1, one tier up, for the same measured reason: the three
+share pages were built with no published anatomy, and §3.1 shows what that cost — three
+pages, two header implementations, three answers to where the title lives.
+
+| Floorplan | Pages today | Anatomy |
+|---|---|---|
+| **Application** | `index.html` | The shell ([`shell.md`](shell.md)): UI header, side navigation, one view visible at a time, each view declaring an archetype (§2.1). Exactly one page carries the view router. |
+| **Share** | `request.html` · `driver.html` · `maintenance.html` | One audience, one task, one column: the shared `.rux-ui-header` (brand + the page's name) above a single `<main>`, and nothing beside it — no side navigation, no view router, no attached panels. Floating windows MAY serve documents the page links (`driver.html` carries the shared doc viewer and envelope). The column's measure is the page's own; §3.1 records today's three. |
+| **Stub** | `d.html` · `m.html` · `doc.html` | Resolves and leaves: a redirect or a lookup, one status line, no chrome and no design-system obligations. The file SHOULD state its own reason to exist and, where one exists, its deletion condition — `d.html` and `m.html` do; `doc.html` does not (§3.1). |
+| **Specimen** | `gallery.html` · `examples/app-layout.html` | Internal references with their own contracts (`tests/gallery-coverage`, the example assertions in `tests/layout-contract.test.mjs`). Not user destinations. Named here so they are exempt from Share rules by classification, not by silence. |
+
+**A share page MUST NOT hand-roll its chrome.** The header is the shared block —
+`maintenance.html` composes it with a page variant class, which is the precedent —
+because a page a customer or driver reaches from a link is exactly where the product has
+one chance to look like itself. `driver.html` violates this today: D8. Where the page's
+`<h1>` lives is genuinely unsettled — three pages, three answers — and is Q6, so this
+rule names the block and stops; it does not yet legislate the title's element or
+placement.
+
+**A share page whose content loads MUST show a loading state in its `<main>` until it
+renders.** Both data-driven pages do — `driver.html` a skeleton of its card anatomy,
+`maintenance.html` a spinner with a status line — and `request.html` is static markup
+with nothing to wait for. Whether one treatment should be the rule is Q7.
+
+Card discipline inside a share column is deliberately not ruled: `request.html` composes
+`.rux-card` sections, `maintenance.html` renders a custom schedule surface the way the
+Calendar's canvas legitimately does (§2.5), and one instance each is not a pattern to
+read a rule off.
+
+### 2.10 Print is a light-on-paper world
+
+The two print surfaces — the week report `js/panels/print-schedule.js` builds off-screen,
+and the trip envelope's printable page — are not pages: both live inside the application
+and swap in under `@media print`.
+
+**A print surface MUST publish its own scoped ink palette and MUST NOT consume the
+`--rux-` surface tokens.** The screen system is near-black; paper is white, and a print
+surface that borrows screen tokens inherits a dark theme it must then fight. Both
+instances already conform — `--print-*` scoped to `.sched-print-root`, and the envelope's
+equivalent scoped to `.sched-trip-envelope` — so this rule changes nothing rendered; it
+gives the discipline a home. The palette *values* stay in the feature CSS where they are
+used, and the rationale comments beside them stay what they are: explanation, no longer
+the rule's only statement.
+
 ---
 
 ## 3. Current state
@@ -194,6 +258,28 @@ baseline. And Game reports 7 `.rux-card` against 6 framed boxes because a bare `
 is not a framed card: `card.css` frames only via `:has(> .rux-card__body)`. That mismatch is
 D2 made visible in the census itself.
 
+### 3.1 The page census
+
+Read off the files on 2026-08-24 — a static census, unlike §3's live one, because every
+fact here is a markup fact: chrome, column, and script list need no runtime state. The
+one runtime-shaped claim, what the share scripts build, was checked in the page scripts
+themselves.
+
+| Page | Chrome | `<main>` | Measure | Loading | Floorplan |
+|---|---|---|---|---|---|
+| `index.html` | shell | eight views | fills the viewport | per view | Application |
+| `request.html` | `.rux-ui-header`, title in a `<span>`; `<h1>` on the intro | intro, then a form of four `.rux-card` sections, a footer action band, and a hidden success card | 720px, centered | static markup | Share |
+| `driver.html` | hand-rolled `driver-share-header` (**D8**); `<h1>` inside it | JS-built column; shared doc viewer and envelope windows | 520px, centered | skeleton, `aria-busy` | Share |
+| `maintenance.html` | `.rux-ui-header` + variant class; `<h1>` is the header title | JS-built schedule surface, hand-rolled boxes | full width, `--rux-space-4` inset | spinner + status line | Share |
+| `doc.html` | none | one status line, then `location.replace` to the stored document | — | its status line | Stub |
+| `d.html` / `m.html` | none | rename pointers to `driver.html` / `maintenance.html`; deletion condition in a comment | — | — | Stub |
+| `gallery.html` | own `gallery-bar` with theme toggle | specimen sections, one per published role | — | — | Specimen |
+| `examples/app-layout.html` | the reference shell itself | the smallest complete composition | — | — | Specimen |
+
+Three share pages, two header implementations, three title homes, two loading
+treatments plus one static page. This is §3's 83 hand-rolled boxes at the page tier —
+caught at three pages instead of 118 boxes.
+
 ---
 
 ## 4. Known defects
@@ -207,6 +293,8 @@ D2 made visible in the census itself.
 | D7 | **Fixed 2026-08-23, app work.** The surface is a `.rux-card` with card header/body/footer; `tests/composition-contract.test.mjs` now asserts no attached panel in any document column, exception-free. ~~The game's main surface wears `.rux-panel--attached` while docked to nothing.~~ Original: `.flip-seven__panel` sits centered inside `.flip-seven__shell` — `display: grid`, `place-items: center`, `padding: var(--rux-space-6)` — with `max-width: 42rem`. An attached panel's contract is the opposite: docked beside the workspace, sharing its edge, no decorative gutter (`../layout-composition.md`). The vocabulary is borrowed for its chrome — the header band and scrolling body — the same borrowing step 20 unwound when nine `.rux-card__title`s sat in panel headers. The fix is app work: re-dress the surface as a `.rux-card` (header/body/footer — the Hit/Bank bar is a card footer), noting the blast radius: the panel-header tokens give it a 64px band today and a card header floors at 40px, and layout.md step 21's panel sweep counted this header among the eleven it measured. |
 | D6 | **Fixed 2026-08-23, app work under §2.8.** ~~The Drivers rail violates §2.8~~: the switch moved into the workspace band beside the panel toggle; the rail keeps its option cards. With the rail closed the view is now both labelled (by the pressed segment) and switchable. Original: the Roster/Workload segmented control — the only way to change which of the two views is active — lives inside the collapsible Table Options rail, and the workspace title that mirrored the active view was removed 2026-08-23 at the owner's direction, with the trade recorded in that commit. With the rail closed, the active view is unlabelled and unswitchable. Fixing it is app work: either the switch moves into the workspace band or the rail stops being the only home. |
 | D5 | **Fixed (step 4)** — `tests/composition-contract.test.mjs` enforces the declaration and three decisive anatomy facts per archetype. ~~Nothing enforces §2.~~ A view could compose any anatomy and no test would fail. |
+| D8 | `driver.html` hand-rolls its chrome: `driver-share-header` with its own `__logo`/`__label` while both sibling share pages compose the shared `.rux-ui-header` (§2.9). The fix is app work on the `maintenance.html` precedent — the shared block plus a page variant class — and inherits the logo sizing the hand-rolled header carries (`--sched-driver-page-max-width` and `--sched-driver-logo-max-width` in `driver-share.css`). Q6 does not block it: the block can change while the title question stays open, because every candidate answer keeps a header. |
+| D9 | Nothing enforces §2.9–2.10. A page could compose any anatomy and no test would fail — D5 again, one tier up. Unlike views, pages may need no markup declaration: the file list *is* the census, so a static test can classify by name and assert each floorplan's decisive anatomy (share: shared header, one `<main>`, no view router; stub: no stylesheet; print: no `--rux-` surface token inside the scoped root). That design is this defect's to settle. |
 
 ---
 
@@ -223,6 +311,7 @@ D2 made visible in the census itself.
 | 7 | Q4 answered — the component docs are a governed tier, not foundations | **done · Class A** | **Executed 2026-08-23.** The architecture already existed and only needed naming: `foundations/motion.md` declares `../motion.md` its **component tier** — recipes consuming the vocabulary, outranked where they touch — and the four D3 documents are the same kind of file. Promoting them to family foundations was declined against `forms.md` Q2's own gate (families earn a foundation document when their **rules** span concerns; these are recipes), and pointer-izing them would delete the only home of legitimate component contracts. **Each now opens with a governance header**: tier, the outranking contracts with versions, and the check date — the version anchor D3 said consumers lacked, without minting four amendment logs. **The stamps were earned, not asserted**: buttons' 32/40/24 heights match `--rux-button-height-*` (44 in the ≤500px block); ui-header's 40/44 match `--rux-ui-header-height` and the touch block; cards' token census names only live tokens; popovers carries no values at all. **One stale value found and removed**: ui-header glossed `--rux-radius-control` as "(4px)", a literal beside a token reference — the one-home failure mode — deleted rather than updated, since the token is the home. **One numbering defect found**: layout.md carried two Q5s (step 26 there). `DOCS_SHIP` is unchanged — the tier ships; that is what the stamps are for. **Deliberately not done**: a deep line-by-line audit of all four against every foundation MUST — the headers make each future reading self-policing, and D1 (`layout-composition.md`, 29 MUSTs) remains open and is not shrunk by this step. |
 | 8 | D1 fixed — `layout-composition.md` promotes to `shell.md` | **done · Class A** | **Executed 2026-08-23.** The one-home test decided the direction: 29 MUSTs are foundation material, so the file became a foundation document rather than gaining a tier header — the opposite call from step 7's four, for the stated reason (those are recipes; this is rules). Content moved verbatim; `tests/layout-contract.test.mjs` moved its read path so enforcement never lapsed; the old path is a shipping stub so the twelve referencing files and the vendored consumer keep resolving, with live pointers updated and log history left as written. One correction rode along — the `44px` header literal contradicted `--rux-ui-header-height`'s 40px desktop value (fixed in the move; `layout.md` step 27 claims the token). `shell.md` records its own D1: the example file the contract cites no longer shows the contract's composition. |
 | 9 | D2 fixed — two homeless rules get homes; the third never was | **done · Class A** | **Executed 2026-08-23.** **`.rux-card` frames only via `:has(> .rux-card__body)`** — a bare `.rux-card` is an unstyled structural marker — is now stated in `../cards.md`'s anatomy, with the failure mode named: adding the class to a bodyless element produces no visible card, which cost two debugging cycles in one session (the itinerary day group and Settings' "App Updates"). **`.rux-u-row` vs `.rux-u-cluster`** got a home by giving the whole family one: `../utilities.md`, a component-tier document under step 7's governance header, covering all seven `.rux-u-*` classes (36 uses in app markup) — the family had **no document at all**, and `typography.md` §3.3 explicitly scopes them out. It ships with its siblings via `DOCS_SHIP`. **The third rule was already homed, and this defect was wrong about it**: the itinerary's continuous-surface rule is rationale beside the code it explains, which `CLAUDE.md` names a legitimate form, and `../cards.md` already pointed at it. The session that nearly overturned it failed to *read* the file header, not to find a home — recorded rather than fixed, because manufacturing a third relocation to match the defect's count would be worse than correcting the count. **Both CSS comments became pointers**, keeping their explanation and surrendering the rule. |
+| 10 | The page tier — four floorplans; the print rule gets its home | **done · Class A** | **Executed 2026-08-24, at the owner's direction** ("draft the page floorplans doc first"). **The home was the first decision**: the ask arrived as a new document, and the one-home rule routed it here — this document already answers *what to build*, and a `floorplans.md` beside it would split one question across two authorities; the same test step 8 ran, landed the other way for the stated reason. **The floorplans are read off the nine shipped pages, not designed** (§3.1): a static census, unlike §3's live pass, because chrome, column, and script list are markup facts — the one runtime-shaped claim, what the share scripts build, was checked in the page scripts themselves. **The word is SAP Fiori's, the taxonomy is not**: *floorplan* names exactly this and is borrowed as vocabulary only under the standing guidance-only rule; Cloudscape stays the gap source and is silent here — the 59-pattern index step 2 verified live is console interiors throughout and reaches no standalone page, so the tier originates like the archetypes before it. **One rule consolidated (§2.10)**: print's light-on-paper discipline was stated only as rationale beside the two scoped palettes in `print-schedule.css` and `trip-envelope.css`; the MUST now has a home, the values stay in the feature CSS, and the comments stay rationale — unedited, because they explain values and no longer carry the rule alone. **Found and recorded, not fixed**: D8, and two divergences no rule can be read off — the title's home (Q6) and the loading treatment (Q7). **Deliberately not done**: no enforcement (D9 — D5's stance repeated, with the design note that a page checker needs no markup declaration because the file list is the census); no card-discipline rule for share columns (one instance each way — §2.9 declines it with the reasons in place); no stub cleanup (`doc.html` states no reason-to-exist while `d.html`/`m.html` do — recorded in §2.9 and §3.1 as a SHOULD gap, below a defect's threshold). Class A throughout: rule text only, nothing renders differently, no name moves. |
 
 ---
 
@@ -262,3 +351,25 @@ that audit: Cloudscape's **Split view** (a collection paired with a split panel)
 archetype here and the Drivers/Fleet attached rails resemble it; its three **Details page**
 variants may inform what replaces §2.6 if the Viewer retires (Q1); and **Density settings**
 speaks to `layout.md` §9.2's dense exception. Each finding would be its own classified step.
+
+**Q6 — Where does a share page's `<h1>` live?** Three pages, three answers, measured in
+§3.1: `maintenance.html` makes the header title the `<h1>`; `request.html` demotes the
+header title to a `<span>` and puts the `<h1>` on the intro ("Tell us about your trip");
+`driver.html`'s sits inside its hand-rolled header (D8). [`typography.md`](typography.md)
+§3.5 owns the *application* header's `<h1>`; whether that rule extends to a page with no
+side navigation and no views is exactly what is undecided. Settling it moves rendered
+markup on at least one page, so it is an owner's call, not a census read: header-as-`<h1>`
+makes `request.html`'s span the fix; content-as-`<h1>` moves `maintenance.html`'s. There
+is also a real argument for the split as it stands — a customer-facing page may want its
+heading to speak ("Tell us about your trip") while an operational share page wants it to
+name ("Maintenance Schedule") — and if that is the answer, the rule is *which kind of page
+gets which*, stated here. Until then §2.9 requires the shared block and stays silent on
+the title's element.
+
+**Q7 — Is one loading treatment the rule?** The two data-driven share pages load
+differently: `driver.html` renders a skeleton of its card anatomy under `aria-busy`,
+`maintenance.html` a spinner with a status line. Both are legitimate; three share pages
+is early to freeze one, and the answer may be per-content — a skeleton promises a shape,
+a spinner promises nothing, and a page whose rendered anatomy is stable enough to
+skeleton is a page that has already decided its layout. Blocks nothing today; recorded
+so the fourth share page does not invent a third treatment unaware.
