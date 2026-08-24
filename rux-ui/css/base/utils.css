@@ -99,7 +99,8 @@
 
 /* A horizontal row with a consistent gap — the single-line counterpart to
    .rux-u-cluster's wrapping flex. Use when items must not wrap (e.g. a label
-   beside an action cluster). */
+   beside an action cluster). Which to pick, and how each fails when picked
+   wrongly, is docs/utilities.md (composition.md step 9, D2). */
 .rux-u-row {
 	display: flex;
 	align-items: center;

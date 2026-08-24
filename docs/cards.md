@@ -74,6 +74,20 @@ to. `.rux-card`'s own base rule carries `min-width: 0` specifically for
 this — every one of these consumers is a flex child that needs to
 shrink/truncate properly rather than forcing its container wide.
 
+**A card frames only when it has a direct `.rux-card__body`.** The shell chrome —
+background, border, radius, shadow, and the rounded clip — is applied by
+`.rux-card:has(> .rux-card__body)`, not by `.rux-card` alone. A bare `.rux-card` is a
+**structural marker**: a hook for a combinator or a grouping class, deliberately unstyled.
+The distinction is what lets driver-share reuse the class as a divider selector without
+inheriting a box.
+
+The practical consequence, and the reason this is written down: adding `.rux-card` to an
+element that has no `__body` child produces **no visible card** — the class is right, the
+frame simply never applies. That cost two debugging cycles on 2026-08-23, once converting
+the itinerary's day group and once on Settings' bodyless "App Updates" panel, before the
+rule was found in a CSS comment. A single-region card that wants the chrome without a
+`__body` opts in explicitly — see `.rux-card--stack` in `card.css`.
+
 The outer card frame remains the only border and radius at every nesting
 depth; nested headers and bodies do not create competing boxes.
 

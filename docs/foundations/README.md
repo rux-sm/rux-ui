@@ -22,7 +22,7 @@ roles onto that vocabulary.
 | [`naming.md`](naming.md) | 1.18.0 | 15 done | — |
 | [`state.md`](state.md) | 1.8.0 | 10 done | — |
 | [`forms.md`](forms.md) | 1.2.0 | 3 done | — |
-| [`composition.md`](composition.md) | 1.7.0 | 8 done | — |
+| [`composition.md`](composition.md) | 1.8.0 | 9 done | — |
 | [`shell.md`](shell.md) | 1.1.0 | 2 done | — |
 
 `../motion.md` stays at the component tier — which token a panel, menu or scrim consumes,

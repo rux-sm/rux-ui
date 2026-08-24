@@ -20,7 +20,9 @@
 }
 
 /* A direct body distinguishes a complete card from the few legacy places
-   that use bare .rux-card only as a structural marker. The complete card is
+   that use bare .rux-card only as a structural marker — the rule is stated in
+   docs/cards.md, which this comment now explains rather than owns
+   (composition.md step 9, D2). The complete card is
    one framed surface; its regions below are deliberately borderless.
    overflow:clip keeps every region inside that shared radius without clipping
    the shell's own outer shadow. */
