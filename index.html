@@ -6402,7 +6402,7 @@
 		<script src="./js/panels/trip-panel.js?v=46"></script>
 		<script src="./js/components/itinerary.js?v=64"></script>
 		<script src="./js/panels/driver-panel.js?v=31" defer></script>
-		<script src="./js/panels/fleet-panel.js?v=17" defer></script>
+		<script src="./js/panels/fleet-panel.js?v=18" defer></script>
 		<script src="./js/panels/customers-panel.js?v=13" defer></script>
 		<script src="./js/panels/settings-panel.js?v=11" defer></script>
 		<script src="./js/panels/trip-finder.js?v=11" defer></script>
@@ -10837,7 +10837,7 @@
 					console.warn("Could not load buses:", err);
 				}
 				try {
-					const fleetDb = await import("./js/data/fleet-db.js");
+					const fleetDb = await import("./js/data/fleet-db.js?v=1");
 					busOutOfService = indexOutOfServiceByBus(
 						await fleetDb.fetchAllBusOutOfService(),
 					);

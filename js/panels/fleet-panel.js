@@ -1062,7 +1062,7 @@
     if (!db) {
       try {
         [db, busStatus] = await Promise.all([
-          import("../data/fleet-db.js"),
+          import("../data/fleet-db.js?v=1"),
           import("../core/bus-status.js"),
         ]);
       } catch (err) {
