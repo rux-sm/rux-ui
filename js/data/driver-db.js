@@ -151,7 +151,7 @@ export async function fetchDriverTrips(driverId) {
       role,
       trip_assignments(
         leg, active_roles,
-        trips(trip_ref, start_date, end_date, return_start_date, return_end_date, trip_type, destination, invoice_status),
+        trips(trip_ref, start_date, end_date, return_start_date, return_end_date, trip_type, destination, invoice_status, cancelled_at),
         buses(number)
       )
     `)
@@ -163,6 +163,10 @@ export async function fetchDriverTrips(driverId) {
       const ta   = td.trip_assignments;
       const trip = ta?.trips;
       if (!trip?.trip_ref) return null;
+      // Cancelling a trip deletes its trip_drivers rows, but trips cancelled
+      // before that behavior existed can still carry them — a cancelled trip
+      // is not part of a driver's schedule either way.
+      if (trip.cancelled_at) return null;
       if (!isAssignmentRoleActive(ta, td.role)) return null;
       // Return-leg assignments run on the trip's separate return date range,
       // not its outbound start/end — only meaningful for dropoff_pickup trips.
@@ -201,7 +205,10 @@ export async function fetchDriverWorkloadAssignments() {
           est_miles, actual_miles
         )
       )
-    `);
+    `)
+    // A cancelled trip was never driven, so it earns no pay or mileage.
+    // Server-side because legacy cancelled trips may still carry driver rows.
+    .is("trip_assignments.trips.cancelled_at", null);
   if (error) throw error;
 
   return (data ?? [])

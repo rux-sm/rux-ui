@@ -683,6 +683,12 @@ import {
 		// widen it across both legs anyway) — the real check below is a
 		// precise per-assignment overlap, so the prefilter would only be an
 		// optimization, not a correctness requirement.
+		//
+		// Cancelled trips are excluded outright: their buses and drivers are
+		// free. deleteTrip below clears bus and driver assignments at cancel
+		// time, but a trip cancelled before that existed can still carry
+		// assignment rows — so the exclusion has to happen here, not be
+		// trusted to the data.
 		let query = supabase
 			.from("trips")
 			.select(`
@@ -693,7 +699,8 @@ import {
 					buses(id, number, capacity, ada_lift, sleeper),
 					trip_drivers(driver_id, drivers(id, name))
 				)
-			`);
+			`)
+			.is("cancelled_at", null);
 
 		if (currentTripId) query = query.neq("id", currentTripId);
 
@@ -1591,6 +1598,13 @@ export function isSaveInFlight() {
 	// as they did under the old rux:trip-deleted name when this was a hard
 	// delete. Trip Finder (js/panels/trip-finder.js) doesn't listen — it
 	// always refetches fresh on open instead.
+	//
+	// Cancelling also deletes the trip's trip_assignments rows (trip_drivers
+	// goes with them by cascade): a trip that isn't happening holds neither
+	// its buses nor its drivers, so nothing it once booked can read as taken
+	// anywhere — the driver panel, workload report, and driver share page all
+	// read those tables. Which buses and drivers it had survives in the
+	// pre-cancel snapshot recorded to trip history.
 
 	let cancelTripModal = null;
 
@@ -1669,6 +1683,40 @@ export function isSaveInFlight() {
 			.update({ cancelled_at: new Date().toISOString(), cancellation_reason: reason || null })
 			.eq("id", cancelledId);
 		if (error) throw error;
+		// Counts are fetched fresh rather than taken from the loaded trip — a
+		// save replaces trip_assignments wholesale, so rows this panel loaded
+		// may already have been replaced by another dispatcher. A bus-less
+		// slot row is not a bus, so buses count only rows carrying a bus_id.
+		let unassignedBuses = 0;
+		let unassignedDrivers = 0;
+		let assignmentCleanupFailed = false;
+		try {
+			const { data: assignmentRows, error: assignmentsErr } = await supabase
+				.from("trip_assignments")
+				.select("id, bus_id, trip_drivers(id)")
+				.eq("trip_id", cancelledId);
+			if (assignmentsErr) throw assignmentsErr;
+			unassignedBuses = (assignmentRows ?? []).filter((row) => row.bus_id).length;
+			unassignedDrivers = (assignmentRows ?? [])
+				.reduce((total, row) => total + (row.trip_drivers?.length ?? 0), 0);
+			if ((assignmentRows ?? []).length) {
+				const { error: assignmentDeleteErr } = await supabase
+					.from("trip_assignments")
+					.delete()
+					.eq("trip_id", cancelledId);
+				if (assignmentDeleteErr) throw assignmentDeleteErr;
+			}
+		} catch (cleanupErr) {
+			// The trip is already marked cancelled — leftover assignment rows
+			// are the tolerated legacy state (findAssignmentConflict skips
+			// cancelled trips), not a reason to present the whole cancellation
+			// as failed. Zeroed so history never claims an unassignment that
+			// didn't commit.
+			unassignedBuses = 0;
+			unassignedDrivers = 0;
+			assignmentCleanupFailed = true;
+			console.warn("Cancelled trip's assignments could not be cleared:", cleanupErr);
+		}
 		await safelyRecordTripHistory({
 			tripId: cancelledId,
 			action: "cancelled",
@@ -1678,11 +1726,28 @@ export function isSaveInFlight() {
 				label: "Trip",
 				before: "Active",
 				after: reason ? `Cancelled — ${reason}` : "Cancelled",
-			}],
+			}, ...(unassignedBuses ? [{
+				field: "buses",
+				label: "Buses",
+				before: `${unassignedBuses} assigned`,
+				after: "Unassigned",
+			}] : []), ...(unassignedDrivers ? [{
+				field: "drivers",
+				label: "Drivers",
+				before: `${unassignedDrivers} assigned`,
+				after: "Unassigned",
+			}] : [])],
 		});
 		clearForm(root, itinerary);
 		root.dispatchEvent(new CustomEvent("rux:trip-cancelled", { bubbles: true, detail: { id: cancelledId } }));
-		if (window.Rux) Rux.toast("Trip cancelled");
+		if (window.Rux) {
+			Rux.toast(
+				assignmentCleanupFailed
+					? "Trip cancelled — bus and driver assignments could not be cleared"
+					: "Trip cancelled",
+				assignmentCleanupFailed ? { variant: "danger" } : undefined,
+			);
+		}
 	}
 
 	/* ── Fetch ───────────────────────────────────────────────────────────── */

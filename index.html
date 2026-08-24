@@ -6434,7 +6434,7 @@
 			src="./js/panels/documents-panel.js?v=6"
 		></script>
 		<script type="module" src="./js/panels/trip-history.js?v=6"></script>
-		<script type="module" src="./js/panels/tasks-panel.js?v=70"></script>
+		<script type="module" src="./js/panels/tasks-panel.js?v=71"></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=24"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
 
@@ -7650,7 +7650,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=41");
+					const db = await import("./js/data/trip-db.js?v=42");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -9867,7 +9867,7 @@
 			async function ensureDriverGridData() {
 				if (driverGridDataLoaded) return;
 				try {
-					const driverDb = await import("./js/data/driver-db.js?v=7");
+					const driverDb = await import("./js/data/driver-db.js?v=8");
 					getDriverPhotoUrl = driverDb.getDriverPhotoUrl;
 					const [drivers, timeOff] = await Promise.all([
 						driverDb.fetchDrivers(),
@@ -10830,7 +10830,7 @@
 			// the calendar without a reload. renderBusRows ends in
 			// renderScheduler(), which repaints the bars and the stripes.
 			async function loadFleet() {
-				const db = await import("./js/data/trip-db.js?v=41");
+				const db = await import("./js/data/trip-db.js?v=42");
 				try {
 					schedulerBuses = await db.fetchBuses();
 				} catch (err) {
@@ -10863,7 +10863,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=41");
+					const db = await import("./js/data/trip-db.js?v=42");
 					loadTrip = db.loadTrip;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;

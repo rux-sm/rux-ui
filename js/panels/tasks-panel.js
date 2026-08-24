@@ -427,6 +427,16 @@ function hasPendingWork(trip, leg) {
 	return !isTripReady(trip) || !isPrepDone(trip, leg);
 }
 
+// Cancelled trips stay in window.RuxTrips.list() (Trip Finder and search
+// still show them) but they are no longer work: a trip that isn't happening
+// has no departure prep, and one that didn't happen has no post-trip
+// follow-up. Every list, badge, and status dot in this panel reads through
+// this filter; the event handlers below may keep the raw list, since a
+// cancelled trip renders no card to fire from.
+function activeTrips() {
+	return (window.RuxTrips?.list() || []).filter((trip) => !trip.cancelled_at);
+}
+
 function isRecoverablePreviousEntry(trip, leg) {
 	const previousDate = addDays(defaultTargetDates()[0], -1);
 	if (legForDate(trip, previousDate) !== leg || !hasPendingWork(trip, leg)) return false;
@@ -436,7 +446,7 @@ function isRecoverablePreviousEntry(trip, leg) {
 
 function recoverablePreviousTasks() {
 	const previousDate = addDays(defaultTargetDates()[0], -1);
-	const allTrips = window.RuxTrips?.list() || [];
+	const allTrips = activeTrips();
 	const hasRecoverableTrip = tripsForDate(allTrips, previousDate)
 		.some(({ trip, leg }) => isRecoverablePreviousEntry(trip, leg));
 	return { date: previousDate, hasRecoverableTrip };
@@ -469,7 +479,7 @@ function targetDates() {
 // reviewing a past day (nothing left to do) or a far-future one could
 // clear a badge that's actually still flagging tomorrow's real gap.
 function defaultEntriesByDate() {
-	const allTrips = window.RuxTrips?.list() || [];
+	const allTrips = activeTrips();
 	return defaultTargetDates().map((iso) => ({ iso, entries: tripsForDate(allTrips, iso) }));
 }
 
@@ -771,7 +781,7 @@ function renderDayGroup(iso, entries) {
 
 function entriesByDate() {
 	const dates = targetDates();
-	const allTrips = window.RuxTrips?.list() || [];
+	const allTrips = activeTrips();
 	return dates.map((iso) => ({ iso, entries: tripsForDate(allTrips, iso) }));
 }
 
@@ -827,7 +837,7 @@ function updatePostTripStatus() {
 	if (!postTripStatus) return;
 	const today = localIsoDate();
 	const yesterday = addDays(today, -1);
-	const pending = (window.RuxTrips?.list() || []).filter((trip) => {
+	const pending = activeTrips().filter((trip) => {
 		const end = tripEndDate(trip);
 		return end && end < today && !trip.post_trip_survey_sent;
 	});
@@ -860,7 +870,7 @@ function render() {
 	if (!body) return;
 	if (activeList === "post_trip") {
 		const today = localIsoDate();
-		const overTrips = (window.RuxTrips?.list() || [])
+		const overTrips = activeTrips()
 			.filter((trip) => matchesPostTripFilter(trip, today))
 			.sort((a, b) => tripEndDate(b).localeCompare(tripEndDate(a)));
 		body.innerHTML = overTrips.length

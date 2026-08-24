@@ -119,7 +119,7 @@ export async function fetchBusTrips(busId) {
     .from("trip_assignments")
     .select(`
       leg,
-      trips(trip_ref, start_date, end_date, return_start_date, return_end_date, trip_type, destination, invoice_status),
+      trips(trip_ref, start_date, end_date, return_start_date, return_end_date, trip_type, destination, invoice_status, cancelled_at),
       trip_drivers(role, drivers(name))
     `)
     .eq("bus_id", busId);
@@ -129,6 +129,10 @@ export async function fetchBusTrips(busId) {
     .map(ta => {
       const trip = ta.trips;
       if (!trip?.trip_ref) return null;
+      // Cancelling a trip deletes its assignment rows, but trips cancelled
+      // before that behavior existed can still carry them — a cancelled trip
+      // neither occupies the vehicle nor clashes with its service windows.
+      if (trip.cancelled_at) return null;
       const driver = ta.trip_drivers?.[0]?.drivers?.name || null;
       // Return-leg assignments run on the trip's separate return date range,
       // not its outbound start/end — only meaningful for dropoff_pickup trips.

@@ -179,7 +179,7 @@ function documentsFor(trip) {
 function fetchSharedTrips(tripIds, includeReliefDetails = true) {
 	const reliefFields = includeReliefDetails ? ", report_time, instructions" : "";
 	return supabase.from("trips").select(`
-		id, trip_ref, start_date, end_date, return_start_date, return_end_date, updated_at,
+		id, trip_ref, cancelled_at, start_date, end_date, return_start_date, return_end_date, updated_at,
 		trip_type, destination, customer, departure_time, spot_time, return_time, notes,
 		booking_contact_name, booking_contact_phone,
 		trip_contact_1_name, trip_contact_1_phone,
@@ -593,6 +593,11 @@ async function load() {
 				ref,
 			};
 		}
+		// Cancelling a trip deletes its driver rows, so its refs normally stop
+		// arriving — but a trip cancelled before that behavior existed can
+		// still send one. A cancelled trip isn't the driver's work, and it
+		// must not surface as a loading error either.
+		if (trip.cancelled_at) return null;
 		const assignment = (trip.trip_assignments || []).find((item) =>
 			(item.leg || "outbound") === (ref.leg || "outbound")
 				&& activeAssignmentDrivers(item).some(
@@ -612,7 +617,7 @@ async function load() {
 				statusesByKey,
 			),
 		};
-	});
+	}).filter(Boolean);
 
 	const activeItems = normalized
 		.filter((item) => item.error || isCurrentOrUpcomingLeg(
