@@ -1,10 +1,10 @@
 # Rux UI Foundations — State
 
-**Contract version: 1.8.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.8.1** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 10 steps: **10 done**
+**Status** · 11 steps: **11 done**
 This document is canonical for **how a component expresses that it is in a state** — which
 attribute carries it, which class may substitute, who may bind a dismiss listener, and where
 a focus ring is required. It is the home `README.md` §1 routes **R3, R7 and R8** to.
@@ -170,6 +170,7 @@ Ordered by dependency. Every step records what it deliberately did **not** do.
 | 8 | Retire `.is-selected` onto `aria-current`; free the two real menus | **done · Class B** | **Executed 2026-08-22, and the step's own scope was wrong in a way worth recording.** It described `.is-selected` as *the customers roster*. The portable reader is `.rux-table tbody tr.is-selected`, and it served **four panels** — customers, fleet, trip-manifest and drivers — plus the driver grid, **sixteen call sites across four files**, not one. A migration scoped to customers would have moved one writer and left the class alive for three others, achieving nothing. **The design answer held at that scale**, which is what made it safe to widen: every one of the four does the same thing — `selectRow()` closes any open dialog, marks the row, populates the editor and opens it — so the highlight tracks *which row's editor is open*, which is `aria-current`, not `aria-selected`. **The grid question dissolved rather than being answered.** The step proposed `role="grid"` + `aria-selected`; that would have been wrong twice, and `aria-current="true"` is valid on any element, needs no container role, owes no arrow-key contract, and leaves the tabbable-rows model correct. **Deliberately excluded: the driver grid.** `index.html:10510`/`:10572` and `scheduler-app.css:608` write `.is-selected` on `.sched-driver-grid__row`, which **does** carry `role="grid"` — there `aria-selected` is the valid channel, it is a different reader, and it is application-layer. Two things that look identical to a grep, and only one of them moves. **Verified twice.** A probe proved the channel swapped: an `[aria-current="true"]` row paints `--rux-table-row-selected-bg` while a `.is-selected` row now paints nothing, same as a plain row. Then the real application, against live data: open Customers, **145 rows**, click one — **exactly one** row carries `aria-current`, **zero** carry the old class, and the painted background matches the token. **(b) half done.** `fleet-panel.js` and `driver-panel.js` built `"rux-menu__item" + (selected ? " is-active" : "")` while already setting `role="menuitemradio"` and `aria-checked` on the next two lines — pure redundancy, and both now write the class no more. **`menu.css` keeps its `.is-active` selector**, because removing it would unstyle `index.html:5390`, and that site is step 9's. Contract 1.5.0 → 1.6.0. |
 | 9 | Read `aria-current` in `menu.css`; retire the last `.is-active` | **done · Class B** | **Executed 2026-08-22, and it is the fix this step argued against — because the argument did not survive being checked.** The step said adding `[aria-current="page"]` beside `[aria-checked="true"]` would make one selector serve **two different state semantics**, and called re-homing the documents nav the better design. **`.rux-menu` is not an ARIA menu.** In this repository it carries **four different roles** — `role="menu"` (`index.html:341`, `:703`), `role="dialog"` (the notifications panel, `:462`), `role="radiogroup"` (the fleet filter, `:4924`) and a bare `<nav>` (documents, `:5385`) — and `menu.css` **makes no role assumption anywhere**, checked by grep. It is a visual list surface. The menu *behaviour* is separate and correctly scoped: `menu.js` drives keyboard navigation off `[role^="menuitem"]`, so it attaches only to the sites that really are menus. **So the objection was measuring the wrong thing.** `menu.css` was not about to start serving two semantics; it already served four, deliberately. `aria-checked` is how a `menuitemradio` says it is active and `aria-current` is how a navigation item does — **one concept with two spellings**, not two concepts sharing a rule. Reading both is correct, and the rule now leads with them instead of with a class. **Verified:** the live documents nav item carries `class="rux-menu__item"` alone and still paints the active background through `aria-current="page"`; a probe shows `aria-checked` and `aria-current` resolving identically and a plain item transparent; zero `.rux-menu__item.is-active` remain. **`.is-*` no longer appears in `rux-ui/css` or `rux-ui/js`** — only two comments naming what was retired — which closes **D1**. **The real defect the exploration found is a naming one, and it is not this document's.** A block called `.rux-menu` that styles a dialog, a radiogroup and a nav has a name asserting a role its users do not share. That is `naming.md`'s, and it opens a step there. **Deliberately did not rename anything here**: this step's job was the last `.is-active`, and renaming a public block in a state amendment would be the bundling this log keeps refusing. Contract 1.6.0 → 1.7.0. |
 | 10 | Enforce rules 2.7–2.10 (D5) | **done · Class A** | **Executed 2026-08-23.** D5 said the four arrived as stated rather than as tests, because writing them inside the relocating step would have bundled two decisions; this is the separate decision. **The suite scans every HTML page rather than a named list** — `typography.md` step 66 recorded a sweep that followed the documented location list and still missed `examples/`, and a test that picks its files by hand inherits that blind spot. **Enforcing 2.8 found a live violation of a MUST NOT**: the Fleet and Drivers *Table Options* rails carried `role="dialog"` while `drawer.js` sets no `aria-modal`, traps no focus, and applies no dialog machinery at any width — semantics borrowed without being honoured, which `shell.md` § Right Panel forbids outright for persistent attached panels. Their Calendar sibling carried no role at all, so it was an inconsistency rather than a decision. Both removed; the rails keep `<aside>` plus `aria-label`, the complementary-region shape 2.8 asks for. Nothing read the role — verified before removing; the other `role="dialog"` sites are real modals that pair it with `aria-modal="true"`. **Every assertion was proven fallible**, 2.10 through each of its three clauses separately (keydown guard, `aria-expanded` on a separator, the CSS visibility gate). **One probe was wrong before the test was**: breaking `if (!isOpen()) return;` by first occurrence patched a different handler — `drawer.js` has two — and the pass that followed was the probe's fault, not a vacuous assertion; re-aimed at the keydown handler it failed as it should. **Deliberately not done:** 2.7's Escape and focus restoration are cited to `overlay-kernel.test.mjs` rather than re-asserted — two suites holding one contract is the duplication the one-home rule forbids. |
+| 11 | Doc sync — record Q1 and Q2's answers in §6 (drift) | **done · Class A** | **Executed 2026-08-24.** §6 presented three questions as open. **Two of them were answered by executed steps and never written back**: step 2 answered Q2 narrow and reworded rule 2.5 to match, step 3 answered Q1 and steps 6–9 acted on it until step 9 closed D1. Both still said *"Blocks step 2"* and *"Blocks step 3"* while both steps were done, so `README.md`'s rollup counted two finished decisions as open work — the same drift `typography.md` step 62 corrected for its step 23, and the reason a log needs a step for it rather than a quiet edit. **Each answer is recorded beneath its question with the original preserved**, per the convention `README.md` §3 states. **Q2's answer was re-verified against the code rather than transcribed from its step**, because a step that reports its own success is the weakest evidence in the document: `rux-ui/js/overlay.js` binds document-level `pointerdown` and `keydown`, and `menu.js`'s two document-level listeners are the roving/Home/End/Tab `keydown` — which has **no Escape branch** — and a `click` that closes only on a `[role^="menuitem"]` *inside* the active menu. Neither is outside-press or Escape, so the narrow reading holds in the code and not merely in the argument. **Q1's answer is recorded with the correction step 8 made to it**, not as step 3 first wrote it: step 3 justified moving `.is-selected` to `aria-selected` on the grounds that `role="grid"` was already in use, which was true of the repository and false of that table, and the fix that shipped was `aria-current="true"`. Recording the original reasoning without its correction would preserve a wrong argument under a right answer. **Deliberately did not record Q3.** Step 4 decided it by outcome — rules 2.7–2.10 landed in this document, so it owns focus management as well as visibility — but no step adjudicated it in writing, and writing an answer no step stated would be this step making a decision while claiming to transcribe one. It stays open and is now the document's only open question. **Deliberately did not re-litigate either answer**: both were settled by steps that recorded their evidence, and a doc-sync that reopens decided questions is not a sync. **Deliberately touched no rule, token, CSS or JS.** `README.md`'s rollup is re-derived in the same change, per the rule that README is corrected alongside the document it summarises: this document goes **3 open questions → 1**, and the set total **12 → 10**. Patch, not minor — nothing re-renders and no downstream conformance changes. Contract 1.8.0 → **1.8.1**. |
 
 ---
 
@@ -183,6 +184,30 @@ real. So `.is-open` on a surface may be correct and `.is-active` on a nav item m
 `aria-current` in disguise. *Answering it means looking at each of the four against its own
 markup, not reasoning about the category. Blocks step 3.*
 
+> **Answered — two of the four are legitimate and two were defects (step 3).** Settled by
+> looking at each class against its own markup rather than at the category. **The principle:**
+> a surface MAY carry a class for a state its *trigger* expresses in aria, because
+> `aria-expanded` describes the trigger and nothing describes the surface — but it MAY NOT
+> when the element itself already carries the aria attribute.
+>
+> **Legitimate: `.is-open`** on `.rux-drawer` and `.rux-side-nav--overlay` — no aria attribute
+> means "open" on a surface, and `aria-hidden` is about assistive-technology exposure rather
+> than visual state. **Legitimate: `.is-visible`** on the two scrims, which are decorative and
+> expose no state. **Defects: `.is-active`**, which `view-router.js` wrote alongside
+> `aria-current="page"` on the same element, and **`.is-selected`** on `tr`.
+>
+> **The migration corrected part of the reasoning, and that is kept rather than tidied away.**
+> Step 3 justified `.is-selected` → `aria-selected` on the grounds that `role="grid"` was
+> already in use in `index.html`. That was true of the repository and **false of that table** —
+> the customers table is a plain `<table>`, where `aria-selected` would be invalid ARIA and
+> strictly worse than the class. Step 8 shipped `aria-current="true"` instead, which is valid
+> anywhere and owes no arrow-key contract, and found the class served **four panels and sixteen
+> call sites** rather than the one the step named. The driver grid, which really does carry
+> `role="grid"`, kept `aria-selected` — two things a grep cannot tell apart.
+>
+> Retired across steps 6–9. `.is-*` no longer appears in `rux-ui/css` or `rux-ui/js`, which
+> closed **D1**.
+
 **Q2 — Does rule 2.5 govern all dismissal, or only outside-dismissal?** R7's wording is "no
 module binds its own document-level dismiss listeners," and `menu.js` binds two that include
 Tab-closes and close-on-item-click. Under the broad reading it is in breach; under the
@@ -192,6 +217,30 @@ conformant, and `menu.js`'s own comment reads as though the narrow one was inten
 *Blocks step 2. The narrow reading is the one the code was written against; the broad one is
 what the sentence says, and a rule that does not match its own implementation is worth
 resolving in writing rather than by precedent.*
+
+> **Answered — narrow (step 2).** The kernel owns the two policies that must be singular:
+> document-level outside-`pointerdown` and Escape. It also publishes the one focus trap and
+> restore helper and the one layer-promotion helper. **A menu closing itself on Tab, or on its
+> own item being activated, is neither** — that is the surface's own business and stays with
+> the surface.
+>
+> **The argument did not have to be made, because the codebase had already made it.** Six
+> modules carried a comment deferring outside-click and Escape to the kernel — `menu.js`,
+> `drawer.js`, `popover.js`, `suggestions.js`, `ui-shell.js` and `utilities.js`. R7's sentence
+> was broader than its own implementation, so **rule 2.5 was reworded to match what was built**
+> rather than the code being changed to match the sentence.
+>
+> **Enforced** by `tests/overlay-kernel.test.mjs` in four checks. The third is the one that
+> matters: it asserts the kernel **does** bind both policies, so the other two mean *exactly
+> one* owner rather than *at most one* — without it, a kernel that stopped binding them would
+> turn the suite green. Proved to bite by injecting a second Escape handler into `menu.js`.
+>
+> **Re-verified in the code (step 11), not taken from the step that claimed it.**
+> `rux-ui/js/overlay.js` binds document `pointerdown` and document `keydown`; `menu.js`'s two
+> document-level listeners are a `keydown` carrying the roving arrows, Home/End and Tab-close
+> — **with no Escape branch at all** — and a `click` that closes only when the target is a
+> `[role^="menuitem"]` *inside* the active menu, which is an inside-activation and not an
+> outside press.
 
 **Q3 — Does this document own focus *management*, or only focus *visibility*?** R8 is
 visibility: every interactive selector draws a ring. But `overlay.js` owns trap and restore,

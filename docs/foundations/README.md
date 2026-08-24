@@ -20,7 +20,7 @@ roles onto that vocabulary.
 | [`color.md`](color.md) | 3.0.0 | 19 done | — |
 | [`motion.md`](motion.md) | 1.6.0 | 6 done | — |
 | [`naming.md`](naming.md) | 1.18.0 | 15 done | — |
-| [`state.md`](state.md) | 1.8.0 | 10 done | — |
+| [`state.md`](state.md) | 1.8.1 | 11 done | — |
 | [`forms.md`](forms.md) | 1.2.0 | 3 done | — |
 | [`composition.md`](composition.md) | 1.8.0 | 9 done | — |
 | [`shell.md`](shell.md) | 1.1.0 | 2 done | — |
@@ -234,9 +234,9 @@ counts.
 | [`motion.md`](motion.md) | 1 | 1 | 2 |
 | [`naming.md`](naming.md) | 0 | 2 | 0 |
 | [`shell.md`](shell.md) | 1 | 0 | 0 |
-| [`state.md`](state.md) | 3 | 0 | 1 |
+| [`state.md`](state.md) | 1 | 0 | 1 |
 | [`typography.md`](typography.md) | 1 | 0 | 0 |
-| **total** | **12** | **3** | **3** |
+| **total** | **10** | **3** | **3** |
 
 **Accepted debt is not a to-do.** Those rows record a defect measured and deliberately left
 — the reasoning is in the row. They are counted apart so the backlog does not cry wolf.
