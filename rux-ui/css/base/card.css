@@ -109,8 +109,10 @@
 /* A header carrying a subtitle is taller than the single-line band, so it is
    the one shape that needs a real block inset — the band's own slack comes
    from centering and cannot stretch. Scoped with :has() rather than pushed
-   into --rux-card-header-padding so the single-line headers, which have only
-   7px of block room inside the border-box floor, keep rendering unchanged. */
+   into --rux-card-header-padding so the single-line headers — centred in the
+   64px floor with ~20px of slack each side since layout.md step 25 — keep
+   rendering unchanged. (This read "7px of block room" against the old 40px
+   floor.) */
 .rux-card__header:has(.rux-card__subtitle) {
 	padding-block: var(--rux-space-2);
 }
