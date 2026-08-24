@@ -16,13 +16,13 @@ roles onto that vocabulary.
 | Document | Contract | Status | Blocked on |
 |---|---|---|---|
 | [`typography.md`](typography.md) | 5.0.0 | 62 done · 1 deferred · 3 withdrawn | — |
-| [`layout.md`](layout.md) | 2.10.1 | 25 done | — |
+| [`layout.md`](layout.md) | 2.11.0 | 26 done | — |
 | [`color.md`](color.md) | 3.0.0 | 19 done | — |
 | [`motion.md`](motion.md) | 1.6.0 | 6 done | — |
 | [`naming.md`](naming.md) | 1.18.0 | 15 done | — |
 | [`state.md`](state.md) | 1.7.0 | 9 done | — |
 | [`forms.md`](forms.md) | 1.2.0 | 3 done | — |
-| [`composition.md`](composition.md) | 1.5.0 | 6 done | — |
+| [`composition.md`](composition.md) | 1.6.0 | 7 done | — |
 
 `../motion.md` stays at the component tier — which token a panel, menu or scrim consumes,
 and the verification checklist for each. [`motion.md`](motion.md) owns the scales those

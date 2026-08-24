@@ -1,5 +1,13 @@
 # Button Components
 
+> **Tier: component recipe.** This document is the component tier — which class and token
+> each part consumes — not a foundation document. The foundation set outranks it wherever
+> they touch: [`typography.md`](foundations/typography.md) 5.0.0 (the button family), [`layout.md`](foundations/layout.md) 2.11.0, [`color.md`](foundations/color.md) 3.0.0, [`state.md`](foundations/state.md) 1.7.0. Where they disagree, the foundation document wins and this file is
+> corrected in the same change — the split `foundations/motion.md` states for `../motion.md`.
+> Values below are this component's own contract; each was checked against `tokens.css` and
+> the contracts above on 2026-08-23 (`composition.md` step 7). A sentence here that states a
+> shared value or a MUST belongs in a foundation document, per the one-home rule.
+
 Rux buttons use one composable contract. A button combines:
 
 1. The base component: `.rux-button`

@@ -1,5 +1,13 @@
 # Rux Popovers
 
+> **Tier: component recipe.** This document is the component tier — which class and token
+> each part consumes — not a foundation document. The foundation set outranks it wherever
+> they touch: [`layout.md`](foundations/layout.md) 2.11.0 (§8, §11), [`state.md`](foundations/state.md) 1.7.0, [`motion.md`](foundations/motion.md) 1.6.0. Where they disagree, the foundation document wins and this file is
+> corrected in the same change — the split `foundations/motion.md` states for `../motion.md`.
+> Values below are this component's own contract; each was checked against `tokens.css` and
+> the contracts above on 2026-08-23 (`composition.md` step 7). A sentence here that states a
+> shared value or a MUST belongs in a foundation document, per the one-home rule.
+
 Popovers disclose secondary content next to a trigger without replacing the
 current workspace. `.rux-popover` owns positioning. Add
 `.rux-popover--surface` when the popover needs the standard Rux outer container,

@@ -1,5 +1,13 @@
 # Card Components
 
+> **Tier: component recipe.** This document is the component tier — which class and token
+> each part consumes — not a foundation document. The foundation set outranks it wherever
+> they touch: [`layout.md`](foundations/layout.md) 2.11.0 (§8, §9.1–9.2), [`color.md`](foundations/color.md) 3.0.0, [`typography.md`](foundations/typography.md) 5.0.0. Where they disagree, the foundation document wins and this file is
+> corrected in the same change — the split `foundations/motion.md` states for `../motion.md`.
+> Values below are this component's own contract; each was checked against `tokens.css` and
+> the contracts above on 2026-08-23 (`composition.md` step 7). A sentence here that states a
+> shared value or a MUST belongs in a foundation document, per the one-home rule.
+
 A card has three parts, or four when it has a footer: outer shell, header,
 body, and optional footer. `.rux-card` owns the outer `background`, `border`,
 `border-radius`, `box-shadow`, and rounded clip. Its regions remain square and

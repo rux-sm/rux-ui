@@ -1,5 +1,13 @@
 # UI Header
 
+> **Tier: component recipe.** This document is the component tier — which class and token
+> each part consumes — not a foundation document. The foundation set outranks it wherever
+> they touch: [`layout.md`](foundations/layout.md) 2.11.0 (§10), [`typography.md`](foundations/typography.md) 5.0.0 (§3.5 — the `<h1>`), [`state.md`](foundations/state.md) 1.7.0, [`motion.md`](foundations/motion.md) 1.6.0. Where they disagree, the foundation document wins and this file is
+> corrected in the same change — the split `foundations/motion.md` states for `../motion.md`.
+> Values below are this component's own contract; each was checked against `tokens.css` and
+> the contracts above on 2026-08-23 (`composition.md` step 7). A sentence here that states a
+> shared value or a MUST belongs in a foundation document, per the one-home rule.
+
 The Rux UI header provides persistent product identity and global actions. It
 pairs with side navigation for product destinations and stays separate from
 view-specific workspace controls.
@@ -150,7 +158,7 @@ shells. They do not change the compact application-button standard.
 | Hit target | `40px × 40px` | `44px × 44px` |
 | Icon | `22px × 22px` | `24px × 24px` |
 | Profile avatar | `32px × 32px` | `32px × 32px` |
-| Corner radius | `var(--rux-radius-control)` (4px) | same |
+| Corner radius | `var(--rux-radius-control)` | same |
 
 Use the action button for the navigation trigger and persistent global actions
 such as search, messages, notifications, and profile. The control is transparent
