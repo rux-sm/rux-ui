@@ -66,16 +66,47 @@ import {
 
 	/* ── Trip ref ────────────────────────────────────────────────────────── */
 
-	async function generateTripRef(startDate) {
-		const { count } = await supabase
-			.from("trips")
-			.select("id", { count: "exact", head: true })
-			.eq("start_date", startDate);
+	function tripRefStem(startDate) {
 		const d  = new Date(startDate + "T00:00:00");
 		const yy = String(d.getFullYear()).slice(2);
 		const mm = String(d.getMonth() + 1).padStart(2, "0");
 		const dd = String(d.getDate()).padStart(2, "0");
-		return `TRP${yy}${mm}${dd}-${String((count ?? 0) + 1).padStart(3, "0")}`;
+		return `TRP${yy}${mm}${dd}`;
+	}
+
+	// Continues the highest number this stem has already issued, rather than
+	// counting the trips currently sitting on the date. A count can go back
+	// down, and a ref never does: rescheduling a trip off its date frees the
+	// slot it was counted in while the trip keeps the ref it was stamped with,
+	// so the next trip booked on that date gets handed a ref already in use.
+	// Hard-deleting a row outside the app does the same. That is how the live
+	// table came to hold 15 refs shared by two distinct trips, with 15 further
+	// dates primed to repeat it (audited 2026-08-24). Issued numbers only ever
+	// go up, so reading them is immune to both. Cancelled trips keep their ref
+	// and are therefore counted here on purpose.
+	function nextTripRef(stem, existingRefs) {
+		const prefix = `${stem}-`;
+		const highest = (existingRefs ?? []).reduce((max, ref) => {
+			const text = String(ref ?? "").trim();
+			if (!text.startsWith(prefix)) return max;
+			// Only a plain numeric tail continues the sequence. A suffix an
+			// import or a person extended ("-001-B") is not a number this
+			// generator issued, so it must not cap what it issues next.
+			const suffix = text.slice(prefix.length);
+			if (!/^\d+$/.test(suffix)) return max;
+			return Math.max(max, Number(suffix));
+		}, 0);
+		return `${prefix}${String(highest + 1).padStart(3, "0")}`;
+	}
+
+	async function generateTripRef(startDate) {
+		const stem = tripRefStem(startDate);
+		const { data, error } = await supabase
+			.from("trips")
+			.select("trip_ref")
+			.like("trip_ref", `${stem}-%`);
+		if (error) throw error;
+		return nextTripRef(stem, (data ?? []).map((row) => row.trip_ref));
 	}
 
 	/* ── Helpers ─────────────────────────────────────────────────────────── */
