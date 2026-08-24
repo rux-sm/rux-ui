@@ -55,9 +55,13 @@ test("records views hold a table and a floating editor (§2.3)", () => {
 	}
 });
 
-test("a document column has no workspace header and no floating window (§2.4)", () => {
+test("a document column has no header band, no floating window, no attached panel (§2.4)", () => {
+	// The attached-panel half waited for D7: while the game's main surface wore
+	// .rux-panel--attached, asserting it needed an exception list. Step 5's
+	// re-dress removed the last false positive, so the check is now whole.
 	for (const v of views.filter((x) => x.archetype === "document-column")) {
 		assert.ok(!v.seg.includes("rux-workspace__header"), `${v.view}: document column with a header band`);
 		assert.ok(!v.seg.includes("rux-panel--floating"), `${v.view}: document column with a floating window`);
+		assert.ok(!v.seg.includes("rux-panel--attached"), `${v.view}: document column with an attached panel`);
 	}
 });
