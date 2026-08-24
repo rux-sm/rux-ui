@@ -984,9 +984,9 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 				phoneInput.id = `tp-trip${number}-phone`;
 				phoneInput.name = `tripContact${number}.phone`;
 				nameLabel.htmlFor = nameInput.id;
-				nameLabel.textContent = `Contact Name ${number}`;
+				nameLabel.textContent = `Contact name ${number}`;
 				phoneLabel.htmlFor = phoneInput.id;
-				phoneLabel.textContent = `Contact Phone ${number}`;
+				phoneLabel.textContent = `Contact phone ${number}`;
 			});
 			if (contactAddBtn) contactAddBtn.disabled = contactCount() >= 5;
 		};

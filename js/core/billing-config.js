@@ -25,7 +25,7 @@
 	const DEFAULT_CONFIG = {
 		workflow: {
 			contractSigned: { label: "Contract", active: true },
-			poReceived: { label: "Purchase Order", active: true },
+			poReceived: { label: "Purchase order", active: true },
 			invoiced: { label: "Invoice", active: true },
 		},
 		confirmWhen: ["contract_signed", "po_received", "deposit_received", "paid_full"],

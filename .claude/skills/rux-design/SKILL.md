@@ -113,7 +113,8 @@ Where the two disagree, the foundation document wins. Do not restate a value her
    a step exists.
 6. Use the current `.rux-icon` contract, which is backed by Material Symbols
    Sharp. Follow existing markup and load the font when the host page does not
-   already provide it. Do not use emoji as interface icons.
+   already provide it. Do not use emoji as interface icons
+   (`docs/foundations/content.md` rule 2.6).
 7. Verify responsive layouts at narrow and wide widths and inspect both light
    and dark themes when changing shared styles.
 
@@ -150,10 +151,11 @@ Before completing layout work, verify:
 
 ## Content rules
 
-Read README.md's Content Fundamentals section for the full voice, tone,
-casing, punctuation, and numbers/dates/units rules — it is the canonical
-source. Do not duplicate that list here; if you find a content rule missing
-from README.md, add it there.
+Read `docs/foundations/content.md` for the full voice, tone, casing,
+punctuation, and numbers/dates/units rules — it is canonical and carries its
+own amendment log. README.md § Content Fundamentals is a pointer, not the
+source. Do not duplicate the rules here; a missing content rule is proposed
+against content.md's amendment log, never added to README.
 
 ## Agent workflow
 

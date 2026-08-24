@@ -152,96 +152,35 @@ markup.
 
 ## Content Fundamentals
 
-### Voice & tone
+**Canonical: [`docs/foundations/content.md`](docs/foundations/content.md).** That document
+owns the voice, person, casing, punctuation, number/date/unit, and emoji rules — every
+string the product renders. It carries a contract version and its own amendment log.
+**This section is a pointer: it names what is ruled, never what the rules say.** Where the
+two disagree, the foundation document wins and this section is corrected in the same
+change.
 
-- **Direct.** Short sentences. Verb-first when you can.
-- **Active voice.** "Save the trip" over "The trip will be saved." A control says exactly what happens when it's used.
-- **Calm.** No exclamation marks, no urgency unless it's truly urgent (a destructive action, an error).
-- **Plain.** Plain words over technical ones. "Delete trip" over "Remove record". "Couldn't connect" over "Connection failure occurred".
-- **Trustworthy.** Tell the user what happened and what they can do. Never blame them.
-- **Consistent through a flow.** An action keeps the same name end to end — a
-  "Publish" button produces a "Published" toast, not "Success" or "Done."
+| Where | What it governs |
+|---|---|
+| rule 2.1 | the six properties of the voice, and the flow-consistency rule |
+| rule 2.2 | person — you, we, never I |
+| rule 2.3 | casing by what an element *is* — controls against language — and the no-uppercase rule |
+| rule 2.4 | punctuation — trailing periods, the ellipsis, curly quotes |
+| rule 2.5 | numbers, dates, times, money, units, and the formatting APIs |
+| rule 2.6 | no emoji, in copy or as icons |
+| §3 | the worked examples, good against bad |
 
-### Person & pronouns
+Two things worth knowing before reading further: casing follows what an element **is**,
+not where it sits; and the casing split is **this system's own position** — Geist
+publishes no casing rule and its own docs are inconsistent, so "follow Geist" settles
+nothing here. Field-label casing was contested between two foundation documents for one
+day — **sentence case won** (2026-08-24); `content.md` D2 carries the evidence and
+`forms.md` step 5 the execution.
 
-- **You** addresses the user directly. "You haven't saved this trip yet."
-- **We** is the product team, used sparingly and only for product communication ("We're updating the schedule format"). Never in UI labels.
-- **Never "I"** in UI copy.
-
-### Casing
-
-Casing follows what an element *is*, not where it sits. A control is a thing
-you act on and reads as a label; a heading, a field label, and body copy are
-read as language.
-
-- **Title Case** for **controls**: buttons, menu items, navigation destinations, tabs, toasts.
-    - ✅ `New Trip`, `Save Changes`, `Send Trip Request`
-    - ❌ `New trip`, `Save changes`, `Send trip request`
-- **Sentence case** for **headings, form field labels, radio/checkbox/switch option labels, and body copy**.
-    - ✅ `Day of the trip`, `Pickup address or venue`, `Round trip`, `I am the day-of contact`
-    - ❌ `Day Of The Trip`, `Pickup Address Or Venue`, `Round Trip`
-- **No UPPERCASE, and no tracking on labels.** Overlines and section labels are
-  **sentence case at the label role's own tracking (0)**, like every other label.
-    - ✅ `Recent changes`, `Trip contact`, `Move to bus`
-    - ❌ `RECENT CHANGES`, `TRIP CONTACT`
-    - Acronyms that are genuinely acronyms keep their caps — `CDL`, `VIN`, `ZIP`.
-
-  This bullet read *"UPPERCASE only for overlines and badges … track them out
-  (`letter-spacing: 0.04em`)"* until 2026-08-21. It was withdrawn because rule 2.13 in
-  `docs/foundations/typography.md` holds that Label tracks **0 at every size it publishes**,
-  measured on the Geist specimens — so an overline that is uppercased *and* tracked out is
-  two departures from the catalog at once. Of the three ways to resolve that, dropping the
-  uppercase is the only one needing no departure at all, and it is the one taken
-  (typography.md §5 step 40, Q10). Badges were never affected: nothing uppercases them in
-  CSS, and their caps come from the data.
-
-The split is deliberate. Title Case makes a control read as one named thing,
-which is why it earns its place on buttons and menu items. Field labels are
-often phrases rather than names — `Pickup address or venue`, `Day-of contact
-phone` — and Title Case fights their legibility, which matters most on
-customer-facing pages such as `request.html`.
-
-This rule was Title Case for everything until 2026-08-18. Vercel Geist, the
-structural reference elsewhere in this document, publishes **no** casing rule
-and its own docs are inconsistent — `Upload` and `Sign Up` on buttons, but
-`Prefix and suffix` and `All Types and Sizes in comparison` as headings. So
-this is our own position rather than one inherited, and the "follow Geist"
-heuristic does not settle it.
-
-### Punctuation
-
-- No trailing periods on **button labels**, **menu items**, **field labels**, **table headers**, **toasts**, or **single-line tooltips**.
-- Periods **are** used in full sentences inside body copy, modal descriptions, and multi-sentence help text.
-- Ellipsis (`…`, the actual character, not three dots) for actions that open a follow-up step (`Export…`, `Delete trip…`) and for in-progress states (`Saving…`, `Loading…`).
-- Curly quotes (“Delete”) rather than straight quotes ("Delete") in copy.
-
-### Numbers, dates, units
-
-- Use real characters: `–` for ranges (`Mon–Fri`), `×` for dimensions, `′″` for feet/inches if needed.
-- Times: lowercase `am`/`pm`, no space. `9:00am`, `3:30pm`.
-- Dates in UI lists: `Tue, Mar 12`. Full dates: `March 12, 2026`.
-- Money: `$1,240` not `$1240.00` unless cents matter.
-- Use numerals for counts: `8 trips`, not `eight trips`.
-- Use a non-breaking space between a number and its unit, or inside a
-  keyboard shortcut, so they never wrap apart: `10&nbsp;mi`, `⌘&nbsp;K`.
-- Use `Intl.DateTimeFormat` / `Intl.NumberFormat` for date, time, and number
-  formatting — never hand-rolled string formatting.
-- Use `font-variant-numeric: tabular-nums` wherever numbers sit in a column
-  or get compared side by side (schedule times, counts).
-
-### Emoji
-
-**Do not use emoji** in Rux UI surfaces. Status is communicated by color, a Material Symbols icon, and the badge component. Emoji are inconsistent across platforms and clash with the minimalist tone.
-
-### Example copy
-
-| Context     | Good                                                  | Bad                                                 |
-| ----------- | ----------------------------------------------------- | --------------------------------------------------- |
-| Empty state | `No trips this week`                                  | `Looks like you don't have any trips yet! 🚌`       |
-| Error       | `Couldn't save. Check your connection and try again.` | `Oops! Something went wrong saving your trip!`      |
-| Confirm     | `Delete this trip?` `This can't be undone.`           | `Are you sure you want to permanently delete this?` |
-| Toast       | `Trip Saved`                                          | `Trip successfully saved.`                          |
-| Button      | `Save` `Delete Trip…`                                 | `save trip` `DELETE`                                |
+*This section carried the full rule set until content.md step 1 — and the drift the
+one-home rule predicts had already happened three times inside this one file: § Conventions
+contradicted § Casing on headings, § Iconography contradicted § Numbers on which unicode
+characters copy uses while restating § Emoji, and the tabular-figures bullet restated
+`typography.md` rule 2.9. All three are pointers now.*
 
 ---
 
@@ -555,7 +494,11 @@ control its accessible name on the button or link.
 
 ### Emoji & unicode
 
-Both are **not** used as icons in Rux UI. Status is shown by color + Material Symbols icon + label. The only acceptable unicode character is `…` (ellipsis) in action labels and `–` (en dash) in ranges.
+Ruled by [`docs/foundations/content.md`](docs/foundations/content.md): rule 2.6 bans
+emoji in every surface, icons included; rules 2.4–2.5 say which typographic characters
+copy uses. *This section's own compressed version — "the only acceptable unicode
+character is `…` and `–`" — contradicted the numbers rule it summarized (`×`, `′″`, and
+curly quotes are all required characters), which is why it is a pointer now.*
 
 ### Logo
 
@@ -578,7 +521,10 @@ tests/portability-boundary.test.mjs; see docs/portability-audit.md §3.
 
 Use oklch() for all color values.
 Use full readable words.  Exception: `bg` for background.
-Use Title Case for UI controls and headings, following the content rules above.
+Casing follows docs/foundations/content.md rule 2.3.  This line said
+"Title Case for UI controls and headings" until 2026-08-24 — § Casing
+ruled headings sentence case, so the fence had drifted from the rule
+it cited.
 
 State classes (.is-*, .has-*) are JS-toggled, no prefix — see docs/foundations/state.md.
 The class shape and the modifier vocabulary are stated in docs/foundations/naming.md

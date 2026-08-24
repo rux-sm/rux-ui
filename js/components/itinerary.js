@@ -562,7 +562,7 @@
           <label class="rux-field__label">${label}</label>
           <output class="rux-output${warn ? " sched-trip-itinerary__seg-stat--warn" : ""}" aria-label="${label}">${escHtml(val)} <span class="sched-trip-itinerary__unit">${unit}</span></output>
         </div>`;
-		return `<div class="sched-trip-itinerary__day-stats">${field("Miles", miVal, "mi", false)}${field("Drive", drVal, "hr", drWarn)}${field("On-Duty", dutyVal, "hr", dutyWarn)}${field("Off-Duty", offVal, "hr", false)}</div>`;
+		return `<div class="sched-trip-itinerary__day-stats">${field("Miles", miVal, "mi", false)}${field("Drive", drVal, "hr", drWarn)}${field("On-duty", dutyVal, "hr", dutyWarn)}${field("Off-duty", offVal, "hr", false)}</div>`;
 	}
 
 	// Shared three-stat anatomy for cards that close a duty period. Off Duty
@@ -578,7 +578,7 @@
 		  <div class="rux-field">
 			<div class="sched-trip-itinerary__stats-values sched-trip-itinerary__stats-values--3col is-expanded">
 			  <div class="rux-field">
-				<label class="rux-field__label">On-Duty</label>
+				<label class="rux-field__label">On-duty</label>
 				<output class="rux-output">${escHtml(dutyVal)} <span class="sched-trip-itinerary__unit">hr</span></output>
 			  </div>
 			  <div class="rux-field">
@@ -754,7 +754,7 @@
 			{ id: "days", label: "Days", value: `${dayCount}` },
 			{ id: "miles", label: "Miles", value: totalMiles > 0 ? `${totalMiles % 1 === 0 ? totalMiles : totalMiles.toFixed(1)}` : "—" },
 			{ id: "drive", label: "Drive", value: totalDrive > 0 ? formatDriveValue(totalDrive) : "—" },
-			{ id: "duty", label: "On-Duty", value: onDutyMins !== null && onDutyMins > 0 ? formatDriveValue(onDutyMins) : "—" },
+			{ id: "duty", label: "On-duty", value: onDutyMins !== null && onDutyMins > 0 ? formatDriveValue(onDutyMins) : "—" },
 		];
 		const statsHtml = stats
 			.map(
@@ -840,7 +840,7 @@
 			</header>
 			<div class="sched-trip-itinerary__stop-body">
 			<div class="rux-field">
-				<label class="rux-field__label">Passengers Board At</label>
+				<label class="rux-field__label">Passengers board at</label>
 				<div class="rux-segmented-track sched-trip-itinerary__origin-mode" data-rux-segmented data-itinerary-segment="origin-mode" aria-label="Passengers board at">
 					${modeButton("pickup", "Pickup", "location_on")}
 					${modeButton("yard", "Yard", "garage")}
@@ -850,8 +850,8 @@
 				</div>
 			</div>
 			<div class="sched-trip-itinerary__yard-times${mode === "yard" ? " sched-trip-itinerary__yard-times--meet" : ""}">
-				<div class="rux-field" data-yard-meet-row${mode === "yard" ? "" : " hidden"}><span class="rux-field__label">Customer Meet</span><div class="sched-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-meet-date value="${escHtml(pickup?.spotDate || startDate || "")}" aria-label="Calculated customer meet date" readonly /><input class="rux-input" type="time" data-yard-meet-time value="${escHtml(pickup?.spot || "")}" aria-label="Calculated customer meet time" readonly /></div></div>
-				<div class="rux-field"><span class="rux-field__label">Yard Departure</span><div class="sched-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-depart-date value="${escHtml(pickup?.departPrevDate || startDate || "")}" aria-label="Yard departure date" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /><input class="rux-input" type="time" data-yard-depart-time value="${escHtml(pickup?.departPrev || "")}" aria-label="Yard departure time" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /></div></div>
+				<div class="rux-field" data-yard-meet-row${mode === "yard" ? "" : " hidden"}><span class="rux-field__label">Customer meet</span><div class="sched-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-meet-date value="${escHtml(pickup?.spotDate || startDate || "")}" aria-label="Calculated customer meet date" readonly /><input class="rux-input" type="time" data-yard-meet-time value="${escHtml(pickup?.spot || "")}" aria-label="Calculated customer meet time" readonly /></div></div>
+				<div class="rux-field"><span class="rux-field__label">Yard departure</span><div class="sched-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-depart-date value="${escHtml(pickup?.departPrevDate || startDate || "")}" aria-label="Yard departure date" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /><input class="rux-input" type="time" data-yard-depart-time value="${escHtml(pickup?.departPrev || "")}" aria-label="Yard departure time" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /></div></div>
 			</div>
 			</div>
 		</section>`;
@@ -969,7 +969,7 @@
 		return stops.slice(0, idx).filter((s) => s.type === "day").length + 1;
 	}
 	// 1-based position of this stop among only the "stop"-type stops, for
-	// address placeholders like "Stop 2 Address".
+	// address placeholders like "Stop 2 address".
 	function stopNumberFor(stops, idx) {
 		return stops.slice(0, idx + 1).filter((s) => s.type === "stop").length;
 	}
@@ -1018,10 +1018,10 @@
 
 		const isVerified = !!(stop.lat && stop.lng);
 		const showAddrIcon = isStale || isVerified;
-		// "Pick-up Address" / "Stop 2 Address" instead of a bare "Address" —
+		// "Pickup address" / "Stop 2 address" instead of a bare "Address" —
 		// tells you which stop you're filling in without needing to glance
 		// back at the badge, especially useful once a list has several Stops.
-		const addressLabel = type === "pickup" ? `${TYPE_LABEL[type]} Address` : `Stop ${stopNumberFor(stops, idx)} Address`;
+		const addressLabel = type === "pickup" ? `${TYPE_LABEL[type]} address` : `Stop ${stopNumberFor(stops, idx)} address`;
 		// Sleeper always sits at whatever location the previous stop is at —
 		// shown read-only (like Return's) instead of empty space, since it's
 		// a time block at an inherited place, not a place of its own to edit.
@@ -1042,8 +1042,8 @@
 		// with a visible label, because the address beside it has none and a
 		// label row would add height to an already dense card.
 		const nameLabel = type === "pickup"
-			? `${TYPE_LABEL[type]} Name`
-			: `Stop ${stopNumberFor(stops, idx)} Name`;
+			? `${TYPE_LABEL[type]} name`
+			: `Stop ${stopNumberFor(stops, idx)} name`;
 		const nameFieldId = `itin-name-${idx}`;
 		const nameEl = type === "sleeper" || isReturn
 			? ""
@@ -1054,7 +1054,7 @@
 			   </div>`;
 		const addrEl = type === "sleeper"
 			? `<div class="rux-field">
-                 <label class="rux-field__label" for="${addrFieldId}">Resting Location</label>
+                 <label class="rux-field__label" for="${addrFieldId}">Resting location</label>
                  <div class="sched-trip-itinerary__address-wrap">
                <input id="${addrFieldId}" class="rux-input" type="text" value="${escHtml(visibleSleeperAddr)}" readonly
                       aria-label="${visibleSleeperAddr ? `Resting at ${escHtml(visibleSleeperAddr)}` : "Resting location — inherits previous stop's address"}" />

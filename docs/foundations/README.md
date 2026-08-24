@@ -21,9 +21,10 @@ roles onto that vocabulary.
 | [`motion.md`](motion.md) | 1.6.0 | 6 done | — |
 | [`naming.md`](naming.md) | 1.18.0 | 15 done | — |
 | [`state.md`](state.md) | 1.8.1 | 11 done | — |
-| [`forms.md`](forms.md) | 1.2.0 | 3 done | — |
+| [`forms.md`](forms.md) | 1.3.0 | 5 done | — |
 | [`composition.md`](composition.md) | 1.9.0 | 10 done | — |
 | [`shell.md`](shell.md) | 1.1.0 | 2 done | — |
+| [`content.md`](content.md) | 1.0.1 | 2 done | — |
 
 `../motion.md` stays at the component tier — which token a panel, menu or scrim consumes,
 and the verification checklist for each. [`motion.md`](motion.md) owns the scales those
@@ -44,7 +45,9 @@ the worked example; the unwritten documents follow the same method.
 | [`layout.md`](layout.md) | **none — originated here** | written, breakpoints only. Geist publishes four foundations and **no breakpoint page**, so this is the first foundation rule this repo originates rather than adopts. Its remaining scope (space scale, radius, Materials elevation) is measured from Geist and is recorded as open steps |
 | [`motion.md`](motion.md) | **gap source: [Cloudscape motion](https://cloudscape.design/foundation/visual-foundation/motion/), guidance-only** — Geist publishes no motion page | written. Geist publishes **no motion page**, so this is the **second** foundation rule this repository originates rather than adopts, after `layout.md`'s breakpoints. Every value in it is measured from this repository's own tokens, and its §6 Q1 has no upstream to defer to |
 | `spacing.md` | [vercel.com/geist/materials](https://vercel.com/geist/materials) | reviewed, not written — and **may not be needed**: `layout.md` steps 4 and 5 already claim the space scale, radius, and the eight elevation presets. Fold or keep is `layout.md` Q4's to settle |
-| [`forms.md`](forms.md) | [vercel.com/geist/input](https://vercel.com/geist/input) + [fieldset](https://vercel.com/geist/fieldset) | written (step 1). Content, behaviour and control-selection rules adopted; Geist publishes these as prose on the component pages rather than as a foundation page || component specs | the [component index](https://vercel.com/geist) and its 71 pages | **censused, not adopted** — [`naming.md`](naming.md) §7 publishes Geist's component vocabulary and maps it against this system's blocks. It is a name census: it renames nothing, and its central finding is that Geist publishes **no class vocabulary** to converge on. Read §7.3 for the mapping, including the `switch`/`toggle` crossing |
+| [`forms.md`](forms.md) | [vercel.com/geist/input](https://vercel.com/geist/input) + [fieldset](https://vercel.com/geist/fieldset) | written (step 1). Content, behaviour and control-selection rules adopted; Geist publishes these as prose on the component pages rather than as a foundation page |
+| [`content.md`](content.md) | **none — originated here** | written (step 1, 2026-08-24) — promoted whole from `README.md` § Content Fundamentals, whose casing decision of 2026-08-18 predates the foundation set. Geist publishes no writing page and its rendered docs are internally inconsistent on casing, so this is the **fifth** originated foundation. The move found README contradicting itself three times and the field-label casing conflict with `forms.md` 2.2 (content.md D2 / forms.md D5) |
+| component specs | the [component index](https://vercel.com/geist) and its 71 pages | **censused, not adopted** — [`naming.md`](naming.md) §7 publishes Geist's component vocabulary and maps it against this system's blocks. It is a name census: it renames nothing, and its central finding is that Geist publishes **no class vocabulary** to converge on. Read §7.3 for the mapping, including the `switch`/`toggle` crossing |
 
 **The values are not published.** Vercel's pages name the classes and say the numbers come
 from "the Geist Core Figma system" without listing them, so every figure in `typography.md`
@@ -71,7 +74,9 @@ document once one claims them.
 | `color.md` | **R6**, the color half — tokens only, both themes | written — rule 2.1 |
 | [`motion.md`](motion.md) | **R6**, the duration/easing half | written — and it **originates** rather than adopts |
 | [`naming.md`](naming.md) | **R1, R2, R4, R5** — one block per component, one modifier vocabulary, namespaces, every emitted class resolves | written |
-| [`forms.md`](forms.md) | **none — new territory.** R1–R10 predate it and none of them reaches forms | written — composition, label copy, control selection || [`state.md`](state.md) | **R3, R7, R8** — aria is the state of record, one overlay kernel, focus is visible everywhere | written |
+| [`forms.md`](forms.md) | **none — new territory.** R1–R10 predate it and none of them reaches forms | written — composition, label copy, control selection |
+| [`content.md`](content.md) | **none — new territory.** R1–R10 predate it and none of them reaches copy | written — voice, person, casing, punctuation, numbers, emoji |
+| [`state.md`](state.md) | **R3, R7, R8** — aria is the state of record, one overlay kernel, focus is visible everywhere | written |
 
 **R9 and R10 are deliberately absent.** The gallery as contract surface and "docs cite
 tokens, not numbers" are process rules, and their homes are `CLAUDE.md` and
@@ -227,14 +232,21 @@ counts.
 |---|---|---|---|
 | [`color.md`](color.md) | 2 | 0 | 0 |
 | [`composition.md`](composition.md) | 2 | 2 | 0 |
-| [`forms.md`](forms.md) | 2 | 0 | 0 |
+| [`content.md`](content.md) | 2 | 1 | 0 |
+| [`forms.md`](forms.md) | 2 | 4 | 0 |
 | [`layout.md`](layout.md) | 2 | 0 | 0 |
 | [`motion.md`](motion.md) | 1 | 1 | 2 |
 | [`naming.md`](naming.md) | 0 | 2 | 0 |
 | [`shell.md`](shell.md) | 1 | 0 | 0 |
 | [`state.md`](state.md) | 1 | 0 | 1 |
 | [`typography.md`](typography.md) | 1 | 0 | 0 |
-| **total** | **12** | **5** | **3** |
+| **total** | **14** | **10** | **3** |
+
+*Forms' defects counted zero until 2026-08-24 — not because they were fixed, but because
+its §4 marked defect numbers in bold and the counter matches them plain, so four listed
+defects rolled up as none from the day the document landed. Its step 4 records the repair
+(five once D5 was recorded; D5 resolved the same day by step 5). The jump in this table is
+bookkeeping catching up with the truth, not a bad day.*
 
 **Accepted debt is not a to-do.** Those rows record a defect measured and deliberately left
 — the reasoning is in the row. They are counted apart so the backlog does not cry wolf.
