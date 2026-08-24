@@ -682,7 +682,12 @@
 	height: var(--sched-driver-grid-cell-size);
 	padding: 0;
 	border-radius: var(--rux-radius-0);
-	background: var(--rux-surface-0);
+	/* The fill routes through a variable so a contextual marker — the trip
+	   range below — can move the cell's BASE colour without competing for the
+	   `background` property itself. Every status modifier declares
+	   `background` directly and so outranks this rule, which is what keeps a
+	   driver's real state visible underneath any marker. */
+	background: var(--sched-driver-grid-cell-bg, var(--rux-surface-0));
 	/* Transparent, not --rux-border-subtle: an idle cell should read as
 	   quietly as a plain .sched-mini-cal__date, which has no border at all
 	   until it means something (today/active-week). The status modifiers
@@ -760,17 +765,31 @@
 }
 
 /* Same trip-range marker as the day header above, on every cell in that
-   column regardless of driver. outline (not box-shadow) so it never fights
-   the inset box-shadow rings the busy/conflict/unavailable combos already
-   use for their own signal. */
-/* The active-background role, not a bare grey. --rux-gray resolved L50 on a
+   column regardless of driver, so it reads at a glance which drivers are
+   free during the selected trip's window.
+
+   It sets the cell's base-fill variable rather than `background`, because a
+   status fill has to survive it: a blue already-assigned cell inside the
+   range is the most important thing on this grid, and painting over it tells
+   a dispatcher a driver is free when they are not. Status modifiers declare
+   `background` directly and win; only a cell with no state of its own takes
+   the marker. A modifier added later inherits that protection without
+   editing this rule.
+
+   That was always the intent. This comment claimed the marker was an
+   `outline` "so it never fights the inset box-shadow rings", while the rule
+   under it set `background` for as long as the history goes back — at two
+   classes it outranked every single-class status modifier and covered all of
+   them. The principle was right and the code contradicted it.
+
+   The active-background role, not a bare grey. --rux-gray resolved L50 on a
    dark canvas and L98 on a light one — strong to the point of shouting in
    dark, and all but invisible in light against a 98.48 canvas. That split was
    D10: one name carrying two different intentions. A persistent range marker
    is a selected background, which the scale already publishes.
    docs/foundations/color.md D10, §5 step 18. */
 .sched-driver-grid__cell.is-trip-range {
-	background: var(--rux-bg-active);
+	--sched-driver-grid-cell-bg: var(--rux-bg-active);
 }
 
 .sched-driver-grid__cell:hover {
