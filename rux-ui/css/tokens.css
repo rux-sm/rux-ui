@@ -340,9 +340,13 @@
 	   step 9. Three of Geist's eight presets are adopted, because three is
 	   what this system has roles for: Small -> --rux-shadow-1 (scrolled
 	   header and footer edges), Menu -> --rux-shadow-2 (menus, popovers,
-	   anchored panels), Modal -> --rux-shadow-3 (modals, floating panels,
-	   trip bar). Base, Tooltip, Medium, Large and Fullscreen have no consumer
-	   here and are recorded in §8.1 rather than published as dead tokens.
+	   anchored panels), Modal -> --rux-shadow-3 (modals, floating panels).
+	   Tooltip, Medium, Large and Fullscreen have no consumer here and are
+	   recorded in §8.1 rather than published as dead tokens.
+
+	   BASE now has a consumer and still needs no token: the trip bar took
+	   --rux-shadow-3 until docs/trip-bar.md step 3, and Base is stroke-only,
+	   so conforming to it meant `none` rather than a fourth name.
 
 	   ONLY THE SHADOW LAYERS ARE ADOPTED. Each Geist preset also bundles a
 	   1px stroke and a backdrop fill into its box-shadow; this system paints

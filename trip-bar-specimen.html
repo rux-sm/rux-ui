@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Trip bar — surface specimen</title>
+<link rel="stylesheet" href="./rux-ui/css/rux.css?v=11" />
+<link rel="stylesheet" href="./scheduler/css/components.css?v=11" />
+<style>
+	body { background: var(--rux-surface-0); color: var(--rux-text-primary);
+	       font-family: var(--rux-font-sans); margin: 0; padding: var(--rux-space-5) var(--rux-space-5) 6rem; }
+	header { display: flex; align-items: flex-start; gap: var(--rux-space-4);
+	         justify-content: space-between; margin-bottom: var(--rux-space-5); }
+	header > div:first-child { flex: 1 1 auto; min-width: 0; }
+	h1 { font-size: var(--rux-text-heading-24-size); line-height: var(--rux-text-heading-24-line-height);
+	     letter-spacing: var(--rux-text-heading-24-tracking); font-weight: var(--rux-weight-600); margin: 0 0 var(--rux-space-2); }
+	h2 { font-size: var(--rux-text-heading-16-size); line-height: var(--rux-text-heading-16-line-height);
+	     font-weight: var(--rux-weight-600); margin: 0 0 var(--rux-space-1); }
+	p  { color: var(--rux-text-secondary); margin: 0; max-width: 68ch;
+	     font-size: var(--rux-text-copy-14-size); line-height: var(--rux-text-copy-14-line-height); }
+	section { margin-bottom: var(--rux-space-7, 2.5rem); }
+	.sec-head { margin-bottom: var(--rux-space-4); padding-bottom: var(--rux-space-2);
+	            border-bottom: 1px solid var(--rux-card-border); }
+	.grid { display: grid; grid-template-columns: 6.5rem repeat(var(--cols), minmax(11rem, 14rem));
+	        gap: var(--rux-space-3) var(--rux-space-2); align-items: start; }
+	.rowlab, .colhead { color: var(--rux-text-secondary); font-size: var(--rux-text-label-12-size);
+	                    line-height: var(--rux-text-label-12-line-height); padding-top: var(--rux-space-2); }
+	.colhead { padding-top: 0; font-weight: var(--rux-weight-500); color: var(--rux-text-primary); }
+	.cell { display: flex; flex-direction: column; gap: var(--rux-space-1); }
+	.cell > .sched-trip-bar { position: relative; height: auto; }
+	.ratio { font-family: var(--rux-font-mono); font-size: var(--rux-text-label-12-size);
+	         line-height: var(--rux-text-label-12-line-height); font-variant-numeric: tabular-nums; }
+	.pass { color: var(--rux-success-base); } .fail { color: var(--rux-danger-base); }
+	.legend { display: flex; gap: var(--rux-space-4); flex-wrap: wrap; margin-top: var(--rux-space-2);
+	          color: var(--rux-text-secondary); font-size: var(--rux-text-label-12-size); }
+	.controls { display: flex; gap: var(--rux-space-2); flex: none; }
+	.note { background: var(--rux-surface-1); border: 1px solid var(--rux-card-border);
+	        border-radius: var(--rux-radius-container); padding: var(--rux-space-3);
+	        margin-bottom: var(--rux-space-4); }
+	.note strong { color: var(--rux-text-primary); }
+	.strip { display: flex; gap: 2px; }
+	.swatch { width: 2.25rem; height: 2.25rem; border-radius: var(--rux-radius-container); }
+	.sep { display: flex; gap: var(--rux-space-5); flex-wrap: wrap; margin-bottom: var(--rux-space-4); }
+</style>
+</head>
+<body>
+<header>
+	<div>
+		<h1>Trip bar surfaces</h1>
+		<p>Seven tones against every state, both themes, no Supabase. Contrast is measured live
+		   in this page — canvas-composited sRGB against a 4.5:1 floor
+		   (<code>color.md</code> rule 2.11) — so the numbers below are the page's, not a
+		   document's. Ratios are for the <em>primary</em> label.</p>
+		<div class="legend">
+			<span><span class="pass">■</span> clears 4.5:1</span>
+			<span><span class="fail">■</span> below the floor</span>
+			<span>label is chosen by rule 2.11's own test: white if it clears, else near-black</span>
+		</div>
+	</div>
+	<div class="controls">
+		<button class="rux-button rux-button--default" id="theme" type="button">Toggle theme</button>
+	</div>
+</header>
+<div class="note">
+	<strong>Not what ships.</strong> Sections 2 and 3 are proposals — they set the fill, label
+	and state treatment inline on this page. The application still renders section 1.
+	<code>docs/trip-bar.md</code> Q4 and D13.
+</div>
+<div id="out"></div>
+<script>
+const HUES = [
+	["accent / default", "blue",  null,     false],
+	["teal",             "teal",  "teal",   false],
+	["green",            "green", "green",  false],
+	["purple",           "purple","purple", false],
+	["amber",            "amber", "amber",  false],
+	["pink",             "pink",  "pink",   false],
+	["unconfirmed",      "red",   null,     true ],
+];
+
+/* ---- measurement ----
+   The floor is evaluated in the WORSE gamut (color.md rule 2.11): a pairing that
+   clears in P3 but not sRGB is not published, because sRGB is what a display
+   without P3 renders and it cannot be the one that fails.
+
+   This page therefore CANNOT read computed styles to measure. The catalog ships
+   both branches, and a P3 display resolves the P3 one — higher chroma, higher
+   contrast. Measuring what the browser computed would grade the design on the
+   generous branch and inflate every number (blue-700 + white is 5.04 in P3 and
+   4.44 in sRGB — the difference between passing and failing).
+
+   So: fetch tokens.css, slice off the @media (color-gamut: p3) block, and convert
+   the sRGB-branch oklch() values here. The numbers below are then the same on any
+   display, which is the point. */
+let SRGB = null;                                   /* name -> [r,g,b], per theme */
+
+function oklchToSrgb(L, C, hDeg) {
+	const h = (hDeg * Math.PI) / 180;
+	const a = C * Math.cos(h), b = C * Math.sin(h);
+	const l_ = L + 0.3963377774*a + 0.2158037573*b;
+	const m_ = L - 0.1055613458*a - 0.0638541728*b;
+	const s_ = L - 0.0894841775*a - 1.2914855480*b;
+	const l = l_**3, m = m_**3, s = s_**3;
+	const lin = [ 4.0767416621*l - 3.3077115913*m + 0.2309699292*s,
+	             -1.2684380046*l + 2.6097574011*m - 0.3413193965*s,
+	             -0.0041960863*l - 0.7034186147*m + 1.7076147010*s ];
+	const enc = (v) => { v = Math.min(1, Math.max(0, v));
+		return v <= 0.0031308 ? 12.92*v : 1.055*Math.pow(v, 1/2.4) - 0.055; };
+	return lin.map(v => Math.round(enc(v) * 255));
+}
+const parseOklch = (v) => { const m = v.match(/oklch\(\s*([\d.]+)%\s+([\d.]+)\s+([\d.]+)/);
+	return m ? oklchToSrgb(+m[1]/100, +m[2], +m[3]) : null; };
+
+async function loadSrgbBranch() {
+	const css = await (await fetch("./rux-ui/css/tokens.css")).text();
+	const srgb = css.slice(0, css.indexOf("@media (color-gamut: p3)"));
+	const lightAt = srgb.indexOf(':root[data-theme="light"]');
+	const scope = { dark: srgb.slice(0, lightAt), light: srgb.slice(lightAt) };
+	const out = { dark: {}, light: {} };
+	for (const theme of ["dark","light"]) {
+		const re = /--(rux-[a-z]+-\d+)\s*:\s*([^;]+);/g; let m;
+		while ((m = re.exec(scope[theme]))) {
+			const rgb = parseOklch(m[2]); if (rgb) out[theme][m[1]] = rgb;
+		}
+	}
+	SRGB = out;
+}
+const theme = () => document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+/* A token name resolved in the governing branch; falls back to the browser for
+   anything not in the hue scales (the state overlay, which is neutral alpha). */
+const srgbTok = (name) => SRGB ? SRGB[theme()][name.replace(/^--/, "")] : null;
+
+const cv = document.createElement("canvas"); cv.width = cv.height = 4;
+const cx = cv.getContext("2d", { willReadFrequently: true });
+const px = (...layers) => { cx.clearRect(0,0,4,4);
+	for (const l of layers) { if (!l) continue; cx.fillStyle = l; cx.fillRect(0,0,4,4); }
+	const d = cx.getImageData(1,1,1,1).data; return [d[0],d[1],d[2]]; };
+const lum = (r) => { const f = r.map(v => { v/=255; return v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055,2.4); });
+	return 0.2126*f[0] + 0.7152*f[1] + 0.0722*f[2]; };
+const ratio = (a,b) => { const la = lum(a), lb = lum(b);
+	return (Math.max(la,lb)+0.05)/(Math.min(la,lb)+0.05); };
+
+const probe = document.createElement("div"); probe.style.cssText = "position:absolute;left:-9999px";
+document.body.appendChild(probe);
+const resolve = (v) => { probe.style.backgroundColor = ""; probe.style.backgroundColor = v;
+	return getComputedStyle(probe).backgroundColor || v; };
+/* A hue step, in the governing branch, as an rgb() string the page can paint. */
+window.step = (hue, n) => { const c = srgbTok(`rux-${hue}-${n}`);
+	return c ? `rgb(${c[0]},${c[1]},${c[2]})` : resolve(tok(`--rux-${hue}-${n}`)); };
+const tok = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+const WHITE = "oklch(100% 0 0)", INK = "oklch(14.57% 0 0)";
+
+/* ---- one trip bar ---- */
+function bar(fill, label, opts = {}) {
+	const el = document.createElement("article");
+	el.className = "sched-trip-bar";
+	el.style.backgroundColor = fill;
+	if (opts.overlay) el.style.backgroundImage = `linear-gradient(${opts.overlay}, ${opts.overlay})`;
+	if (opts.ring)    { el.style.outline = `${opts.ring}px solid ${label}`;
+	                    el.style.outlineOffset = `-${opts.ring}px`; }
+	/* The label is the fifth axis; muted and subtle are its own opacity tiers. */
+	el.style.setProperty("--rux-fg-on-accent", label);
+	const mut = opts.mutedOpacity || 75;
+	el.style.setProperty("--rux-fg-on-accent-muted",
+		label === WHITE ? `oklch(100% 0 0 / ${mut}%)` : `oklch(14.57% 0 0 / ${mut}%)`);
+	el.style.setProperty("--rux-fg-on-accent-subtle",
+		label === WHITE ? "oklch(100% 0 0 / 55%)" : "oklch(14.57% 0 0 / 55%)");
+	const rows = [["destination","Laredo, TX"],["client","PSJA North Early College"],
+	              ["contact","Sarah Wright 956-354-2000"]];
+	for (const [cls, text] of rows) {
+		const r = document.createElement("div");
+		r.className = "sched-trip-bar__" + cls; r.textContent = text; el.append(r);
+	}
+	const time = document.createElement("div"); time.className = "sched-trip-bar__time";
+	for (const t of ["11:38 am","12:00 pm","2:53 am"]) {
+		const i = document.createElement("div"); i.className = "sched-trip-bar__time-item";
+		const v = document.createElement("span"); v.className = "sched-trip-bar__time-value";
+		v.textContent = t; i.append(v); time.append(i);
+	}
+	el.append(time);
+	const drv = document.createElement("div"); drv.className = "sched-trip-bar__drivers";
+	const d = document.createElement("span"); d.className = "sched-trip-bar__driver";
+	d.textContent = "Raul"; drv.append(d); el.append(drv);
+	return el;
+}
+
+function cell(fill, label, opts) {
+	opts = opts || {};
+	const c = document.createElement("div"); c.className = "cell";
+	c.append(bar(fill, label, opts));
+	const base = px(fill, opts.overlay || null);
+	const r = ratio(base, px(fill, opts.overlay || null, label));
+	/* When a second tier is in play, IT is the binding number, not the primary. */
+	if (opts.mutedOpacity) {
+		const a = opts.mutedOpacity / 100;
+		const tint = label === WHITE ? `oklch(100% 0 0 / ${opts.mutedOpacity}%)`
+		                             : `oklch(14.57% 0 0 / ${opts.mutedOpacity}%)`;
+		const m = ratio(base, px(fill, opts.overlay || null, tint));
+		c.dataset.muted = m.toFixed(2);
+	}
+	const cap = document.createElement("span");
+	cap.className = "ratio " + (r >= 4.5 ? "pass" : "fail");
+	cap.textContent = r.toFixed(2) + (r >= 4.5 ? " ✓" : " ✗");
+	c.append(cap);
+	if (c.dataset.muted) {
+		const m = parseFloat(c.dataset.muted);
+		const c2 = document.createElement("span");
+		c2.className = "ratio " + (m >= 4.5 ? "pass" : "fail");
+		c2.textContent = "tier " + c.dataset.muted + (m >= 4.5 ? " ✓" : " ✗");
+		c.append(c2);
+	}
+	return c;
+}
+
+function labelFor(fill) {
+	const p = px(fill);
+	return ratio(p, px(fill, WHITE)) >= 4.5 ? WHITE : INK;
+}
+
+/* A row of every tone at one step, plus the closest-pair distance — the number
+   that says whether a categorical palette can still do its job. */
+function strip(step) {
+	const wrap = document.createElement("div"); wrap.className = "strip";
+	const cols = HUES.map(h => px(window.step(h[1], step)));
+	for (let i = 0; i < HUES.length; i++) {
+		const sw = document.createElement("div"); sw.className = "swatch";
+		sw.style.backgroundColor = `rgb(${cols[i].join(",")})`;
+		sw.title = HUES[i][0]; wrap.append(sw);
+	}
+	let min = Infinity, pair = "";
+	for (let i = 0; i < cols.length; i++) for (let j = i+1; j < cols.length; j++) {
+		const d = Math.hypot(cols[i][0]-cols[j][0], cols[i][1]-cols[j][1], cols[i][2]-cols[j][2]);
+		if (d < min) { min = d; pair = HUES[i][0] + " / " + HUES[j][0]; }
+	}
+	const cap = document.createElement("span");
+	cap.className = "ratio " + (min >= 40 ? "pass" : "fail");
+	cap.textContent = `step ${step} — closest pair ${pair}: ${Math.round(min)}`;
+	const box = document.createElement("div"); box.className = "cell";
+	box.append(wrap, cap); return box;
+}
+
+function section(title, blurb, cols, build) {
+	const s = document.createElement("section");
+	const h = document.createElement("div"); h.className = "sec-head";
+	const h2 = document.createElement("h2"); h2.textContent = title;
+	const p  = document.createElement("p"); p.innerHTML = blurb;
+	h.append(h2, p); s.append(h);
+	const g = document.createElement("div"); g.className = "grid";
+	g.style.setProperty("--cols", cols.length);
+	g.append(document.createElement("div"));
+	for (const c of cols) { const d = document.createElement("div"); d.className = "colhead"; d.textContent = c; g.append(d); }
+	for (const hue of HUES) {
+		const lab = document.createElement("div"); lab.className = "rowlab"; lab.textContent = hue[0];
+		g.append(lab);
+		for (const c of build(hue)) g.append(c);
+	}
+	s.append(g); return s;
+}
+
+function render() {
+	const out = document.getElementById("out");
+	out.textContent = "";
+	const overlay = resolve(tok("--rux-state-hover-overlay"));
+
+	/* ---- today ---- */
+	out.append(section("Today — what the app renders",
+		"Rest is each tone's <strong>700</strong> step with a white label, which is what step 4 shipped. " +
+		"<code>color.md</code> rule 2.11 says a fill carrying a label takes the lightest step whose label " +
+		"clears 4.5:1, and its own words are that <em>no fill clears at 700 except purple</em>. This row is D13.",
+		["rest (700)", "hover (800)"],
+		(h) => {
+			const f7 = step(h[1], "700"), f8 = step(h[1], "800");
+			return [cell(f7, WHITE, {}), cell(f8, WHITE, {})];
+		}));
+
+	/* ---- option 1 ---- */
+	out.append(section("Option 1 — the published state overlay",
+		"Rest is <strong>800</strong> with the label rule 2.11 selects. Hover adds " +
+		"<code>--rux-state-hover-overlay</code> — one token, already used by button hover, ghost active, " +
+		"switch, checkbox, tab pressed and suggestions. Its direction is the <strong>theme's</strong> " +
+		"(white 9% dark, black 7.84% light), so every surface in the app moves together. " +
+		"Watch for the four combinations that land just under the floor — and toggle the theme, because " +
+		"they swap.",
+		["rest (800)", "hover (+ overlay)", "selected (ring)"],
+		(h) => {
+			const f = step(h[1], "800"), l = labelFor(f);
+			return [cell(f, l, {}), cell(f, l, { overlay }), cell(f, l, { ring: 2 })];
+		}));
+
+	/* ---- option 2 ---- */
+	out.append(section("Option 2 — the fill never moves",
+		"Rest is the same <strong>800</strong> with the same label. Hover and selection are both on the " +
+		"<strong>outline</strong>, at 1px and 2px, and the ring is the label colour so it contrasts with " +
+		"its own fill by construction. Contrast is identical in all three states on every tone in both " +
+		"themes — the column of numbers below is the argument.",
+		["rest (800)", "hover (1px ring)", "selected (2px ring)"],
+		(h) => {
+			const f = step(h[1], "800"), l = labelFor(f);
+			return [cell(f, l, {}), cell(f, l, { ring: 1 }), cell(f, l, { ring: 2 })];
+		}));
+
+	/* ---- section 4: the 600 step ---- */
+	out.append(section("Option 3 — rest at 600",
+		"<strong>This one breaks a rule.</strong> 600 is the catalog's <em>Active border</em> step " +
+		"(<code>--rux-card-border-active</code>), and rule 2.2's closing clause is that a step MUST NOT " +
+		"serve two purposes. It also sits outside rule 2.5's fill model, so the hover shown here — 700 — " +
+		"is not a published partner for it, just the next step along. " +
+		"Every tone clears the floor. <strong>But look at the labels in dark theme:</strong> purple and " +
+		"pink take white while the other five take near-black, so the split does not go away — it moves. " +
+		"Toggle to light and it becomes uniform, which means the label would depend on the theme as well " +
+		"as the hue.",
+		["rest (600)", "hover (700)", "selected (ring)"],
+		(h) => {
+			const f6 = step(h[1], "600"), f7 = step(h[1], "700");
+			const l6 = labelFor(f6), l7 = labelFor(f7);
+			return [cell(f6, l6, {}), cell(f7, l7, {}), cell(f6, l6, { ring: 2 })];
+		}));
+
+	/* ---- section 5: the component-background ladder ---- */
+	const s5 = section("Option 4 — the component background ladder (100 / 200 / 300)",
+		"<strong>Fully published, no amendment needed.</strong> <code>color.md</code> rule 2.3: " +
+		"<em>a component's own background is the scale's 100, hovering to 200 and pressing to 300.</em> " +
+		"One direction, one mechanism, one label per theme, and it is the only option measured that " +
+		"<strong>fixes D13 outright</strong> — the muted and subtle tiers clear here, which they do " +
+		"nowhere else. The cost is below the bars, not in them.",
+		["rest (100)", "hover (200)", "pressed (300)", "selected (ring)"],
+		(h) => {
+			const f1 = step(h[1], "100"), f2 = step(h[1], "200"),
+			      f3 = step(h[1], "300");
+			const l = labelFor(f1);
+			return [cell(f1, l, {}), cell(f2, labelFor(f2), {}), cell(f3, labelFor(f3), {}),
+			        cell(f1, l, { ring: 2 })];
+		});
+	const sepHead = document.createElement("p");
+	sepHead.innerHTML = "<strong>The cost — hue separation.</strong> The palette's stated requirement " +
+		"is that <em>no two members look alike</em> (<code>js/core/trip-colors.js</code>). Closest-pair " +
+		"distance in sRGB, measured live. Judge the top strip by eye, not by the number.";
+	sepHead.style.marginTop = "var(--rux-space-4)";
+	const sep = document.createElement("div"); sep.className = "sep";
+	sep.append(strip("100"), strip("700"), strip("800"));
+	s5.append(sepHead, sep);
+	out.append(s5);
+
+	/* ---- section 6: step 500, one label per theme ---- */
+	const hoverOv  = resolve(tok("--rux-state-hover-overlay"));
+	const activeOv = resolve(tok("--rux-state-active-overlay"));
+	const s6 = section("Option 5 — step 500, one label per theme",
+		"<strong>White in dark, near-black in light — uniform within a theme, like every other " +
+		"surface in the system.</strong> 500 is the most vivid step where white clears on all seven " +
+		"hues in dark (min 7.30); 600 fails on amber at 2.28. Hover and pressed use the published " +
+		"<code>--rux-state-hover-overlay</code> / <code>-active-overlay</code>, so the effect is one " +
+		"token and one direction per theme. <strong>Purple needs no exception</strong> and the second " +
+		"text tier is legal again — at <strong>87%</strong>, not 75%: the dark overlay lightens, which " +
+		"costs white-text contrast, and 75% drops to 4.11 on hover. The second number under each bar " +
+		"is that tier. <strong>The open cost is separation</strong> — see the strip below.",
+		["rest (500)", "hover (+overlay)", "pressed (+active)"],
+		(h) => {
+			const f = step(h[1], "500"), l = labelFor(f), o = { mutedOpacity: 87 };
+			return [cell(f, l, o),
+			        cell(f, l, { ...o, overlay: hoverOv }),
+			        cell(f, l, { ...o, overlay: activeOv })];
+		});
+	const sh6 = document.createElement("p");
+	sh6.innerHTML = "<strong>Separation at 500 against the vivid steps.</strong> 500 keeps roughly " +
+		"60% of 700's separation and about four times the 100 ladder's. Whether that is enough to tell " +
+		"a teal trip from a green one at card size is the one thing no number settles.";
+	sh6.style.marginTop = "var(--rux-space-4)";
+	const sep6 = document.createElement("div"); sep6.className = "sep";
+	sep6.append(strip("500"), strip("700"));
+	s6.append(sh6, sep6);
+	out.append(s6);
+}
+
+document.getElementById("theme").addEventListener("click", () => {
+	const now = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+	document.documentElement.setAttribute("data-theme", now);
+	render();
+});
+loadSrgbBranch().then(render);
+</script>
+</body>
+</html>

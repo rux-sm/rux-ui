@@ -176,22 +176,38 @@
 
 	--_details-height: 0px;
 	--_conflict-height: 0px;
-	--_tone: var(--_trip-bar-color, var(--rux-accent));
-	--_chroma: calc(c * var(--sched-trip-bar-chroma-scale));
-	--_outline: oklch(
-		from var(--_tone)
-		var(--sched-trip-bar-bg-lightness)
-		var(--_chroma)
-		h / 100%
-	);
-	--_surface: oklch(from var(--_tone) var(--sched-trip-bar-bg-lightness) var(--_chroma) h / var(--sched-trip-bar-bg-opacity));
-	--_surface-hover: oklch(from var(--_tone) var(--sched-trip-bar-hover-bg-lightness) var(--_chroma) h / var(--sched-trip-bar-hover-bg-opacity));
-	--_surface-pressed: oklch(from var(--_tone) var(--sched-trip-bar-pressed-bg-lightness) var(--_chroma) h / var(--sched-trip-bar-pressed-bg-opacity));
-	--_surface-active: oklch(from var(--_tone) var(--sched-trip-bar-selected-bg-lightness) var(--_chroma) h / var(--sched-trip-bar-selected-bg-opacity));
-	--_tail-surface: oklch(from var(--_tone) var(--sched-trip-bar-bg-lightness) var(--_chroma) h / var(--sched-trip-bar-tail-opacity));
-	--_tail-surface-hover: oklch(from var(--_tone) var(--sched-trip-bar-hover-bg-lightness) var(--_chroma) h / var(--sched-trip-bar-tail-hover-opacity));
-	--_tail-surface-pressed: oklch(from var(--_tone) var(--sched-trip-bar-pressed-bg-lightness) var(--_chroma) h / var(--sched-trip-bar-tail-pressed-opacity));
-	--_tail-surface-active: oklch(from var(--_tone) var(--sched-trip-bar-selected-bg-lightness) var(--_chroma) h / var(--sched-trip-bar-tail-selected-opacity));
+	/* Two steps per tone, not one hue plus a lightness recipe — docs/trip-bar.md
+	   rule 2.5, step 4. Rest is the catalog's 700 (its high-contrast
+	   background); hover and pressed are 800, and 800 is DARKER, which is the
+	   direction color.md rule 2.5 states and every button in the app already
+	   moves. The old recipe hovered by ADDING 4% lightness — D7's "a hover that
+	   lightens is off the model" — and gave selected the SAME +4% as hover, so
+	   the two were separated only by an alpha step and a selected trip read as
+	   a hovered one. Selected is not a fill at all now; see .is-active below.
+	   Measured before the change, all seven tones, both themes: every one
+	   rendered at L 0.60 rest / 0.64 hover regardless of the step it named,
+	   because the recipe overrode the lightness the step carried. */
+	--_tone:       var(--_trip-bar-color, var(--rux-accent));
+	--_tone-hover: var(--_trip-bar-color-hover, var(--rux-accent-hover));
+	/* Kept in the relative-color shape the outline contract asserts, minus the
+	   lightness override: the tone is already an opaque catalog step, so there
+	   is nothing left to restate but the alpha. Only --partial-po gives this a
+	   width, and it overrides the colour too; the base value exists so base,
+	   head and tail agree when it does. */
+	--_outline: oklch(from var(--_tone) l c h / 100%);
+	--_surface:         var(--_tone);
+	--_surface-hover:   var(--_tone-hover);
+	--_surface-pressed: var(--_tone-hover);
+	--_surface-active:  var(--_tone);
+	/* The tail is the one surface that keeps alpha (rule 2.5): it exists to read
+	   as subordinate to its day-1 head, and reduced alpha is the mechanism that
+	   says so. Each tail derives from the head surface it accompanies rather
+	   than from a parallel lightness recipe, so it tracks whatever the head
+	   does with no second ladder to keep in sync. */
+	--_tail-surface:         oklch(from var(--_surface) l c h / var(--sched-trip-bar-tail-opacity));
+	--_tail-surface-hover:   oklch(from var(--_surface-hover) l c h / var(--sched-trip-bar-tail-hover-opacity));
+	--_tail-surface-pressed: oklch(from var(--_surface-pressed) l c h / var(--sched-trip-bar-tail-pressed-opacity));
+	--_tail-surface-active:  oklch(from var(--_surface-active) l c h / var(--sched-trip-bar-tail-selected-opacity));
 
 	position: relative;
 	display: flex;
@@ -361,8 +377,19 @@
 	pointer-events: none;
 }
 
+/* Selection keeps the REST fill and takes a ring — rule 2.5. Hover and pressed
+   are transient pointer feedback and belong on the surface; selection is
+   persistent aria-pressed state and has to survive the pointer leaving, which
+   a fill one step off rest cannot do legibly on a board where the neighbouring
+   bar may be hovered at the same time.
+   `outline` rather than `border`: outline draws outside the box model, so it
+   costs no layout and leaves the border channel free for --partial-po's
+   warning. The negative offset insets it, so a selected bar does not bleed
+   across the 8px lane gap into the bar beside it. */
 .sched-trip-bar.is-active {
 	background-color: var(--_surface-active);
+	outline: var(--sched-trip-bar-selected-ring-width) solid var(--sched-trip-bar-selected-ring-color);
+	outline-offset: calc(var(--sched-trip-bar-selected-ring-width) * -1);
 	z-index: var(--sched-trip-bar-active-z-index);
 }
 
@@ -384,28 +411,48 @@
 
 /* ---------- Modifier: unconfirmed ---------- */
 
-.sched-trip-bar[data-trip-bar-color="teal"] { --_trip-bar-color: var(--sched-trip-color-teal); }
-.sched-trip-bar[data-trip-bar-color="green"] { --_trip-bar-color: var(--sched-trip-color-green); }
-.sched-trip-bar[data-trip-bar-color="purple"] { --_trip-bar-color: var(--sched-trip-color-purple); }
-/* Amber alone reads muddy at the shared --sched-trip-bar-bg-lightness —
-   noticeably darker than its own native lightness, unlike the other trip
-   colors which sit closer to theirs already. amber-700 is L 81.87%, the
-   lightest of the five, so the override survives the move onto the catalog
-   (step 17); orange used to need it too and was retired at step 16.
-   Scoped to just this one so the
-   other colors and every other consumer of --sched-trip-bar-bg-lightness
-   (accent/danger button glass, see tokens.css) are untouched;
-   --hover/--pressed/--selected are calc()'d off this token at :root, so
-   they pick up the lighter base automatically. */
-.sched-trip-bar[data-trip-bar-color="amber"] {
-	--_trip-bar-color: var(--sched-trip-color-amber);
-	--sched-trip-bar-bg-lightness: 80%;
+/* Each tone sets BOTH steps. Setting only the rest colour would leave the
+   hover reading --rux-accent-hover, i.e. a teal bar hovering to blue. */
+.sched-trip-bar[data-trip-bar-color="teal"] {
+	--_trip-bar-color:       var(--sched-trip-color-teal);
+	--_trip-bar-color-hover: var(--sched-trip-color-teal-hover);
 }
 
-.sched-trip-bar[data-trip-bar-color="pink"] { --_trip-bar-color: var(--sched-trip-color-pink); }
+.sched-trip-bar[data-trip-bar-color="green"] {
+	--_trip-bar-color:       var(--sched-trip-color-green);
+	--_trip-bar-color-hover: var(--sched-trip-color-green-hover);
+}
 
+.sched-trip-bar[data-trip-bar-color="purple"] {
+	--_trip-bar-color:       var(--sched-trip-color-purple);
+	--_trip-bar-color-hover: var(--sched-trip-color-purple-hover);
+}
+
+/* Amber's lightness exception is GONE, and step 4 is why it can be. It read
+   `--sched-trip-bar-bg-lightness: 80%` because amber alone looked muddy when
+   every tone was flattened to L 60 — amber-700 is natively L 82, so the
+   shared recipe darkened it by 22 points and the override put it back. With
+   the recipe gone each tone renders at its own catalog step, and amber needs
+   no special case. The override was also only ever applied to REST: measured
+   2026-08-24, amber sat at L 0.80 at rest and L 0.64 on hover — a 16-point
+   drop, in the opposite direction to every other tone, which is the bug the
+   exception quietly carried. */
+.sched-trip-bar[data-trip-bar-color="amber"] {
+	--_trip-bar-color:       var(--sched-trip-color-amber);
+	--_trip-bar-color-hover: var(--sched-trip-color-amber-hover);
+}
+
+.sched-trip-bar[data-trip-bar-color="pink"] {
+	--_trip-bar-color:       var(--sched-trip-color-pink);
+	--_trip-bar-color-hover: var(--sched-trip-color-pink-hover);
+}
+
+/* Unconfirmed read --sched-trip-bar-danger-border (red-800) as its REST
+   colour, which left it one step darker than every other tone at rest and
+   with nowhere to hover to. It takes 700/800 like the rest now. */
 .sched-trip-bar--unconfirmed:not([data-trip-bar-color]) {
-	--_tone: var(--sched-trip-bar-danger-border);
+	--_tone:       var(--sched-trip-bar-unconfirmed-tone);
+	--_tone-hover: var(--sched-trip-bar-unconfirmed-tone-hover);
 }
 
 /* ---------- Modifier: trip-type pattern overlay ---------- */
@@ -499,8 +546,11 @@
 	background-color: transparent;
 	overflow: visible;
 	border: none;
-	/* The outer wrapper owns the shared shadow, so it must carry the same
-	   silhouette as its rounded head/tail surfaces. */
+	/* Kept after step 3 removed the shadow this silhouette was cut for. The
+	   wrapper is transparent and borderless, so the radius clips nothing today
+	   — but head and tail are rounded surfaces inside it, and a wrapper whose
+	   corners disagree with theirs is a bug waiting for the next thing that
+	   paints or clips here. Matching the parts is the cheap invariant. */
 	border-radius: var(--sched-trip-bar-radius);
 }
 

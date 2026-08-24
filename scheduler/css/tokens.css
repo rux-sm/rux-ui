@@ -37,11 +37,47 @@
 	   is separation — teal and green are the closest pair at 74 where the old
 	   bases sat 143 apart, and that is inherent to the catalog's hue set rather
 	   than to the step. docs/foundations/color.md §5 step 17. */
-	--sched-trip-color-teal:   var(--rux-teal-700);
-	--sched-trip-color-green:  var(--rux-green-700);
-	--sched-trip-color-purple: var(--rux-purple-700);
-	--sched-trip-color-amber:  var(--rux-amber-700);
-	--sched-trip-color-pink:   var(--rux-pink-700);
+	/* PAIRED, since step 4. Each tone publishes the step it rests at and the
+	   step it hovers to, because color.md rule 2.5 is a statement about STEPS
+	   — fills are 700, hovering to 800, and 800 is darker — and a hue alone
+	   cannot say that. The comment above used to end "700 is the convention,
+	   not a constraint," which was true and was the problem: the bar set its
+	   own lightness on top, so every tone rendered at L 0.60 no matter which
+	   step it named. Measured across all seven tones in both themes on
+	   2026-08-24, that is exactly what it did. The step is the constraint now.
+	   docs/trip-bar.md rule 2.5, step 4. */
+	--sched-trip-color-teal:         var(--rux-teal-700);
+	--sched-trip-color-teal-hover:   var(--rux-teal-800);
+	--sched-trip-color-green:        var(--rux-green-700);
+	--sched-trip-color-green-hover:  var(--rux-green-800);
+	--sched-trip-color-purple:       var(--rux-purple-700);
+	--sched-trip-color-purple-hover: var(--rux-purple-800);
+	--sched-trip-color-amber:        var(--rux-amber-700);
+	--sched-trip-color-amber-hover:  var(--rux-amber-800);
+	--sched-trip-color-pink:         var(--rux-pink-700);
+	--sched-trip-color-pink-hover:   var(--rux-pink-800);
+	/* Unconfirmed is the sixth tone and takes the same shape — but it is NOT a
+	   --sched-trip-color-*, and tests/trip-colors.test.mjs is why that matters:
+	   that family is exactly the five categorical labels a user can tag a trip
+	   or an avatar with, avatarColorValue builds its name by hand from that
+	   list, and the suite asserts the two sets are equal. Unconfirmed is a
+	   status the board computes, not a label anyone picks. It read
+	   --sched-trip-bar-danger-border (--rux-danger-fill, red-800) as its REST
+	   colour, which left it one step darker at rest than every other tone and
+	   with nowhere to hover to. Red is not a status here — the red bar IS the
+	   status — so it takes 700/800 like the rest. */
+	--sched-trip-bar-unconfirmed-tone:       var(--rux-red-700);
+	--sched-trip-bar-unconfirmed-tone-hover: var(--rux-red-800);
+	/* Selected is not a fill (rule 2.5): hover and pressed are transient
+	   pointer feedback and belong on the surface, selection is persistent
+	   aria-pressed state and takes a ring. Drawn with `outline`, not `border`,
+	   so --partial-po keeps the border channel to warn in. Inset by its own
+	   width so a selected bar does not bleed into its neighbour on a dense
+	   board. --rux-fg-on-accent is white in both themes and is already the
+	   bar's own foreground, so it reads on all six tones without a per-tone
+	   value. */
+	--sched-trip-bar-selected-ring-width: 2px;
+	--sched-trip-bar-selected-ring-color: var(--rux-fg-on-accent);
 	/* Orange retired 2026-08-22: the design system publishes one warm hue and
 	   the board used two. Stored rows still holding "orange" render yellow —
 	   js/core/trip-colors.js does the mapping, nothing was migrated.
@@ -54,8 +90,15 @@
 	   these lightness levels. 1 = source chroma unchanged. */
 	--sched-trip-bar-chroma-scale: 1;
 	/* — state lightness/opacity steps —
-	   Trip states shift lightness predictably while preserving each
-	   category's native chroma to avoid hue-dependent gamut clipping. */
+	   NO LONGER READ BY THE TRIP BAR (step 4). Its surfaces are catalog steps
+	   now, not a lightness recipe over a hue. These names are KEPT rather than
+	   removed because .sched-driver-grid__cell--conflict
+	   (layout/scheduler-app.css) reads -bg-lightness and -bg-opacity to tint
+	   its own warning cell — removing a name with a live consumer is Class C,
+	   and step 4 is Class B. That a driver-grid cell reads a token named for
+	   the trip bar is a naming defect and belongs to naming.md, not here.
+	   The -tail-* opacities below ARE still read: rule 2.5 keeps alpha on the
+	   continuation rail, which is where transparency does real work. */
 	--sched-trip-bar-bg-lightness:              60%;
 	--sched-trip-bar-state-lightness-step:      4%;
 	--sched-trip-bar-hover-bg-lightness:        calc(var(--sched-trip-bar-bg-lightness) + var(--sched-trip-bar-state-lightness-step));
@@ -94,7 +137,14 @@
 	--sched-itinerary-status-off-duty:    var(--rux-danger);
 	--sched-itinerary-status-return-yard: var(--rux-info);
 	--sched-trip-bar-border-width: 0px;
-	--sched-trip-bar-radius: var(--rux-radius-0);
+	/* The trip bar is a card-shaped surface and takes the same rung every card,
+	   panel, button and field took when layout.md step 8 adopted Geist's product
+	   default. It was the only card-shaped surface in the application still at 0.
+	   Seam edges stay square: --from-prev and --to-next zero the corners on the
+	   continuing side, and __head/__tail zero the corners where they meet, so a
+	   multi-day span reads as one surface rather than a row of rounded boxes.
+	   docs/trip-bar.md rule 2.2, step 2. */
+	--sched-trip-bar-radius: var(--rux-radius-container);
 	--sched-trip-bar-action-button-size: 32px;
 	--sched-trip-bar-actions-radius:   var(--rux-radius-control);
 	--sched-trip-bar-bus-label-radius: var(--rux-radius-full);
@@ -109,7 +159,15 @@
 	--sched-trip-bar-bus-label-tracking:    var(--rux-text-label-12-tracking);
 	--sched-trip-bar-meta-radius:      var(--rux-radius-sm);
 	--sched-trip-bar-meta-fg: var(--rux-fg-on-accent);
-	--sched-trip-bar-shadow: var(--rux-shadow-3);
+	/* None, and deliberately so: Materials' Base preset is stroke-only, which is
+	   the correct elevation for a card that sits INSIDE a grid rather than
+	   floating over one. The 1px --_outline carries the edge.
+	   This read --rux-shadow-3, which is Geist's MODAL stack — three layers, on
+	   thirty cards at once — and that is why the board read heavy. A smaller
+	   shadow was rejected rather than substituted: a scheduler cell makes no
+	   depth claim, so the right number of layers is zero, not fewer.
+	   docs/trip-bar.md rule 2.3, step 3. */
+	--sched-trip-bar-shadow: none;
 	--sched-trip-bar-meta-shadow: none; /* recessed rim, same as input fields */
 	--sched-trip-bar-stripe-color:   var(--rux-white);
 	--sched-trip-bar-stripe-opacity: 0.04;

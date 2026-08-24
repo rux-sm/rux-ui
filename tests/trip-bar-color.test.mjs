@@ -28,13 +28,19 @@ const appSource = await readFile(
 );
 
 test("trip bar override colors remain visible for unconfirmed trips", () => {
+	// The guarantee is the :not() scoping, not the token name: a trip tagged
+	// teal stays teal when it goes unconfirmed. docs/trip-bar.md step 4 moved
+	// the tone off --sched-trip-bar-danger-border (red-800, a REST colour one
+	// step darker than every other tone with nowhere to hover to) and onto a
+	// 700/800 pair like the rest of the palette. The scoping is what this
+	// asserts, in both directions.
 	assert.match(
 		tripBarCss,
-		/\.sched-trip-bar--unconfirmed:not\(\[data-trip-bar-color\]\)\s*\{[^}]*--_tone:\s*var\(--sched-trip-bar-danger-border\)/s,
+		/\.sched-trip-bar--unconfirmed:not\(\[data-trip-bar-color\]\)\s*\{[^}]*--_tone:\s*var\(--sched-trip-bar-unconfirmed-tone\)[^}]*--_tone-hover:\s*var\(--sched-trip-bar-unconfirmed-tone-hover\)/s,
 	);
 	assert.doesNotMatch(
 		tripBarCss,
-		/\.sched-trip-bar--unconfirmed\s*\{[^}]*--_tone:\s*var\(--sched-trip-bar-danger-border\)/s,
+		/\.sched-trip-bar--unconfirmed\s*\{[^}]*--_tone:/s,
 	);
 });
 
@@ -155,21 +161,55 @@ test("bus-count pills use black text on their white surface", () => {
 	);
 });
 
-test("trip interaction surfaces derive modest state changes from one base brightness", () => {
-	assert.match(tokensCss, /--sched-trip-bar-bg-lightness:\s*60%/);
-	assert.match(tokensCss, /--sched-trip-bar-state-lightness-step:\s*4%/);
-	assert.match(
-		tokensCss,
-		/--sched-trip-bar-hover-bg-lightness:\s*calc\(var\(--sched-trip-bar-bg-lightness\) \+ var\(--sched-trip-bar-state-lightness-step\)\)/,
+test("trip surfaces are catalog steps, and hover is the darker one", () => {
+	// Replaces "trip interaction surfaces derive modest state changes from one
+	// base brightness", which asserted the lightness/opacity recipe the trip
+	// bar no longer reads. docs/trip-bar.md rule 2.5, step 4: rest is 700,
+	// hover and pressed are 800, and selected is not a fill at all.
+	//
+	// Those tokens still EXIST — .sched-driver-grid__cell--conflict reads
+	// -bg-lightness and -bg-opacity — so asserting their values would have
+	// kept passing while testing nothing about this component. What is
+	// asserted here is that the bar's own surfaces are the steps.
+	assert.match(tripBarCss, /--_surface:\s*var\(--_tone\);/);
+	assert.match(tripBarCss, /--_surface-hover:\s*var\(--_tone-hover\);/);
+	assert.match(tripBarCss, /--_surface-pressed:\s*var\(--_tone-hover\);/);
+	assert.match(tripBarCss, /--_surface-active:\s*var\(--_tone\);/);
+
+	// No trip surface may reconstitute the old recipe.
+	assert.doesNotMatch(
+		tripBarCss.replace(/\/\*[\s\S]*?\*\//g, ""),
+		/--_surface[a-z-]*:\s*oklch\([^;]*--sched-trip-bar-(bg|hover-bg|pressed-bg|selected-bg)-(lightness|opacity)/,
+		"a head surface is back on the lightness/opacity recipe",
 	);
+
+	// Every categorical tone publishes both steps, or a teal bar hovers blue.
+	for (const hue of ["teal", "green", "purple", "amber", "pink"]) {
+		assert.match(
+			tripBarCss,
+			new RegExp(`--_trip-bar-color:\\s*var\\(--sched-trip-color-${hue}\\);[\\s\\S]{0,120}--_trip-bar-color-hover:\\s*var\\(--sched-trip-color-${hue}-hover\\)`),
+			`${hue} must set both steps`,
+		);
+		assert.match(tokensCss, new RegExp(`--sched-trip-color-${hue}:\\s*var\\(--rux-${hue}-700\\)`));
+		assert.match(tokensCss, new RegExp(`--sched-trip-color-${hue}-hover:\\s*var\\(--rux-${hue}-800\\)`));
+	}
+
+	// Selected is a ring, not a third fill.
 	assert.match(
-		tokensCss,
-		/--sched-trip-bar-pressed-bg-lightness:\s*calc\(var\(--sched-trip-bar-bg-lightness\) - var\(--sched-trip-bar-state-lightness-step\)\)/,
+		tripBarCss,
+		/\.sched-trip-bar\.is-active\s*\{[^}]*outline:\s*var\(--sched-trip-bar-selected-ring-width\) solid var\(--sched-trip-bar-selected-ring-color\)/s,
 	);
-	assert.match(tokensCss, /--sched-trip-bar-bg-opacity:\s*80%/);
-	assert.match(tokensCss, /--sched-trip-bar-hover-bg-opacity:\s*70%/);
-	assert.match(tokensCss, /--sched-trip-bar-pressed-bg-opacity:\s*50%/);
-	assert.match(tokensCss, /--sched-trip-bar-selected-bg-opacity:\s*80%/);
+	// Amber's lightness exception is gone; nothing may re-scope that token.
+	// Checked against DECLARATIONS only — the stylesheet comment that records
+	// why the exception existed quotes the old value verbatim, and a rule that
+	// cannot tell a declaration from a note about one would forbid explaining
+	// itself.
+	const declarationsOnly = tripBarCss.replace(/\/\*[\s\S]*?\*\//g, "");
+	assert.doesNotMatch(
+		declarationsOnly,
+		/--sched-trip-bar-bg-lightness:\s*\d/,
+		"a tone is overriding the retired lightness recipe again",
+	);
 });
 
 test("trip tails use direct state surfaces instead of compounding transparency", () => {
