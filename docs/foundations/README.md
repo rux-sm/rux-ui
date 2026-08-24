@@ -22,6 +22,7 @@ roles onto that vocabulary.
 | [`naming.md`](naming.md) | 1.18.0 | 15 done | — |
 | [`state.md`](state.md) | 1.7.0 | 9 done | — |
 | [`forms.md`](forms.md) | 1.2.0 | 3 done | — |
+| [`composition.md`](composition.md) | 1.0.0 | 1 done | — |
 
 `../motion.md` stays at the component tier — which token a panel, menu or scrim consumes,
 and the verification checklist for each. [`motion.md`](motion.md) owns the scales those
@@ -37,6 +38,7 @@ the worked example; the unwritten documents follow the same method.
 |---|---|---|
 | `typography.md` | [vercel.com/geist/typography](https://vercel.com/geist/typography) | adopted; ramp, leading, tracking and role families all measured from it |
 | [`color.md`](color.md) | [vercel.com/geist/colors](https://vercel.com/geist/colors) | written (step 1, 2026-08-21); every scale measured off the page's custom properties in both themes and both gamut branches. Ten-step scales: 1–3 component backgrounds, 4–6 borders, 7–8 high-contrast backgrounds, **9–10 the only two text colours** — which is what answered typography's Q4. Tier 0 is the catalog and every role with a step reads it (steps 2–6). **Its component pages are deliberately *not* a source** — those are Geist's own mapping, and treating one as authority is the mistake `typography.md` Q7 made with the Badge and Q11 reversed; `color.md`'s source note records it |
+| [`composition.md`](composition.md) | **none — originated here** | written (step 1). Geist publishes four foundations and 71 component pages and **no page-composition layer**, so this is the **third** foundation rule this repository originates rather than adopts, after `layout.md`'s breakpoints and `motion.md`. Carbon is the nearest external precedent and already informs `motion.md`, but supplies no taxonomy here: the four archetypes are read off this application's own eight views |
 | [`layout.md`](layout.md) | **none — originated here** | written, breakpoints only. Geist publishes four foundations and **no breakpoint page**, so this is the first foundation rule this repo originates rather than adopts. Its remaining scope (space scale, radius, Materials elevation) is measured from Geist and is recorded as open steps |
 | [`motion.md`](motion.md) | **none — originated here** | written. Geist publishes **no motion page**, so this is the **second** foundation rule this repository originates rather than adopts, after `layout.md`'s breakpoints. Every value in it is measured from this repository's own tokens, and its §6 Q1 has no upstream to defer to |
 | `spacing.md` | [vercel.com/geist/materials](https://vercel.com/geist/materials) | reviewed, not written — and **may not be needed**: `layout.md` steps 4 and 5 already claim the space scale, radius, and the eight elevation presets. Fold or keep is `layout.md` Q4's to settle |
