@@ -79,6 +79,70 @@ graph — but retiring them touches six call sites and wants its own change.
 
 **Cost:** small if the answer is "remove them", medium if the scanner grows a JS parser.
 
+### T3 — The gallery is eight specimens short, and R9's second clause has never been true
+
+`tests/gallery-coverage.test.mjs` records 13 of 23 base components as having no specimen in
+`gallery.html`. **Five of those are not gaps** — the census reads one Specimen surface where
+`composition.md` §2 classifies two. That half is a design-rule defect and lives where the
+rule does, as [`foundations/composition.md`](foundations/composition.md) **D10**. This entry
+is the remaining eight and the two process findings around them.
+
+**Eight components genuinely have no specimen**, and they split by CSS positioning, which is
+what decides the work:
+
+| | Components | Why they group |
+|---|---|---|
+| Flow-positioned | `table`, `menu`, `notifications`, `preferences`, `profile-picker` | No `position: fixed`. Static markup in a gallery section works as-is — `table`'s sort and filter states are attribute-driven (`[data-sort]`, `.is-filtered`) and show without script. |
+| `position: fixed` | `popover`, `suggestions`, `drawer` | They escape any gallery card. These need the behavior modules and real triggers, not markup. |
+
+**R9's second clause has never been true.** [`audit/design-system-audit.md`](audit/design-system-audit.md)
+§5 R9 reads: every base block appears in `gallery.html`, *with behavior modules loaded*,
+before it ships. `gallery.html:7` loads `rux-ui/css/rux.css` and nothing else. The test
+checks the first half and is silent on the second, so the 10 components counted as covered
+are covered against half a rule. `README.md:41` advertises the opposite property — "no app
+boot required" — so the two statements of R9 contradict each other and always have.
+
+**R9 has no home.** `foundations/README.md:81` routes R9 to `CLAUDE.md`, on the grounds that
+the gallery-as-contract-surface is a process rule rather than a design rule. `grep -c gallery
+CLAUDE.md` returns **0**. So R9 is stated in the audit document, claimed to live somewhere
+that does not mention it, and enforced by a test that cites no section — the one-home rule
+broken three ways at once.
+
+**How it is known:** the gap list is the test's own `KNOWN_GAPS`, run 2026-08-24; the
+positioning split is grepped from `rux-ui/css/base/*.css`; the stylesheet claim is
+`gallery.html:7`; the CLAUDE.md count is the grep above. The test's own comment says
+"thirteen of twenty-two" and is stale — there are 23 base files, and `README.md:42`'s "10 of
+23" is right.
+
+**Why it was not fixed on the spot:** building specimens is design work rather than a
+mechanical fix, and two parts needed decisions before anything could be written. Both were
+taken 2026-08-24 and are recorded here so the work resumes anywhere: **the example counts as
+coverage** (widen the census — composition.md D10), and **the gallery loads behavior
+modules** (live triggers for the three fixed-position overlays, which makes R9's second
+clause true rather than amending it away).
+
+**Cost**, in the order the phases land, each committable alone:
+
+1. **Census** — small, test-only. Widen `gallery-coverage` to both Specimen surfaces, drop
+   the five from `KNOWN_GAPS`, correct the stale count in the test comment. Closes D10.
+2. **Five flow-positioned specimens** — medium, design work. `table` first: it is the largest
+   of the eight and the table-page floorplan will want it anyway.
+3. **Three overlays, live** — medium, and the only risky phase. Loading `overlay.js`,
+   `popover.js`, `drawer.js` and `suggestions.js` into a page that has never booted them can
+   surface init assumptions; `tests/ui-shell-init-idempotence.test.mjs` and
+   `boot-contract.test.mjs` exist because that has bitten before. `KNOWN_GAPS` and its two
+   guard tests delete at the end of it. Two consequences ride along and belong in the same
+   change: `README.md:41` stops being true, and the gallery's inline theme toggle hand-rolls
+   a contract `theme.js` does not share — academic while nothing else is loaded, live once
+   its siblings are.
+4. **Home R9** — small, Class A. `composition.md` is the candidate: it already owns the
+   Specimen archetype and already names `tests/gallery-coverage` as its contract. Taking it
+   also corrects `foundations/README.md:81`'s "deliberately absent" claim.
+
+**Not in scope:** the 10 existing specimens; the audit's inert-tabs finding; and
+`panel.css`'s `__header`, `__title`, `__footer`, `__tabs` and four modifiers, which stay
+unshown because the ratchet is block-level by design and one instance credits a whole file.
+
 ---
 
 *A third entry — fourteen `trip_ref` values each shared by two active trips — was drafted
