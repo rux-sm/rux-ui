@@ -363,6 +363,9 @@ test("the canonical example contains the required accessible composition", () =>
 	assert.equal((exampleHtml.match(/class="rux-panel example-panel"/g) ?? []).length, 1);
 	assert.match(exampleHtml, /aria-current="page"/);
 	assert.match(exampleHtml, /class="rux-ui-header"/);
+	// shell.md D1 (fixed by its step 2): the example must carry the page h1
+	// in the UI header — the composition it exists to demonstrate.
+	assert.match(exampleHtml, /<h1[^>]*class="rux-ui-header__title"/);
 	assert.match(exampleHtml, /class="rux-side-nav rux-side-nav--overlay"/);
 	assert.match(exampleHtml, /aria-label="Primary Navigation"/);
 	assert.match(exampleHtml, /data-rux-side-nav-toggle/);

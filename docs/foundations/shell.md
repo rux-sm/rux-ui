@@ -1,10 +1,10 @@
 # Rux UI Foundations — Shell
 
-**Contract version: 1.0.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.1.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 1 step: **1 done**
+**Status** · 2 steps: **2 done**
 Founding entry — a **promotion, not a rewrite**: this content governed as
 `docs/layout-composition.md` since before the foundation set existed, carrying more MUSTs
 than any foundation document and none of the machinery (`composition.md` D1). It moved here
@@ -313,13 +313,14 @@ See `../../examples/app-layout.html` for the smallest complete reference composi
 
 | # | Defect |
 |---|---|
-| D1 | **`../../examples/app-layout.html` no longer shows this document's own composition**: it has no UI-header `<h1>` — page identity per `typography.md` §3.5 — an omission exposed 2026-08-23 when its workspace title (the page's only `h1`) was removed with the retired class. The last line below still names it the smallest complete reference; until it is rebuilt, that claim is aspirational. |
+| D1 | **Fixed (step 2)** — the example carries the UI-header `<h1>` again, stated statically and agreeing with the nav item that carries `aria-current`; `tests/layout-contract.test.mjs` now asserts it, so the reference cannot lose its page heading silently a second time. ~~`../../examples/app-layout.html` no longer shows this document's own composition~~. |
 
 ## Amendment log
 
 | # | Step | Status | Notes |
 |---|---|---|---|
 | 1 | Establish this document — promote `docs/layout-composition.md` | **done · Class A** | **Executed 2026-08-23**, closing `composition.md` D1. A relocation of authority, not a change to it: every rule moved verbatim, and `tests/layout-contract.test.mjs` — which asserts against this content — moved its read path and nothing else, so the rules were enforced continuously through the move. **One correction rode along, because leaving it would have promoted a falsehood**: the header bullet stated a literal `44px` control contract, while `--rux-ui-header-height` resolves **40px** on desktop and 44px only in the ≤500px touch block — the same literal-beside-a-token drift step 7 of `composition.md` deleted from `../ui-header.md` the same day. The bullet now cites the token, and `layout.md` step 27 claims it in §10. **Links re-aimed for the new directory** (`layout.md`, `state.md`, `../motion.md`, `../ui-header.md`, `../cards.md`); the § Spacing and § Responsive pointers stay pointers, stating no values. **Deliberately not done**: no renumbering of the sections into the §1–§6 skeleton the younger foundations use — the headings are load-bearing for the enforcement suite's regexes, and a cosmetic renumber that risks silent test drift is a bad trade on a founding step. |
+| 2 | Close D1 — the example regains its page `<h1>` | **done · Class A** | **Executed 2026-08-23.** One element: `<h1 class="rux-ui-header__title">Trips</h1>` between brand and actions, per `../ui-header.md`'s contract and `typography.md` §3.5 — the module name lives in the header, written by the router in the reference app and stated once in a static example. The label matches the nav item carrying `aria-current`, which the old file did not (it marked Trips current while titling nothing). **The fix is enforced, not just made**: the example-composition test now requires the h1, so the regression class that created D1 — removing a title's last wearer without noticing the example wore it — fails a named test instead of a protocol grep. Verified rendered: the title sets at heading-16 beside the brand, the nav toggle still operates, both themes probed. |
 
 ## Open questions
 

@@ -23,7 +23,7 @@ roles onto that vocabulary.
 | [`state.md`](state.md) | 1.7.0 | 9 done | — |
 | [`forms.md`](forms.md) | 1.2.0 | 3 done | — |
 | [`composition.md`](composition.md) | 1.7.0 | 8 done | — |
-| [`shell.md`](shell.md) | 1.0.0 | 1 done | — |
+| [`shell.md`](shell.md) | 1.1.0 | 2 done | — |
 
 `../motion.md` stays at the component tier — which token a panel, menu or scrim consumes,
 and the verification checklist for each. [`motion.md`](motion.md) owns the scales those

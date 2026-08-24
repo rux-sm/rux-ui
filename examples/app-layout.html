@@ -38,6 +38,12 @@
 				<div class="rux-ui-header__brand">
 					<strong>Rux</strong>
 				</div>
+				<!-- The page's only h1. The side navigation is an overlay, so without
+				     this the current module is unlabelled whenever the nav is closed.
+				     In the reference app RuxViewRouter writes it from the active nav
+				     link's label; a static example states it once, matching the item
+				     carrying aria-current below. typography.md §3.5. -->
+				<h1 class="rux-ui-header__title">Trips</h1>
 				<div class="rux-ui-header__actions">
 					<div class="rux-ui-header__action-group">
 						<button
