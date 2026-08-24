@@ -38,9 +38,6 @@
 		"driver-workload-alert-text",
 	);
 	const driverToolsTitle = document.getElementById("driver-tools-title");
-	const driverWorkspaceTitle = document.getElementById(
-		"driver-workspace-title",
-	);
 
 	let db = null;
 	let settingsDb = null;
@@ -508,11 +505,6 @@
 			driverToolsTitle.textContent = showWorkload
 				? "Workload Options"
 				: "Table Options";
-		}
-		if (driverWorkspaceTitle) {
-			driverWorkspaceTitle.textContent = showWorkload
-				? "Driver Workload"
-				: "Driver Roster";
 		}
 		if (showWorkload) {
 			await loadWorkloadData();

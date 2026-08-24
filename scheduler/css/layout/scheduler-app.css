@@ -182,10 +182,6 @@
 	min-width: 0;
 }
 
-.sched-workspace-nav > .rux-workspace__title {
-	flex: 1 1 auto;
-	min-width: 0;
-}
 
 .sched-app__view-menu {
 	flex: none;
