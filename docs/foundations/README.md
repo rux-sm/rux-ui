@@ -21,10 +21,10 @@ roles onto that vocabulary.
 | [`motion.md`](motion.md) | 1.6.0 | 6 done | — |
 | [`naming.md`](naming.md) | 1.18.0 | 15 done | — |
 | [`state.md`](state.md) | 1.8.1 | 11 done | — |
-| [`forms.md`](forms.md) | 1.4.0 | 6 done | — |
+| [`forms.md`](forms.md) | 1.4.1 | 7 done | — |
 | [`composition.md`](composition.md) | 1.9.2 | 11 done | — |
 | [`shell.md`](shell.md) | 1.2.0 | 3 done | — |
-| [`content.md`](content.md) | 1.0.1 | 2 done | — |
+| [`content.md`](content.md) | 1.0.2 | 3 done | — |
 
 `../motion.md` stays at the component tier — which token a panel, menu or scrim consumes,
 and the verification checklist for each. [`motion.md`](motion.md) owns the scales those
@@ -233,14 +233,14 @@ counts.
 | [`color.md`](color.md) | 2 | 0 | 0 |
 | [`composition.md`](composition.md) | 2 | 2 | 0 |
 | [`content.md`](content.md) | 2 | 1 | 0 |
-| [`forms.md`](forms.md) | 2 | 5 | 0 |
+| [`forms.md`](forms.md) | 3 | 4 | 0 |
 | [`layout.md`](layout.md) | 2 | 0 | 0 |
 | [`motion.md`](motion.md) | 1 | 1 | 2 |
 | [`naming.md`](naming.md) | 0 | 2 | 0 |
 | [`shell.md`](shell.md) | 3 | 0 | 0 |
 | [`state.md`](state.md) | 1 | 0 | 1 |
 | [`typography.md`](typography.md) | 1 | 0 | 0 |
-| **total** | **16** | **11** | **3** |
+| **total** | **17** | **10** | **3** |
 
 *Forms' defects counted zero until 2026-08-24 — not because they were fixed, but because
 its §4 marked defect numbers in bold and the counter matches them plain, so four listed

@@ -654,14 +654,20 @@
 									></span>
 								</label>
 							</div>
-							<input
-								type="text"
-								class="rux-input rux-profile-picker__add-name"
-								id="profile-picker-add-name"
-								placeholder="Display name"
-								autocomplete="off"
-								required
-							/>
+							<div class="rux-field rux-profile-picker__add-name">
+								<label
+									class="rux-field__label"
+									for="profile-picker-add-name"
+									>Display name</label
+								>
+								<input
+									type="text"
+									class="rux-input"
+									id="profile-picker-add-name"
+									autocomplete="off"
+									required
+								/>
+							</div>
 							<div class="rux-profile-picker__add-actions">
 								<button
 									type="button"
@@ -1645,7 +1651,6 @@
 														min="0"
 														step="0.01"
 														placeholder="0.00"
-														aria-label="Quoted price"
 													/>
 												</div>
 											</div>
@@ -1667,7 +1672,7 @@
 												<label
 													class="rux-field__label"
 													for="tp-est-mi"
-													>Est. Miles</label
+													>Est. miles</label
 												><input
 													class="rux-input"
 													id="tp-est-mi"
@@ -1676,7 +1681,6 @@
 													min="0"
 													step="0.1"
 													placeholder="0"
-													aria-label="Estimated miles"
 												/>
 											</div>
 											<div class="rux-field">
@@ -1692,7 +1696,6 @@
 													min="0"
 													step="1"
 													placeholder="0"
-													aria-label="Actual miles"
 												/>
 											</div>
 										</div>
@@ -1870,7 +1873,6 @@
 														min="0"
 														step="0.01"
 														placeholder="0.00"
-														aria-label="PO authorized amount"
 														disabled
 													/>
 												</div>
@@ -6257,7 +6259,8 @@
 												class="rux-input settings-req-label-input"
 												type="text"
 												id="settings-req-new-label"
-												placeholder="Label"
+												aria-label="Requirement label"
+												placeholder="Restroom"
 												maxlength="32"
 												style="flex: 1"
 											/>
@@ -11279,19 +11282,28 @@
 							gap: var(--rux-space-3);
 						"
 					>
-						<textarea
-							id="tp-import-textarea"
-							class="rux-input"
-							rows="10"
-							placeholder="Paste JSON here — or use the file button below…"
-							style="
-								font-family: var(--rux-font-mono);
-								font-size: var(--rux-size-12);
-								resize: vertical;
-								min-height: 14rem;
-								height: 14rem;
-							"
-						></textarea>
+						<div class="rux-field">
+							<label
+								class="rux-field__label"
+								for="tp-import-textarea"
+								>Trip JSON</label
+							>
+							<textarea
+								id="tp-import-textarea"
+								class="rux-textarea"
+								rows="10"
+								aria-describedby="tp-import-help"
+								style="
+									font-family: var(--rux-font-mono);
+									font-size: var(--rux-size-12);
+									min-height: 14rem;
+									height: 14rem;
+								"
+							></textarea>
+							<span class="rux-field__help" id="tp-import-help"
+								>Paste the JSON, or upload a file below.</span
+							>
+						</div>
 						<div
 							style="
 								display: flex;
@@ -11688,7 +11700,7 @@
 											<label
 												class="rux-field__label"
 												for="rpm-pickup"
-												>Pick-up Location</label
+												>Pick-up location</label
 											><input
 												class="rux-input"
 												id="rpm-pickup"
