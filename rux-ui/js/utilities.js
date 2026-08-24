@@ -152,6 +152,10 @@
   /* ── Wiring ─────────────────────────────────────────────────────────────── */
 
   document.addEventListener("click", function (e) {
+    // A real click lands on an Element; an event dispatched at document
+    // makes the target `document`, which has no .closest. rux-ui/js/controls.js
+    // carries the same guard on its own document handlers.
+    if (!(e.target instanceof Element)) return;
     // [data-rux-set-accent="violet"] — set accent on click
     const accentEl = e.target.closest("[data-rux-set-accent]");
     if (accentEl) {

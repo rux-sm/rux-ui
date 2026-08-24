@@ -78,6 +78,10 @@
 	});
 
 	document.addEventListener("click", (event) => {
+		// A real click lands on an Element; an event dispatched at document
+		// makes the target `document`, which has no .closest. rux-ui/js/controls.js
+		// carries the same guard on its own document handlers.
+		if (!(event.target instanceof Element)) return;
 		const menuItem = event.target.closest('[role^="menuitem"]');
 		if (menuItem && active?.menu.contains(menuItem)) {
 			close(active.menu, { restoreFocus: true });
