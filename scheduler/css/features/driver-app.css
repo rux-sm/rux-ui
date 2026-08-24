@@ -52,16 +52,15 @@
 	overflow: hidden;
 }
 
+/* Content-sized, never crushed. The old `flex: 0 1 14rem` let the band shrink
+   the track below its labels at 375px — "Workload" clipped at 35px against a
+   49px text width, because the buttons below carry min-width: 0. The track
+   measures 132px at content size, and New Driver (128) + track (132) + the
+   44px toggle fit the 335px the mobile band offers, so the floor is safe. */
 .driver-app__view-switch {
-	flex: 0 1 14rem;
-	max-width: 14rem;
+	flex: none;
 }
 
-.driver-app__view-switch--panel {
-	flex: none;
-	width: 100%;
-	max-width: none;
-}
 
 .driver-app__view-switch > .rux-button {
 	flex: 1;
