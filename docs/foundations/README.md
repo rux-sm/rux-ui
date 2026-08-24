@@ -20,7 +20,7 @@ roles onto that vocabulary.
 | [`color.md`](color.md) | 3.0.0 | 19 done | — |
 | [`motion.md`](motion.md) | 1.6.0 | 6 done | — |
 | [`naming.md`](naming.md) | 1.18.0 | 15 done | — |
-| [`state.md`](state.md) | 1.7.0 | 9 done | — |
+| [`state.md`](state.md) | 1.8.0 | 10 done | — |
 | [`forms.md`](forms.md) | 1.2.0 | 3 done | — |
 | [`composition.md`](composition.md) | 1.7.0 | 8 done | — |
 | [`shell.md`](shell.md) | 1.1.0 | 2 done | — |
