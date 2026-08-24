@@ -1,21 +1,25 @@
 # Rux UI Foundations — Composition
 
-**Contract version: 1.0.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.1.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 1 step: **1 done**
+**Status** · 2 steps: **2 done**
 Founding entry. This document answers **which anatomy a view gets**, given what kind of
 content it holds. Every other foundation document answers *what a thing looks like*;
 none answered *what to build*, and §3's census is what that omission cost.
 
-**Source: originated here.** Geist publishes four foundations and 71 component pages and
+**Source: originated here; gap source [Cloudscape](https://cloudscape.design/patterns/),
+guidance-only (step 2).** Geist publishes four foundations and 71 component pages and
 **no page-composition layer** — the same finding that made `layout.md`'s breakpoints and
-`motion.md` originate here rather than adopt. This is the **third**. Carbon is the nearest
-external precedent and is already an acknowledged influence on `motion.md`'s productive
-model, but it supplies no taxonomy here: §2's archetypes are read off this application's
-own views, in the same way `typography.md` §3.5 ratified a rung two authors had already
-chosen independently. Nothing in this document is imported.
+`motion.md` originate here rather than adopt. This is the **third**. Where Geist is silent,
+**Cloudscape's patterns are the reference this document checks itself against**: 59
+published patterns for exactly this genre — dense operational consoles with tables,
+editors, and panels — verified live on 2026-08-23. Guidance-only under the standing rule:
+its insights are translated into `--rux-*` vocabulary, its names and values are never
+adopted, and **Geist still wins wherever it publishes anything**. §2's archetypes remain
+read off this application's own views — Cloudscape is the second opinion, not the author.
+Nothing in this document is imported.
 
 ---
 
@@ -179,6 +183,7 @@ D2 made visible in the census itself.
 | # | Step | Status | Notes |
 |---|---|---|---|
 | 1 | Establish this document; publish the four archetypes | **done · Class A** | **Executed 2026-08-23.** Founding entry. Class A throughout: it names a taxonomy that already existed in the application and moves no code, renames nothing, and changes no resolved value. The archetypes are **read off the eight views, not designed** — four of them were already identical, which is what made the set nameable. **Deliberately did not absorb `../layout-composition.md`** (D1): that document's 29 MUSTs are shell containment and ARIA, a different question from which anatomy a view gets, and folding them in during a founding step would mix a relocation with a taxonomy. It is recorded as D1 and left for its own step. **Deliberately did not enforce anything** (D5): a checker would have to decide which archetype a view intends before it can say the view is wrong, and no attribute records that intent yet — §6 Q3. |
+| 2 | Adopt Cloudscape as the gap source, guidance-only | **done · Class A** | **Executed 2026-08-23**, at the owner's direction after a sourced comparison. The Carbon residue predates the Geist alignment and is retired as this document's precedent. **Candidates were verified live, not recalled:** Cloudscape's patterns index publishes 59 patterns covering Table view, three Details-page variants, Split view, Secondary panels, Create/Edit/Delete resource, dashboards, Empty states and Density settings — a near-direct map onto §2's archetypes. **Polaris was disqualified by the same check**: its standalone docs now redirect into shopify.dev and `polaris-react` was archived 2026-01, so citing it would inherit its churn. Primer's patterns are interaction/workflow guidance, orthogonal to composition. **Scope of the adoption:** Cloudscape is a *gap* source — consulted only where Geist publishes nothing, guidance-only, translated into `--rux-*` vocabulary, never names or values wholesale. **Deliberately not done:** §2 was not re-audited against Cloudscape's patterns in this step — that audit is real work and is recorded as Q5 rather than rushed into a source-adoption step. No rule, value, or archetype changed. |
 
 ---
 
@@ -201,3 +206,10 @@ in the markup that exists only for the checker. `naming.md` would own the attrib
 They could become foundation documents, become pointers into one, or stay as they are with
 their status stated. `layout.md` Q5 asks a version of this about cards specifically, and
 appears not to know `docs/cards.md` already exists.
+
+**Q5 — Does §2 survive an audit against Cloudscape's patterns?** Step 2 adopted Cloudscape
+as the gap source without re-deriving the archetypes from it. The obvious candidates for
+that audit: Cloudscape's **Split view** (a collection paired with a split panel) has no
+archetype here and the Drivers/Fleet attached rails resemble it; its three **Details page**
+variants may inform what replaces §2.6 if the Viewer retires (Q1); and **Density settings**
+speaks to `layout.md` §9.2's dense exception. Each finding would be its own classified step.

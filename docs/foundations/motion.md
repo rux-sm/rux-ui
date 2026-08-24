@@ -1,10 +1,10 @@
 # Rux UI Foundations — Motion
 
-**Contract version: 1.5.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.6.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 5 steps: **5 done**
+**Status** · 6 steps: **6 done**
 This document is canonical for **how long a change takes and what curve it follows** — the
 duration and easing scales, which curve an entrance, an exit and a continuous movement each
 take, what may be animated at all, and what must keep working when motion is switched off.
@@ -14,8 +14,13 @@ went to [`color.md`](color.md) rule 2.1.
 **Geist publishes no motion page.** This is the **second** foundation rule this repository
 originates rather than adopts — `layout.md`'s breakpoints were the first, for the same
 reason. Everything below is measured from this repository's own tokens and stylesheets,
-not read off a source, and the amendment log should stay honest about that: there is no
-upstream to defer to when a question here is hard.
+not read off a source. **Since step 6 the gap source is
+[Cloudscape's motion foundation](https://cloudscape.design/foundation/visual-foundation/motion/)**
+— guidance-only, consulted where Geist is silent — which publishes a concrete scale
+(115/165/250ms, three named curves, per-component rules) from the same operational-console
+genre. The Carbon-derived *model* language predates the Geist alignment; §6 Q2 carries
+whether the values themselves should be re-derived, which would be **Class B** and stops
+for a proposal.
 
 **It does not own component recipes.** `../motion.md` is the component tier — which token a
 panel, a menu or a scrim consumes, and the verification checklist for each. This document
@@ -190,6 +195,7 @@ Ordered by dependency. Every step records what it deliberately did **not** do.
 | 3 | **Consolidate** — move `../motion.md`'s Foundation Tokens table here; convert it to a pointer | **done · Class A** | **Executed 2026-08-22.** Both sources named in the step are now pointers. **`../motion.md` § Foundation Tokens** stated the Carbon table's values at the component tier; it now links §1 and states none, and its pointer carries the two things that section used to get wrong — that there are **two** scales rather than one, and that the set the layer actually reaches for **139 times** was never mentioned there at all. Its component recipes and verification checklist are untouched; they are correct and they are that document's job. **`../audit/design-system-audit.md` §5 rule 6** is now a pointer for both moved halves, colour to `color.md` and duration/easing here. **Splitting one rule twice exposed a third piece nobody had noticed.** R6 reads *no literal duration, easing, or z-index* — and **z-index has no home**. Five tokens are published (`--rux-z-base`, `-dropdown`, `-overlay`, `-modal`, `-sticky`), **no foundation document mentions z-index at all**, and nothing enforces it. **Deliberately did not claim it here.** Stacking order is not motion; the natural home is `layout.md`, which already owns the Materials elevation presets, and z-index is the ordering half of the same idea — but routing a rule into another document is that document's to accept, so it is proposed as `layout.md` step 13 rather than assigned. **With this step, every rule in §5 that had a foundation destination has reached it**, and what remains there is R9, R10 and that orphan. Contract 1.1.0 → 1.2.0. |
 | 4 | Name each scale for its job; retire the two dead tokens (D5) | **done · Class A — the rename is declined; the two deletions stay proposed** | **Measured 2026-08-22, then declined.** D5 is real: the names describe *speed* where Q1 established the distinction is *what moves*. **The fix does not earn its cost.** The rename spans **310 occurrences** across `--rux-menu`-free ground — `--rux-duration-*` 80, `--rux-ease-*` 78, `--rux-motion-*` 25 in this repository — and buys naming accuracy with no behavioural change and no consumer impact (**zero** consumer-owned references). It would also make every call site **longer**, spending the short set's readability, which Q1 recorded as its genuine strength. **The step's own candidate direction was tested and abandoned too.** *Route the application's rules through component semantics first, then re-read D5* assumed the application is inconsistent. It is not: its **47** motion declarations resolve to **5** patterns, and **41 of those are two** — `fast + ease-out` and `base + ease-out`. The primitives already are the shared vocabulary; a semantic tier between the rule and the token would add indirection without adding a decision point, because the application has no consumer that would ever retune it. **D4 is therefore downgraded, not scheduled.** **The two dead tokens were a different matter and were taken separately — and only one of them survived the check.** `--rux-duration-productive` is retired (`../portability-audit.md` entry 25): zero readers, and a second reason beyond being unused, since a dead alias between two scales asserts the interchangeability Q1 had just disproved. **`--rux-motion-duration-moderate-02` is kept.** Proposing it here was wrong: it is the fourth rung of a complete four-rung ladder, and ledger entry 16 already decided that case — *the unused rungs of a complete scale or palette were kept, a design system ships whole ladders*. This step bundled the two because both measured as unread; **unread is not the same claim as unwanted**, and only one had the second reason. Contract 1.3.0 → 1.4.0. |
 | 5 | Give 2.3 and 2.4 definitions, then enforce what can be (D3) | **done · Class A** | **Executed 2026-08-22, and the two halves went opposite ways — which is the finding.** **2.4 had a precise definition available and nobody had reached for it.** A cubic-bezier overshoots exactly when a control point's **y** leaves `[0, 1]`; below 0 the value reverses before it starts, above 1 it passes its target and comes back. Spring and bounce are that same fault named differently. **x is deliberately unchecked** — the spec already bounds it, and a curve may take any pace through time without overshooting. The layer holds **five distinct curves** and every y is inside the range, so `motion-contract` gained the assertion **with no exception list**, and it was verified to fail first: a planted `cubic-bezier(0.5, 1.6, 0.4, 1)` went red naming the file, the curve and the offending control point. **The test checks both layers rather than the four surfaces 2.4 names**, because scoping to *shell navigation, panels, dialogs and menus* means inferring which stylesheet styles a dialog — the inference `naming.md` step 2 records as how a check ends up measuring its own allow-list. Nothing productive should overshoot, so the wider assertion is also the simpler one. **2.3 went the other way: measuring it proved it false.** It read as a permitted set — `transform`, `translate`, `opacity`, `clip-path`, layout dimensions — and **63 of the layer's 122 property transitions fall outside it**, led by `background-color`, `box-shadow`, `border-color` and `color`. Those are hover and focus feedback, exactly what a component's `--rux-*-transition` token exists for. **A rule violated by half the layer for good reasons is not a rule**, so it is restated as guidance and owes no test. **The measurement cleared a suspect too**: two `display` transitions looked like a defect and are the `transition-behavior: allow-discrete` pattern in `menu.css`, which is correct and deliberate. **§1.2 is corrected in the same step** — it called `--rux-ease-out` *overshooting*, and both its control points sit **on** y = 1 rather than outside it. Once 2.4 has a checkable definition, describing a legal curve with the word the rule forbids is how a document drifts from its own rule. Contract 1.4.0 → 1.5.0. |
+| 6 | Adopt Cloudscape's motion foundation as the gap source, guidance-only | **done · Class A** | **Executed 2026-08-23**, at the owner's direction: pre-Geist sourcing is outdated, and Carbon was that. Cloudscape's motion page was verified live — it publishes 115/165/250ms, three cubic-bezier curves with stated intents, and per-component usage rules, from the operational-console genre this application is in. **No value moves in this step**: the scales below remain this repository's own measurements, and the Carbon-derived *set names* stay until Q2 is answered, because renaming the set is cosmetic and re-deriving the values is Class B. Guidance-only under the standing rule; Geist still wins wherever it publishes anything. |
 
 ---
 
@@ -255,3 +261,13 @@ set as the *primitive* layer — which is exactly what `--rux-duration-productiv
 does, and what §1.3's panel aliases do one level up. That would make `--rux-duration-fast`
 mean "the fast rung, whatever it resolves to" rather than "140ms", and it converts a rename
 with 139 call sites into a value change on four tokens. *Blocks steps 2 and 3.*
+
+**Q2 — Should the Carbon-derived set be re-derived against Cloudscape's scale?** The
+comparison concerns the **surface set only**: its upper rungs (110/150/240ms) sit beside
+Cloudscape's three-rung 115/165/250ms, near-neighbours from the same genre — but the set
+has **four** rungs (70/110/150/240) to Cloudscape's three, so convergence is a mapping
+question, not a substitution. The **short set (80/140/220/720) is out of scope here**: §1.1
+established it as a different motion character, and no Cloudscape counterpart was claimed
+or checked. Every rung is live in shipped surfaces, so any move is **Class B** per resolved
+value — before/after, the states needing an eyeball, a minor bump. Not to be folded into a
+rename or a source note; it stops for a proposal.
