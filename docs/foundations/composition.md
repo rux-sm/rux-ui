@@ -1,10 +1,10 @@
 # Rux UI Foundations — Composition
 
-**Contract version: 1.2.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.3.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 3 steps: **3 done**
+**Status** · 4 steps: **4 done**
 Founding entry. This document answers **which anatomy a view gets**, given what kind of
 content it holds. Every other foundation document answers *what a thing looks like*;
 none answered *what to build*, and §3's census is what that omission cost.
@@ -52,6 +52,14 @@ composing its own anatomy. That rule exists because the alternative was measured
 day's Settings migration, **92 of 121 framed boxes were hand-rolled** rather than composed
 from `.rux-card` (§3 carries the current figures), and three separate hand-built
 implementations of "a titled group" existed, none aware of the others.
+
+**Every view MUST declare its archetype: `data-archetype` on the `.rux-app-view`, one of
+`records` · `document-column` · `canvas` · `viewer`.** The attribute exists for the
+checker — declared intent is what lets `tests/composition-contract.test.mjs` tell a
+non-conforming view from a new archetype — and it is deliberately **bare, not
+`data-rux-*`**: it is application-layer vocabulary on application markup, the same
+standing `data-view` has, and `naming.md` rule 2.5 scopes the `data-rux-*` namespace to
+`rux-ui/` only. *(Step 4.)*
 
 ### 2.2 Record identity lives in the surface that shows the record
 
@@ -189,7 +197,7 @@ D2 made visible in the census itself.
 | D3 | **`docs/cards.md`, `buttons.md`, `popovers.md`, `ui-header.md` ship to consumers carrying values and no contract version.** Same governance gap as D1, smaller blast radius. |
 | D4 | **The Game view is a Document column carrying an attached rail**, which no other instance of that archetype has. Either the archetype admits an optional rail or the Game view is non-conformant; §6 Q2. |
 | D6 | **Fixed 2026-08-23, app work under §2.8.** ~~The Drivers rail violates §2.8~~: the switch moved into the workspace band beside the panel toggle; the rail keeps its option cards. With the rail closed the view is now both labelled (by the pressed segment) and switchable. Original: the Roster/Workload segmented control — the only way to change which of the two views is active — lives inside the collapsible Table Options rail, and the workspace title that mirrored the active view was removed 2026-08-23 at the owner's direction, with the trade recorded in that commit. With the rail closed, the active view is unlabelled and unswitchable. Fixing it is app work: either the switch moves into the workspace band or the rail stops being the only home. |
-| D5 | **Nothing enforces §2.** A view could compose any anatomy and no test would fail. |
+| D5 | **Fixed (step 4)** — `tests/composition-contract.test.mjs` enforces the declaration and three decisive anatomy facts per archetype. ~~Nothing enforces §2.~~ A view could compose any anatomy and no test would fail. |
 
 ---
 
@@ -200,6 +208,7 @@ D2 made visible in the census itself.
 | 1 | Establish this document; publish the four archetypes | **done · Class A** | **Executed 2026-08-23.** Founding entry. Class A throughout: it names a taxonomy that already existed in the application and moves no code, renames nothing, and changes no resolved value. The archetypes are **read off the eight views, not designed** — four of them were already identical, which is what made the set nameable. **Deliberately did not absorb `../layout-composition.md`** (D1): that document's 29 MUSTs are shell containment and ARIA, a different question from which anatomy a view gets, and folding them in during a founding step would mix a relocation with a taxonomy. It is recorded as D1 and left for its own step. **Deliberately did not enforce anything** (D5): a checker would have to decide which archetype a view intends before it can say the view is wrong, and no attribute records that intent yet — §6 Q3. |
 | 2 | Adopt Cloudscape as the gap source, guidance-only | **done · Class A** | **Executed 2026-08-23**, at the owner's direction after a sourced comparison. The Carbon residue predates the Geist alignment and is retired as this document's precedent. **Candidates were verified live, not recalled:** Cloudscape's patterns index publishes 59 patterns covering Table view, three Details-page variants, Split view, Secondary panels, Create/Edit/Delete resource, dashboards, Empty states and Density settings — a near-direct map onto §2's archetypes. **Polaris was disqualified by the same check**: its standalone docs now redirect into shopify.dev and `polaris-react` was archived 2026-01, so citing it would inherit its churn. Primer's patterns are interaction/workflow guidance, orthogonal to composition. **Scope of the adoption:** Cloudscape is a *gap* source — consulted only where Geist publishes nothing, guidance-only, translated into `--rux-*` vocabulary, never names or values wholesale. **Deliberately not done:** §2 was not re-audited against Cloudscape's patterns in this step — that audit is real work and is recorded as Q5 rather than rushed into a source-adoption step. No rule, value, or archetype changed. |
 | 3 | Q5 answered — §2 audited against Cloudscape's patterns | **done · Class A** | **Executed 2026-08-23**, reading eight pattern pages (Table view, View resources, Split view, the three Details variants, Secondary panels, Density settings). **The archetypes survive; one conjecture in Q5 itself did not.** Q5 guessed the Drivers/Fleet rails "resemble Split view" — they do not: a split panel shows *selected-record details* beside a collection, our rails hold *view options*, which map to Cloudscape's Preferences/drawer. Split view proper — browse-and-compare without opening an editor — has **no instance and no archetype here**, recorded as a recognized absence rather than invented ahead of a need. **One rule adopted, translated:** §2.8, an attached panel is supportive, never essential — and applying it the same day found **D6**, the Roster/Workload switch stranded in a collapsible rail. **Records validated with one explained divergence:** Cloudscape titles its table pages because its chrome has no persistent module heading; ours does, so §2.3's title-less band stands (note added in place). **The Details trio informs Q1 without changing it:** our floating editors are the "Details page with tabs" analog and the trip editor already follows one-tab-one-task; Cloudscape's summary-container-above-tabs — universally relevant info that survives tab switches — is worth weighing when the Documents detail work lands, and is left as an observation, not a rule. **Density: no adoption.** Cloudscape's density is a user-controlled, service-wide preference defaulting comfortable — a product feature. `layout.md` §9.2's dense exception is an author-chosen per-context rule, and its guardrail (never as a general compactness lever) already matches Cloudscape's readability caution. Different mechanisms, both kept. **Deliberately not done:** no Split view archetype, no density feature, and no app change for D6 — the defect is recorded and the fix is its own decision. |
+| 4 | Q3 answered — views declare their archetype; §2 becomes enforceable | **done · Class A** | **Executed 2026-08-23.** All eight `.rux-app-view` elements gained `data-archetype`, valued per §3's census: four `records`, two `document-column`, one `canvas`, one `viewer`. **The attribute is bare, and Q3's conjecture that `naming.md` would own it was wrong**: rule 2.5 scopes `data-rux-*` to `rux-ui/`, this is application vocabulary on application markup, and bare `data-view` on the same elements is the standing precedent — recorded here rather than amending a document that has nothing to say. **D5 closes with it**: `tests/composition-contract.test.mjs` asserts the declaration and the decisive anatomy per archetype — only a viewer titles its workspace; records hold a table and a floating editor; a document column has neither header band nor floating window. **The checks carry no exception list** (`CLAUDE.md`: an exception list is not a passing check) — the Game view's stray rail (D4) is *not* asserted against: attached panels are unchecked for document columns until D4 is decided, stated rather than worked around. **The first run of the test caught a real slicer bug**: the last view's segment ran to end-of-file and swallowed the floating surfaces that live outside the views container, flagging Settings for windows it does not contain — the live census had it right, the static slice was wrong, and the test now bounds the final segment. **Verified the test can fail**: flipping one view's archetype fails the suite by name. |
 
 ---
 
@@ -214,7 +223,9 @@ If that lands, §2.6 should be withdrawn rather than kept for a hypothetical, an
 does not. Either the rail is optional in §2.4 or the Game view is non-conformant (D4). It
 is also the view with no route control, so the question may be moot.
 
-**Q3 — Should a view declare its archetype?** D5 cannot be enforced without knowing what a
+**Q3 — Should a view declare its archetype? — ANSWERED: yes, `data-archetype`, bare.** *Answered 2026-08-23 with step 4. One conjecture corrected: `naming.md` did not need to own the attribute — rule 2.5 scopes `data-rux-*` to `rux-ui/`, and this is application vocabulary on the `data-view` precedent. Original text follows.*
+
+**Q3 (original) —** D5 cannot be enforced without knowing what a
 view intends. A `data-archetype` attribute would make §2 checkable, at the cost of a name
 in the markup that exists only for the checker. `naming.md` would own the attribute if so.
 

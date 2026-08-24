@@ -40,7 +40,7 @@
 		<!-- The design system's public entrypoint: tokens, typography, webfonts,
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
-		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=115" />
+		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=116" />
 		<link rel="stylesheet" href="./scheduler/css/components.css?v=342" />
 		<link
 			rel="stylesheet"
@@ -869,7 +869,7 @@
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: CALENDAR
              ════════════════════════════════════════════════════════════════ -->
-				<div class="rux-app-view" data-view="calendar">
+				<div class="rux-app-view" data-view="calendar" data-archetype="canvas">
 					<!-- Movable, resizable trip editor workspace window -->
 					<div
 						class="rux-panel rux-panel--floating sched-trip-dialog sched-scope-trip"
@@ -3084,7 +3084,7 @@
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: FLEET
              ════════════════════════════════════════════════════════════════ -->
-				<div class="rux-app-view" data-view="fleet" hidden>
+				<div class="rux-app-view" data-view="fleet" data-archetype="records" hidden>
 					<!-- Movable, resizable vehicle editor window -->
 						<aside
 							class="rux-panel rux-panel--floating sched-fleet-dialog sched-scope-fleet"
@@ -3771,7 +3771,7 @@
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: DRIVERS
              ════════════════════════════════════════════════════════════════ -->
-				<div class="rux-app-view" data-view="drivers" hidden>
+				<div class="rux-app-view" data-view="drivers" data-archetype="records" hidden>
 					<!-- Movable, resizable driver editor window -->
 						<aside
 							class="rux-panel rux-panel--floating sched-driver-dialog sched-scope-driver"
@@ -4944,6 +4944,7 @@
 				<div
 					class="rux-app-view"
 					data-view="customers"
+					data-archetype="records"
 					hidden
 				>
 					<!-- Movable, resizable customer editor window -->
@@ -5134,6 +5135,7 @@
 				<div
 					class="rux-app-view"
 					data-view="requests"
+					data-archetype="records"
 					hidden
 				>
 					<section
@@ -5299,6 +5301,7 @@
 				<div
 					class="rux-app-view"
 					data-view="documents"
+					data-archetype="viewer"
 					hidden
 				>
 					<section
@@ -5397,7 +5400,7 @@
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: FLIP 7
              ════════════════════════════════════════════════════════════════ -->
-				<div class="rux-app-view" data-view="game" data-view-title="Flip 7" hidden>
+				<div class="rux-app-view" data-view="game" data-view-title="Flip 7" data-archetype="document-column" hidden>
 					<section
 						class="rux-workspace flip-seven"
 						aria-label="Flip 7"
@@ -5678,6 +5681,7 @@
 				<div
 					class="rux-app-view"
 					data-view="settings"
+					data-archetype="document-column"
 					hidden
 				>
 					<section
