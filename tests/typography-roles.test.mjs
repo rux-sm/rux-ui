@@ -86,14 +86,18 @@ const ROLES = [
 // "Unread" here means unread BY THE PORTABLE LAYER, because `sheets` is
 // rux-ui/css/base only — the same scope the used-check above runs against.
 // A role the application layer has adopted stays in this list until a portable
-// consumer appears, and --rux-text-label-18 is in exactly that state after
-// step 39: .driver-share-header__label reads it from scheduler/css. Stated
-// rather than left implicit, because a reader who assumes PENDING means
-// "nothing uses it" would draw the wrong conclusion from that entry.
+// consumer appears. --rux-text-label-18 lived in that state from step 39
+// (.driver-share-header__label read it from scheduler/css) until 2026-08-24,
+// when composition.md D8 re-dressed driver.html's chrome as the shared
+// .rux-ui-header and retired that consumer — the role is again read by
+// nothing but its own utility in base/text.css, like the step-50 catalog
+// roles below. Stated rather than left implicit, because a reader who
+// assumes PENDING means "nothing ever used it" would misread the history.
 const PENDING = [
 	// --rux-text-button-14 and -12 were promoted into ROLES by step 41, which
-	// adopted them on .rux-button. --rux-text-label-18 stays: its only consumer
-	// is .driver-share-header__label in scheduler/css, outside this corpus.
+	// adopted them on .rux-button. --rux-text-label-18 stays: its one app-layer
+	// consumer, .driver-share-header__label, retired 2026-08-24 (composition.md
+	// D8), so nothing outside base/text.css reads it today.
 	"--rux-text-label-18",
 	// The rest of the catalog, published by step 50 once Q12 settled that the
 	// adopted catalog is itself the named consumer §7.3 asks for. Every one is

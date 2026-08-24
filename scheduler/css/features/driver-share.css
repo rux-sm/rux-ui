@@ -14,9 +14,6 @@
 	--sched-driver-page-gutter-compact:     var(--rux-space-3);
 	--sched-driver-page-bottom-padding:     var(--rux-space-6);
 	--sched-driver-card-gap:                var(--rux-space-5);
-	--sched-driver-logo-width:              160px;
-	--sched-driver-logo-width-compact:      136px;
-	--sched-driver-logo-max-width:          52vw;
 	--sched-driver-card-bg:                 var(--rux-surface-1);
 	--sched-driver-card-border:             var(--rux-border-width) solid var(--rux-card-border);
 	--sched-driver-card-radius:             var(--rux-radius-container);
@@ -64,42 +61,12 @@ html {
 	color: var(--rux-text-primary);
 }
 
-.driver-share-header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: var(--rux-space-4);
-	padding: var(--rux-space-5) max(var(--sched-driver-page-gutter), env(safe-area-inset-left));
-	background: var(--rux-surface-1);
-	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
-}
-
-.driver-share-header__logo {
-	width: var(--sched-driver-logo-width);
-	max-width: var(--sched-driver-logo-max-width);
-	height: auto;
-}
-
-/* The page's <h1>. line-height is declared because the element would
-   otherwise inherit the 4xl heading rhythm from colors_and_type.css and
-   stretch the header — this page keeps its own phone-first header rather
-   than .rux-ui-header, so it styles its own title. */
-.driver-share-header__label {
-	/* Step 27 left this open: "whether it is heading-18 or label-18 — which
-	   would track 0 — is step 26's call". Step 39 answers it as label-18, the
-	   Label family's own 18/20 rung, published by step 38. Size, weight and
-	   leading are unchanged; only the tracking moves, -0.02em to 0.
-	   docs/foundations/typography.md D14, steps 27, 38, 39. */
-	font-size: var(--rux-text-label-18-size);
-	font-weight: var(--rux-text-label-18-weight);
-	line-height: var(--rux-text-label-18-line-height);
-	letter-spacing: var(--rux-text-label-18-tracking);
-	/* Deliberately overrides the role's colour: this is the quieter half of a
-	   two-line header, and the role publishes primary. Same allowance
-	   .rux-u-subtitle takes (§3.3). */
-	color: var(--rux-text-secondary);
-	white-space: nowrap;
-}
+/* Chrome is the shared .rux-ui-header, composed bare — the request.html
+   precedent (see trip-request.css's header note). The hand-rolled
+   .driver-share-header block lived here until 2026-08-24; composition.md D8
+   records the re-dress. Its label was the app-layer consumer of label-18 —
+   that history stays in typography.md steps 27/38/39 and the role returns
+   to published-and-unread (tests/typography-roles.test.mjs, PENDING). */
 
 .driver-share {
 	width: min(var(--sched-driver-page-max-width), 100%);
@@ -986,20 +953,12 @@ html {
 }
 
 @media (max-width: 500px) {
-	.driver-share-header {
-		padding-inline: var(--sched-driver-page-gutter);
-	}
-
 	.driver-share {
 		padding-top: var(--rux-space-5);
 	}
 }
 
 @media (max-width: 420px) {
-	.driver-share-header__logo {
-		width: var(--sched-driver-logo-width-compact);
-	}
-
 	.driver-share {
 		padding-inline: var(--sched-driver-page-gutter-compact);
 	}

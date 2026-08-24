@@ -1,6 +1,6 @@
 # Rux UI Foundations — Composition
 
-**Contract version: 1.9.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.9.1** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
@@ -186,7 +186,8 @@ pages, two header implementations, three answers to where the title lives.
 **A share page MUST NOT hand-roll its chrome.** The header is the shared block —
 `maintenance.html` composes it with a page variant class, which is the precedent —
 because a page a customer or driver reaches from a link is exactly where the product has
-one chance to look like itself. `driver.html` violates this today: D8. Where the page's
+one chance to look like itself. `driver.html` violated this from the census until
+2026-08-24 — D8, fixed on the `request.html` precedent. Where the page's
 `<h1>` lives is genuinely unsettled — three pages, three answers — and is Q6, so this
 rule names the block and stops; it does not yet legislate the title's element or
 placement.
@@ -269,7 +270,7 @@ themselves.
 |---|---|---|---|---|---|
 | `index.html` | shell | eight views | fills the viewport | per view | Application |
 | `request.html` | `.rux-ui-header`, title in a `<span>`; `<h1>` on the intro | intro, then a form of four `.rux-card` sections, a footer action band, and a hidden success card | 720px, centered | static markup | Share |
-| `driver.html` | hand-rolled `driver-share-header` (**D8**); `<h1>` inside it | JS-built column; shared doc viewer and envelope windows | 520px, centered | skeleton, `aria-busy` | Share |
+| `driver.html` | `.rux-ui-header`; `<h1>` is the header title *(hand-rolled at the census — the D8 fix re-dressed it 2026-08-24)* | JS-built column; shared doc viewer and envelope windows | 520px, centered | skeleton, `aria-busy` | Share |
 | `maintenance.html` | `.rux-ui-header` + variant class; `<h1>` is the header title | JS-built schedule surface, hand-rolled boxes | full width, `--rux-space-4` inset | spinner + status line | Share |
 | `doc.html` | none | one status line, then `location.replace` to the stored document | — | its status line | Stub |
 | `d.html` / `m.html` | none | rename pointers to `driver.html` / `maintenance.html`; deletion condition in a comment | — | — | Stub |
@@ -278,7 +279,9 @@ themselves.
 
 Three share pages, two header implementations, three title homes, two loading
 treatments plus one static page. This is §3's 83 hand-rolled boxes at the page tier —
-caught at three pages instead of 118 boxes.
+caught at three pages instead of 118 boxes. *(As censused. The D8 fix, later the same
+day, collapsed the header implementations to one and the title homes to two — Q6 carries
+the remaining split.)*
 
 ---
 
@@ -293,7 +296,7 @@ caught at three pages instead of 118 boxes.
 | D7 | **Fixed 2026-08-23, app work.** The surface is a `.rux-card` with card header/body/footer; `tests/composition-contract.test.mjs` now asserts no attached panel in any document column, exception-free. ~~The game's main surface wears `.rux-panel--attached` while docked to nothing.~~ Original: `.flip-seven__panel` sits centered inside `.flip-seven__shell` — `display: grid`, `place-items: center`, `padding: var(--rux-space-6)` — with `max-width: 42rem`. An attached panel's contract is the opposite: docked beside the workspace, sharing its edge, no decorative gutter (`../layout-composition.md`). The vocabulary is borrowed for its chrome — the header band and scrolling body — the same borrowing step 20 unwound when nine `.rux-card__title`s sat in panel headers. The fix is app work: re-dress the surface as a `.rux-card` (header/body/footer — the Hit/Bank bar is a card footer), noting the blast radius: the panel-header tokens give it a 64px band today and a card header floors at 40px, and layout.md step 21's panel sweep counted this header among the eleven it measured. |
 | D6 | **Fixed 2026-08-23, app work under §2.8.** ~~The Drivers rail violates §2.8~~: the switch moved into the workspace band beside the panel toggle; the rail keeps its option cards. With the rail closed the view is now both labelled (by the pressed segment) and switchable. Original: the Roster/Workload segmented control — the only way to change which of the two views is active — lives inside the collapsible Table Options rail, and the workspace title that mirrored the active view was removed 2026-08-23 at the owner's direction, with the trade recorded in that commit. With the rail closed, the active view is unlabelled and unswitchable. Fixing it is app work: either the switch moves into the workspace band or the rail stops being the only home. |
 | D5 | **Fixed (step 4)** — `tests/composition-contract.test.mjs` enforces the declaration and three decisive anatomy facts per archetype. ~~Nothing enforces §2.~~ A view could compose any anatomy and no test would fail. |
-| D8 | `driver.html` hand-rolls its chrome: `driver-share-header` with its own `__logo`/`__label` while both sibling share pages compose the shared `.rux-ui-header` (§2.9). The fix is app work on the `maintenance.html` precedent — the shared block plus a page variant class — and inherits the logo sizing the hand-rolled header carries (`--sched-driver-page-max-width` and `--sched-driver-logo-max-width` in `driver-share.css`). Q6 does not block it: the block can change while the title question stays open, because every candidate answer keeps a header. |
+| D8 | **Fixed 2026-08-24, app work — the bare shared header, on the `request.html` precedent.** ~~`driver.html` hand-rolls its chrome: `driver-share-header` with its own `__logo`/`__label` while both sibling share pages compose the shared `.rux-ui-header` (§2.9).~~ The header is now `.rux-ui-header` with brand and `<h1>` title, composed bare. **The prescription's "plus a page variant class" was declined on inspection**: `maintenance.html`'s variant exists to make *its* header sticky over a full-width scroll table, `driver.html`'s centered column needs no page-specific behaviour, a variant class with no rules would fail `tests/class-resolution` — and `trip-request.css`'s own header note had already proved the bare composition (*"nothing about it is specific to this page"*). **Consequences carried**: the title moved from label-18 to the shared `.rux-ui-header__title` (heading-16), so label-18's one app-layer consumer retired and the role returns to published-and-unread — `tests/typography-roles.test.mjs`'s PENDING notes corrected in the same change, `typography.md` steps 27/38/39 left as written, history. The three `--sched-driver-logo-*` tokens died with the hand-rolled block, grepped before (driver.html ×3, driver-share.css rules and tokens, zero js/tests selectors) and after (zero live references; past-tense mentions remain in two test comments and one CSS rationale pointer). The `--sched-driver-page-max-width` the prescription also named is the content column's and survives untouched. **Verified**: served and eyeballed at 375 and desktop in the page's one theme — brand, heading-16 title, hairline seam, the no-token state intact — and 398/398 green with `driver-share.css`'s buster bumped. Evidence corrections in §2.9, §3.1 and Q6 ride with this fix: contract 1.9.0 → **1.9.1**, wording and evidence only. Original prescription: the fix is app work on the `maintenance.html` precedent — the shared block plus a page variant class — and inherits the logo sizing the hand-rolled header carries; Q6 does not block it, because every candidate answer keeps a header. |
 | D9 | Nothing enforces §2.9–2.10. A page could compose any anatomy and no test would fail — D5 again, one tier up. Unlike views, pages may need no markup declaration: the file list *is* the census, so a static test can classify by name and assert each floorplan's decisive anatomy (share: shared header, one `<main>`, no view router; stub: no stylesheet; print: no `--rux-` surface token inside the scoped root). That design is this defect's to settle. |
 
 ---
@@ -365,6 +368,12 @@ heading to speak ("Tell us about your trip") while an operational share page wan
 name ("Maintenance Schedule") — and if that is the answer, the rule is *which kind of page
 gets which*, stated here. Until then §2.9 requires the shared block and stays silent on
 the title's element.
+
+*(2026-08-24, after the census: the D8 fix moved `driver.html` onto the shared header
+with the `<h1>` as its title — the `maintenance.html` pattern — so the split is now two
+operational pages titling the header against `request.html`'s content-`<h1>`. The
+question stands, smaller, and the which-kind-gets-which reading gained its second
+instance.)*
 
 **Q7 — Is one loading treatment the rule?** The two data-driven share pages load
 differently: `driver.html` renders a skeleton of its card anatomy under `aria-busy`,

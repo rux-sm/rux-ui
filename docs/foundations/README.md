@@ -22,7 +22,7 @@ roles onto that vocabulary.
 | [`naming.md`](naming.md) | 1.18.0 | 15 done | — |
 | [`state.md`](state.md) | 1.8.1 | 11 done | — |
 | [`forms.md`](forms.md) | 1.3.0 | 5 done | — |
-| [`composition.md`](composition.md) | 1.9.0 | 10 done | — |
+| [`composition.md`](composition.md) | 1.9.1 | 10 done | — |
 | [`shell.md`](shell.md) | 1.1.0 | 2 done | — |
 | [`content.md`](content.md) | 1.0.1 | 2 done | — |
 
@@ -231,7 +231,7 @@ counts.
 | Document | Open questions | Open defects | Accepted debt |
 |---|---|---|---|
 | [`color.md`](color.md) | 2 | 0 | 0 |
-| [`composition.md`](composition.md) | 2 | 2 | 0 |
+| [`composition.md`](composition.md) | 2 | 1 | 0 |
 | [`content.md`](content.md) | 2 | 1 | 0 |
 | [`forms.md`](forms.md) | 2 | 4 | 0 |
 | [`layout.md`](layout.md) | 2 | 0 | 0 |
@@ -240,7 +240,7 @@ counts.
 | [`shell.md`](shell.md) | 1 | 0 | 0 |
 | [`state.md`](state.md) | 1 | 0 | 1 |
 | [`typography.md`](typography.md) | 1 | 0 | 0 |
-| **total** | **14** | **10** | **3** |
+| **total** | **14** | **9** | **3** |
 
 *Forms' defects counted zero until 2026-08-24 — not because they were fixed, but because
 its §4 marked defect numbers in bold and the counter matches them plain, so four listed
