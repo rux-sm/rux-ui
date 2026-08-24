@@ -40,7 +40,7 @@
 		<!-- The design system's public entrypoint: tokens, typography, webfonts,
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
-		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=112" />
+		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=113" />
 		<link rel="stylesheet" href="./scheduler/css/components.css?v=342" />
 		<link
 			rel="stylesheet"
@@ -64,7 +64,7 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/settings-app.css?v=14"
+			href="./scheduler/css/features/settings-app.css?v=15"
 		/>
 		<link
 			rel="stylesheet"
@@ -5683,18 +5683,13 @@
 						class="rux-workspace settings-app__main"
 						aria-label="Options"
 					>
-						<header
-							class="rux-workspace__header settings-app__header"
-						>
-							<div class="rux-workspace__heading">
-								<p
-									class="rux-workspace__subtitle settings-app__subtitle"
-								>
-									Company defaults used across dispatch and
-									estimates.
-								</p>
-							</div>
-						</header>
+						<!-- No workspace header. The band held one orphan
+						     .rux-workspace__heading wrapping a subtitle and no
+						     title, and typography.md §3.5 gives the module name
+						     to the UI header's <h1>, so there was nothing left
+						     for it to identify. layout-composition.md §122 says
+						     a workspace header SHOULD identify the view — this
+						     is the one that has nothing to add. -->
 
 						<div class="rux-workspace__body settings-app__body">
 							<section

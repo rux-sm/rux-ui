@@ -17,17 +17,6 @@
 	overflow-x: hidden;
 }
 
-.settings-app__header {
-	flex: none;
-	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
-}
-
-/* Typography shared with every other muted subtitle — see
-   rux-ui/css/base/card.css. */
-.settings-app__subtitle {
-	margin: 0;
-}
-
 .settings-app__body {
 	display: flex;
 	flex-direction: column;
