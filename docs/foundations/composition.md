@@ -1,10 +1,10 @@
 # Rux UI Foundations — Composition
 
-**Contract version: 1.1.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.2.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 2 steps: **2 done**
+**Status** · 3 steps: **3 done**
 Founding entry. This document answers **which anatomy a view gets**, given what kind of
 content it holds. Every other foundation document answers *what a thing looks like*;
 none answered *what to build*, and §3's census is what that omission cost.
@@ -76,6 +76,12 @@ The dominant archetype: **four of eight views**, and the target for a fifth.
 | Floating window | **Required** — the editor, titled with the record. |
 | Opening a record | Populates and shows the floating window. It does not navigate. |
 
+*Checked against Cloudscape's Table view (step 3): its page header **does** carry a title —
+the resource-category name — because its chrome is breadcrumbs plus side navigation, with no
+persistent module heading. This system's UI header `<h1>` already names the module on every
+screen (`typography.md` §3.5), so the same information appears exactly once in both systems.
+The divergence is deliberate and stays.*
+
 ### 2.4 Document column — a page of settings or prose
 
 | | |
@@ -121,6 +127,14 @@ This document owns *which* parts a view gets. It does not restate what those par
 - Which title role each container takes — [`typography.md` §3.5](typography.md)
 - Insets, the card rhythm, z-index — [`layout.md` §7–§11](layout.md)
 - What opens and closes a surface — [`state.md`](state.md)
+
+### 2.8 An attached panel is supportive, never essential
+
+**An attached panel MUST NOT hold the only path to something the view requires.** Adopted
+from Cloudscape's Secondary panels — "content must remain secondary, never essential to
+task completion" — translated, not copied: their panels are help/drawer/split surfaces, ours
+are option rails, but the principle transfers whole. A collapsed rail must cost convenience,
+not capability. The census found one violation the day this rule landed: D6.
 
 ---
 
@@ -174,6 +188,7 @@ D2 made visible in the census itself.
 | D2 | **Component anatomy has no documented home.** Of six structural rules surfaced on 2026-08-23, **three exist only as code comments**: that `.rux-card` frames only via `:has(> .rux-card__body)`, that a day group reads as one continuous surface rather than boxed rows, and that `.rux-u-row` is the non-wrapping counterpart to `.rux-u-cluster`. The first cost two debugging cycles in one session — the class was right and the box did not appear. |
 | D3 | **`docs/cards.md`, `buttons.md`, `popovers.md`, `ui-header.md` ship to consumers carrying values and no contract version.** Same governance gap as D1, smaller blast radius. |
 | D4 | **The Game view is a Document column carrying an attached rail**, which no other instance of that archetype has. Either the archetype admits an optional rail or the Game view is non-conformant; §6 Q2. |
+| D6 | **The Drivers rail violates §2.8**: the Roster/Workload segmented control — the only way to change which of the two views is active — lives inside the collapsible Table Options rail, and the workspace title that mirrored the active view was removed 2026-08-23 at the owner's direction, with the trade recorded in that commit. With the rail closed, the active view is unlabelled and unswitchable. Fixing it is app work: either the switch moves into the workspace band or the rail stops being the only home. |
 | D5 | **Nothing enforces §2.** A view could compose any anatomy and no test would fail. |
 
 ---
@@ -184,6 +199,7 @@ D2 made visible in the census itself.
 |---|---|---|---|
 | 1 | Establish this document; publish the four archetypes | **done · Class A** | **Executed 2026-08-23.** Founding entry. Class A throughout: it names a taxonomy that already existed in the application and moves no code, renames nothing, and changes no resolved value. The archetypes are **read off the eight views, not designed** — four of them were already identical, which is what made the set nameable. **Deliberately did not absorb `../layout-composition.md`** (D1): that document's 29 MUSTs are shell containment and ARIA, a different question from which anatomy a view gets, and folding them in during a founding step would mix a relocation with a taxonomy. It is recorded as D1 and left for its own step. **Deliberately did not enforce anything** (D5): a checker would have to decide which archetype a view intends before it can say the view is wrong, and no attribute records that intent yet — §6 Q3. |
 | 2 | Adopt Cloudscape as the gap source, guidance-only | **done · Class A** | **Executed 2026-08-23**, at the owner's direction after a sourced comparison. The Carbon residue predates the Geist alignment and is retired as this document's precedent. **Candidates were verified live, not recalled:** Cloudscape's patterns index publishes 59 patterns covering Table view, three Details-page variants, Split view, Secondary panels, Create/Edit/Delete resource, dashboards, Empty states and Density settings — a near-direct map onto §2's archetypes. **Polaris was disqualified by the same check**: its standalone docs now redirect into shopify.dev and `polaris-react` was archived 2026-01, so citing it would inherit its churn. Primer's patterns are interaction/workflow guidance, orthogonal to composition. **Scope of the adoption:** Cloudscape is a *gap* source — consulted only where Geist publishes nothing, guidance-only, translated into `--rux-*` vocabulary, never names or values wholesale. **Deliberately not done:** §2 was not re-audited against Cloudscape's patterns in this step — that audit is real work and is recorded as Q5 rather than rushed into a source-adoption step. No rule, value, or archetype changed. |
+| 3 | Q5 answered — §2 audited against Cloudscape's patterns | **done · Class A** | **Executed 2026-08-23**, reading eight pattern pages (Table view, View resources, Split view, the three Details variants, Secondary panels, Density settings). **The archetypes survive; one conjecture in Q5 itself did not.** Q5 guessed the Drivers/Fleet rails "resemble Split view" — they do not: a split panel shows *selected-record details* beside a collection, our rails hold *view options*, which map to Cloudscape's Preferences/drawer. Split view proper — browse-and-compare without opening an editor — has **no instance and no archetype here**, recorded as a recognized absence rather than invented ahead of a need. **One rule adopted, translated:** §2.8, an attached panel is supportive, never essential — and applying it the same day found **D6**, the Roster/Workload switch stranded in a collapsible rail. **Records validated with one explained divergence:** Cloudscape titles its table pages because its chrome has no persistent module heading; ours does, so §2.3's title-less band stands (note added in place). **The Details trio informs Q1 without changing it:** our floating editors are the "Details page with tabs" analog and the trip editor already follows one-tab-one-task; Cloudscape's summary-container-above-tabs — universally relevant info that survives tab switches — is worth weighing when the Documents detail work lands, and is left as an observation, not a rule. **Density: no adoption.** Cloudscape's density is a user-controlled, service-wide preference defaulting comfortable — a product feature. `layout.md` §9.2's dense exception is an author-chosen per-context rule, and its guardrail (never as a general compactness lever) already matches Cloudscape's readability caution. Different mechanisms, both kept. **Deliberately not done:** no Split view archetype, no density feature, and no app change for D6 — the defect is recorded and the fix is its own decision. |
 
 ---
 
@@ -207,7 +223,9 @@ They could become foundation documents, become pointers into one, or stay as the
 their status stated. `layout.md` Q5 asks a version of this about cards specifically, and
 appears not to know `docs/cards.md` already exists.
 
-**Q5 — Does §2 survive an audit against Cloudscape's patterns?** Step 2 adopted Cloudscape
+**Q5 — Does §2 survive an audit against Cloudscape's patterns? — ANSWERED: yes, with one adopted rule (§2.8), one defect (D6), and one refuted conjecture.** *Answered 2026-08-23 with step 3. Original text follows.*
+
+**Q5 (original) —** Step 2 adopted Cloudscape
 as the gap source without re-deriving the archetypes from it. The obvious candidates for
 that audit: Cloudscape's **Split view** (a collection paired with a split panel) has no
 archetype here and the Drivers/Fleet attached rails resemble it; its three **Details page**
