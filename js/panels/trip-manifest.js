@@ -191,7 +191,7 @@
             <span class="rux-field__label">Date</span>
             <span class="rux-input sched-scope-trip__payment-date-control">
               <span class="sched-scope-trip__payment-date-label" data-payment-date-label aria-hidden="true">Date</span>
-              <input class="sched-scope-trip__payment-date" id="rpm-payment-date-${index + 1}" data-payment-date type="date" aria-label="Payment date" />
+              <input class="sched-scope-trip__payment-date" id="rpm-payment-date-${index + 1}" data-payment-date type="date" />
             </span>
           </label>
           <label class="rux-field sched-scope-trip__payment-amount">

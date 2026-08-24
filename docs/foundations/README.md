@@ -21,7 +21,7 @@ roles onto that vocabulary.
 | [`motion.md`](motion.md) | 1.6.0 | 6 done | — |
 | [`naming.md`](naming.md) | 1.18.0 | 15 done | — |
 | [`state.md`](state.md) | 1.8.1 | 11 done | — |
-| [`forms.md`](forms.md) | 1.4.1 | 7 done | — |
+| [`forms.md`](forms.md) | 1.4.2 | 8 done | — |
 | [`composition.md`](composition.md) | 1.9.2 | 11 done | — |
 | [`shell.md`](shell.md) | 1.2.0 | 3 done | — |
 | [`content.md`](content.md) | 1.0.2 | 3 done | — |
@@ -233,14 +233,14 @@ counts.
 | [`color.md`](color.md) | 2 | 0 | 0 |
 | [`composition.md`](composition.md) | 2 | 2 | 0 |
 | [`content.md`](content.md) | 2 | 1 | 0 |
-| [`forms.md`](forms.md) | 3 | 4 | 0 |
+| [`forms.md`](forms.md) | 4 | 3 | 0 |
 | [`layout.md`](layout.md) | 2 | 0 | 0 |
 | [`motion.md`](motion.md) | 1 | 1 | 2 |
 | [`naming.md`](naming.md) | 0 | 2 | 0 |
 | [`shell.md`](shell.md) | 3 | 0 | 0 |
 | [`state.md`](state.md) | 1 | 0 | 1 |
 | [`typography.md`](typography.md) | 1 | 0 | 0 |
-| **total** | **17** | **10** | **3** |
+| **total** | **18** | **9** | **3** |
 
 *Forms' defects counted zero until 2026-08-24 — not because they were fixed, but because
 its §4 marked defect numbers in bold and the counter matches them plain, so four listed

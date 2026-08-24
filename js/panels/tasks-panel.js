@@ -572,7 +572,7 @@ function renderTrip(trip, leg) {
 						</label>
 						<input class="rux-input sched-tasks__requirement-input" type="text" maxlength="80"
 							data-task-trip="${trip.id}" data-task-field="${row.detailField}"
-							value="${escapeAttr(trip[row.detailField])}" placeholder="${row.placeholder}" aria-label="${row.placeholder}" />
+							value="${escapeAttr(trip[row.detailField])}" placeholder="${row.placeholder}" aria-label="${row.label} detail" />
 					</div>
 				` : `
 					<div class="sched-tasks__requirement-row sched-tasks__requirement-row--automatic">
@@ -732,7 +732,10 @@ function renderPostTripCard(trip) {
 								Incident occurred
 							</label>
 						</div>
-						<textarea class="rux-textarea sched-tasks__note-input" rows="2" placeholder="Add a note…" data-task-trip="${trip.id}" data-task-field="post_trip_note" aria-label="Post-trip note">${escapeHtml(trip.post_trip_note || "")}</textarea>
+						<div class="rux-field sched-tasks__note-input">
+							<label class="rux-field__label" for="post-trip-note-${trip.id}">Post-trip note</label>
+							<textarea class="rux-textarea" id="post-trip-note-${trip.id}" rows="2" data-task-trip="${trip.id}" data-task-field="post_trip_note">${escapeHtml(trip.post_trip_note || "")}</textarea>
+						</div>
 					</div>
 				</div>
 			</div>

@@ -6402,15 +6402,15 @@
 		     last so every namespace it calls already exists. It does not boot
 		     the page itself; each module still does that for itself. -->
 		<script src="./rux-ui/js/boot.js?v=1"></script>
-		<script src="./js/panels/trip-panel.js?v=46"></script>
+		<script src="./js/panels/trip-panel.js?v=47"></script>
 		<script src="./js/components/itinerary.js?v=64"></script>
 		<script src="./js/panels/driver-panel.js?v=31" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=18" defer></script>
 		<script src="./js/panels/customers-panel.js?v=13" defer></script>
-		<script src="./js/panels/settings-panel.js?v=11" defer></script>
+		<script src="./js/panels/settings-panel.js?v=12" defer></script>
 		<script src="./js/panels/trip-finder.js?v=11" defer></script>
 		<script src="./js/panels/request-inbox.js?v=10" defer></script>
-		<script src="./js/panels/trip-manifest.js?v=12" defer></script>
+		<script src="./js/panels/trip-manifest.js?v=13" defer></script>
 		<script src="./js/panels/print-schedule.js?v=37" defer></script>
 		<script src="./js/panels/trip-envelope.js?v=21" defer></script>
 		<script type="module" src="./js/core/app-reload.js?v=4"></script>
@@ -6437,7 +6437,7 @@
 			src="./js/panels/documents-panel.js?v=6"
 		></script>
 		<script type="module" src="./js/panels/trip-history.js?v=6"></script>
-		<script type="module" src="./js/panels/tasks-panel.js?v=71"></script>
+		<script type="module" src="./js/panels/tasks-panel.js?v=72"></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=24"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
 
@@ -7653,7 +7653,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=43");
+					const db = await import("./js/data/trip-db.js?v=44");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -10833,7 +10833,7 @@
 			// the calendar without a reload. renderBusRows ends in
 			// renderScheduler(), which repaints the bars and the stripes.
 			async function loadFleet() {
-				const db = await import("./js/data/trip-db.js?v=43");
+				const db = await import("./js/data/trip-db.js?v=44");
 				try {
 					schedulerBuses = await db.fetchBuses();
 				} catch (err) {
@@ -10866,7 +10866,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=43");
+					const db = await import("./js/data/trip-db.js?v=44");
 					loadTrip = db.loadTrip;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;

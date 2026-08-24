@@ -556,10 +556,10 @@
     };
     return Object.entries(config.workflow).map(([key, item]) => `
       <div class="settings-billing-row" data-billing-setting="${key}">
-        <span class="settings-billing-row__label">${escHtml(labels[key] || key)}</span>
-        <input class="rux-input settings-billing-row__input" type="text" maxlength="32" value="${escHtml(item.label)}" data-billing-label-input="${key}" />
+        <label class="settings-billing-row__label" for="settings-billing-label-${key}">${escHtml(labels[key] || key)}</label>
+        <input class="rux-input settings-billing-row__input" type="text" maxlength="32" id="settings-billing-label-${key}" value="${escHtml(item.label)}" data-billing-label-input="${key}" />
         <label class="rux-switch" title="${item.active ? "Visible in trip editor" : "Hidden in trip editor"}">
-          <input type="checkbox" ${item.active ? "checked" : ""} data-billing-active="${key}" />
+          <input type="checkbox" ${item.active ? "checked" : ""} data-billing-active="${key}" aria-label="Show ${escHtml(labels[key] || key)} in the trip editor" />
           <span class="rux-switch__track"></span>
           <span class="rux-switch__thumb"></span>
         </label>

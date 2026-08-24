@@ -126,10 +126,11 @@
       ${iconBtnHtml(req.icon, req.id)}
       <input class="rux-input settings-req-label-input" type="text"
              value="${escHtml(req.label)}" maxlength="32"
+             aria-label="Requirement label"
              data-req-label="${escHtml(req.id)}" />
       <span class="rux-badge settings-req-type-badge">${req.type === "vehicle" ? "Vehicle" : "Driver"}</span>
       <label class="rux-switch" title="${req.active ? "Active — click to disable" : "Inactive — click to enable"}">
-        <input type="checkbox" ${req.active ? "checked" : ""} data-req-toggle="${escHtml(req.id)}" />
+        <input type="checkbox" ${req.active ? "checked" : ""} data-req-toggle="${escHtml(req.id)}" aria-label="${escHtml(req.label)} active" />
         <span class="rux-switch__track"></span>
         <span class="rux-switch__thumb"></span>
       </label>

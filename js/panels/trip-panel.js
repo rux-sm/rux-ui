@@ -383,7 +383,7 @@ function initBillingWorkflow(root) {
 						<span class="rux-field__label">Date</span>
 						<span class="rux-input sched-scope-trip__payment-date-control">
 							<span class="sched-scope-trip__payment-date-label" data-payment-date-label aria-hidden="true">Date</span>
-							<input class="sched-scope-trip__payment-date" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
+							<input class="sched-scope-trip__payment-date" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" />
 						</span>
 					</label>
 					<label class="rux-field sched-scope-trip__payment-amount">
