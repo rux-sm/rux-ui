@@ -214,9 +214,10 @@
 /* The 16/24 semibold heading recipe, shared with .rux-ui-header__title.
    Tracking is negative rather than zeroed: at this size the tighter setting
    is what keeps a title reading as a heading instead of as body copy. */
-/* .rux-workspace__title left for heading-24 in workspace.css on 2026-08-23:
-   a workspace titles the PAGE, and typography.md §3.5's ladder found it was
-   titling smaller than the panels nested inside it. */
+/* .rux-workspace__title left for heading-24 in workspace.css on 2026-08-23
+   (§3.5's ladder found it titling smaller than the panels nested inside it),
+   and was removed entirely the same day — typography.md step 66, Class C —
+   when its last wearer retired with the Documents records table. */
 .rux-card__title {
 	color: var(--rux-text-heading-16-color);
 	font-size: var(--rux-text-heading-16-size);
@@ -244,8 +245,7 @@
    scheduler/css/features/settings-app.css, trip-history.css, all of
    which used to hardcode the same (size, color, line-height) themselves. */
 .rux-u-subtitle,
-.rux-card__subtitle,
-.rux-workspace__subtitle {
+.rux-card__subtitle {
 	color: var(--rux-text-secondary);
 	font-size: var(--rux-text-copy-14-size);
 	line-height: var(--rux-text-copy-14-line-height);

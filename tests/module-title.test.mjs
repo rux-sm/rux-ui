@@ -53,43 +53,16 @@ test("the shell has exactly one h1, and it is the module title", () => {
 	);
 });
 
-test("no workspace title claims to be the page heading", () => {
-	// A workspace heading names what is being viewed — a week, a document, a
-	// sub-view — never the module, which the shell header now carries.
-	for (const match of page.matchAll(/<(h\d)[^>]*class="rux-workspace__title"/g)) {
-		assert.notEqual(
-			match[1],
-			"h1",
-			"a workspace title must sit below the shell's h1",
-		);
+test("the workspace title class is retired (typography.md step 66)", () => {
+	// Class C, 2026-08-23: the last wearer retired with the Documents records
+	// table. The class must not reappear in markup, and no stylesheet may
+	// re-type it — comments are stripped first, since the tombstone notes
+	// legitimately NAME the class while recording where it went.
+	assert.ok(!page.includes('class="rux-workspace__title"'), "index.html must not wear the retired class");
+	for (const [name, css] of [["workspace.css", workspace], ["card.css", card]]) {
+		const rules = css.replace(/\/\*[\s\S]*?\*\//g, "");
+		assert.ok(!/\.rux-workspace__title\s*[,{]/.test(rules), `${name} must not define the retired class`);
 	}
-});
-
-test("the workspace title does not depend on its tag for size", () => {
-	// It was an h1 and is now an h2, so its type cannot come from the element.
-	// Since typography.md §3.5 step 64 workspace.css owns the type AND the box:
-	// a workspace titles the page at heading-24, where a panel titles a surface
-	// at 20 and a card at 16. Before that it shared card.css's heading-16 recipe
-	// and so titled SMALLER than the panels nested inside it.
-	const box = workspace.match(/\.rux-workspace__title\s*\{[^}]*\}/)[0];
-	for (const role of [
-		"--rux-text-heading-24-size",
-		"--rux-text-heading-24-weight",
-		"--rux-text-heading-24-line-height",
-		"--rux-text-heading-24-tracking",
-	]) {
-		assert.match(box, new RegExp(role), `missing ${role}`);
-	}
-	// card.css imports AFTER workspace.css, so any rule left there would win and
-	// silently undo the ladder. It must not type this class at all. Comments are
-	// stripped first: card.css legitimately NAMES the class in the note recording
-	// why it left, and matching prose would fail on the explanation itself.
-	const cardRules = card.replace(/\/\*[\s\S]*?\*\//g, "");
-	assert.doesNotMatch(
-		cardRules,
-		/\.rux-workspace__title[^{}]*\{[^}]*font-size/,
-		"card.css must not re-type .rux-workspace__title — it imports later and would win",
-	);
 });
 
 test("every view resolves a name for the header", () => {
@@ -145,7 +118,9 @@ test("the container ladder resolves each rung from its own source rule", () => {
 	};
 
 	rung(uiHeader, ".rux-ui-header__title", "heading-16");
-	rung(workspace, ".rux-workspace__title", "heading-24");
+	// No workspace rung to assert: §3.5 keeps heading-24 published as what a
+	// workspace title costs if one returns, but the class was removed at
+	// step 66 and there is no source rule to hold to it.
 	rung(panel, ".rux-panel__title", "heading-20");
 	rung(content, ".rux-section__title", "heading-16");
 	rung(card, ".rux-card__title", "heading-16");

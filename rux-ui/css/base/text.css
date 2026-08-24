@@ -89,8 +89,10 @@
 	color: var(--rux-text-heading-20-color);
 }
 
-/* Moved here from card.css at step 51. .rux-card__title, .rux-panel__title
-   and .rux-workspace__title still read the same role there. */
+/* Moved here from card.css at step 51. Of the three classes that shared the
+   recipe then, only .rux-card__title still reads it there — .rux-panel__title
+   moved to heading-20 (layout.md step 20) and .rux-workspace__title was
+   removed (typography.md step 66). */
 .rux-text-heading-16 {
 	font-size: var(--rux-text-heading-16-size);
 	font-weight: var(--rux-text-heading-16-weight);
