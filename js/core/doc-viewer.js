@@ -11,7 +11,11 @@
    window.RuxDocViewer.open({
      url, fileName, title, icon,
      onDelete, onUpdate,   // omit to hide that footer button
+     externalUrl,          // omit to hide the header's open-in-new link
    })
+   The footer always carries Print — any document the frame can render,
+   it can print — so the footer no longer hides when the optional
+   handlers are absent.
    window.RuxDocViewer.close()
    ========================================================================== */
 
@@ -53,6 +57,9 @@
 					<span class="rux-icon" aria-hidden="true">upload_file</span> Replace
 				</button>
 				<span class="rux-panel__spacer"></span>
+				<button type="button" class="rux-button rux-button--default" data-doc-viewer-print>
+					<span class="rux-icon" aria-hidden="true">print</span> Print
+				</button>
 			</footer>
 		`;
 		document.body.appendChild(panelEl);
@@ -66,6 +73,12 @@
 		panelEl.querySelector("[data-doc-viewer-external]").addEventListener("pointerdown", (event) => event.stopPropagation());
 		panelEl.querySelector("[data-doc-viewer-delete]").addEventListener("click", () => current?.onDelete?.());
 		panelEl.querySelector("[data-doc-viewer-update]").addEventListener("click", () => current?.onUpdate?.());
+		panelEl.querySelector("[data-doc-viewer-print]").addEventListener("click", () => {
+			const win = panelEl.querySelector(".sched-doc-viewer__frame")?.contentWindow;
+			if (!win) return;
+			win.focus();
+			win.print();
+		});
 		window.RuxFloatingWindow.attachDrag(panelEl, panelEl.querySelector(".rux-panel__header"));
 
 		document.addEventListener("keydown", (event) => {
@@ -108,7 +121,7 @@
 		panel.querySelector(".sched-doc-viewer__frame").src = url;
 		panel.querySelector("[data-doc-viewer-delete]").hidden = !options.onDelete;
 		panel.querySelector("[data-doc-viewer-update]").hidden = !options.onUpdate;
-		panel.querySelector(".sched-doc-viewer__footer").hidden = !options.onDelete && !options.onUpdate;
+		// Footer stays: Print applies to every document, whatever else is hidden.
 		const externalLink = panel.querySelector("[data-doc-viewer-external]");
 		externalLink.hidden = !options.externalUrl;
 		externalLink.href = options.externalUrl || "#";

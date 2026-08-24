@@ -7,7 +7,9 @@ import { readFile } from "node:fs/promises";
 // own anatomy fails here instead of shipping; D5 recorded that nothing did.
 const page = await readFile(new URL("../index.html", import.meta.url), "utf8");
 
-const ARCHETYPES = new Set(["records", "document-column", "canvas", "viewer"]);
+// "viewer" retired with composition.md Q1/step 6 — its only instance became
+// records, and no view may declare it or carry a workspace title now.
+const ARCHETYPES = new Set(["records", "document-column", "canvas"]);
 
 // Each view runs from its opening tag to the next view's (or the file end for
 // the last). Static slicing is enough: the views are siblings in one file.
@@ -37,21 +39,22 @@ test("every view declares a valid archetype (§2.1)", () => {
 	}
 });
 
-test("only a viewer titles its workspace (§2.2, typography.md §3.5)", () => {
+test("no view titles its workspace (§2.2 — record identity lives in the editor window)", () => {
 	for (const v of views) {
-		const titled = v.seg.includes("rux-workspace__title");
-		if (v.archetype === "viewer") {
-			assert.ok(titled, `${v.view}: a viewer names the record it renders`);
-		} else {
-			assert.ok(!titled, `${v.view}: a ${v.archetype} view must not carry a workspace title`);
-		}
+		assert.ok(!v.seg.includes("rux-workspace__title"),
+			`${v.view}: a ${v.archetype} view must not carry a workspace title`);
 	}
 });
 
 test("records views hold a table and a floating editor (§2.3)", () => {
 	for (const v of views.filter((x) => x.archetype === "records")) {
 		assert.ok(/<table/.test(v.seg), `${v.view}: records without a table`);
-		assert.ok(v.seg.includes("rux-panel--floating"), `${v.view}: records without a floating editor`);
+		// The editor is markup in the segment, or the shared runtime-built
+		// RuxDocViewer — declared with data-editor="shared", the same declared-
+		// intent mechanism as data-archetype, so this is not an exception list.
+		const shared = /data-editor="shared"/.test(v.seg);
+		assert.ok(shared || v.seg.includes("rux-panel--floating"),
+			`${v.view}: records without a floating editor (inline or declared shared)`);
 	}
 });
 

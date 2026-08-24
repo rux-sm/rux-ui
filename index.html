@@ -124,7 +124,7 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/documents-app.css?v=3"
+			href="./scheduler/css/features/documents-app.css?v=4"
 		/>
 		<link
 			rel="stylesheet"
@@ -5301,98 +5301,62 @@
 				<div
 					class="rux-app-view"
 					data-view="documents"
-					data-archetype="viewer"
+					data-archetype="records"
+					data-editor="shared"
 					hidden
 				>
 					<section
 						class="rux-workspace documents-app__stage"
-						aria-labelledby="documents-title"
+						aria-label="Documents"
 					>
-						<header class="rux-workspace__header">
-							<div class="rux-workspace__heading">
-								<h2
-									class="rux-workspace__title"
-									id="documents-title"
+						<!-- No workspace header: a records header carries controls
+						     (composition.md §2.3), and this view's Print and
+						     Open-in-new moved into the shared RuxDocViewer window
+						     that shows the document they act on. -->
+						<div class="rux-workspace__body documents-app__body">
+							<div class="rux-table-wrap">
+								<table
+									class="rux-table documents-app__table"
+									aria-label="Documents"
 								>
-									Credit Card Authorization
-								</h2>
-							</div>
-							<div class="rux-workspace__toolbar">
-								<button
-									class="rux-button rux-button--default"
-									type="button"
-									data-document-print
-								>
-									<span class="rux-icon" aria-hidden="true"
-										>print</span
-									>
-									<span class="rux-button__label"
-										>Print</span
-									>
-								</button>
-								<a
-									class="rux-button rux-button--default"
-									data-document-open-external
-									href="documents/form_cca.html"
-									target="_blank"
-									rel="noopener"
-								>
-									<span class="rux-icon" aria-hidden="true"
-										>open_in_new</span
-									>
-									<span class="rux-button__label"
-										>Open in New Tab</span
-									>
-								</a>
-							</div>
-						</header>
-						<div class="rux-workspace__body documents-app__preview">
-							<div class="documents-app__frame-wrap">
-								<iframe
-									class="documents-app__frame"
-									title="Document preview"
-									data-document-frame
-									src="documents/form_cca.html"
-								></iframe>
+									<thead>
+										<tr>
+											<th scope="col">Document</th>
+											<th scope="col">Category</th>
+											<th scope="col" aria-label="Actions"></th>
+										</tr>
+									</thead>
+									<tbody data-document-nav>
+										<!-- Each row declares its own src/title
+										     inline, so adding a document later is
+										     a markup-only change — the panel
+										     module reads these attributes. -->
+										<tr
+											class="documents-app__row"
+											data-document-src="documents/form_cca.html"
+											data-document-title="Credit Card Authorization"
+										>
+											<td>Credit Card Authorization</td>
+											<td>Forms</td>
+											<td class="documents-app__row-actions">
+												<button
+													class="rux-button rux-button--ghost rux-button--icon"
+													type="button"
+													aria-label="Open Credit Card Authorization"
+												>
+													<span
+														class="rux-icon"
+														aria-hidden="true"
+														>visibility</span
+													>
+												</button>
+											</td>
+										</tr>
+									</tbody>
+								</table>
 							</div>
 						</div>
 					</section>
-
-					<aside
-						class="rux-panel rux-panel--attached documents-app__list"
-						aria-label="Document list"
-					>
-						<header class="rux-panel__header">
-							<h2 class="rux-panel__title">Documents</h2>
-						</header>
-						<div class="rux-panel__body">
-							<div class="rux-panel__pane">
-								<div class="rux-card">
-									<header class="rux-card__header">
-										<p class="rux-card__title">Forms</p>
-									</header>
-									<div class="rux-card__body">
-										<nav
-											class="rux-menu documents-app__nav"
-											aria-label="Forms"
-											data-document-nav
-										>
-											<button
-												class="rux-menu__item"
-												type="button"
-												aria-current="page"
-												data-document-target="cca-form"
-												data-document-src="documents/form_cca.html"
-												data-document-title="Credit Card Authorization"
-											>
-												Credit Card Authorization
-											</button>
-										</nav>
-									</div>
-								</div>
-							</div>
-						</div>
-					</aside>
 				</div>
 				<!-- /module:documents -->
 
@@ -6430,7 +6394,7 @@
 		<script src="./rux-ui/js/controls.js?v=10"></script>
 		<script src="./js/core/billing-config.js?v=8"></script>
 		<script src="./rux-ui/js/floating-window.js?v=7"></script>
-		<script src="./js/core/doc-viewer.js?v=15"></script>
+		<script src="./js/core/doc-viewer.js?v=16"></script>
 		<script src="./rux-ui/js/suggestions.js?v=9"></script>
 		<!-- Rux.boot(root) — attaches the scanning modules (theme, utilities,
 		     controls, ui-shell) to a subtree rendered after page load. Loads
@@ -6469,7 +6433,7 @@
 		<script type="module" src="./js/panels/team-chat.js?v=19"></script>
 		<script
 			type="module"
-			src="./js/panels/documents-panel.js?v=5"
+			src="./js/panels/documents-panel.js?v=6"
 		></script>
 		<script type="module" src="./js/panels/trip-history.js?v=6"></script>
 		<script type="module" src="./js/panels/tasks-panel.js?v=70"></script>

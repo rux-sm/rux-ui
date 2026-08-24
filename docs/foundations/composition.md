@@ -1,10 +1,10 @@
 # Rux UI Foundations — Composition
 
-**Contract version: 1.4.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.5.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 5 steps: **5 done**
+**Status** · 6 steps: **6 done**
 Founding entry. This document answers **which anatomy a view gets**, given what kind of
 content it holds. Every other foundation document answers *what a thing looks like*;
 none answered *what to build*, and §3's census is what that omission cost.
@@ -84,6 +84,14 @@ The dominant archetype: **four of eight views**, and the target for a fifth.
 | Floating window | **Required** — the editor, titled with the record. |
 | Opening a record | Populates and shows the floating window. It does not navigate. |
 
+**The editor may be a shared, runtime-built window.** Documents' rows open the app-wide
+`RuxDocViewer` — the same window the trip panel's Files card uses — rather than a window of
+their own. A records view whose editor is shared declares it: `data-editor="shared"` on the
+`.rux-app-view`, the same declared-intent mechanism as `data-archetype`, which is what keeps
+the enforcement exception-free. And **a records view with no controls may omit the header
+band entirely**: Documents' Print and Open-in-new moved into the viewer beside the document
+they act on, leaving nothing for a band to hold. *(Step 6.)*
+
 *Checked against Cloudscape's Table view (step 3): its page header **does** carry a title —
 the resource-category name — because its chrome is breadcrumbs plus side navigation, with no
 persistent module heading. This system's UI header `<h1>` already names the module on every
@@ -116,14 +124,14 @@ The Calendar is the only instance. **Its date range is a readout, not a title**:
 `aria-live="polite"` and changes as you page, which is why it does not use
 `.rux-workspace__title` and must not be converted to one.
 
-### 2.6 Viewer — one record rendered whole
+### 2.6 Viewer — WITHDRAWN (step 6; original follows)
 
 | | |
 |---|---|
 | Workspace header | Controls, and `.rux-workspace__title` naming the record. |
 | Workspace body | The rendered record. |
 
-**This archetype is a candidate for retirement**, and §6 Q1 carries the question. Its only
+**Withdrawn 2026-08-23 (step 6): the prediction below came true** — Documents became §2.3 and no view declares `viewer`. The section stays as history. Original: this archetype is a candidate for retirement, and §6 Q1 carries the question. Its only
 instance is Documents, whose planned move to a table plus the existing `RuxDocViewer`
 floating window would make it §2.3 — after which `.rux-workspace__title` has no caller.
 
@@ -159,7 +167,7 @@ Measured in the browser on 2026-08-23, every view revealed in turn.
 | Settings | — | — | cards | 0 | 0 | Document column |
 | Game | — | — | cards | 0 | 0 | Document column *(attached count was 1 at the census — the D7 re-dress on the same day removed it; it was the main surface misdressed, never a rail)* |
 | Calendar | ✓ | — | custom | 1 | 1 | Canvas |
-| Documents | ✓ | ✓ | document | 1 | 0 | Viewer |
+| Documents | — | — | table | 0 | shared | Records *(was Viewer at the census — step 6 converted it; the editor is the shared `RuxDocViewer`)* |
 
 **Framed boxes: 118 across the eight views, 83 of them hand-rolled** rather than
 `.rux-card`, measured after that day's Settings migration.
@@ -211,12 +219,15 @@ D2 made visible in the census itself.
 | 3 | Q5 answered — §2 audited against Cloudscape's patterns | **done · Class A** | **Executed 2026-08-23**, reading eight pattern pages (Table view, View resources, Split view, the three Details variants, Secondary panels, Density settings). **The archetypes survive; one conjecture in Q5 itself did not.** Q5 guessed the Drivers/Fleet rails "resemble Split view" — they do not: a split panel shows *selected-record details* beside a collection, our rails hold *view options*, which map to Cloudscape's Preferences/drawer. Split view proper — browse-and-compare without opening an editor — has **no instance and no archetype here**, recorded as a recognized absence rather than invented ahead of a need. **One rule adopted, translated:** §2.8, an attached panel is supportive, never essential — and applying it the same day found **D6**, the Roster/Workload switch stranded in a collapsible rail. **Records validated with one explained divergence:** Cloudscape titles its table pages because its chrome has no persistent module heading; ours does, so §2.3's title-less band stands (note added in place). **The Details trio informs Q1 without changing it:** our floating editors are the "Details page with tabs" analog and the trip editor already follows one-tab-one-task; Cloudscape's summary-container-above-tabs — universally relevant info that survives tab switches — is worth weighing when the Documents detail work lands, and is left as an observation, not a rule. **Density: no adoption.** Cloudscape's density is a user-controlled, service-wide preference defaulting comfortable — a product feature. `layout.md` §9.2's dense exception is an author-chosen per-context rule, and its guardrail (never as a general compactness lever) already matches Cloudscape's readability caution. Different mechanisms, both kept. **Deliberately not done:** no Split view archetype, no density feature, and no app change for D6 — the defect is recorded and the fix is its own decision. |
 | 4 | Q3 answered — views declare their archetype; §2 becomes enforceable | **done · Class A** | **Executed 2026-08-23.** All eight `.rux-app-view` elements gained `data-archetype`, valued per §3's census: four `records`, two `document-column`, one `canvas`, one `viewer`. **The attribute is bare, and Q3's conjecture that `naming.md` would own it was wrong**: rule 2.5 scopes `data-rux-*` to `rux-ui/`, this is application vocabulary on application markup, and bare `data-view` on the same elements is the standing precedent — recorded here rather than amending a document that has nothing to say. **D5 closes with it**: `tests/composition-contract.test.mjs` asserts the declaration and the decisive anatomy per archetype — only a viewer titles its workspace; records hold a table and a floating editor; a document column has neither header band nor floating window. **The checks carry no exception list** (`CLAUDE.md`: an exception list is not a passing check) — the Game view's stray rail (D4) is *not* asserted against: attached panels are unchecked for document columns until D4 is decided, stated rather than worked around. **The first run of the test caught a real slicer bug**: the last view's segment ran to end-of-file and swallowed the floating surfaces that live outside the views container, flagging Settings for windows it does not contain — the live census had it right, the static slice was wrong, and the test now bounds the final segment. **Verified the test can fail**: flipping one view's archetype fails the suite by name. |
 | 5 | Q2 answered, D4 closed — there is no rail | **done · Class A** | **Executed 2026-08-23, at the owner's direction to decide D4.** **The decision: §2.4 stands — a document column admits no attached panel.** No amendment to the archetype, no exception. **D4's premise dissolved under inspection**: the census that raised it counted `.rux-panel--attached` nodes per view and read the game's one as a rail; the markup shows it is the game's **main surface**, centered inside the workspace body and docked to nothing — verified again in this step (exactly one attached panel in the view, zero floating). D4 closes as misdescribed and **D7 records the real defect precisely**: panel vocabulary borrowed un-docked for its chrome. **Unreachability was not used as the answer**: the game has no route control (recorded 2026-08-23 in the flip-seven header commit), but the taxonomy governs shipped markup, not what the navigation happens to expose. **Deliberately not done:** the D7 re-dress — app work with a stated blast radius, its own step — and no test assertion on attached panels in document columns while D7 stands, because a check that needs the game excepted is an exception list, not a rule. Nothing renders differently. |
+| 6 | Q1 answered — Documents becomes records; the Viewer archetype retires | **done · Class A** | **Executed 2026-08-23, at the owner's direction** ("a list of all documents … a button to open in a floating window … similar to the envelope and itinerary windows"). The view held **one document** — an iframe stage titled by `.rux-workspace__title`, fed by a menu-in-card in an attached list panel. It is now a `.rux-table` of documents; each row declares its own `data-document-src`/`-title` inline — the markup-only-additions property the old menu had, kept on purpose — and opens the shared `RuxDocViewer`, which gained a **Print** button in its footer for **every** caller (the footer no longer hides when the optional Delete/Replace handlers are absent). Record identity now lives in the floating window's title, as in every other records view. **§2.3 gained two sentences**: the editor may be a shared runtime-built window, declared `data-editor="shared"` — the same declared-intent mechanism as `data-archetype`, so the test's records assertion stays exception-free — and a records view with no controls may omit its header band. **§2.6 is withdrawn** with its text preserved; the enforcement strengthened both ways — `viewer` left the archetype set, and **no view may carry a workspace title now**, asserted for all eight. **Deliberately not done:** `.rux-workspace__title` and the orphaned `.rux-workspace__heading`/`__subtitle` CSS were **not removed** — zero callers makes that Class C, which stops and proposes; the proposal accompanies this step rather than being executed by it. The trip-panel and tasks flows that share the viewer were smoke-checked through the viewer itself, not re-run end to end; the one behavioural change they inherit is the always-present footer, now carrying Print. |
 
 ---
 
 ## 6. Open questions
 
-**Q1 — Does the Viewer archetype survive?** Its only instance is Documents, and the owner
+**Q1 — Does the Viewer archetype survive? — ANSWERED: no.** *Answered 2026-08-23 with step 6: Documents is a records view, §2.6 is withdrawn, and `.rux-workspace__title` has zero callers — its removal is Class C and stops for a proposal rather than riding along. Original text follows.*
+
+**Q1 (original) —** Its only instance is Documents, and the owner
 has stated it will become a table plus the existing `RuxDocViewer` floating window — §2.3.
 If that lands, §2.6 should be withdrawn rather than kept for a hypothetical, and
 `.rux-workspace__title` loses its last caller, which is a **Class C** removal.

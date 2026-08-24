@@ -1,65 +1,27 @@
 /* ==========================================================================
-   DOCUMENTS APP  ·  shell
+   DOCUMENTS APP  ·  records table
    --------------------------------------------------------------------------
-   Library of printable/reference documents. Layout mirrors the Calendar
-   module's canvas-left, tools-panel-right position (workspace preview stage
-   leading, .rux-panel document list attached flush on the trailing edge) —
-   built from shared classes only (.rux-panel, .rux-menu, .rux-workspace).
-   The list stays static like the Components module's (it never closes or
-   resizes; a single-document list doesn't need Calendar's resizable drawer).
-   The selected document renders in an iframe rather than inline markup,
-   since each document is its own self-contained, print-ready HTML file.
+   Library of printable/reference documents as a records view
+   (composition.md §2.3): a table of every document, each row opening the
+   shared RuxDocViewer floating window — the same window the trip panel's
+   Files card uses — where Print and Open-in-new sit beside the document
+   they act on. Rows declare src/title inline; adding a document is a
+   markup-only change. The old anatomy (attached list panel + iframe stage
+   + workspace title) retired with composition.md Q1: record identity lives
+   in the floating window's title, like every other records view.
    ========================================================================== */
 
-/* The view wrapper needs no background of its own: the shell behind it
-   (.rux-app, --rux-shell-bg) already paints the same surface its old
-   surface-1 fill duplicated. */
-
-.documents-app__list {
-	flex: none;
-	width: var(--rux-panel-width-sm);
-	min-width: var(--rux-panel-width-sm);
-	border-inline-start: var(--rux-panel-right-border);
-}
-
-.documents-app__nav {
-	padding: 0;
-	background: transparent;
-	border: 0;
-	border-radius: 0;
-}
-
-.documents-app__preview {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding: var(--rux-space-6);
-	background: var(--rux-surface-0);
+.documents-app__body {
+	padding: var(--rux-panel-padding);
 	overflow: auto;
-	overscroll-behavior: contain;
 }
 
-.documents-app__frame-wrap {
-	height: 100%;
-	width: auto;
-	max-width: 100%;
-	aspect-ratio: 8.5 / 11;
-	flex: none;
-	border: var(--rux-border-width) solid var(--rux-card-border);
-	border-radius: var(--rux-radius-container);
-	overflow: hidden;
+.documents-app__row {
+	cursor: pointer;
 }
 
-@media (max-width: 500px) {
-	.documents-app__preview {
-		padding: var(--rux-space-4);
-	}
-}
-
-.documents-app__frame {
-	display: block;
-	width: 100%;
-	height: 100%;
-	border: 0;
-	background: var(--rux-white);
+.documents-app__row-actions {
+	width: 1%;
+	text-align: end;
+	white-space: nowrap;
 }
