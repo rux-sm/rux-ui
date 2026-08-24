@@ -234,9 +234,9 @@ counts.
 | [`motion.md`](motion.md) | 1 | 1 | 2 |
 | [`naming.md`](naming.md) | 0 | 2 | 0 |
 | [`shell.md`](shell.md) | 1 | 0 | 0 |
-| [`state.md`](state.md) | 3 | 1 | 0 |
+| [`state.md`](state.md) | 3 | 0 | 1 |
 | [`typography.md`](typography.md) | 9 | 0 | 0 |
-| **total** | **20** | **4** | **2** |
+| **total** | **20** | **3** | **3** |
 
 **Accepted debt is not a to-do.** Those rows record a defect measured and deliberately left
 — the reasoning is in the row. They are counted apart so the backlog does not cry wolf.

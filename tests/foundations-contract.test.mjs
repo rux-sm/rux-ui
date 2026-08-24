@@ -128,7 +128,18 @@ test("the README index agrees with each document it lists", () => {
    across all nine documents every resolved defect carries `~~` and no live one
    does. Live defects then split by whether the row records a decision to live
    with them — accepted debt is not a to-do, and rolling it up as one would
-   make the backlog cry wolf. */
+   make the backlog cry wolf.
+
+   Acceptance is detected by PHRASE, and that is this counter's weak point,
+   recorded rather than hidden: the first version matched "accepted debt" and
+   missed state.md's D4, which says "accepted as debt", so a row that states
+   its own acceptance was rolled up as a to-do. Phrases are matched loosely
+   now, but the real fix — an explicit marker column, the way the amendment log
+   carries its status — would touch every defect row in nine documents and is
+   not worth a drive-by. If this misclassifies again, that is the change to
+   make. Note the distinction the phrases encode: naming.md D4 says resolving
+   it "belongs in ../portability-audit.md" and stays OPEN, because routing a
+   defect elsewhere is not the same as declining it. */
 function questionSection(md) {
 	const m = md.match(/\n##\s*(?:\d+\.\s*)?Open questions\s*\n/i);
 	return m ? md.slice(m.index) : "";
@@ -152,7 +163,7 @@ function defects(md) {
 	for (const line of md.split("\n")) {
 		if (!/^\|\s*D\d+\s*\|/.test(line)) continue;
 		if (line.includes("~~")) resolved++;
-		else if (/accepted debt|downgraded by step|measured and declined/i.test(line)) accepted++;
+		else if (/accepted\s+(?:as\s+)?debt|downgraded by step|measured and declined/i.test(line)) accepted++;
 		else open++;
 	}
 	return { open, accepted, resolved };
