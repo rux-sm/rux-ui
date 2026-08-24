@@ -1141,7 +1141,10 @@
 
 	/* — pane / shared across header, nav, pane, footer — */
 	--rux-panel-pane-bg:       var(--rux-surface-0); /* the content area following an attached tab strip */
-	--rux-panel-padding:       0 var(--rux-space-5) var(--rux-space-5) var(--rux-space-5);
+	/* 20 on every edge. The 0 top this carried was §9.1's "adjusted when
+	   attached navigation owns the top seam" — step 25 adopted the flat inset
+	   and the seam clause died with it. layout.md step 25. */
+	--rux-panel-padding:       var(--rux-space-5);
 	--rux-panel-content-gap:   var(--rux-space-0);
 	--rux-panel-padding-block:  var(--rux-space-4);
 	--rux-panel-padding-inline: var(--rux-space-4);
@@ -1251,8 +1254,10 @@
 	/* — card header — owns title layout, fill, and the body divider. */
 	/* A floor, not a fixed height (see card.css): a header holding a stacked
 	   title + subtitle is taller than one line and has to grow rather than
-	   spill past the card's own clipped edge. */
-	--rux-card-header-height: 40px;
+	   spill past the card's own clipped edge. 64 is Geist's own arithmetic —
+	   a 16px title sets a 24px line, and 24 + 20 above + 20 below = 64, the
+	   breathing its Fieldset gives a header. 40 gave ~9px. layout.md step 25. */
+	--rux-card-header-height: 64px;
 	--rux-card-header-weight: var(--rux-weight-400);
 	/* Left-only — relies on a card that's already inset from the viewport
 	   by its own parent's padding, with the trailing button's own hit-area
