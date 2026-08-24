@@ -35,7 +35,7 @@ needed for the task after that:
 - `scheduler/css/components.css` — scheduler features and layout only; requires `rux.css` to be loaded first
 - `scheduler/css/features/` — product-specific component and panel styles
 - `scheduler/css/layout/` — scheduler and application-shell layout styles
-- `docs/layout-composition.md` — canonical UI-header, shell, workspace, panel,
+- `docs/foundations/shell.md` — canonical UI-header, shell, workspace, panel,
   card, spacing, scrolling, and responsive composition contract
 - `docs/portability-audit.md` — the tier boundary between `rux-ui/` and the
   application layer: what is portable, what stays, and the migration sequence.
@@ -127,7 +127,7 @@ after. Skip that file for pure token, color, or static-layout changes.
 ## Application layout
 
 Before creating or modifying an application shell, read
-`docs/layout-composition.md`. Use `.rux-ui-header` above the application body,
+`docs/foundations/shell.md`. Use `.rux-ui-header` above the application body,
 `.rux-side-nav` for product destinations, one required center `.rux-workspace`,
 and optional attached side `.rux-panel` elements. Structural siblings have no
 decorative gap. Read `docs/ui-header.md` when changing global navigation.

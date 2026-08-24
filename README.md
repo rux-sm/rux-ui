@@ -141,7 +141,7 @@ in the workspace header. Attached application shells contain one required
 center workspace and may include side panels with no decorative gaps between
 structural siblings.
 
-See [Application Layout](docs/layout-composition.md) for the complete UI-header,
+See [Shell](docs/foundations/shell.md) for the complete UI-header,
 workspace, panel, card, spacing, scrolling, responsive, and accessibility
 contract. See [UI Header](docs/ui-header.md) for the lightweight component
 standard, [Rux Popovers](docs/popovers.md) for header tab-tip and interactive

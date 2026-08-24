@@ -14,7 +14,8 @@ const componentsCss = read("scheduler/css/components.css");
 const schedulerLayoutCss = read("scheduler/css/layout/scheduler-app.css");
 const drawerCss = read("rux-ui/css/base/drawer.css");
 const exampleHtml = read("examples/app-layout.html");
-const layoutDocs = read("docs/layout-composition.md");
+// Promoted 2026-08-23 (composition.md step 8); the old path is a stub.
+const layoutDocs = read("docs/foundations/shell.md");
 const layoutFoundation = read("docs/foundations/layout.md");
 const skillDocs = read(".claude/skills/rux-design/SKILL.md");
 
@@ -379,7 +380,7 @@ test("panel cards in the reference are composed through panel panes", () => {
 
 test("human and agent guidance route to the canonical layout contract", () => {
 	assert.match(layoutDocs, /A panel MUST have an identifiable purpose/);
-	assert.match(skillDocs, /docs\/layout-composition\.md/);
+	assert.match(skillDocs, /docs\/foundations\/shell\.md/);
 
 	/* The spacing rhythm moved to the foundation in layout.md step 6 — it stated
 	   values and a MUST outside a foundation document (D3). Assert BOTH halves
@@ -388,7 +389,7 @@ test("human and agent guidance route to the canonical layout contract", () => {
 	   quietly re-grew a table is the drift the rule exists to catch. */
 	assert.match(layoutFoundation, /UI header to app shell \| `0`/);
 	assert.doesNotMatch(layoutDocs, /UI header to app shell/);
-	assert.match(layoutDocs, /## Spacing[\s\S]{0,400}?foundations\/layout\.md/);
+	assert.match(layoutDocs, /## Spacing[\s\S]{0,400}?\]\(layout\.md\)/);
 });
 
 /* Rule §11.3 — stacking order. Enforces docs/foundations/layout.md §11.3.1,

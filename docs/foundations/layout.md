@@ -1,10 +1,10 @@
 # Rux UI Foundations — Layout
 
-**Contract version: 2.11.0** · Stamped at the top so a downstream document can state the
+**Contract version: 2.12.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 26 steps: **26 done**
+**Status** · 27 steps: **27 done**
 This document is canonical for **breakpoints (§1), the space scale (§7), and the radius
 scale and Materials presets (§8)**. Steps 4 and 5 brought the last two in, and **step 9
 adopted the elevation presets**, which was the last thing §8 had measured but not applied.
@@ -20,7 +20,7 @@ stacks in §8.1 remain measured-only, and only in dark.
    Mechanical, reversible, and the largest single reduction in drift available here.
 2. **Steps 4 and 5 — the scales.** `--rux-space-*` and `--rux-radius-*` exist in
    `tokens.css` and are governed by nothing. Step 5 is where Geist Materials gets measured.
-3. **Step 6 — `../layout-composition.md`.** Its § Spacing and § Responsive Behavior state
+3. **Step 6 — `shell.md`.** Its § Spacing and § Responsive Behavior state
    values and MUSTs, which by `CLAUDE.md`'s one-home test makes them rules with no
    canonical home. They move here or become pointers.
 
@@ -38,7 +38,7 @@ is otherwise prohibited.
 
 **Precedence.** This document outranks every downstream specification that lays out Rux UI,
 in this repository or any other — but only on what §1 actually governs. On the space scale,
-radius, and elevation it currently governs nothing, and `../layout-composition.md` remains
+radius, and elevation it currently governs nothing, and `shell.md` remains
 the operative statement until step 6 moves it.
 
 **Scope of that precedence.**
@@ -196,6 +196,7 @@ do.
 | 24 | A card inside a section does not pay the gap twice | **done · Class B, inert** | **Executed 2026-08-23**, found while migrating `tasks-panel` onto `.rux-section` (typography.md §3.5). `.rux-section` spaces its children with a **flex gap** of `--rux-card-content-gap`; `.rux-card` carries its own `+` sibling **margin** of the same token for when cards stack outside a section. Inside one they compound. **Measured, not assumed: a run of two cards under a section heading rendered a 32px gap** where every other card pair in the app renders 16px. Added `.rux-section > .rux-card + .rux-card { margin-top: 0 }` — the gap wins, because it is the primitive's own contract and the margin exists for cards that have no section to space them. **Class B by kind but inert in fact, and that was checked rather than assumed:** `.rux-section` had zero callers until the same day, and its one prior caller — the itinerary's day group — holds exactly **one** card child, so it has no adjacent pair and measured unchanged. The first content this rule affects is the tasks panel migrated in the same commit, which now renders 16px between trip cards. **Deliberately not done:** the reverse case — a `.rux-card` containing `.rux-section` children — was not addressed. No such markup exists, and inventing a rule for it would be guessing at a shape nothing has asked for yet. |
 | 25 | The card header floor moves to 64px; the pane inset loses its 0 top | **done · Class B ×3** | **Executed 2026-08-23, adopting the owner's two working-tree edits after a measured A/B** — stock values overridden live, every point measured both ways. **Before → after: `--rux-card-header-height` 40px → 64px; `--rux-panel-padding` `0 20 20 20` → `20px` all round.** **The 64 is Geist's own arithmetic**: a 16px title sets a 24px line, 24 + 20 + 20 = 64 — closing the "card header top padding" item (~9px at the 40 floor vs Geist's 20). Single-line headers 40 → 64. **Correction (2026-08-23, 2.10.1): the "subtitled headers 84 → 84" this step first recorded was a measurement artifact** — the A/B revealed the Settings view without hiding the active one, and the overlapped layout wrapped the header taller. Properly navigated, subtitled headers measure **64 under both floors**: they are content-sized past the old 40 floor, so the conclusion — unchanged by the token — holds, and the figure is corrected. **One reader takes it as a fixed height, accepted knowingly**: `itinerary.css` sets `height:` on stop headers — the densest form grows 24px per stop; a §9.2 dense-exception was offered, the owner chose uniformity. **The pane edit makes §9.1's row true**: it promised 20px "adjusted when attached navigation owns the top seam", but the token was 0-top everywhere and no adjustment existed — the clause described nothing and is deleted rather than kept as fiction. Tab-strip seams in all four editors 0 → 20; rail panes 0 → 20 top; a flush-seam variant was offered and declined. **The third Class B was found by an assert, not the A/B**: §1.1's ≤500px touch block held a second `--rux-card-header-height: 44px` — a *grow* against the 40 floor, a **shrink** against 64, the exact defect step 20 removed for the panel header. Removed from the block; **before → after at ≤500px: 44px → 64px.** The desktop-only A/B missed it, and the claim that the token had a single definition shipped wrong in `19352a2` before this step corrected it. Consumer renders zero `.rux-card__header` and zero `.rux-panel__pane`; gate clean. **Eyeball**: single-line card headers, the itinerary tab, the editors' tab seams, the rails, driver-week-info — and card headers at ≤500px. **Recording note**: commit `19352a2` shipped the values with a message claiming this step — the recording script had died on a stale anchor and the commit chain was gated on the test run instead of the script. This step is that record, one commit late and saying so. |
 | 26 | Answer the cards-document question; fix its duplicated number | **done · Class A** | **Executed 2026-08-23** alongside `composition.md` step 7, which decided the component-doc tier as a set. **The answer: no family foundation for cards** — `docs/cards.md` already exists at the component tier and gains the governance header; this document keeps owning the card's rules (§8, §9.1–9.2). **The numbering defect is the second finding**: step 17 appended the question as a second Q5 at the file's end while §6 already held one, so a citation by number was ambiguous — it is now Q6, answered, with the original preserved. Nothing renders differently. |
+| 27 | Claim `--rux-ui-header-height` in §10 | **done · Class A** | **Executed 2026-08-23**, with `shell.md`'s founding step: its header bullet stated a literal `44px` that contradicted the token's 40px desktop value, and correcting it to a token reference needed the token to have a published home. §10 carries it beside its panel and card siblings from steps 20 and 25. Prose references to `../layout-composition.md` in live sections now say `shell.md`; log history keeps the old path, as history. |
 
 ---
 
@@ -246,7 +247,7 @@ is a defensible choice, but it should be a choice on record rather than an accid
 
 **Q3 — Does layout own the shell's fixed dimensions? — ANSWERED: split, and the split is
 the answer.** Layout owns the **vocabulary** of dimensions the portable layer publishes —
-§10 now lists all six. `../portability-audit.md` and `../layout-composition.md` own the
+§10 now lists all six. `../portability-audit.md` and `shell.md` own the
 separate rule about **which layer may define a product dimension**, which is why
 `--rux-drawer-*-default-width` resolves to `auto` and appears in §10 only as an explanation
 of its own absence.
@@ -259,7 +260,7 @@ which closes D5.* Original text follows.
 
 **Q3 — Does layout own the shell's fixed dimensions?** Rail widths, drawer widths, and panel
 minimums are layout decisions that live in `tokens.css` today and are called "application
-variants, not base-shell defaults" by `../layout-composition.md`. Whether that stays true
+variants, not base-shell defaults" by `shell.md`. Whether that stays true
 or they become published vocabulary is not decided. *Gates nothing until step 6.*
 
 ---
@@ -406,7 +407,7 @@ governed by their own Geist pages and were not measured here.
 ## 9. Composition
 
 §7 publishes the space scale; this section says which rung applies to which
-relationship. Relocated from `../layout-composition.md` by step 6, where it stated
+relationship. Relocated from `shell.md` by step 6, where it stated
 values and a MUST outside a foundation document.
 
 ### 9.1 The card rhythm
@@ -458,7 +459,7 @@ dense rhythm only for a genuinely dense, repeating list of short rows — never 
 
 ### 9.3 Responsive composition
 
-These are the layout half of `../layout-composition.md` § Responsive Behavior. **The
+These are the layout half of `shell.md` § Responsive Behavior. **The
 accessibility half did not move** — see step 6 and D3.
 
 - Wide layouts SHOULD keep panels attached beside the workspace.
@@ -468,7 +469,7 @@ accessibility half did not move** — see step 6 and D3.
   §1.1's 500px boundary exists to switch on.
 
 **Rails, drawer widths and workspace minimums are not here**, though step 6 briefly put them
-here. `../layout-composition.md` already states that rule — *the shared shell MUST NOT define
+here. `shell.md` already states that rule — *the shared shell MUST NOT define
 product drawer widths, collapsed rails, feature breakpoints, or a workspace content minimum
 width* — and it is a **portability** rule about which layer may define a value, not a layout
 rule about what the value is. **Q3 is the open question of whether layout owns those fixed
@@ -492,6 +493,7 @@ which layout *changes*; this section governs the widths layout *is*.
 | `--rux-workspace-header-min-height` | 40px, 44px at §1.1's 500 | the workspace header band |
 | `--rux-panel-header-height` | 64px | the panel header band — a floor, and **not** in §1.1's touch block |
 | `--rux-card-header-height` | 64px | The card header band's floor — 24px title line + 20px breathing each side, Geist's Fieldset arithmetic (step 25) |
+| `--rux-ui-header-height` | 40px | The shell header band; the ≤500px touch block raises it to 44px (step 27 — claimed when `shell.md`'s founding fix replaced the stale `44px` literal with this token) |
 | `--rux-field-height` | 36px | a single-line form control |
 | `--rux-textarea-min-height` | 84px | the floor a textarea may be resized to |
 | `--rux-checkbox-target-height` | 32px | the hit target a checkbox or switch fills |
@@ -502,7 +504,7 @@ marketing surfaces to need a wider one. The `xs` suffix names the rung it would 
 scale ever existed, not a family that does.
 
 **Why the drawer widths are absent.** `--rux-drawer-left-default-width` and its right twin
-resolve to `auto`, and that is the rule working rather than a gap: `../layout-composition.md`
+resolve to `auto`, and that is the rule working rather than a gap: `shell.md`
 holds that *the shared shell MUST NOT define product drawer widths, collapsed rails, feature
 breakpoints, or a workspace content minimum width*. That is a **portability** rule about
 which layer may define a value, and it is not this document's — see §6 Q3. An application

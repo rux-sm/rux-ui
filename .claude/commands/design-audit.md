@@ -163,7 +163,7 @@ reimplement a base component instead of composing it, and any base component tha
 exists to serve one caller.
 
 Check the documented contracts in `docs/` (`buttons.md`, `cards.md`, `popovers.md`,
-`ui-header.md`, `trip-bar.md`, `driver-assignment-card.md`, `layout-composition.md`,
+`ui-header.md`, `trip-bar.md`, `driver-assignment-card.md`, `foundations/shell.md`,
 `motion.md`) against the CSS and JS as built. Documentation that has drifted from the
 implementation is a finding, and say which side is wrong.
 
