@@ -1,10 +1,10 @@
 # Rux UI Foundations — Typography
 
-**Contract version: 4.12.0** · Stamped at the top so a downstream document can state the
+**Contract version: 4.13.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 64 steps: **60 done · 1 deferred · 3 withdrawn**
+**Status** · 65 steps: **61 done · 1 deferred · 3 withdrawn**
 The type system conforms to the measured Geist catalog end to end, in its **values** and now
 in its **names**: the ladder sits on the catalog (24), roles own their leading and carry a
 family (25, 26), tracking follows the curve (27), every overridden heading is paired (29),
@@ -565,11 +565,30 @@ until 2026-08-23.
 
 | Container | Titles | Role | px |
 |---|---|---|---|
-| UI header | the product | `text-heading-16` | 16 |
-| Workspace | the page | `text-heading-24` | 24 |
-| Panel | one surface | `text-heading-20` | 20 |
+| UI header | **the module** — persistent chrome, outside the ladder | `text-heading-16` | 16 |
+| Workspace | **what is being viewed** — a week, a document | `text-heading-24` | 24 |
+| Panel | one surface, or the record on it | `text-heading-20` | 20 |
 | Section | a run of surfaces | `text-heading-16` | 16 |
 | Card | one surface's inside | `text-heading-16` | 16 |
+
+**The UI header title is the page's only `<h1>`, and it is not a rung of the content
+ladder.** `RuxViewRouter` writes it from the active nav link's own label, so it always names
+the *module* and cannot drift from the navigation. It is sized for a persistent bar rather
+than for its depth — which is why a 24px workspace title legitimately sets larger than the
+16px `<h1>` above it. Semantic level and visual weight are answering different questions
+here, and the ladder governs only the second.
+
+**A workspace title names what is being viewed — a week, a document — and MUST NOT restate
+the module's own name.** That is what the UI header already says, on every screen, whether
+or not the side navigation is open. This rule is not new: it was stated in an `index.html`
+comment beside the `<h1>` and had no home in this document until step 65, which is why
+§3.5's first draft described the workspace as titling "the page" — the opposite of the rule
+already in force. `index.html` now points here.
+
+A workspace title is also **frequently absent, and that is correct**: five of the reference
+application's seven views carry controls in that band and no title at all, because a
+schedule, a fleet list and a customer list are not "a thing being viewed" the way one
+document or one week is.
 
 **Section and card share a rung on purpose, and this is the rule the ladder turns on:
 between a section and a card the hierarchy signal is *position*, not size.** A section
@@ -582,11 +601,13 @@ and `settings-app` both chose 16 for a heading over a run, neither having a rule
 The ladder ratifies what they found rather than overruling it.
 
 **The ladder is not monotonic by containment, and that is deliberate.** A workspace title
-names a page and a panel title names a surface floating above it; those are different jobs,
-not two depths of one job. What the ladder does forbid is the **inversion** step 64 found:
-a container titling *smaller* than something nested inside it.
+names what is being viewed and a panel title names a surface floating above it; those are
+different jobs, not two depths of one job. What the ladder does forbid is the **inversion**
+step 64 found: a *content* container titling smaller than something nested inside it. The UI
+header is exempt because it is chrome, not content — stated above rather than left as an
+apparent contradiction.
 
-*(Enforced: `tests/typography-contract.test.mjs`.)*
+*(Enforced: `tests/module-title.test.mjs` — the five rungs are asserted against their source rules. Step 64 cited `typography-contract.test.mjs` here, which mentions none of this; step 65 replaced the false citation with a real check rather than deleting the claim.)*
 
 ---
 
@@ -761,6 +782,7 @@ five steps after it are what "exactly" still requires. Ordered by dependency: 49
 | 62 | Doc sync — reclassify step 23 (drift) | **done · Class A** | **Executed 2026-08-22.** A review of what remained across the set found this document overstating its own debt. **Step 23 was deferred for a reason that stopped being true.** Its blocker was that the three off-ladder rungs had no consumer; **step 50 published all three** eleven steps later, along with the `copy-13`, `copy-20` and `copy-24` roles the note said did not exist — verified against `tokens.css` rather than inferred. The step's work was done by a later step and the row was never reclassified, so the Status block read **2 deferred** when only step 4 still is. **Step 4 was re-checked in the same pass and its premise holds**: nothing in `rux-ui/css` caps a prose measure and `--rux-measure-*` has no consumer, so it stays deferred correctly. **Recorded as a numbered step rather than a quiet edit**, per step 21 — a log that silently corrects its own history is worth less than one that shows the correction — and step 23's original note is kept beside its new status for the same reason. **Patch, not minor:** no token, rule or value moves and nothing re-renders; this is a status correction. Contract 4.10.0 → 4.10.1. |
 | 63 | Correct rule 2.12's Q2 — interactivity is not the button test | **done · Class A** | **Executed 2026-08-22.** Found by acting on the rule rather than reading it: the trip-panel type pilot reached `.sched-scope-trip__doc-name`, which sits inside a `<button>`, and Q2 ("Is it interactive?") fires before Q3, so the tree as published sent it to **button-14 at weight 500**. **Two shipped components already contradicted that.** `.rux-menu__item` and `.rux-side-nav__item` are both interactive, both keyboard-operable, and both read `--rux-text-label-14-*` — weight **400** — and have since before this tree was written. So the tree disagreed with the system it describes, and the system was right: the `button` family is what the `--rux-button-*` control contract reads (`tokens.css:1405-1407`, `1529-1530`), i.e. a control's *own* label, not any text with a clickable ancestor. Q2 now asks that, and the paragraph below the list names the three interactive cases that still take **label**. **Nothing re-renders:** no token, value or class moves, and the two components already matched the corrected rule — this brings the *document* to the code, not the code to the document. **Deliberately not done:** (a) `.rux-menu__item` and `.rux-side-nav__item` were **not** changed — they were never wrong, and "fix the components to match the tree" would have pushed two core components to weight 500 on the authority of a sentence nobody had tested; (b) no `control-label` family or fifth question was added — §2.12 publishes four families and the correction needs no fifth, only a sharper Q2; (c) the `button` family's own values were **not** touched. **Minor, not patch:** unlike step 62 this moves a rule's meaning for every future call site, even though it moves no pixel. Contract 4.10.1 → 4.11.0. |
 | 64 | Publish the container ladder; correct the workspace inversion | **done · Class A + Class B** | **Executed 2026-08-23.** §3.2 said what each role *is*; nothing said which role a **container's own title** takes, and the cost of that gap was measured rather than asserted. A live census of the reference application found **121 framed boxes, 92 of them hand-rolled rather than `.rux-card`** — Settings alone renders **29 framed boxes and zero `.rux-card`** — and **three separate hand-built versions of "a titled group"**: `settings-app__panel` (×8), `sched-tasks__day-title` (×1), and `.rux-section` itself, which shipped with **zero callers** until the same day. Of 38 visible headings, **29 resolve to 16px (76%)**. **Class A —** §3.5 publishes the ladder: UI header 16, workspace 24, panel 20, section 16, card 16. **Class B —** two roles move. **Before → after: `.rux-workspace__title` 16/24/600 tracking −0.32px → 24/32/600 tracking −0.96px; `.rux-section__title` 24/32/600 tracking −0.96px → 16/24/600 tracking −0.32px.** Panel (20/26) and card (16/24) are unchanged and were re-measured to prove it. **The workspace move is the defect half:** a workspace titles the page, and it was reading heading-16 — **smaller than the panels nested inside it** ("Driver Roster" at 16 beneath a driver editor at 20). The ladder forbids that inversion specifically; it does not require monotonicity, and §3.5 says why. **The section move ratifies rather than overrules:** `tasks-panel.js` and `settings-app` independently chose 16 for a heading over a run with no rule to follow, and §3.5 makes the reason explicit — between a section and a card the hierarchy signal is **position**, not size. **Structural note:** `.rux-workspace__title` had to be split out of `card.css`'s shared heading-16 recipe, the same surgery step 51 and step 20 performed for `.rux-panel__title`. `card.css` imports **after** `workspace.css`, so a rule left behind there would silently win and undo the ladder; `tests/module-title.test.mjs` now asserts that absence, with comments stripped first — the first version of that assertion failed on `card.css`'s own note recording why it left. **States needing an eyeball:** every workspace header (Driver Roster, Fleet, Customers, Requests, Documents) now sets 8px larger; the itinerary's Day N heading now sets 8px smaller and shares the card rung. **Deliberately not done:** `settings-app__panel` (8 instances, including a `border-bottom` on its header that layout.md step 17 removed system-wide) and `sched-tasks__day-title` were **not** migrated to `.rux-section`. They are 9 elements across two panels and are recorded here as their own step rather than folded into a ladder change. **Consumer exposure checked**, since a Class B trips none of the name-based gates: the `infor-ln-docs` portal renders **zero** `.rux-workspace__title` and **zero** `.rux-section__title`, so both moves are inert there. Consumer gate clean. |
+| 65 | Correct §3.5 — a workspace names what is *viewed*, not the page | **done · Class A** | **Executed 2026-08-23**, one commit after step 64 and correcting it. §3.5's first draft said the workspace titles **"the page"**. That is the opposite of a rule already in force: an `index.html` comment beside the `<h1>` stated that the UI header names the module and that **"workspace headers below therefore carry controls and the name of what is being viewed — a week, a document — never the module's own name."** Step 64 published a mapping without looking for the rule that already governed it, and the rule was invisible to look for because it lived in an HTML comment — precisely the failure the one-home rule exists to prevent. §3.5 now carries it and `index.html` points here. **What the corrected rule settles:** the Documents view's "Credit Card Authorization" is **correct** (a document being viewed), the calendar's "August 17 – 23, 2026" is **correct** (a week being viewed, and an `aria-live` readout rather than a heading), and Drivers' **"Driver Roster" violates it** — that is the module's own name, which the UI header already carries on every screen. **The UI header is now stated to be outside the ladder.** It is the page's only `<h1>` and `RuxViewRouter` writes it from the nav label, but it is persistent chrome sized for a bar, not a rung sized for its depth — which is why a 24px workspace title legitimately sets larger than the 16px `<h1>` above it. Step 64's "forbids the inversion" line is narrowed to *content* containers so the exemption is stated rather than read as a contradiction. **Absence is correct too:** five of the reference application's seven views carry controls in that band and no title, because a schedule, a fleet list and a customer list are not "a thing being viewed" the way one document or one week is. **A false enforcement citation was found and repaired.** Step 64 wrote *(Enforced: `tests/typography-contract.test.mjs`)* under §3.5; that file mentions none of the ladder, the workspace title or the section title. Rather than delete the claim, step 65 made it true: `tests/module-title.test.mjs` now asserts **all five rungs against the rule that sets each one**, in five separate files. The check was verified by breaking a rung deliberately — reverting `.rux-section__title` to heading-24 fails it — so it is not a vacuous pass. **No values move; this is Class A.** The ladder's numbers are exactly step 64's. **Deliberately not done:** "Driver Roster" was **not** removed. It is app work, it changes what a page looks like, and the owner has the Documents view moving to a table plus the existing `RuxDocViewer` floating window — after which record identity lives in `.rux-panel__title` as it already does in six of seven floating windows, and `.rux-workspace__title` may have no caller left at all. Removing the class is **Class C** and stops for a proposal; it is not folded in here. |
 
 ---
 
