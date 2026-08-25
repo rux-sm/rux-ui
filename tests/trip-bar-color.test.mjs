@@ -143,9 +143,11 @@ test("centered identity text applies to single and multi-day bars without moving
 		tripBarCss,
 		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar \.sched-trip-bar__destination\s*\{[^}]*grid-column:\s*2[^}]*justify-content:\s*center[^}]*text-align:\s*center/s,
 	);
+	// __summary-end, not __paid-badge: since step 10 the paid badge and bus
+	// reference share one trailing grid item, so the summary stays one row.
 	assert.match(
 		tripBarCss,
-		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar \.sched-trip-bar__paid-badge\s*\{[^}]*grid-column:\s*3[^}]*justify-self:\s*end/s,
+		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar \.sched-trip-bar__summary-end\s*\{[^}]*grid-column:\s*3[^}]*justify-self:\s*end/s,
 	);
 	assert.match(
 		tripBarCss,
@@ -154,10 +156,25 @@ test("centered identity text applies to single and multi-day bars without moving
 	assert.match(appSource, />Center trip details<\/span/);
 });
 
-test("bus-count pills use black text on their white surface", () => {
+test("the bus reference is the faintest ink on the destination row", () => {
+	// docs/trip-bar.md rule 2.10, step 10: the white pill was the
+	// highest-contrast treatment on the surface, spent on a secondary
+	// identity marker that outranked the destination it qualifies (D11).
+	// Plain text in the subtle tier now, trailing the destination inside
+	// __summary-end so centered-heads mode keeps the summary one grid row.
 	assert.match(
 		tripBarCss,
-		/\.sched-trip-bar__bus-label\s*\{[^}]*background:\s*var\(--sched-trip-bar-bus-label-bg\)[^}]*color:\s*var\(--rux-black\)/s,
+		/\.sched-trip-bar__bus-label\s*\{[^}]*color:\s*var\(--rux-fg-on-accent-subtle\)/s,
+	);
+	assert.match(
+		tripBarSource,
+		/el\.className = "sched-trip-bar__summary-end";[\s\S]{0,120}if \(paidBadge\) el\.appendChild\(paidBadge\);[\s\S]{0,40}if \(busLabel\) el\.appendChild\(busLabel\);/,
+		"paid badge sits just inside the marker, marker outermost right",
+	);
+	assert.doesNotMatch(
+		tripBarSource,
+		/__reqs";[\s\S]{0,80}busLabel/,
+		"the marker has left the reqs row",
 	);
 });
 

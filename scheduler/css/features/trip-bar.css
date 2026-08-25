@@ -35,15 +35,15 @@
                                 Options, five independent switches). Hides
                                 that row while a bar is collapsed — selecting
                                 the bar always shows every row regardless.
-   .sched-scheduler--trip-bar-size-xxs
    .sched-scheduler--trip-bar-size-sm
                                 Swaps --sched-trip-bar-row-font-size/-line-height
-                                (tokens.css, COMPONENT · trip bar) from their
-                                xs default to xxs/sm — every row's text and the
+                                (tokens.css, COMPONENT · trip bar) from the
+                                xs default to sm — every row's text and the
                                 whole height budget follow automatically, no
                                 other CSS to touch. Set by the "Trip bar size"
                                 segmented control (index.html). No -xs class:
-                                that's just the unmodified default.
+                                that's just the unmodified default; the -xxs
+                                class was retired at docs/trip-bar.md step 6.
 
    State classes (JS-toggled, no rux- prefix)
    ------------------------------------------
@@ -79,9 +79,8 @@
    Client       __client           xs
    Contact      __contact          xs
    Notes        __notes            xs        (italic)
-   Reqs/bus pill __bus-label       9-13px    Clamped to the reqs row, not a row of its own — tracks
-                                              __row-font-size at 0.85 so it steps with every tier
-                                              (9/10.2/11.9px at XXS/XS/SM), always under its row
+   Bus ref      __bus-label        12/16     Plain text, destination row far right (step 10) —
+                                              label-12 whole, faintest ink, no box of its own
    Time         __time             xs        (Dep left, Spt centered, Arr right)
    Time value   __time-value       xs
    Drivers      __driver           xs
@@ -104,12 +103,10 @@
 	);
 	--sched-trip-bar-action-padding-block: var(--rux-space-2) 0;
 	--sched-trip-bar-action-padding-inline: var(--rux-space-2);
-	--sched-trip-bar-bus-label-min-width-compact: 1.875rem;
 	--sched-trip-bar-conflict-height: var(--rux-control-height);
 	--sched-trip-bar-tight-gap: var(--rux-space-px);
 	--sched-trip-bar-compact-padding: var(--rux-space-2);
 	--sched-trip-bar-actions-bg: transparent;
-	--sched-trip-bar-bus-label-bg: var(--rux-white);
 	--sched-trip-bar-conflict-bg: color-mix(in oklch, var(--rux-danger) 18%, transparent);
 	--sched-trip-bar-conflict-border-color: color-mix(in oklch, var(--rux-danger) 38%, transparent);
 	--sched-trip-bar-active-z-index: var(--rux-z-dropdown);
@@ -118,47 +115,9 @@
 
 	/* Declared here, not in tokens.css — see the comment there. Chains
 	   through --sched-trip-bar-row-line-height, so it has to be declared at
-	   or below .sched-scheduler--trip-bar-size-xxs/-sm to actually see their
+	   or below .sched-scheduler--trip-bar-size-sm to actually see its
 	   override; :root sits above that and would freeze on the xs default. */
 	--sched-trip-bar-icon-size: var(--sched-trip-bar-row-line-height);
-
-	/* Same freezing reasoning as icon-size above — both chain through the row
-	   typography, so both have to live here, not tokens.css. The bus-label
-	   pill is a badge, not a text row, but it still has to move when the rest
-	   of the bar does.
-
-	   It previously didn't. The font tracked *line-height* x 0.625 with a 10px
-	   floor, and the height tracked line-height - 4px with a 12px floor, which
-	   worked out to:
-
-	     XXS (12px row)  height 8 -> floored 12px   font 7.5 -> floored 10px
-	     XS  (16px row)  height      12px           font       10px
-	     SM  (20px row)  height      16px           font       12.5px
-
-	   — XXS and XS resolving pixel-identical, so two of the three settings
-	   produced the same pill and the control looked broken at the first step.
-
-	   The font now tracks --sched-trip-bar-row-font-size, which is the thing
-	   the user actually sees change (10/12/14px), at 0.85 so the pill stays a
-	   step under the row text it sits beside. Both floors drop below the XS
-	   value so XXS has somewhere to go: 9px of 600-weight text on white is
-	   still legible at the density XXS exists to provide, and every tier stays
-	   shorter than its own row line-height, so the pill never grows the row. */
-	/* Three hand-set specs, one per density tier — the shape Geist publishes
-	   for Badge (Small 11/20, Medium 12/24, Large 14/20), rather than one
-	   formula evaluated three times. The clamps this replaces derived size,
-	   leading and box from three *different* expressions, so none of them
-	   landed on the scale, two resolved fractional (10.2px, 11.9px), and the
-	   box was computed from a term the text never saw — which is why it
-	   clipped its own glyphs. A hand-set spec cannot do any of that.
-	   XS is the default, and the three values live in scheduler/css/tokens.css
-	   rather than here: a custom property resolves from the *nearest* ancestor
-	   that declares it, so a default on .sched-trip-bar — a descendant of
-	   .sched-scheduler — silently beat every tier override on the size class.
-	   The row tokens never had this problem because they were already declared
-	   further up. A token a tier is meant to override MUST be declared above
-	   that tier's class in the ancestor chain.
-	   docs/foundations/typography.md D13, Q7, step 30. */
 
 	/* ONE LABEL PER THEME — docs/trip-bar.md rule 2.12, step 18. The bar
 	   overrides the on-accent family for its own subtree so every existing
@@ -249,12 +208,12 @@
    Icons (.sched-trip-bar .rux-icon, just below) are the same story for size
    — --sched-trip-bar-icon-size (declared on .sched-trip-bar above) already
    scales with these two. Icons also expose their other three Material
-   Symbols axes per tier if it turns out XXS/SM need their own tuning
+   Symbols axes per tier if it turns out SM needs its own tuning
    beyond just shrinking/growing: --sched-trip-bar-icon-fill,
    --sched-trip-bar-icon-weight, --sched-trip-bar-icon-grade,
    --sched-trip-bar-icon-optical-size (all defined once, tokens.css). None
    are overridden per tier yet — add one here, same shape as the two below,
-   once XXS/XS/SM are visible side by side and it's clear which need it. */
+   once XS/SM are visible side by side and it's clear which need it. */
 
 /* Trip bar icons are tuned independently of every other .rux-icon in the app.
    This rule lives here, not in rux-ui/css/base/icons.css, because .sched-trip-bar
@@ -273,9 +232,10 @@
 	--_icon-optical-size: var(--sched-trip-bar-icon-optical-size);
 }
 
-/* .sched-scheduler--trip-bar-size-xxs / --trip-bar-size-sm moved to
-   layout/scheduler.css, which owns .sched-scheduler — naming.md rule 2.1,
-   step 13. They set --sched-trip-bar-* tokens, which is why they lived here. */
+/* .sched-scheduler--trip-bar-size-sm moved to layout/scheduler.css, which
+   owns .sched-scheduler — naming.md rule 2.1, step 13. It sets
+   --sched-trip-bar-* tokens, which is why it lived here. The -xxs tier that
+   moved with it was retired at docs/trip-bar.md step 6. */
 
 /* Partial POs keep the confirmed trip surface (including color overrides),
    while the shared outline warns that authorization is incomplete. */
@@ -733,7 +693,7 @@
 	text-align: center;
 }
 
-.sched-scheduler--centered-trip-heads .sched-trip-bar .sched-trip-bar__paid-badge {
+.sched-scheduler--centered-trip-heads .sched-trip-bar .sched-trip-bar__summary-end {
 	grid-column: 3;
 	justify-self: end;
 }
@@ -866,21 +826,35 @@
 	white-space: nowrap;
 }
 
-.sched-trip-bar__bus-label {
+/* Paid badge and bus reference share one right-aligned trailing group: in
+   the centered-heads grid this is what keeps the summary a single row — two
+   trailing siblings would auto-place into a second grid row and grow the
+   bar. */
+.sched-trip-bar__summary-end {
 	display: inline-flex;
 	align-items: center;
-	justify-content: center;
-	height: var(--sched-trip-bar-bus-label-height);
-	padding: var(--rux-space-px);
-	background: var(--sched-trip-bar-bus-label-bg);
-	border-radius: var(--sched-trip-bar-bus-label-radius);
-	color: var(--rux-black);
-	font-size: var(--sched-trip-bar-bus-label-font-size);
-	font-weight: var(--sched-trip-bar-bus-label-weight);
-	/* Was line-height: 1 — unitless on real text, which rule 2.2 calls a
-	   defect, and the third of this element's three derived values. */
-	line-height: var(--sched-trip-bar-bus-label-line-height);
-	letter-spacing: var(--sched-trip-bar-bus-label-tracking);
+	gap: var(--rux-space-1);
+	flex: none;
+	white-space: nowrap;
+}
+
+/* The bus reference — "1/6", which bus of how many — is a qualifier on the
+   trip's NAME, so it sits on the destination row, far right, as plain text
+   in the faintest ink available: no fill, no radius, no box. The white pill
+   this replaces was the highest-contrast treatment on the surface, spent on
+   a secondary identity marker that outranked the destination it qualified
+   (D11); the print surface had this placement right the whole time. It
+   takes label-12 whole at weight 400 — a Label is 400, and print's 700 is
+   that surface's own recorded debt, not a value to copy.
+   docs/trip-bar.md rule 2.10, step 10. */
+.sched-trip-bar__bus-label {
+	flex: none;
+	color: var(--rux-fg-on-accent-subtle);
+	font-size: var(--rux-text-label-12-size);
+	line-height: var(--rux-text-label-12-line-height);
+	letter-spacing: var(--rux-text-label-12-tracking);
+	font-weight: var(--rux-weight-400);
+	font-variant-numeric: tabular-nums; /* a 1/6 ratio is a count — rule 2.11, step 11 */
 }
 
 .sched-trip-bar__destination {
@@ -894,8 +868,9 @@
 	white-space: nowrap;
 	font-size: var(--sched-trip-bar-row-font-size);
 	font-weight: var(--rux-weight-400);
-	/* Tokenised so the XXS tier can carry the dense rung: its row text is 11px,
-	   and rule 2.14 requires positive tracking below 14. */
+	/* Tokenised with the row pair so a tier override reaches all three axes
+	   together. The dense-rung reason it was added (XXS at 11px) retired with
+	   that tier — docs/trip-bar.md step 6. */
 	letter-spacing: var(--sched-trip-bar-row-tracking, 0);
 	line-height: var(--sched-trip-bar-row-line-height);
 }
@@ -919,6 +894,7 @@
 	font-size: var(--sched-trip-bar-row-font-size);
 	font-weight: var(--rux-weight-400);
 	line-height: var(--sched-trip-bar-row-line-height);
+	font-variant-numeric: tabular-nums; /* a date — rule 2.11, step 11 */
 }
 
 .sched-trip-bar__pending {
@@ -986,6 +962,7 @@
 	white-space: nowrap;
 	margin-left: var(--rux-space-1);
 	letter-spacing: var(--rux-tracking-normal);
+	font-variant-numeric: tabular-nums; /* a phone number — rule 2.11, step 11 */
 }
 
 .sched-trip-bar__notes {
@@ -1049,6 +1026,11 @@
 	min-width: 0;
 	min-height: var(--sched-trip-bar-row-line-height);
 	align-items: center;
+	/* typography.md rule 2.9: times are compared down the board, so their
+	   figures share one advance — thirty stacked bars align digit-for-digit
+	   with the bus rail beside them, which already sets this.
+	   docs/trip-bar.md rule 2.11, step 11. */
+	font-variant-numeric: tabular-nums;
 	background: var(--sched-trip-bar-meta-bg);
 	border-radius: var(--sched-trip-bar-meta-radius) var(--sched-trip-bar-meta-radius) 0 0;
 	box-shadow: var(--sched-trip-bar-meta-shadow);
@@ -1280,6 +1262,14 @@
 	content: ":";
 }
 
+/* Every drawer value is numeric — miles, dollars, invoice and PO refs, the
+   payment date — EXCEPT the free-text --wrap field (Notes), which is prose
+   and where typography.md rule 2.9 says tabular figures are wrong.
+   docs/trip-bar.md rule 2.11, step 11. */
+.sched-trip-bar__detail-field:not(.sched-trip-bar__detail-field--wrap) .sched-trip-bar__detail-field-value {
+	font-variant-numeric: tabular-nums;
+}
+
 .sched-trip-bar__detail-field-value {
 	min-width: 0;
 	overflow: hidden;
@@ -1336,13 +1326,6 @@
 @container (max-width: 16rem) {
 	.sched-trip-bar__actions {
 		padding-inline: var(--rux-space-2);
-	}
-}
-
-@container (max-width: 14rem) {
-	.sched-trip-bar__bus-label {
-		min-width: var(--sched-trip-bar-bus-label-min-width-compact);
-		padding: 0 var(--rux-space-1);
 	}
 }
 

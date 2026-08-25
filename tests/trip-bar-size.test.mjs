@@ -23,6 +23,11 @@ const ruxTokens = await readFile(
 	new URL("../rux-ui/css/tokens.css", import.meta.url),
 	"utf8",
 );
+// The size control and stored-preference migration live in the app shell.
+const appSource = await readFile(
+	new URL("../index.html", import.meta.url),
+	"utf8",
+);
 
 const ROOT_FONT_PX = 16;
 
@@ -79,95 +84,36 @@ function pxFor(tier, prop) {
 	return pxOf(ref[1]);
 }
 
-const TIERS = ["xxs", "xs", "sm"];
+// Two tiers since docs/trip-bar.md step 6 retired XXS — it had rendered
+// identically to the default since typography.md Q11, so the control lied.
+const TIERS = ["xs", "sm"];
 const rowFont = (t) => pxFor(t, "--sched-trip-bar-row-font-size");
 const rowLine = (t) => pxFor(t, "--sched-trip-bar-row-line-height");
-const pillFont = (t) => pxFor(t, "--sched-trip-bar-bus-label-font-size");
-const pillBox = (t) => pxFor(t, "--sched-trip-bar-bus-label-height");
-const pillLine = (t) => pxFor(t, "--sched-trip-bar-bus-label-line-height");
-
-test("the bus pill states rungs instead of deriving them", () => {
-	// The regression this replaces: size, leading and box each came from a
-	// separate clamp() over a different term, so none landed on the scale, two
-	// resolved fractional (10.2px, 11.9px), and the box was computed from a
-	// term the text never saw — so it clipped its own glyphs.
-	for (const tier of TIERS) {
-		for (const prop of [
-			"--sched-trip-bar-bus-label-font-size",
-			"--sched-trip-bar-bus-label-height",
-			"--sched-trip-bar-bus-label-line-height",
-		]) {
-			const raw = valueOf(tier, prop);
-			assert.doesNotMatch(
-				raw,
-				/clamp\(|calc\(/,
-				`${tier}: ${prop} is derived ("${raw}"); it must name a rung`,
-			);
-		}
-	}
-});
-
-test("the bus pill never grows the row it sits in", () => {
-	// The collapsed bar height is row-line-height x visible-row-count, so a
-	// pill taller than its own row would silently blow that budget. Equal is
-	// allowed: at XXS the pill fills the row exactly, which is that tier's
-	// stated cost for legible text.
-	for (const tier of TIERS) {
-		assert.ok(
-			pillBox(tier) <= rowLine(tier),
-			`${tier}: pill ${pillBox(tier)}px must fit a ${rowLine(tier)}px row`,
-		);
-	}
-});
-
-test("the bus pill's box fits its own leading", () => {
-	// The box and the text used to come from different expressions. They do not
-	// any more, and this is what keeps them together.
-	//
-	// The default tier is the ONE exception and it is pinned rather than
-	// skipped: docs/foundations/typography.md D19 records the pill rendering
-	// 12/12 in a 16px box, measured live 2026-08-21. Asserting the known-bad
-	// pair means fixing D19 fails this test and forces the exception out,
-	// which a skip would not.
-	//
-	// This exception was not written to make a red test green. Until step 13 of
-	// naming.md moved the tier blocks out of trip-bar.css, this suite read the
-	// XXS tier's values for the default tier -- a whole-file regex finding the
-	// first match -- so it reported agreement it had never actually checked.
-	// The defect was open the whole time; only the coverage is new.
-	for (const tier of TIERS) {
-		if (tier === "xs") {
-			assert.equal(pillBox(tier), 16, "D19: default pill box is 16px");
-			assert.equal(pillLine(tier), 12, "D19: default pill leading is 12px — fix D19, then delete this branch");
-			continue;
-		}
-		assert.equal(
-			pillBox(tier),
-			pillLine(tier),
-			`${tier}: pill box ${pillBox(tier)}px and leading ${pillLine(tier)}px must agree`,
-		);
-	}
-});
-
-test("the bus pill is never louder than the row text beside it", () => {
-	// Where size cannot separate them — XXS has no room for two legible sizes —
-	// weight does, per rule 2.3. What is forbidden is the pill being *bigger*.
-	const pillWeight = schedTokens.match(
-		/--sched-trip-bar-bus-label-weight:\s*var\((--rux-weight-\d+)\)/,
+test("the bus reference is plain text taking label-12 whole", () => {
+	// docs/trip-bar.md rule 2.10, step 10: the marker is a qualifier on the
+	// trip's name — destination row, far right, no fill, no radius, no box,
+	// weight 400, the role's own three axes adopted together (rule 2.6).
+	// This replaces four pill tests: the pill geometry they measured (box,
+	// per-tier font, weight-500 exception) no longer exists, and its
+	// hand-set tokens are gone — which also closes typography.md D19's
+	// 12/12-in-a-16px-box defect by deletion.
+	assert.match(
+		barCss,
+		/\.sched-trip-bar__bus-label\s*\{[^}]*font-size:\s*var\(--rux-text-label-12-size\)[^}]*line-height:\s*var\(--rux-text-label-12-line-height\)[^}]*letter-spacing:\s*var\(--rux-text-label-12-tracking\)[^}]*font-weight:\s*var\(--rux-weight-400\)/s,
 	);
-	assert.ok(pillWeight, "the pill weight must name a --rux-weight-* rung");
-	for (const tier of TIERS) {
-		assert.ok(
-			pillFont(tier) <= rowFont(tier),
-			`${tier}: pill text ${pillFont(tier)}px must not exceed the ${rowFont(tier)}px row text`,
+	const declarations = barCss.replace(/\/\*[\s\S]*?\*\//g, "");
+	const markerRule = declarations.match(/\.sched-trip-bar__bus-label\s*\{[^}]*\}/s)?.[0] ?? "";
+	for (const boxProp of ["background", "border-radius", "height", "min-width", "padding"]) {
+		assert.doesNotMatch(
+			markerRule,
+			new RegExp(`[\\s;{]${boxProp}:`),
+			`the marker is plain text — no ${boxProp}`,
 		);
-		if (pillFont(tier) === rowFont(tier)) {
-			assert.notEqual(
-				pillWeight[1],
-				"--rux-weight-400",
-				`${tier}: pill matches the row size, so its weight must differ from the row's 400`,
-			);
-		}
+	}
+	// The hand-set pill tokens stayed dead nowhere: no declaration or read
+	// survives in any stylesheet this suite covers.
+	for (const css of [barCss, schedTokens, layoutCss]) {
+		assert.doesNotMatch(css, /--sched-trip-bar-bus-label-/);
 	}
 });
 
@@ -187,10 +133,6 @@ test("no tier goes below the 12px floor (rule 2.14)", () => {
 			rowFont(tier) >= 12,
 			`${tier}: ${rowFont(tier)}px row text is below the 12px floor (rule 2.14)`,
 		);
-		assert.ok(
-			pillFont(tier) >= 12,
-			`${tier}: ${pillFont(tier)}px pill text is below the 12px floor (rule 2.14)`,
-		);
 	}
 });
 
@@ -200,12 +142,55 @@ test("the size settings still drive the row typography", () => {
 	// spelling would have made a conformance step look like a regression.
 	assert.equal(rowFont("sm"), 14, "SM renders 14px row text");
 	assert.equal(rowFont("xs"), 12, "the default tier renders 12px row text");
+});
 
-	// XXS is deliberately equal to the default now, and that is Q11's answer
-	// rather than a bug: no departures are allowed, 11px has no rung in the
-	// catalog, and the catalog publishes exactly ONE leading at 12. There is no
-	// catalog-legal way to keep a third tier apart on size or leading, so the
-	// tier survives as a no-op class and its 25% density gain is gone.
-	assert.equal(rowFont("xxs"), rowFont("xs"), "XXS collapsed into the default tier (Q11)");
-	assert.equal(rowLine("xxs"), rowLine("xs"), "XXS collapsed into the default tier (Q11)");
+test("the XXS tier stays retired (step 6)", () => {
+	// typography.md Q11 collapsed XXS into the default — no catalog-legal way
+	// to hold a third tier apart — and docs/trip-bar.md step 6 removed the
+	// class, its control segment, and the stored-preference value (migrated
+	// to the default in index.html). A revival would be a control that lies.
+	assert.doesNotMatch(layoutCss, /--trip-bar-size-xxs/);
+	assert.doesNotMatch(appSource, /data-value="xxs"/);
+	assert.match(
+		appSource,
+		/if \(stored === "xxs"\) localStorage\.setItem\("rux:trip-bar-size", "xs"\)/,
+		"a stored xxs preference must migrate to the default it already rendered as",
+	);
+});
+
+test("figures that line up are tabular, and prose is left alone", () => {
+	// typography.md rule 2.9 via docs/trip-bar.md rule 2.11, step 11: the
+	// time row, bus reference, paid date, contact phone and the drawer's
+	// numeric values share one digit advance so thirty stacked bars align
+	// digit-for-digit; setting it globally is prohibited because tabular
+	// figures are wrong in prose.
+	for (const sel of [
+		"__time",
+		"__bus-label",
+		"__status-date",
+		"__contact-phone",
+	]) {
+		assert.match(
+			barCss,
+			new RegExp(
+				`\\.sched-trip-bar${sel}\\s*\\{[^}]*font-variant-numeric:\\s*tabular-nums`,
+				"s",
+			),
+			`${sel} carries tabular figures`,
+		);
+	}
+	// Drawer values take it through the :not(--wrap) scope — the free-text
+	// Notes field is prose and must stay proportional.
+	assert.match(
+		barCss,
+		/\.sched-trip-bar__detail-field:not\(\.sched-trip-bar__detail-field--wrap\) \.sched-trip-bar__detail-field-value\s*\{[^}]*font-variant-numeric:\s*tabular-nums/s,
+	);
+	const declarations = barCss.replace(/\/\*[\s\S]*?\*\//g, "");
+	for (const prose of ["__client", "__notes"]) {
+		assert.doesNotMatch(
+			declarations,
+			new RegExp(`\\.sched-trip-bar${prose}[^{]*\\{[^}]*tabular-nums`, "s"),
+			`${prose} is prose and takes no tabular figures`,
+		);
+	}
 });

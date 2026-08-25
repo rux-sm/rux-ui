@@ -158,16 +158,6 @@
 	--sched-trip-bar-radius: var(--rux-radius-container);
 	--sched-trip-bar-action-button-size: 32px;
 	--sched-trip-bar-actions-radius:   var(--rux-radius-control);
-	--sched-trip-bar-bus-label-radius: var(--rux-radius-full);
-	/* A filled chip carrying a bus number is a badge, and rule 2.11 puts badges
-	   at 500. This read 600 — the heading weight — the same one-job-two-answers
-	   split step 6 closed on .rux-ui-header__badge-count.
-	   docs/foundations/typography.md rule 2.11, step 30. */
-	--sched-trip-bar-bus-label-weight: var(--rux-weight-500);
-	--sched-trip-bar-bus-label-height:      var(--rux-text-label-12-line-height);
-	--sched-trip-bar-bus-label-font-size:   var(--rux-text-label-12-size);
-	--sched-trip-bar-bus-label-line-height: var(--rux-line-height-12);   /* 12px */
-	--sched-trip-bar-bus-label-tracking:    var(--rux-text-label-12-tracking);
 	--sched-trip-bar-meta-radius:      var(--rux-radius-sm);
 	/* --sched-trip-bar-fg, NOT --rux-fg-on-accent — this declaration was D16:
 	   the var() substituted against the :root's white where it sits, so the

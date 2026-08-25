@@ -1021,7 +1021,7 @@ export function createTripBar(trip, callbacks = {}) {
     pending.appendChild(marker);
   });
   const groupLabel = trip.groupLabel || "";
-  // Sits left of the bus-label pill on the destination row — the pill is
+  // Sits left of the bus reference on the destination row — the reference is
   // a fixed identity marker anchored at the far right edge, so paid status
   // (a secondary indicator) reads better just inside it, not past it.
   let paidBadge = null;
@@ -1043,18 +1043,30 @@ export function createTripBar(trip, callbacks = {}) {
     }
   }
   pending.setAttribute("aria-label", summaryMarkerLabels.join(", "));
-  // Lives on the reqs row (left-aligned, before requirement icons), not
-  // nested inside `pending` — that span has its own overriding aria-label
-  // for pending-only items, which would swallow this pill's aria-label if
-  // it were a descendant instead of a sibling.
-  const busPill = groupLabel ? (() => {
+  // The bus reference — which bus of how many — is a qualifier on the trip's
+  // name, so it lives on the destination row, far right (docs/trip-bar.md
+  // rule 2.10, step 10; it was a white pill on the reqs row before that).
+  // Never nested inside `pending`, whose overriding aria-label would swallow
+  // this one — and it keeps its own aria-label because "1/6" reads as a
+  // fraction to a screen reader and means neither.
+  const busLabel = groupLabel ? (() => {
     const el = textEl("span", "sched-trip-bar__bus-label", groupLabel);
     el.setAttribute("aria-label", `${groupLabel} buses in this customer trip`);
     return el;
   })() : null;
+  // Both trailing markers share one right-aligned group so the centered-heads
+  // grid keeps the summary to a single row — see __summary-end in
+  // trip-bar.css.
+  const summaryEnd = (paidBadge || busLabel) ? (() => {
+    const el = document.createElement("span");
+    el.className = "sched-trip-bar__summary-end";
+    if (paidBadge) el.appendChild(paidBadge);
+    if (busLabel) el.appendChild(busLabel);
+    return el;
+  })() : null;
   summary.append(
     textEl("div", "sched-trip-bar__destination", trip.destination),
-    ...(paidBadge ? [paidBadge] : []),
+    ...(summaryEnd ? [summaryEnd] : []),
   );
 
   const time = document.createElement("div");
@@ -1177,7 +1189,6 @@ export function createTripBar(trip, callbacks = {}) {
     (() => {
       const row = document.createElement("div");
       row.className = "sched-trip-bar__reqs";
-      if (busPill) row.appendChild(busPill);
       // Drop-off/Pick-up trips get a leg marker alongside the requirement
       // icons — same class/tooltip convention as those, so it inherits the
       // standard trip-bar icon treatment (size/weight/color) automatically

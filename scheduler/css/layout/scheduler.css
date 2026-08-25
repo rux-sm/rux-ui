@@ -147,33 +147,19 @@
 	}
 }
 
-/* XXS now resolves to exactly what the default tier resolves to, and that is
-   the whole of Q11's answer: no departures, so 11px goes, and the catalog
-   publishes only ONE leading at 12 (16). There is no catalog-legal way to keep
-   a third tier apart on size or leading alone.
+/* Two tiers only — Compact (the default, no class) and Comfortable (below).
+   The XXS tier is GONE (docs/trip-bar.md step 6, Class C, executed under the
+   owner's authorization): typography.md Q11 had already collapsed it into
+   the default — the catalog floors at 12px and publishes one leading there —
+   so the class was a control that changed nothing. Stored "xxs" preferences
+   are migrated to the default in index.html, which they already rendered as. */
 
-   What that costs, stated rather than discovered later: trip-bar height is
-   `row-line-height x visible-row-count`, so at 7 rows this tier rendered
-   12 x 7 = 84px against the default's 16 x 7 = 112px — a 25% density gain that
-   no longer exists. The tier is kept as a no-op class so a stored preference
-   still resolves; retiring the option itself is a product change, not a type
-   one. docs/foundations/typography.md §5 step 43, Q11. */
-.sched-scheduler--trip-bar-size-xxs {
-	--sched-trip-bar-row-font-size:   var(--rux-text-label-12-size);
-	--sched-trip-bar-row-line-height: var(--rux-text-label-12-line-height);
-	--sched-trip-bar-row-tracking:    var(--rux-text-label-12-tracking);
-	--sched-trip-bar-bus-label-height:      var(--rux-text-label-12-line-height);
-	--sched-trip-bar-bus-label-font-size:   var(--rux-text-label-12-size);
-	--sched-trip-bar-bus-label-line-height: var(--rux-text-label-12-line-height);
-}
-
+/* No bus-label overrides since step 10: the bus reference is plain text on
+   the destination row taking label-12 whole at every tier, so there is no
+   per-tier pill geometry left to configure. docs/trip-bar.md rule 2.10. */
 .sched-scheduler--trip-bar-size-sm {
 	--sched-trip-bar-row-font-size:   var(--rux-size-14);           /* 14px */
 	--sched-trip-bar-row-line-height: var(--rux-line-height-20);    /* 20px */
-	--sched-trip-bar-bus-label-height:      var(--rux-line-height-16);    /* 16px */
-	--sched-trip-bar-bus-label-font-size:   var(--rux-size-12);           /* 12px */
-	--sched-trip-bar-bus-label-line-height: var(--rux-line-height-16);    /* 16px */
-	--sched-trip-bar-bus-label-tracking:    var(--rux-tracking-normal);   /* 12px is on-scale */
 }
 
 /* — Pull-to-change-week hint — */

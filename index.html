@@ -41,7 +41,7 @@
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=134" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=354" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=357" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=15"
@@ -2726,10 +2726,10 @@
 													<button
 														class="rux-button rux-button--segment"
 														type="button"
-														aria-pressed="false"
-														data-value="xxs"
-														aria-label="Extra extra small"
-														title="Extra extra small"
+														aria-pressed="true"
+														data-value="xs"
+														aria-label="Compact"
+														title="Compact"
 													>
 														<span
 															class="rux-button__label"
@@ -2739,23 +2739,10 @@
 													<button
 														class="rux-button rux-button--segment"
 														type="button"
-														aria-pressed="true"
-														data-value="xs"
-														aria-label="Extra small"
-														title="Extra small"
-													>
-														<span
-															class="rux-button__label"
-															>M</span
-														>
-													</button>
-													<button
-														class="rux-button rux-button--segment"
-														type="button"
 														aria-pressed="false"
 														data-value="sm"
-														aria-label="Small"
-														title="Small"
+														aria-label="Comfortable"
+														title="Comfortable"
 													>
 														<span
 															class="rux-button__label"
@@ -6447,7 +6434,7 @@
 				clearTripBars,
 				applyItineraryUploaded,
 				applyItineraryDeleted,
-			} from "./js/components/trip-bar.js?v=27";
+			} from "./js/components/trip-bar.js?v=29";
 			import BusPicker, {
 				findConflict as findBusConflict,
 			} from "./js/components/bus-picker.js?v=8";
@@ -9430,7 +9417,7 @@
 
 			// ── Trip bar size ─────────────────────────────────────────────────
 			// Swaps --sched-trip-bar-row-font-size/-line-height (tokens.css) from
-			// xs to xxs/sm via one class on schedulerEl — see trip-bar.css's
+			// xs to sm via one class on schedulerEl — see trip-bar.css's
 			// "Row size" section for why nothing else needs to change. Reuses
 			// the existing .rux-segmented-track component (rux-ui/js/controls.js)
 			// rather than hand-rolling toggle logic: it manages its own
@@ -9440,15 +9427,16 @@
 			let tripBarSize = "xs";
 			try {
 				const stored = localStorage.getItem("rux:trip-bar-size");
-				if (stored === "xxs" || stored === "sm") tripBarSize = stored;
+				if (stored === "sm") tripBarSize = stored;
+				// XXS retired (docs/trip-bar.md step 6): it had rendered
+				// identically to the default since typography.md Q11, so a
+				// stored "xxs" becomes the default it already looked like —
+				// rewritten here so the retired name does not linger.
+				if (stored === "xxs") localStorage.setItem("rux:trip-bar-size", "xs");
 			} catch (_) {}
 
 			function applyTripBarSize(size) {
 				tripBarSize = size;
-				schedulerEl?.classList.toggle(
-					"sched-scheduler--trip-bar-size-xxs",
-					size === "xxs",
-				);
 				schedulerEl?.classList.toggle(
 					"sched-scheduler--trip-bar-size-sm",
 					size === "sm",
@@ -9703,9 +9691,7 @@
 
 				if ("tripBarSize" in settings) {
 					const size = settings.tripBarSize;
-					applyTripBarSize(
-						size === "xxs" || size === "sm" ? size : "xs",
-					);
+					applyTripBarSize(size === "sm" ? size : "xs");
 				}
 
 				if ("centeredTripHeads" in settings) {
