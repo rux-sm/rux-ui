@@ -8,7 +8,7 @@ A lightweight, theme-aware design system for Rux UI. Shared CSS, small vanilla-J
 
 This system was distilled from the historical **TripBoard** codebase, which originated a heavier 3-tier `--rux-*` token system across ~12 CSS files. This rebuild consolidates tokens into one flat namespace and exposes one component entrypoint that imports focused component partials.
 
-The reference application in `index.html`, its styles under `scheduler/css/`, and the documents under `docs/` are the reference for advanced patterns such as the schedule grid, trip bar geometry, and optical-radius math.
+The reference application in `index.html`, its styles under `scheduler/css/`, and the documents under `docs/` are the reference for advanced patterns such as the schedule grid and the trip bar — whose design rules live in [`docs/trip-bar.md`](docs/trip-bar.md), not here. (An optical-radius system once mentioned in this line was withdrawn by that document's rule 2.2.)
 
 ---
 

@@ -1,89 +1,42 @@
 /* ==========================================================================
    RUX UI — TRIP BAR
    --------------------------------------------------------------------------
-   Compact Gantt bar for Escamilla trips. Displays trip destination, client,
-   driver, and time data in a fixed-height card that expands on selection.
+   Compact Gantt bar for Escamilla trips: one card per bus assignment on the
+   week grid, thirty or more on screen at once.
+
+   THE RULES LIVE IN docs/trip-bar.md — anatomy, the colour and state model,
+   the typography and density contracts, and the amendment log that changes
+   them. This header is orientation only, and the comments in the body are
+   rationale beside the values they explain, never rules. It used to be the
+   other way around: the rule statement that lived here quietly became the
+   real specification while the document went stale — docs/trip-bar.md §0
+   records that failure, and its step 9 is this correction.
 
    Base
    ----
-   .sched-trip-bar   Single-day trip (most common shape). Fixed collapsed height,
-                   grows when selected to reveal action toolbar.
+   .sched-trip-bar   Single-day trip (most common shape); grows on selection.
 
    Modifiers (additive — no modifier fights another)
    --------------------------------------------------
-   .sched-trip-bar--multi-day     Spans several scheduler columns; adjusts height
-                                when a conflict row is present.
-   .sched-trip-bar--unconfirmed   Danger-toned variant (red accent) for trips not
-                                yet confirmed by dispatch.
-   .sched-trip-bar--has-conflict  Adds a conflict banner row. Height effect applies
-                                only on multi-day bars (single-day absorbs it).
-   .sched-trip-bar--from-prev     Trip started before the current week window; removes
-                                the thick left accent stripe and left border radius.
-   .sched-trip-bar--to-next       Trip ends after the current week window; removes
-                                the right border radius.
+   .sched-trip-bar--multi-day     Spans several columns as __head + __tail.
+   .sched-trip-bar--unconfirmed   The computed unconfirmed status tone.
+   .sched-trip-bar--has-conflict  Adds the conflict banner row.
+   .sched-trip-bar--from-prev     Continues from before the window; flat start edge.
+   .sched-trip-bar--to-next       Continues past the window; flat end edge.
+   .sched-trip-bar--partial-po    The border becomes the incomplete-authorization
+                                  warning — the one thing that gives it width.
 
-   Scheduler view modifiers
-   ------------------------
-   .sched-scheduler--centered-trip-heads
-                                Makes the full multi-day span the primary head
-                                surface and centers a one-day-width content column.
-   .sched-scheduler--hide-client
-   .sched-scheduler--hide-contact
-   .sched-scheduler--hide-notes
-   .sched-scheduler--hide-reqs
-   .sched-scheduler--hide-drivers Per-row user preferences (index.html's View
-                                Options, five independent switches). Hides
-                                that row while a bar is collapsed — selecting
-                                the bar always shows every row regardless.
-   .sched-scheduler--trip-bar-size-sm
-                                Swaps --sched-trip-bar-row-font-size/-line-height
-                                (tokens.css, COMPONENT · trip bar) from the
-                                xs default to sm — every row's text and the
-                                whole height budget follow automatically, no
-                                other CSS to touch. Set by the "Trip bar size"
-                                segmented control (index.html). No -xs class:
-                                that's just the unmodified default; the -xxs
-                                class was retired at docs/trip-bar.md step 6.
+   Scheduler view modifiers (on .sched-scheduler; blocks in layout/scheduler.css)
+   ------------------------------------------------------------------------------
+   --centered-trip-heads · --hide-{client,contact,notes,reqs,drivers} ·
+   --trip-bar-size-sm (the only size class: the default has none, and the
+   -xxs tier was retired at docs/trip-bar.md step 6).
 
-   State classes (JS-toggled, no rux- prefix)
-   ------------------------------------------
-   .is-active    Bar is selected; reveals the action toolbar and details.
-   .is-expanded  Details drawer is open. Kept in sync with .is-active.
+   State classes (JS-toggled): .is-active (selected), .is-expanded (drawer).
 
-   Row typography — scan rows (body, top to bottom). Every row shares one
-   size/line-height pair, read from the trip bar's own component tokens
-   (tokens.css, COMPONENT · trip bar) rather than the raw --rux-size-12/
-   --rux-line-height-16 primitives directly: --sched-trip-bar-row-font-size
-   (12px) / --sched-trip-bar-row-line-height (16px — tokens.css defines
-   line-height as an absolute, 4px-grid-aligned length, not a unitless
-   ratio). Every row is locked to that same 16px height with zero gap and
-   zero margin between rows — the line-height *is* the row height, no
-   exceptions, no per-row padding. Weight is uniformly --rux-weight-400
-   app-wide (see tokens.css).
-
-   Destination and Time are the only two rows that always show while
-   collapsed — every other row (client, contact, notes, reqs, drivers) is
-   independently togglable per user preference (see the scheduler view
-   modifiers above), so --sched-trip-bar-collapsed-height can't assume a
-   fixed row count while collapsed anymore. index.html's
-   recomputeTripBarRowCount() counts however many are actually on and
-   writes it to --sched-trip-bar-visible-row-count, which the collapsed
-   height calc() below reads. Selecting a bar (.is-active) always shows
-   all 7 regardless — every row preference is collapsed-only declutter,
-   not a permanent hide.
-   ------------------------------------------------
-   Row          Element            Size      Notes
-   ──────────── ────────────────── ───────── ──────────
-   Destination  __destination      xs
-   Paid badge   __status(-date)    xs        (on the destination row)
-   Client       __client           xs
-   Contact      __contact          xs
-   Notes        __notes            xs        (italic)
-   Bus ref      __bus-label        12/16     Plain text, destination row far right (step 10) —
-                                              label-12 whole, faintest ink, no box of its own
-   Time         __time             xs        (Dep left, Spt centered, Arr right)
-   Time value   __time-value       xs
-   Drivers      __driver           xs
+   Scan rows, top to bottom — docs/trip-bar.md §1.1 owns this table:
+   __destination (+ __summary-end holding __paid-badge and __bus-label) ·
+   __client · __contact · __notes · __reqs · __time · __drivers
    ========================================================================== */
 
 .sched-trip-bar {
