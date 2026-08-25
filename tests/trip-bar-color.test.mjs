@@ -31,12 +31,12 @@ test("trip bar override colors remain visible for unconfirmed trips", () => {
 	// The guarantee is the :not() scoping, not the token name: a trip tagged
 	// teal stays teal when it goes unconfirmed. docs/trip-bar.md step 4 moved
 	// the tone off --sched-trip-bar-danger-border (red-800, a REST colour one
-	// step darker than every other tone with nowhere to hover to) and onto a
-	// 700/800 pair like the rest of the palette. The scoping is what this
-	// asserts, in both directions.
+	// step darker than every other tone with nowhere to hover to); step 18
+	// reduced each tone to one per-theme rest declaration. The scoping is
+	// what this asserts, in both directions.
 	assert.match(
 		tripBarCss,
-		/\.sched-trip-bar--unconfirmed:not\(\[data-trip-bar-color\]\)\s*\{[^}]*--_tone:\s*var\(--sched-trip-bar-unconfirmed-tone\)[^}]*--_tone-hover:\s*var\(--sched-trip-bar-unconfirmed-tone-hover\)/s,
+		/\.sched-trip-bar--unconfirmed:not\(\[data-trip-bar-color\]\)\s*\{[^}]*--_tone:\s*var\(--sched-trip-bar-unconfirmed-tone\)/s,
 	);
 	assert.doesNotMatch(
 		tripBarCss,
@@ -161,43 +161,88 @@ test("bus-count pills use black text on their white surface", () => {
 	);
 });
 
-test("trip surfaces are catalog steps, and hover is the darker one", () => {
-	// Replaces "trip interaction surfaces derive modest state changes from one
-	// base brightness", which asserted the lightness/opacity recipe the trip
-	// bar no longer reads. docs/trip-bar.md rule 2.5, step 4: rest is 700,
-	// hover and pressed are 800, and selected is not a fill at all.
+test("trip surfaces are catalog steps, and hover is the published overlay", () => {
+	// docs/trip-bar.md rule 2.12, step 18: rest is the hue's 500 in dark and
+	// 600 in light — the only rungs where one label per theme clears 4.5:1 on
+	// all seven tones — and hover/pressed composite the published
+	// --rux-state-hover-overlay / -active-overlay over rest instead of
+	// stepping to a second rung. Selected is not a fill at all.
 	//
-	// Those tokens still EXIST — .sched-driver-grid__cell--conflict reads
-	// -bg-lightness and -bg-opacity — so asserting their values would have
-	// kept passing while testing nothing about this component. What is
+	// The retired recipe tokens still EXIST — .sched-driver-grid__cell--conflict
+	// reads -bg-lightness and -bg-opacity — so asserting their values would
+	// keep passing while testing nothing about this component. What is
 	// asserted here is that the bar's own surfaces are the steps.
 	assert.match(tripBarCss, /--_surface:\s*var\(--_tone\);/);
-	assert.match(tripBarCss, /--_surface-hover:\s*var\(--_tone-hover\);/);
-	assert.match(tripBarCss, /--_surface-pressed:\s*var\(--_tone-hover\);/);
 	assert.match(tripBarCss, /--_surface-active:\s*var\(--_tone\);/);
+
+	const declarations = tripBarCss.replace(/\/\*[\s\S]*?\*\//g, "");
+	// The paired-step machinery is gone: hover is not a second fill.
+	assert.doesNotMatch(
+		declarations,
+		/--_(tone|surface|trip-bar-color|tail-surface)-(hover|pressed):/,
+		"a hover/pressed surface is a second fill again instead of an overlay",
+	);
 
 	// No trip surface may reconstitute the old recipe.
 	assert.doesNotMatch(
-		tripBarCss.replace(/\/\*[\s\S]*?\*\//g, ""),
+		declarations,
 		/--_surface[a-z-]*:\s*oklch\([^;]*--sched-trip-bar-(bg|hover-bg|pressed-bg|selected-bg)-(lightness|opacity)/,
 		"a head surface is back on the lightness/opacity recipe",
 	);
 
-	// Every categorical tone publishes both steps, or a teal bar hovers blue.
+	// Hover and pressed are the shared overlays, composited over an unmoved
+	// rest fill, and the article-level rules exclude multi-day bars, whose
+	// states paint on __head/__tail so the seam gap stays unpainted.
+	assert.match(
+		tripBarCss,
+		/\.sched-trip-bar:hover:not\(\.is-active\):not\(\.sched-trip-bar--multi-day\)\s*\{[^}]*background-image:\s*linear-gradient\(var\(--rux-state-hover-overlay\), var\(--rux-state-hover-overlay\)\)/s,
+	);
+	assert.match(
+		tripBarCss,
+		/\.sched-trip-bar:active:not\(\.is-active\):not\(\.sched-trip-bar--multi-day\)\s*\{[^}]*background-image:\s*linear-gradient\(var\(--rux-state-active-overlay\), var\(--rux-state-active-overlay\)\)/s,
+	);
+	assert.match(
+		tripBarCss,
+		/\.sched-trip-bar--multi-day:hover:not\(\.is-active\) \.sched-trip-bar__head\s*\{[^}]*--rux-state-hover-overlay/s,
+	);
+	assert.match(
+		tripBarCss,
+		/\.sched-trip-bar--multi-day:hover:not\(\.is-active\) \.sched-trip-bar__tail\s*\{[^}]*--rux-state-hover-overlay/s,
+	);
+
+	// Every categorical tone rests on 500 in dark and 600 in light — one
+	// declaration per tone per theme, no paired hover step.
+	const lightAt = tokensCss.indexOf(':root[data-theme="light"]');
+	assert.ok(lightAt > 0, "scheduler tokens must keep a light-theme block");
+	const darkTokens = tokensCss.slice(0, lightAt);
+	const lightTokens = tokensCss.slice(lightAt);
 	for (const hue of ["teal", "green", "purple", "amber", "pink"]) {
-		assert.match(
-			tripBarCss,
-			new RegExp(`--_trip-bar-color:\\s*var\\(--sched-trip-color-${hue}\\);[\\s\\S]{0,120}--_trip-bar-color-hover:\\s*var\\(--sched-trip-color-${hue}-hover\\)`),
-			`${hue} must set both steps`,
-		);
-		assert.match(tokensCss, new RegExp(`--sched-trip-color-${hue}:\\s*var\\(--rux-${hue}-700\\)`));
-		assert.match(tokensCss, new RegExp(`--sched-trip-color-${hue}-hover:\\s*var\\(--rux-${hue}-800\\)`));
+		assert.match(tripBarCss, new RegExp(`--_trip-bar-color:\\s*var\\(--sched-trip-color-${hue}\\)`));
+		assert.match(darkTokens, new RegExp(`--sched-trip-color-${hue}:\\s*var\\(--rux-${hue}-500\\)`));
+		assert.match(lightTokens, new RegExp(`--sched-trip-color-${hue}:\\s*var\\(--rux-${hue}-600\\)`));
+		assert.doesNotMatch(tokensCss, new RegExp(`--sched-trip-color-${hue}-hover:`));
 	}
+	// The two status tones take the same per-theme split.
+	assert.match(darkTokens, /--sched-trip-bar-confirmed-tone:\s*var\(--rux-blue-500\)/);
+	assert.match(lightTokens, /--sched-trip-bar-confirmed-tone:\s*var\(--rux-blue-600\)/);
+	assert.match(darkTokens, /--sched-trip-bar-unconfirmed-tone:\s*var\(--rux-red-500\)/);
+	assert.match(lightTokens, /--sched-trip-bar-unconfirmed-tone:\s*var\(--rux-red-600\)/);
 
 	// Selected is a ring, not a third fill.
 	assert.match(
 		tripBarCss,
 		/\.sched-trip-bar\.is-active\s*\{[^}]*outline:\s*var\(--sched-trip-bar-selected-ring-width\) solid var\(--sched-trip-bar-selected-ring-color\)/s,
+	);
+	// On a multi-day bar the article is transparent and __head/__tail paint
+	// over an inset article outline, so the ring is an overlay pseudo there
+	// and the occluded article outline is unset (docs/trip-bar.md D17).
+	assert.match(
+		tripBarCss,
+		/\.sched-trip-bar--multi-day\.is-active::after\s*\{[^}]*outline:\s*var\(--sched-trip-bar-selected-ring-width\) solid var\(--sched-trip-bar-selected-ring-color\)/s,
+	);
+	assert.match(
+		tripBarCss,
+		/\.sched-trip-bar--multi-day\.is-active\s*\{[^}]*outline:\s*none/s,
 	);
 	// Amber's lightness exception is gone; nothing may re-scope that token.
 	// Checked against DECLARATIONS only — the stylesheet comment that records
@@ -209,6 +254,51 @@ test("trip surfaces are catalog steps, and hover is the darker one", () => {
 		declarationsOnly,
 		/--sched-trip-bar-bg-lightness:\s*\d/,
 		"a tone is overriding the retired lightness recipe again",
+	);
+});
+
+test("one label per theme, and every dependent token resolves against it (D16)", () => {
+	// docs/trip-bar.md rule 2.12, step 18. The label is white in dark and the
+	// catalog's on-fill near-black in light, carried by --sched-trip-bar-fg;
+	// the second tier is that label at 87%; the subtle tier is retired for
+	// this component and collapses to muted.
+	const lightAt = tokensCss.indexOf(':root[data-theme="light"]');
+	const darkTokens = tokensCss.slice(0, lightAt);
+	const lightTokens = tokensCss.slice(lightAt);
+	assert.match(darkTokens, /--sched-trip-bar-fg:\s*var\(--rux-fg-on-fill\)/);
+	assert.match(lightTokens, /--sched-trip-bar-fg:\s*var\(--rux-fg-on-fill-inverse\)/);
+	assert.match(darkTokens, /--sched-trip-bar-fg-muted:\s*oklch\(from var\(--rux-fg-on-fill\) l c h \/ 87%\)/);
+	assert.match(lightTokens, /--sched-trip-bar-fg-muted:\s*oklch\(from var\(--rux-fg-on-fill-inverse\) l c h \/ 87%\)/);
+	// The bar rebinds the on-accent family for its subtree.
+	assert.match(
+		tripBarCss,
+		/\.sched-trip-bar\s*\{[\s\S]*?--rux-fg-on-accent:\s*var\(--sched-trip-bar-fg\);[\s\S]*?--rux-fg-on-accent-muted:\s*var\(--sched-trip-bar-fg-muted\);[\s\S]*?--rux-fg-on-accent-subtle:\s*var\(--sched-trip-bar-fg-muted\);/,
+	);
+	// D16's shape: a var() in a :root declaration substitutes at :root, so
+	// tokens that must follow the theme read --sched-trip-bar-fg directly —
+	// pointing them at --rux-fg-on-accent would freeze them to the root's
+	// white forever.
+	assert.match(tokensCss, /--sched-trip-bar-meta-fg:\s*var\(--sched-trip-bar-fg\)/);
+	assert.match(tokensCss, /--sched-trip-bar-selected-ring-color:\s*var\(--sched-trip-bar-fg\)/);
+	assert.doesNotMatch(
+		tokensCss.replace(/\/\*[\s\S]*?\*\//g, ""),
+		/--sched-trip-bar-(meta-fg|selected-ring-color):\s*var\(--rux-fg-on-accent\)/,
+		"a :root trip-bar token is reading the on-accent family again (D16)",
+	);
+	// The notes row is a warning-coloured ink per theme — amber-900 dark,
+	// amber-1000 light — never --rux-warning-on-vivid, which is the
+	// near-black for text ON a warning fill and rendered as black text on
+	// the dark fills (docs/trip-bar.md D18, step 20).
+	assert.match(darkTokens, /--sched-trip-bar-notes-fg:\s*var\(--rux-amber-900\)/);
+	assert.match(lightTokens, /--sched-trip-bar-notes-fg:\s*var\(--rux-amber-1000\)/);
+	assert.match(
+		tripBarCss,
+		/\.sched-trip-bar__notes\s*\{[^}]*color:\s*var\(--sched-trip-bar-notes-fg\)/s,
+	);
+	assert.doesNotMatch(
+		tripBarCss.replace(/\/\*[\s\S]*?\*\//g, ""),
+		/__notes\s*\{[^}]*warning-on-vivid/s,
+		"the notes row is back on the on-fill ink (D18)",
 	);
 });
 

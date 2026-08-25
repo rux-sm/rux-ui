@@ -1,6 +1,6 @@
 # Trip Bar — Design Specification
 
-**Contract version 1.4.0** · rewritten 2026-08-24
+**Contract version 1.5.0** · rewritten 2026-08-24 · step 18 (rule 2.12 executed) same day
 
 ```
 Conforms to: Rux UI Foundations — Typography 5.0.0
@@ -11,7 +11,7 @@ Conforms to: Rux UI Foundations — Typography 5.0.0
              Rux UI Foundations — Motion     1.6.0
 ```
 
-**Status:** 5 done · 9 ready · 1 open · 5 open questions · 15 known defects.
+**Status:** 10 done · 7 ready · 1 open · 2 superseded · 5 open questions · 18 known defects (16 resolved).
 
 ---
 
@@ -100,8 +100,10 @@ gap, no per-row padding — so collapsed height is
 leading, so an icon is always exactly its row's height.
 
 **Colour.** `--_tone` resolves in three steps: the categorical `data-trip-bar-color` hue if
-the trip carries one, else `--rux-danger` when unconfirmed, else `--rux-accent`. Every
-surface derives from `--_tone` by a relative-colour recipe.
+the trip carries one, else `--sched-trip-bar-unconfirmed-tone` when unconfirmed, else
+`--sched-trip-bar-confirmed-tone`. Each of those seven tones is one catalog step per theme
+(rule 2.12); the head surfaces read the tone directly, the tail derives by alpha, and the
+pointer states composite the published overlays on top.
 
 ---
 
@@ -121,20 +123,26 @@ colour ladder:
 |---|---|---|
 | Primary | `--rux-fg-on-accent` | destination, time values, driver names, req icons |
 | Secondary | `--rux-fg-on-accent-muted` | client, contact, paid label |
-| Tertiary | `--rux-fg-on-accent-subtle` | time separators, empty-value placeholders |
+| Tertiary | `--rux-fg-on-accent-subtle` — **renders as the secondary tier since step 18** | time separators, empty-value placeholders |
 
-**The three tiers do not clear AA on a saturated fill, and this is unresolved (D13).**
-Measured across all seven tones in both themes: `-muted` lands 1.58–3.68 and `-subtle`
-1.39–2.67, against a 4.5:1 floor. Every row this rule assigns to the lower two tiers —
-client, contact, time labels — is below it on every tone. Colour-only hierarchy and AA are
-in direct tension here, and that tension is the cost of Q1's deferral rather than an
-argument against it: the size scale separates levels without spending contrast, which is
-what rule 2.11's evidence says colour cannot do at these opacities.
+**The ladder is two inks deep, not three, and that is the resolved form of D13.** On the
+per-theme rest step rule 2.12 chose, the primary label and the 87% muted tier clear 4.5:1
+on every tone in every state; a third, fainter ink does not clear anywhere in light at any
+step, so the subtle token stays in the markup but resolves to the muted ink, and the
+tertiary voice is carried by position and content instead. The original three-opacity
+ladder (75%/55%) cleared AA on **no** fill at 700 — colour-only hierarchy and AA were in
+direct tension, and that tension was the cost of Q1's deferral rather than an argument
+against it: the size scale separates levels without spending contrast, which is what rule
+2.11's evidence says colour cannot do at those opacities.
 
 **Status colour is a fourth channel, not a fourth tier.** Notes take
-`--rux-warning-on-vivid`; pending icons take `--sched-trip-bar-{danger,warning,success}-icon`.
-A status colour says *this needs action*; a tier says *this is supporting*. Do not use one
-to do the other's job.
+`--sched-trip-bar-notes-fg`, a per-theme warning ink (amber-900 dark / amber-1000 light —
+step 20; they read `--rux-warning-on-vivid` before that, which is the near-black for text
+*on* a warning fill, not a warning-coloured ink — D18). Pending icons take
+`--sched-trip-bar-{danger,warning,success}-icon`. A status colour says *this needs action*;
+a tier says *this is supporting*. Do not use one to do the other's job. **No published rule
+yet governs a status mark's contrast on a saturated category fill** — the icon tokens fail
+3:1 on every light-theme fill today (D15's family; the standard belongs to `color.md` Q12).
 
 **A bolder destination is prohibited, and this rule exists to say so once.** It was proposed
 on 2026-08-24 and rejected against rule 2.11 — the bar's problem is that it has no
@@ -191,34 +199,40 @@ steps, not as a colour diluted over whatever is behind it, and an alpha fill mak
 contrast figure a claim about the backdrop rather than about the surface. The tail is a
 different object and §2.5 states its own contract.
 
-### 2.5 The state ladder: rest 700 · hover 800 · pressed 800 · **selected is not a fill**.
+### 2.5 The state ladder: rest is one step per theme · hover and pressed are overlays · **selected is not a fill**.
 
-`color.md` rule 2.5 — high-contrast fills are **700, hovering to 800, and 800 is darker**.
-`--_tone` is already a 700 step for every one of the five categorical hues, for `--rux-accent`
-and for `--rux-danger`, so the ladder is a step selection rather than a lightness recipe.
+Rest is the tone's per-theme step (rule 2.12 owns which one). **Hover and pressed are not
+steps at all**: they composite the published `--rux-state-hover-overlay` and
+`--rux-state-active-overlay` over the unmoved rest fill — one token per state, the same
+tokens every list row and ghost control already uses. The overlay's direction is the
+**theme's** (white lightens in dark, black darkens in light), so the bar moves the way its
+surroundings move.
 
-**Hover darkens.** A hover that lightens is off the model — `color.md` D7 records exactly
-that — and it is the direction every button in the application already moves.
+**A per-hue hover step is no longer expressible, by construction.** The paired `-hover`
+tokens step 4 introduced are gone; there is no second declaration to drift out of sync, and
+"a teal bar hovering to blue" — the failure the pairing existed to prevent — cannot be
+written any more.
 
 **Selected is a different axis from hover and MUST NOT be a third fill.** Hover and pressed
 are transient pointer feedback; selection is persistent, is written as `aria-pressed`, and
-survives the pointer leaving. A selected bar keeps the **rest** fill and gains an
-`--rux-accent-ring` outline. Expressing both on the fill is what produced the defect this
-rule replaces: hover and selected resolved to the *same* lightness and were told apart only
-by an alpha step, so a selected trip looked like a hovered one (D3).
+survives the pointer leaving. A selected bar keeps the **rest** fill and gains a 2px inset
+ring in the bar's own label colour (`--sched-trip-bar-selected-ring-color`). Expressing both
+on the fill is what produced the defect this rule replaces: hover and selected resolved to
+the *same* lightness and were told apart only by an alpha step, so a selected trip looked
+like a hovered one (D3). A selected bar also takes **no hover overlay** — its fill answers
+to its ring, not to the pointer passing over it.
 
-**Rest is 700 in this rule and that is under correction (D13).** `color.md` rule 2.11 owns
-the step a *labelled* fill takes, and it is not the same question rule 2.5 answers: 2.5 says
-what a high-contrast fill **means**, 2.11 says which step one **carrying text** may use, and
-its own words are that *"no fill clears at 700 except purple."* The published answer is 800,
-with a near-black label on amber, green and teal. This rule read 2.5 without 2.11 and picked
-the wrong step — the precedence rule working exactly as §0 describes, with the foundation
-catching the downstream. **The correction is not executed**, because it is not only a step
-change: moving rest to 800 leaves hover with nowhere above it to go, which is **Q4**.
+*History.* This rule originally read *"rest 700 · hover 800 · pressed 800"*, taking
+`color.md` rule 2.5's fill ladder without rule 2.11's labelled-fill constraint — the wrong
+step, recorded as D13, and the hover question it created ("800 rests on its own hover step")
+was Q4. Both dissolved when rule 2.12 moved rest to the per-theme step where one label
+clears everywhere and the published overlays work unchanged. Step 18 executed that.
 
 **The tail may keep alpha.** The continuation rail exists to read as subordinate to its
 day-1 head, and a reduced-alpha fill is the mechanism that says so. It is the one place
-transparency does work §2.4's opaque rule would otherwise have to reinvent.
+transparency does work §2.4's opaque rule would otherwise have to reinvent. The overlay
+states composite over head and tail alike, so the two halves of a multi-day bar cannot
+desync.
 
 ### 2.6 Every type axis comes from a Label role, whole.
 
@@ -317,34 +331,42 @@ digit-for-digit."*
 
 Notes and client are prose and take no such setting.
 
-### 2.12 The surface is one step, and the label is one colour per theme.
+### 2.12 The surface is one step per theme, and the label is one colour per theme.
 
-**Rest is the tone's `500` step. The label is white in dark and near-black in light, on every
-tone, in every state.** Not per hue — per theme, which is how every other surface in this
-system already behaves.
+**Rest is the tone's `500` step in dark and its `600` step in light. The label is white in
+dark and near-black (`--rux-fg-on-fill-inverse`) in light, on every tone, in every state.**
+Not per hue — per theme, which is how every other surface in this system already behaves.
 
-500 is not a preference. It is **the most vivid step at which white clears 4.5:1 on all seven
-tones in dark** (minimum 7.30, on green); 600 fails on amber at 2.28 and 700 at 1.80. Light
-theme mirrors it — near-black clears through 600 — so 500 is the one step that satisfies both
-directions at once. Measured 2026-08-24 in the **sRGB branch**, per `color.md` rule 2.11's
-worse-gamut clause.
+Neither rung is a preference. **500 is the only rung above the background tints where white
+clears 4.5:1 on all seven tones in dark** (600 fails five, 700 fails six, 800 fails amber,
+green and teal — `color.md` D19). **600 is the most vivid light rung where near-black clears
+on all seven** (700 fails blue at 4.46 and purple at 3.81). Measured 2026-08-24 in the
+**sRGB branch**, per `color.md` rule 2.11's worse-gamut clause, on the specimen's own meter:
+across every tone, state and tier, dark lands **4.51–11.09** and light **5.17–11.79** — with
+the honest caveat that the dark minimum is the 87% tier on a pressed green bar and it sits
+**on** the floor, not above it.
 
-| | dark, white | light, near-black |
-|---|---|---|
-| primary, rest → pressed | 11.09 → 5.39 | 13.94 → 8.64 |
-| second tier at 87%, rest → pressed | 8.76 → 4.51 | 10.76 → 7.16 |
+*Revision, step 18.* This rule originally put light at 500 as well, for the symmetry of one
+rung number — while its own text conceded near-black clears through 600 in light. Taking
+that headroom is what keeps the light board's closest hue pair (red/pink) separable: at
+light-500 it collapses to roughly half of what 600 gives. A rung that switches with the
+theme has precedent — the catalog's own Badge switches on five of seven hues (`color.md`
+step 22); this switches once, uniformly.
 
 **The second tier is 87%, not 75%.** The dark overlay lightens, which costs white-text
 contrast; 75% drops to **4.11** on hover. 87% is the lowest value that survives every tone in
-every state. The third tier (`-subtle`, 55%) clears **nowhere in light theme at any step** and
-is not published for this component.
+every state. The third tier (`-subtle`, 55%) clears **nowhere in light theme at any step**;
+it is retired for this component and its reads collapse to the muted tier — the tertiary
+voice is position and content, not a third ink.
 
 **What this rule buys, stated so a future reader does not re-litigate it:** purple needs no
 exception, `--rux-fg-on-accent-muted` is legal again — so rule 2.1's colour hierarchy is
-restored rather than dead — and hover can go back to being one published token.
+restored rather than dead — and hover is one published token (rule 2.5).
 
-**What it costs:** category separation falls from **80** at step 700 to **46** at 500. That
-is the trade, it is not recoverable within a systematic scale, and Q5 is where it goes.
+**What it costs:** category separation is far below what 700/800 gave (the dark strip's
+closest pair, pink/unconfirmed, measures 33 in specimen sRGB distance against a 40 floor),
+and 500/600 are `color.md` rule 2.2's hover- and active-border steps, a departure that
+document's D19 records. Whether the separation reads at card size is Q5.
 
 ---
 
@@ -359,10 +381,10 @@ steps execute; every row of it that disagrees with §2 is a defect in §4.
 | Outer radius | **6px** (step 2) | `--rux-radius-container` → 6px (2.2) ✓ |
 | Shadow | **none** (step 3) | none (2.3) ✓ |
 | Border | `--sched-trip-bar-border-width: 0px` — the `--_outline` colour is computed for a stroke that is never drawn; only `--partial-po` gives it 1px | a warning channel, not an edge (2.3) ✓ |
-| Rest fill | **opaque, each tone's own 700 step** (step 4) | 800, per `color.md` 2.11 — **not yet** (D13) |
-| Label contrast | **1.86–5.31** primary, 1.39–3.68 on the lower tiers | 4.5:1 (`color.md` 2.11) — **five of seven tones fail** (D13) |
-| Hover | **the tone's 800 step, opaque** (step 4) | 800 — darker (2.5) ✓ |
-| Selected | **rest fill + 2px inset white ring** (step 4) | rest fill + ring (2.5) ✓ |
+| Rest fill | **opaque, each tone's 500 step in dark / 600 in light** (step 18) | the per-theme step (2.12) ✓ |
+| Label contrast | **4.51–11.79** across every tone, state, theme and tier, specimen meter, sRGB branch | 4.5:1 (`color.md` 2.11) ✓ — D13 closed; the dark floor case (87% tier, pressed green) sits at 4.51 |
+| Hover / pressed | **`--rux-state-hover-overlay` / `-active-overlay` over the rest fill** (step 18) | the published overlays (2.5) ✓ |
+| Selected | **rest fill + 2px inset ring in the per-theme label** (steps 4, 18) | rest fill + ring (2.5) ✓ |
 | Row type | `--rux-size-12` / `--rux-line-height-16` — Tier 0 primitives | `--rux-text-label-12-*` (2.6) |
 | Row geometry | leading is the row, 0 gap, 8px inset | conformant (2.7) |
 | Icons | `--sched-trip-bar-icon-size` tracks row leading | conformant (2.7) |
@@ -395,9 +417,12 @@ published a fixed 135px; that figure has not been correct since the row preferen
 | **D10** | Three dead declarations: an empty `@container (max-width: 24rem) .sched-trip-bar__time {}` rule; `stroke-width: 2` on `__pending-icon`, an SVG property on an icon-font glyph; and `padding-right: var(--rux-space-2)` on the same element, doubling the `gap` its row already sets. | — | `trip-bar.css:1240-1242, 847-851` |
 | **D11** | The bus reference renders as a **white-filled pill with black text** — the highest-contrast treatment available on a saturated tone, spent on a secondary identity marker. It outranks the destination, which is white *text* rather than a white *field*. Its 16px box fills the row's full height so it reads as a block, it takes a 30px min-width floor below 14rem, and because it appears only on multi-bus trips the reqs row's left edge differs bar to bar. | 2.1, 2.10 | `trip-bar.css:785-799`; `--sched-trip-bar-bus-label-bg: var(--rux-white)` |
 | **D12** | **The bar sets `font-variant-numeric: tabular-nums` nowhere**, while rendering times, phone numbers, dates, counts and the bus reference. The time row is the visible cost: three columns of proportional figures across thirty stacked bars do not align down the board. The sticky bus rail immediately beside them already sets it. | 2.11 | 0 hits in `trip-bar.css`; `layout/scheduler.css:451` sets it on `__bus-number` |
-| **D13** | **The bar's fills do not clear AA, and the tier ladder cannot.** `color.md` rule 2.11 requires a published fill and its label to clear **4.5:1**, and states the answer per hue: the fill is **800**, not 700, and the label is near-black rather than white on amber, green and teal. Step 4 put rest at **700**. Measured on the specimen, dark theme, primary label: accent **4.50**, purple 5.31, unconfirmed 3.97, pink 3.88, green 3.02, teal 2.92, amber **1.86** — five of seven below the floor. **Worse, the tier ladder itself fails everywhere:** `--rux-fg-on-accent-muted` (75%) measures 1.58–3.68 and `-subtle` (55%) 1.39–2.67 across every tone in both themes, so the client, contact and time-label rows do not clear AA on *any* fill, including the ones whose primary label does. That is rule 2.1's mechanism, and it is unbuildable at AA as specified. | 2.1, 2.5 | measured 2026-08-24 on `trip-bar-specimen.html`, canvas-composited sRGB; independently reproduces `color.md` §2.11's own 700 column to within 0.1 |
+| **D13** | **Fixed (step 18)** — rest moved to the per-theme step rule 2.12 chose, one label per theme, muted at 87%, subtle collapsed to muted; every tone, state and surviving tier clears, 4.51–11.79 on the specimen meter. The original finding, kept because its measurements justify the rule: ~~The bar's fills do not clear AA, and the tier ladder cannot.~~ `color.md` rule 2.11 requires a published fill and its label to clear **4.5:1**, and states the answer per hue: the fill is **800**, not 700, and the label is near-black rather than white on amber, green and teal. Step 4 put rest at **700**. Measured on the specimen, dark theme, primary label: accent **4.50**, purple 5.31, unconfirmed 3.97, pink 3.88, green 3.02, teal 2.92, amber **1.86** — five of seven below the floor. **Worse, the tier ladder itself fails everywhere:** `--rux-fg-on-accent-muted` (75%) measures 1.58–3.68 and `-subtle` (55%) 1.39–2.67 across every tone in both themes, so the client, contact and time-label rows do not clear AA on *any* fill, including the ones whose primary label does. That is rule 2.1's mechanism, and it is unbuildable at AA as specified. | 2.1, 2.5 | measured 2026-08-24 on `trip-bar-specimen.html`, canvas-composited sRGB; independently reproduces `color.md` §2.11's own 700 column to within 0.1 |
 | **D14** | **Every contrast figure this document carried before 2026-08-24 was measured in the wrong gamut.** They were read from `getComputedStyle` on a **P3** display, so they came from the P3 branch — higher chroma, higher contrast — and were then clipped by an sRGB canvas. `color.md` rule 2.11 evaluates the floor in the **worse** gamut, so the sRGB branch governs and the recorded numbers were inflated by 0.05–0.35. The correction that mattered: the default blue bar at 700 measures **4.44, not 4.50 — it fails**. Recomputed from the sRGB branch directly, the method now reproduces `color.md` §2.11's published table to within 0.03 on all seven hues. `trip-bar-specimen.html` was rewired to parse the branch itself rather than read computed styles, so it reads identically on any display. | fixed same day; see §0.1 |
 | **D15** | **The categorical palette was closed against a rule that does not exist.** `js/core/trip-colors.js` states its premise as *"the five catalog hues that are not spoken for — red is danger and blue is the accent."* Only **teal** and **pink** are unspoken for: green is `--rux-success`, amber is `--rux-warning`, purple is `[data-rux-accent="violet"]`. The collision is live inside this component — the bar renders an amber *warning* icon and a green *success* icon on a bar that may itself be tagged amber or green. **This is `color.md` D17/D18 and belongs there**, recorded here because the trip bar is where it shows. | `color.md` D17, D18 |
+| **D16** | **Fixed (step 18)** — `--sched-trip-bar-meta-fg` and `--sched-trip-bar-selected-ring-color` now read `--sched-trip-bar-fg`, which is declared per theme at `:root`, so both follow the theme label; the substitution trap is fenced by an assertion in `tests/trip-bar-color.test.mjs`. The finding: ~~`--sched-trip-bar-meta-fg` cannot follow a per-hue label, and every label proposal in this document assumes it will.~~ The time and driver rows read `--sched-trip-bar-meta-fg`, declared at `:root` as `var(--rux-fg-on-accent)`. **A `var()` inside a custom-property declaration is substituted where the DECLARATION sits**, so the token resolves once against the root's white and never again — setting `--rux-fg-on-accent` on a bar moves the destination and leaves the meta rows white. **Observed, not deduced:** on the specimen one bar computed `rgb(0, 98, 209)` on `__destination` and `oklch(1 0 0)` on `__time-value` at the same moment. Nothing overrides `--rux-fg-on-accent` today — it is declared once — so the app renders correctly and the defect is **latent**. It goes live the moment any per-hue or per-theme label ships, which is steps 12, 14 and 15 and specimen options 1 and 2 (post-step-17 numbering). On a pale fill the two rows paint white on near-white and vanish. | `scheduler/css/tokens.css:161`, read at `trip-bar.css:1018`; source at `rux-ui/css/tokens.css:530`; observed 2026-08-24 on `trip-bar-specimen.html` |
+| **D17** | **Fixed (step 19)** — ~~the selection ring never rendered on multi-day bars.~~ The ring lives on the article (`.is-active` outline, step 4), but a multi-day article is transparent and `__head`/`__tail` are positioned children at z-index 1+, so the inset outline painted **beneath** the head's opaque fill and showed only as a dim band through the tail's alpha. A selected multi-day trip looked unselected. Present since the ring shipped in step 4; **found by the owner's eyeball on the live board** — the specimen could not have caught it, since it renders no multi-day anatomy. | 2.5 | reported 2026-08-24 from the dark board; occlusion confirmed by computed styles |
+| **D18** | **Fixed (step 20)** — ~~the notes row rendered near-black on the dark fills.~~ `__notes` read `--rux-warning-on-vivid`, which resolves to `--rux-fg-on-fill-inverse` — the ink for text **on** a vivid warning fill, near-black in both themes — where rule 2.1 intended a warning-*coloured* ink. On the old 700 fills it sat at ~4.46 in dark and passed by coincidence; step 18's darker 500 fills dropped it to **1.78–2.70** and the owner read it as black text on a red bar. A role misuse that a passing number had been hiding. The dead `__driver-dot` rules read the same role and are left for step 7, which deletes them. | 2.1 | reported 2026-08-24 from the dark board; measured sRGB branch |
 
 ---
 
@@ -422,10 +447,15 @@ px and name the states needing an eyeball (§2.3 there).
 | 8 | Delete the declarations that paint nothing (D8, D10) | **ready · Class A** | `--sched-trip-bar-meta-bg` / `-meta-shadow` and their four reads, the empty container-query rule, `stroke-width`, and the doubled `__pending-icon` padding. **Open first:** whether the time and driver rows are *supposed* to have a recessed panel — the comment says they were. Deleting the tokens decides "no" by default, which is why this step asks rather than assumes (**Q3**). |
 | 10 | Bus reference: pill on the reqs row → text on the destination row (D11, D6) | **ready · Class B** | **Before → after, resolved.** Marker moves from `__reqs` (left) to `__summary` (far right, outside `__paid-badge`). Fill `--rux-white` → **none**; text `--rux-black` → `--rux-fg-on-accent-subtle`; radius `--rux-radius-full` → **none**; weight **500 → 400**; leading **12 → 16px** (closes D6/`typography.md` D19); box 16px → the row's own leading; the 30px compact min-width floor is removed. **Keeps** its `aria-label` — `1/6` is not a fraction. **Eyeball:** a multi-bus trip beside a single-bus one at both themes and at the 7rem, 10rem and 14rem container steps, checking that the marker survives destination truncation and that the reqs row now starts at the same x on every bar. **Deliberately did not** adopt print's weight `700`: that is the print surface's own untokenized debt (`typography.md` S2), not a value to copy. **Deliberately did not** retire `--rux-line-height-12` in this step — the rung is orphaned by it, but retiring a published name is Class C and belongs to `typography.md`. |
 | 11 | Tabular figures on the numeric rows (D12) | **ready · Class B** | Adds `font-variant-numeric: tabular-nums` to `__time`, `__bus-label`, `__status-date`, `__contact-phone` and the details drawer's numeric fields. Nothing else changes; glyph *advance* changes, so a value's rendered width moves even though its size does not — which is why this is Class B and not additive. **Eyeball:** the time row down a full week at both themes, which is the whole point — a column of departures should align digit-for-digit with the bus rail beside it. **Deliberately did not** set it on `__client` or `__notes`: those are prose, and rule 2.9 prohibits the global that would have caught them. **Deliberately did not** set it on `body`, for the same reason. |
-| 12 | Move rest to step 500; one label per theme; second tier at 87% (D13, rule 2.12) | **ready · Class B** | **Executes rule 2.12 and closes D13, both halves.** **Before → after, resolved, sRGB branch:** fill `{hue}-700` → **`{hue}-500`**; label per-hue white/near-black → **white in dark, near-black in light**; `--rux-fg-on-accent-muted` **75% → 87%**; `-subtle` **retired for this component** (clears nowhere in light). Primary lands 5.39–13.94 across every tone and state, the second tier 4.51–10.76. Hover and pressed become `--rux-state-hover-overlay` / `-active-overlay`, which is one published token doing what four hand-set lightness/opacity tokens did. **Eyeball:** the board at both themes — and specifically whether **46** separation reads at card size, which is Q5 and the reason this is `ready` rather than done. **Deliberately does not** touch the categorical palette: Q5 and `color.md` Q10/Q11 decide what a category *is*, and choosing the step first is the mistake step 4 already made once. **Deliberately does not** resolve `selected` — but note it may need nothing, since selection already changes the bar's height and reveals the toolbar. |
+| 12 | Move rest to step 500; one label per theme; second tier at 87% (D13, rule 2.12) | **superseded by step 18** — executed in revised form: dark took 500 as written, light took 600 rather than mirroring, for the separation its own strip evidence showed 500 giving up. Original notes kept below. | **Executes rule 2.12 and closes D13, both halves.** **Before → after, resolved, sRGB branch:** fill `{hue}-700` → **`{hue}-500`**; label per-hue white/near-black → **white in dark, near-black in light**; `--rux-fg-on-accent-muted` **75% → 87%**; `-subtle` **retired for this component** (clears nowhere in light). Primary lands 5.39–13.94 across every tone and state, the second tier 4.51–10.76. Hover and pressed become `--rux-state-hover-overlay` / `-active-overlay`, which is one published token doing what four hand-set lightness/opacity tokens did. **Eyeball:** the board at both themes — and specifically whether **46** separation reads at card size, which is Q5 and the reason this is `ready` rather than done. **Deliberately does not** touch the categorical palette: Q5 and `color.md` Q10/Q11 decide what a category *is*, and choosing the step first is the mistake step 4 already made once. **Deliberately does not** resolve `selected` — but note it may need nothing, since selection already changes the bar's height and reveals the toolbar. |
 | 13 | Route the palette collision to `color.md` (D15) | **done · Class A** | **Executed 2026-08-24.** `color.md` gains **D17** (no rule governs what a hue means, only what a step means — five of seven hues carry two or three assignments), **D18** (the collision live inside this component: amber warning icons on amber-tagged bars), **D19** (700/800 admit no uniform label across seven hues), and questions **Q10–Q12** (may a hue carry one meaning; does the document adopt a categorical gap source; does a fill publish its label as a pair). Its step 20 records the finding, step 21 repairs a bookkeeping bug the work exposed — §4's nineteen defect rows were **invisible to the rollup counter**, so the three new ones would have counted zero. **Deliberately did not** answer Q10–Q12 here: each moves published vocabulary and none is the scheduler's to settle. |
-| 14 | Standard tones to 800 + white + darkening hover (rule 2.12 revised) | **ready · Class B** | **The owner settled this 2026-08-24: the board barely uses trip colours, and an override is a transient flag that gets switched back to standard blue once resolved.** That reframes everything steps 4 and 12 were solving — measured live, **17 bars on screen carried 0 category colours**; twelve confirmed, five unconfirmed. Every hard constraint those steps hit came from the five override hues, which are not on the board. **Before → after:** fill `{hue}-700` → **`{hue}-800`**, label **white in both themes**, hover/pressed `color-mix(in oklab, black var(--rux-fill-hover-mix|-active-mix), <rest>)` — the accent button's own published mechanism. **blue 5.73 → 6.95 → 8.19, red 4.74 → 5.85 → 7.04**, sRGB branch, identical in both themes because 700/800 are theme-invariant. **No amendment needed**: 800 + white is exactly what `color.md` §2.11 publishes for blue and red. **This supersedes step 12 and rule 2.12's step-500 answer** for the standard tones — 500 was bought to satisfy hues the board does not render, and it cost 46 separation and an 87% tier to do it. **Blocked only by step 15**, which decides what the three override hues that cannot hold white at 800 do. |
-| 15 | Reduce the override palette to the hues that hold a white label (D15) | **open · Class C** | **Proposed 2026-08-24, NOT executed — Class C stops and proposes.** At 800 with white: purple **6.98**, pink **4.52** clear; **teal 4.15, green 4.08, amber 2.14 fail**. The 500 escape is closed for these — 500 with white collapses in light theme (1.42–1.84). **The three that fail are the three already compromised**: green is `--rux-success` and amber is `--rux-warning` (`color.md` D17/D18), so dropping them fixes the contrast failure and the semantic collision in one move. Teal is the only casualty not already compromised, and it misses by 0.35. **Proposal:** overrides become **purple and pink**. **Scope, from the grep:** 4 CSS files per colour, `js/core/trip-colors.js` + `js/panels/print-schedule.js`, 2 picker swatches each in `index.html`, and `tests/trip-colors.test.mjs` which asserts the token set equals `TRIP_COLORS` exactly. **Stored rows are safe** — `normalizeTripColor`'s `RETIRED` map already carries `orange`/`cyan`/`yellow`, so retired names keep rendering and nothing is written to Supabase. **Open sub-question:** where retired names map. `green → blue` and `amber → red` would be semantically wrong; **purple** keeps a tagged trip *flagged* rather than silently turning it into a status colour. **Needs the owner's go-ahead before any edit.** |
+| 14 | Standard tones to 800 + white + darkening hover (rule 2.12 revised) | **superseded by step 18** — the owner chose Option 1 (one rule for all seven tones, label per theme) over this model's theme-invariant 800, 2026-08-24. Its evidence stands: 800+white is what `color.md` §2.11 publishes for blue and red, and this remains the fallback if Q5's eyeball rejects the 500/600 board. Original notes kept below. | **The owner settled this 2026-08-24: the board barely uses trip colours, and an override is a transient flag that gets switched back to standard blue once resolved.** That reframes everything steps 4 and 12 were solving — measured live, **17 bars on screen carried 0 category colours**; twelve confirmed, five unconfirmed. Every hard constraint those steps hit came from the five override hues, which are not on the board. **Before → after:** fill `{hue}-700` → **`{hue}-800`**, label **white in both themes**, hover/pressed `color-mix(in oklab, black var(--rux-fill-hover-mix|-active-mix), <rest>)` — the accent button's own published mechanism. **blue 5.73 → 6.95 → 8.19, red 4.74 → 5.85 → 7.04**, sRGB branch, identical in both themes because 700/800 are theme-invariant. **No amendment needed**: 800 + white is exactly what `color.md` §2.11 publishes for blue and red. **This supersedes step 12 and rule 2.12's step-500 answer** for the standard tones — 500 was bought to satisfy hues the board does not render, and it cost 46 separation and an 87% tier to do it. **Blocked only by step 15**, which decides what the three override hues that cannot hold white at 800 do. |
+| 15 | Reduce the override palette to the hues that hold a white label (D15) | **open · Class C** | **Proposed 2026-08-24, NOT executed — Class C stops and proposes.** At 800 with white: purple **6.98**, pink **4.52** clear; **teal 4.15, green 4.08, amber 2.14 fail**. The 500 escape is closed for these — 500 with white collapses in light theme (1.42–1.84). **The three that fail are the three already compromised**: green is `--rux-success` and amber is `--rux-warning` (`color.md` D17/D18), so dropping them fixes the contrast failure and the semantic collision in one move. Teal is the only casualty not already compromised, and it misses by 0.35. **Proposal:** overrides become **purple and pink**. **Scope, from the grep:** 4 CSS files per colour, `js/core/trip-colors.js` + `js/panels/print-schedule.js`, 2 picker swatches each in `index.html`, and `tests/trip-colors.test.mjs` which asserts the token set equals `TRIP_COLORS` exactly. **Stored rows are safe** — `normalizeTripColor`'s `RETIRED` map already carries `orange`/`cyan`/`yellow`, so retired names keep rendering and nothing is written to Supabase. **Open sub-question:** where retired names map. `green → blue` and `amber → red` would be semantically wrong; **purple** keeps a tagged trip *flagged* rather than silently turning it into a status colour. **Needs the owner's go-ahead before any edit.** **Premise contested 2026-08-24, see step 16 and `color.md` D19:** this step reads "teal, green and amber cannot hold a white label" as a property of the hues. Measured, it is a property of **800**. The catalog's own Badge holds white on all three by leaving 800 — `green-600`/`teal-600` in dark, `-900` in light — so the option this step rules out is one the reference implementation actually ships. That does not make the proposal wrong; the semantic collision (green is `--rux-success`, amber is `--rux-warning`) stands on its own and is the stronger half of the argument. It does mean **the contrast half no longer supports it**, and a Class C removal should not rest on a reason that has been falsified. **Step 18 narrows this further:** under rule 2.12 as executed, all seven tones clear in both themes, so the contrast argument is gone entirely — what remains open is only the semantic collision (green is `--rux-success`, amber is `--rux-warning`), which `color.md` Q10 owns. |
+| 16 | Specimen: the two badge-derived options, and three harness repairs (D16) | **done · Class A** | **Executed 2026-08-24 — `trip-bar-specimen.html` only; no application code, token or rule moved.** **Added** Option 6 (a 100/200 tint carrying the hue's own text step — the pattern Geist's Badge `-Subtle` variant uses, and the one `vercel.com/geist/colors` documents for badges in as many words) and Option 7 (rest at 700 with one pinned label: white, `--rux-text-primary`, near-black). **What they measure.** 100 + **800** text — the combination asked for — fails on six of seven in dark (2.49–4.13; only amber clears, at 8.01) and five of seven in light: 800 is a *fill* step and on a 100 tint it sits too close to its own ground. 100 + **900** clears everywhere (5.75–8.12 dark, 4.82–5.00 light), which is what the real badge uses. Option 7 clears on **no** column in both themes, and its middle column is the useful one — `--rux-text-primary` is the only label that moves when the theme toggles, while 700 does not, which is why a neutral text token cannot serve as an on-fill label. **Three harness repairs, each of which had been making an option look better or worse than it is.** (1) The second tier was computed as a transparency of the label — right for white-on-solid, meaningless for coloured-text-on-tint, and it was reporting **1.12–1.31**; it now measures the neutral secondary step directly, at 5.71–6.76 dark and 7.66–8.02 light. (2) `--sched-trip-bar-meta-fg` is now set explicitly per bar — **this is D16**, and it silently affected **Option 4** as well, whose ratios were right while its rendering was not. (3) Bars are now built with the app's `__body` wrapper, which is where the 8px inset lives (`trip-bar.css:800`); without it every bar sat flush to its edge, so **every option on the page had been judged at the wrong inset** and the specimen measured 80px of collapsed height against the app's 96px. **Deliberately did not** change `--sched-trip-bar-meta-fg` in the application: D16 is latent there, and repointing it belongs to whichever label step ships rather than to a specimen fix. **Deliberately did not** add an eighth option for the per-hue-per-theme map `color.md` D19 now records — that map is an observation of somebody else's component, and building it here would read as adopting it. |
+| 17 | Specimen: scrap the seven-option set, seat the three live candidates | **done · Class A** | **Executed 2026-08-24 — `trip-bar-specimen.html` only; no application code, token or rule moved.** The previous options 1–7 had become an archaeology of the decision rather than the decision: four modelled fills (700, 800, 600, the 100 ladder) that D13/D14/D19 had since ruled out or superseded, and their findings are already banked — options 1–5's in D13, D14, Q4 and rule 2.12; options 6–7's in step 16. All seven removed; the page now renders the current state plus three candidates. **Option 1 — rest `{hue}-500` in dark, `{hue}-600` in light, white/near-black label per theme, published overlays, 87% tier.** New finding, full-rung sweep of the sRGB branch: **600 is the most vivid light rung where near-black clears on all seven** (min 7.22, red; 700 fails blue 4.46 and purple 3.81), and rule 2.12's own text already conceded near-black clears through 600 in light — step 12 just didn't take the headroom. Taking it moves the light closest pair (red/pink) from **ΔE(oklab)×1000 ≈ 28 to ≈ 68**, which erases most of the separation cost rule 2.12 recorded. All states clear on the specimen's own meter: **4.51–11.09 dark, 5.17–11.79 light**, every hue, every state, both tiers — with the caveat that the dark minimum is the 87% tier on a pressed green bar and it sits **on** the floor, not above it. **Option 2 — step 12 as written** (500 both themes), kept so the light-theme cost of one rung number is a toggle away rather than an argument. **Option 3 — step 14** (800 + white both themes, `color-mix` darkening), with its three failing hues visible as step 15's evidence. **Deliberately did not** amend rule 2.12 or step 12 to the 500/600 pair: that revision is Class B against this document and waits on the eyeball the specimen now enables — red/pink at card size, amber's identity at 500's chroma. **Deliberately did not** add the per-hue-per-theme Badge map as an option, for step 16's unchanged reason. **Also removed** the specimen's now-dead coloured-second-tier machinery (`mutedColor`), `labelFor()` (the last per-hue label chooser on the page), and the retired options' code outright — the pointer to this step lives in the page's header note, not in a stub. |
+| 18 | Execute rule 2.12: rest 500 dark / 600 light, one label per theme, overlay states (D13, D16; supersedes steps 12 and 14) | **done · Class B, with a scoped Class C rider** | **Executed 2026-08-24, owner's decision ("going with option 1").** **Before → after, resolved, sRGB branch.** Rest fill: every tone's `700` (theme-invariant) → its **`500` in dark / `600` in light** — blue oklch(.515…) → .576 dark / .486-ish 600 light per catalog; label: white both themes → **white dark / `--rux-fg-on-fill-inverse` (near-black) light**; hover/pressed: the tone's 800 → **rest + `--rux-state-hover-overlay` / `-active-overlay`**; muted tier 75% → **87%**; subtle → **collapses to muted**; selected ring: root-frozen white → **the per-theme label**. Contrast, specimen meter, every tone/state/tier: **dark 4.51–11.09, light 5.17–11.79**, zero failures (the 700 model failed five of seven at rest). **Names removed (the Class C rider):** `--sched-trip-color-{teal,green,purple,amber,pink}-hover` and `--sched-trip-bar-unconfirmed-tone-hover` — born in step 4 **the same day**, never in a tagged release, zero consumers on the grep outside the trip-bar files and their test. Rider accepted without a stop-and-propose cycle on that evidence plus the owner's execute order. **Names added:** `--sched-trip-bar-confirmed-tone` (the default bar stops falling back to `--rux-accent`, which rests at 800; cost taken deliberately — a `[data-rux-accent]` retint no longer recolours the default bar), `--sched-trip-bar-fg`, `--sched-trip-bar-fg-muted`. **D16 closed** by pointing `-meta-fg` and `-selected-ring-color` at `--sched-trip-bar-fg`. **Found in passing, fixed by scoping:** the article-level `:active` rule outranked the multi-day transparent override on specificity and painted the pressed fill across a multi-day bar's seam gap; the state rules now exclude `--multi-day` explicitly (observed by reading, not rendered). **Ghost action hover wash** moved from a hand-set white 18% to the shared hover overlay, matching the direction the token block's own comment already claimed. **Also unread now:** `-tail-hover-opacity`/`-tail-pressed-opacity`, left declared in step 4's kept-not-removed bucket for step 8. **Tests:** state-model and D16 assertions rewritten/added in `tests/trip-bar-color.test.mjs`; `tests/trip-colors.test.mjs` dedupes per-theme declarations; `tests/ghost-button-hover.test.mjs` follows the wash; **423/423 pass**. **Deliberately did not** touch the categorical palette membership (step 15 stays open on semantic grounds), the status icon tokens (D15/`color.md` D18), or `color.md` itself — its D19 clause "lands on 500" stays as the dated observation it was; the 500/600 mapping is recorded here, where the mapping lives (§0's precedence: the foundation owns the vocabulary, this document owns the mapping). **Eyeball still owed (Q5):** the live board at both themes — red vs pink at card size, amber's identity at 500's chroma, and the 87% tier on a pressed green bar, which rests ON the 4.5 floor. |
+| 19 | Selection ring on multi-day bars: overlay pseudo (D17) | **done · patch** | **Executed 2026-08-24.** `.sched-trip-bar--multi-day.is-active::after` draws the ring — same two tokens, same −2px inset, `border-radius: inherit` so it follows the article's corners, which already zero on `--from-prev`/`--to-next`; `z-index: 3` clears the head's 2; `pointer-events: none`. The article's own occluded outline is unset in the same rule rather than left painting invisibly. **Verified live on the board:** computed styles show the pseudo's 2px solid ring spanning the full 880px article (head 208px) with the article outline `none`; a **screenshot could not be taken** because the app's profile gate was up and answering it is the owner's state to set, not this session's. **One ring around the whole span, not one per half** — ringing head and tail separately would double the line at their seam. **Deliberately did not** move the single-day ring onto a pseudo for symmetry: the article outline works there because rows paint no backgrounds over it, and churning a working rule for uniformity is how regressions get in. Test: two assertions added to the ring section of `tests/trip-bar-color.test.mjs`. |
+| 20 | Notes onto a per-theme warning ink (D18) | **done · Class B** | **Executed 2026-08-24, owner's decision.** **Before → after, resolved, sRGB branch:** `__notes` colour `--rux-warning-on-vivid` (near-black both themes; **1.78–2.70** on the dark 500 fills, 7.2–11.8 light) → **`--sched-trip-bar-notes-fg`**, a new domain token: `--rux-amber-900` in dark (**4.50–5.26** on blue/red/purple/pink — the same bright amber the warning icon uses), `--rux-amber-1000` in light (**5.01–8.18 on all seven** 600 fills; light's amber-900 is a mid-dark ink that clears nowhere there). **Known residue, accepted:** no warning ink clears on the amber, green or teal *fills* (3.47–4.19 dark) — amber-on-amber is invisible by construction, which is `color.md` D18's semantic collision; those hues render zero bars on the live board and step 15 proposes dropping two of them. **Deliberately did not** touch the pending-icon tokens, though they fail 3:1 on every light fill: colouring status marks on a category fill needs a published rule, that is `color.md` Q12's, and improvising it per component is how D17-there happened. **Deliberately did not** repoint the dead `__driver-dot` rules off the same role — step 7 deletes them. **Verified live, both themes**, computed styles on the board; test assertions added to `tests/trip-bar-color.test.mjs`; 423/423 pass. **Eyeball owed:** a bar with a note beside one without, both themes — amber text is louder than the near-black was, and whether it outranks the destination is rule 2.1's hierarchy question. |
 | 9 | **Consolidate** — make the CSS header comment rationale, not specification | **ready · patch** | The closing step, and the one that keeps §0's failure from recurring. The 90-line block at the top of `trip-bar.css` currently states rules; it becomes rationale beside the values it explains, and points here for the rules. `README.md` gets a pointer with no values. **Runs last** by design: stripping the comment before the rules above are settled would delete the only statement of several of them. |
 
 ---
@@ -486,11 +516,16 @@ serving two purposes. The system's own answer turned out not to be a ninth step 
 `color-mix(in oklab, black var(--rux-fill-hover-mix), <rest>)`. That is a real mechanism and
 it is now **`color.md` D19** — the steps this document was told to use cannot carry one label.
 
-**Q5 — Is 46 enough separation, and should a category be a hue at all?**
+**Q5 — Is the rest step's separation enough, and should a category be a hue at all?**
 
-Rule 2.12 buys a uniform label by moving to 500 and pays **46** for it where 700 gives 80.
-Whether that reads at card size is an eye question this document cannot settle, and the
-specimen exists to answer it.
+Rule 2.12 buys a uniform label by leaving the vivid steps, and pays in separation — the
+dark strip's closest pair measures 33 against the specimen's 40 floor. Step 18's light-600
+revision recovered the light theme's worst pair; dark has no such headroom (600 fails five
+tones with white), so dark-500 is the floor case. Whether it reads at card size is an eye
+question this document cannot settle, and the specimen exists to answer it. **Step 18
+shipped without waiting for that answer** — the owner chose the model; this question is now
+about whether the *palette* survives it, and step 14's 800+white model is the recorded
+fallback if it does not.
 
 But the more useful finding is that **the trade is structural, not local.** Measured against
 [Google Calendar's eleven event colours](https://developers.google.com/apps-script/reference/calendar/event-color),

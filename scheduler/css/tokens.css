@@ -21,63 +21,70 @@
 	   The hue palette feeding the Gantt bar's background (--_tone in
 	   trip-bar.css), with the lightness/opacity steps below computing each
 	   state's surface from that hue. */
-	/* The five catalog hues nothing else has claimed — red is danger, blue is
-	   the accent. Each takes the 700 step, which is the catalog's high-contrast
-	   background and therefore what a solid bar is; it is also what
-	   --rux-accent already resolves to, so the uncoloured default bar and every
-	   coloured one finally derive from the same step.
-
-	   The step matters less than it looks: the bar sets its OWN lightness and
-	   scales the source chroma, so it consumes a hue rather than a step, and
-	   600/700/900 of one scale land within a few code values of each other.
-	   700 is the convention, not a constraint.
-
-	   Measured 2026-08-22, composited as the bar renders: teal moves 37 8-bit
-	   units from the old base, green 34, purple 31, pink 31, amber 9. The cost
-	   is separation — teal and green are the closest pair at 74 where the old
-	   bases sat 143 apart, and that is inherent to the catalog's hue set rather
-	   than to the step. docs/foundations/color.md §5 step 17. */
-	/* PAIRED, since step 4. Each tone publishes the step it rests at and the
-	   step it hovers to, because color.md rule 2.5 is a statement about STEPS
-	   — fills are 700, hovering to 800, and 800 is darker — and a hue alone
-	   cannot say that. The comment above used to end "700 is the convention,
-	   not a constraint," which was true and was the problem: the bar set its
-	   own lightness on top, so every tone rendered at L 0.60 no matter which
-	   step it named. Measured across all seven tones in both themes on
-	   2026-08-24, that is exactly what it did. The step is the constraint now.
-	   docs/trip-bar.md rule 2.5, step 4. */
-	--sched-trip-color-teal:         var(--rux-teal-700);
-	--sched-trip-color-teal-hover:   var(--rux-teal-800);
-	--sched-trip-color-green:        var(--rux-green-700);
-	--sched-trip-color-green-hover:  var(--rux-green-800);
-	--sched-trip-color-purple:       var(--rux-purple-700);
-	--sched-trip-color-purple-hover: var(--rux-purple-800);
-	--sched-trip-color-amber:        var(--rux-amber-700);
-	--sched-trip-color-amber-hover:  var(--rux-amber-800);
-	--sched-trip-color-pink:         var(--rux-pink-700);
-	--sched-trip-color-pink-hover:   var(--rux-pink-800);
-	/* Unconfirmed is the sixth tone and takes the same shape — but it is NOT a
-	   --sched-trip-color-*, and tests/trip-colors.test.mjs is why that matters:
-	   that family is exactly the five categorical labels a user can tag a trip
-	   or an avatar with, avatarColorValue builds its name by hand from that
-	   list, and the suite asserts the two sets are equal. Unconfirmed is a
-	   status the board computes, not a label anyone picks. It read
-	   --sched-trip-bar-danger-border (--rux-danger-fill, red-800) as its REST
-	   colour, which left it one step darker at rest than every other tone and
-	   with nowhere to hover to. Red is not a status here — the red bar IS the
-	   status — so it takes 700/800 like the rest. */
-	--sched-trip-bar-unconfirmed-tone:       var(--rux-red-700);
-	--sched-trip-bar-unconfirmed-tone-hover: var(--rux-red-800);
+	/* ONE REST STEP PER THEME, since step 18 (docs/trip-bar.md rule 2.12).
+	   Rest is the hue's 500 in dark and 600 in light — the light overrides
+	   live in the [data-theme="light"] block below. Measured in the sRGB
+	   branch, 2026-08-24: 500 is the only rung above the background tints
+	   where white clears 4.5:1 on all seven tones in dark (600 fails five,
+	   700 fails six, 800 fails amber/green/teal — color.md D19), and 600 is
+	   the most vivid light rung where near-black clears on all seven (700
+	   fails blue and purple). One label per theme comes with it:
+	   --sched-trip-bar-fg below.
+	   Hover and pressed are no longer steps at all — the bar composites
+	   --rux-state-hover-overlay / -active-overlay over rest, the same tokens
+	   every list row and ghost control already uses — so step 4's paired
+	   `-hover` tokens are gone (step 18's Class C rider: born and removed
+	   the same day, never in a tagged release, zero consumers on the grep). */
+	--sched-trip-color-teal:   var(--rux-teal-500);
+	--sched-trip-color-green:  var(--rux-green-500);
+	--sched-trip-color-purple: var(--rux-purple-500);
+	--sched-trip-color-amber:  var(--rux-amber-500);
+	--sched-trip-color-pink:   var(--rux-pink-500);
+	/* Unconfirmed and confirmed are the sixth and seventh tones and take the
+	   same per-theme rest step — but they are NOT --sched-trip-color-*, and
+	   tests/trip-colors.test.mjs is why that matters: that family is exactly
+	   the five categorical labels a user can tag a trip or an avatar with,
+	   avatarColorValue builds its name by hand from that list, and the suite
+	   asserts the two sets are equal. These are statuses the board computes,
+	   not labels anyone picks.
+	   Confirmed used to be the --rux-accent fallback inside trip-bar.css —
+	   blue-700, a rung this component can no longer rest on. Blue-as-confirmed
+	   is the scheduler's own meaning (color.md D17), so it gets its own name
+	   here. The cost, taken deliberately: a [data-rux-accent] retint no longer
+	   recolours the default bar, because the bar's blue is "confirmed", not
+	   "the brand". */
+	--sched-trip-bar-confirmed-tone:   var(--rux-blue-500);
+	--sched-trip-bar-unconfirmed-tone: var(--rux-red-500);
+	/* One label per theme, like every other surface in the system: white in
+	   dark, the catalog's own on-fill near-black in light. The second text
+	   tier is the same label at 87% — not 75%: the dark hover overlay
+	   LIGHTENS, which costs white-text contrast, and 75% drops to 4.11 on a
+	   hovered bar; 87% is the lowest value that survives every tone in every
+	   state (docs/trip-bar.md rule 2.12). */
+	--sched-trip-bar-fg:       var(--rux-fg-on-fill);
+	--sched-trip-bar-fg-muted: oklch(from var(--rux-fg-on-fill) l c h / 87%);
+	/* The notes row's warning ink — a per-theme amber TEXT step, step 20.
+	   The row used to read --rux-warning-on-vivid, which is the ink to put
+	   ON a vivid warning fill — near-black in both themes — not a
+	   warning-coloured ink; on the step-18 dark fills it measured 1.78–2.70.
+	   amber-900 here is the same bright amber the warning icon uses (4.50 to
+	   5.26 on blue/red/purple/pink at 500); the light block overrides to
+	   amber-1000, since light's amber-900 is a mid-dark ink that clears
+	   nowhere on a 600 fill. No warning ink can clear on the amber, green or
+	   teal FILLS — amber-on-amber is invisible by construction — which is
+	   color.md D18's collision, not this token's to solve. */
+	--sched-trip-bar-notes-fg: var(--rux-amber-900);
 	/* Selected is not a fill (rule 2.5): hover and pressed are transient
 	   pointer feedback and belong on the surface, selection is persistent
 	   aria-pressed state and takes a ring. Drawn with `outline`, not `border`,
 	   so --partial-po keeps the border channel to warn in. Inset by its own
 	   width so a selected bar does not bleed into its neighbour on a dense
-	   board. --rux-fg-on-accent is white in both themes and is already the
-	   bar's own foreground, so it reads on all six tones without a per-tone
-	   value. */
+	   board. Reads --sched-trip-bar-fg, NOT --rux-fg-on-accent: a var() in a
+	   :root declaration substitutes at :root (docs/trip-bar.md D16), so the
+	   accent token here would freeze to the root's white and never follow the
+	   theme the way the bar's own label does. */
 	--sched-trip-bar-selected-ring-width: 2px;
-	--sched-trip-bar-selected-ring-color: var(--rux-fg-on-accent);
+	--sched-trip-bar-selected-ring-color: var(--sched-trip-bar-fg);
 	/* Orange retired 2026-08-22: the design system publishes one warm hue and
 	   the board used two. Stored rows still holding "orange" render yellow —
 	   js/core/trip-colors.js does the mapping, nothing was migrated.
@@ -97,8 +104,12 @@
 	   its own warning cell — removing a name with a live consumer is Class C,
 	   and step 4 is Class B. That a driver-grid cell reads a token named for
 	   the trip bar is a naming defect and belongs to naming.md, not here.
-	   The -tail-* opacities below ARE still read: rule 2.5 keeps alpha on the
-	   continuation rail, which is where transparency does real work. */
+	   Of the -tail-* opacities, -tail-opacity and -tail-selected-opacity ARE
+	   still read: rule 2.5 keeps alpha on the continuation rail, which is
+	   where transparency does real work. -tail-hover-opacity and
+	   -tail-pressed-opacity lost their readers at step 18 (hover and pressed
+	   are overlays now) and sit in the same kept-not-removed bucket as the
+	   recipe tokens above, awaiting step 8's cleanup pass. */
 	--sched-trip-bar-bg-lightness:              60%;
 	--sched-trip-bar-state-lightness-step:      4%;
 	--sched-trip-bar-hover-bg-lightness:        calc(var(--sched-trip-bar-bg-lightness) + var(--sched-trip-bar-state-lightness-step));
@@ -158,7 +169,12 @@
 	--sched-trip-bar-bus-label-line-height: var(--rux-line-height-12);   /* 12px */
 	--sched-trip-bar-bus-label-tracking:    var(--rux-text-label-12-tracking);
 	--sched-trip-bar-meta-radius:      var(--rux-radius-sm);
-	--sched-trip-bar-meta-fg: var(--rux-fg-on-accent);
+	/* --sched-trip-bar-fg, NOT --rux-fg-on-accent — this declaration was D16:
+	   the var() substituted against the :root's white where it sits, so the
+	   time and driver rows could never follow a per-theme label. Fixed by
+	   step 18, which shipped the first per-theme label and would have gone
+	   live with white-on-near-white meta rows otherwise. */
+	--sched-trip-bar-meta-fg: var(--sched-trip-bar-fg);
 	/* None, and deliberately so: Materials' Base preset is stroke-only, which is
 	   the correct elevation for a card that sits INSIDE a grid rather than
 	   floating over one. The 1px --_outline carries the edge.
@@ -260,6 +276,23 @@
 /* Light theme deepens the bar beneath dark metadata text; dark mode is the
    :root default above. */
 :root[data-theme="light"] {
+	/* The light half of rule 2.12 (step 18): rest moves up one rung to 600 —
+	   the most vivid light rung where near-black clears 4.5:1 on all seven
+	   tones — and the label flips to the catalog's own on-fill near-black.
+	   Taking 600 rather than mirroring dark's 500 is what keeps the light
+	   board's closest hue pair (red/pink) separable; at light-500 it
+	   collapses to roughly half. Measured on trip-bar-specimen.html. */
+	--sched-trip-color-teal:   var(--rux-teal-600);
+	--sched-trip-color-green:  var(--rux-green-600);
+	--sched-trip-color-purple: var(--rux-purple-600);
+	--sched-trip-color-amber:  var(--rux-amber-600);
+	--sched-trip-color-pink:   var(--rux-pink-600);
+	--sched-trip-bar-confirmed-tone:   var(--rux-blue-600);
+	--sched-trip-bar-unconfirmed-tone: var(--rux-red-600);
+	--sched-trip-bar-fg:       var(--rux-fg-on-fill-inverse);
+	--sched-trip-bar-fg-muted: oklch(from var(--rux-fg-on-fill-inverse) l c h / 87%);
+	--sched-trip-bar-notes-fg: var(--rux-amber-1000); /* 5.01–8.18 on every 600 fill */
+
 	--sched-trip-bar-bg-opacity:             68%;
 	--sched-trip-bar-hover-bg-opacity:       76%;
 	--sched-trip-bar-pressed-bg-opacity:     82%;

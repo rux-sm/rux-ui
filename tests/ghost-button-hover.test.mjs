@@ -65,10 +65,12 @@ test("no state fill is a bare lightness step off a surface token", () => {
 
 test("the trip bar is the one surface that keeps a hover fill", () => {
 	// A foreground step needs headroom above the rest color. On the bar the
-	// foreground is pinned to --rux-fg-on-accent, because a neutral grey is
-	// 1.10:1 against that blue where white is 4.34:1 — and white cannot step
-	// higher. Dropping rest to --rux-fg-on-accent-muted to make room would put
-	// it at 3.07:1, barely past the icon threshold. So the wash stays here.
+	// foreground is pinned to --rux-fg-on-accent — the bar's own per-theme
+	// label since docs/trip-bar.md step 18 — because a foreground step on a
+	// saturated fill has nowhere legible to go. The wash carries the state,
+	// and since step 18 it is the shared --rux-state-hover-overlay, so its
+	// direction follows the theme like every other control's; the hand-set
+	// white 18% wash it replaces lightened in both themes.
 	for (const token of [
 		"--rux-button-ghost-text",
 		"--rux-button-ghost-hover-text",
@@ -80,7 +82,7 @@ test("the trip bar is the one surface that keeps a hover fill", () => {
 	}
 	assert.match(
 		tripBar,
-		/--rux-button-ghost-hover-background:\s*oklch\(from var\(--rux-white\)/,
+		/--rux-button-ghost-hover-background:\s*var\(--rux-state-hover-overlay\)/,
 		"the bar must restore a wash its pinned foreground cannot replace",
 	);
 	assert.doesNotMatch(tripBar, /\.sched-trip-bar__action\.rux-button--ghost/);

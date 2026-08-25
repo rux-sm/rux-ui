@@ -41,9 +41,13 @@ test("a live colour passes through and an unknown one is dropped", () => {
 
 test("every published colour has a token, and no token outlives its colour", () => {
 	/* avatarColorValue builds `--sched-trip-color-${color}` by hand, so a colour
-	   without a token renders nothing and a token without a colour is dead. */
+	   without a token renders nothing and a token without a colour is dead.
+	   Unique names, not raw declarations: each tone is legitimately declared
+	   once per theme since docs/trip-bar.md step 18 (500 dark, 600 light). */
 	const css = readFileSync("scheduler/css/tokens.css", "utf8");
-	const declared = [...css.matchAll(/--sched-trip-color-([a-z]+)\s*:/g)].map((m) => m[1]);
+	const declared = new Set(
+		[...css.matchAll(/--sched-trip-color-([a-z]+)\s*:/g)].map((m) => m[1]),
+	);
 	assert.deepEqual([...declared].sort(), [...TRIP_COLORS].sort());
 });
 

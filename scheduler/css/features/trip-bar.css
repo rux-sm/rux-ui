@@ -160,53 +160,56 @@
 	   that tier's class in the ancestor chain.
 	   docs/foundations/typography.md D13, Q7, step 30. */
 
-	/* The one surface where ghost's foreground step cannot work, so this is the
-	   one place that keeps a hover fill.
+	/* ONE LABEL PER THEME — docs/trip-bar.md rule 2.12, step 18. The bar
+	   overrides the on-accent family for its own subtree so every existing
+	   read below follows the theme: white in dark, the catalog's on-fill
+	   near-black in light. The muted tier is 87%, not the family's 75% —
+	   the dark hover overlay LIGHTENS, and 75% drops to 4.11 on a hovered
+	   bar. The subtle tier is RETIRED for this component (it clears the
+	   floor nowhere in light at any step), so its reads collapse to muted;
+	   the tertiary voice here is position and content, not a third ink. */
+	--rux-fg-on-accent:        var(--sched-trip-bar-fg);
+	--rux-fg-on-accent-muted:  var(--sched-trip-bar-fg-muted);
+	--rux-fg-on-accent-subtle: var(--sched-trip-bar-fg-muted);
 
-	   The step needs a rest color with room above it. Here the foreground is
-	   pinned to --rux-fg-on-accent, because a neutral grey computes to 1.10:1
-	   against this blue where white gets 4.34:1 — and white has nothing above
-	   it. Stepping up from --rux-fg-on-accent-muted instead would put the rest
-	   state at 3.07:1: past the 3:1 icon threshold by a hair, on the primary
-	   actions of a selected trip, which is not a margin worth taking.
-	   So the foreground stays constant and the wash carries the state. */
+	/* Ghost action buttons ride the same label (the override above reaches
+	   them), and their hover wash is the shared state overlay so its
+	   direction follows the theme like every other control's — the hand-set
+	   white 18% wash predates the per-theme label and lightened in both
+	   themes. */
 	--rux-button-ghost-text:       var(--rux-fg-on-accent);
 	--rux-button-ghost-hover-text: var(--rux-fg-on-accent);
-	--rux-button-ghost-hover-background: oklch(from var(--rux-white) l c h / 18%);
+	--rux-button-ghost-hover-background: var(--rux-state-hover-overlay);
 
 	--_details-height: 0px;
 	--_conflict-height: 0px;
-	/* Two steps per tone, not one hue plus a lightness recipe — docs/trip-bar.md
-	   rule 2.5, step 4. Rest is the catalog's 700 (its high-contrast
-	   background); hover and pressed are 800, and 800 is DARKER, which is the
-	   direction color.md rule 2.5 states and every button in the app already
-	   moves. The old recipe hovered by ADDING 4% lightness — D7's "a hover that
-	   lightens is off the model" — and gave selected the SAME +4% as hover, so
-	   the two were separated only by an alpha step and a selected trip read as
-	   a hovered one. Selected is not a fill at all now; see .is-active below.
-	   Measured before the change, all seven tones, both themes: every one
-	   rendered at L 0.60 rest / 0.64 hover regardless of the step it named,
-	   because the recipe overrode the lightness the step carried. */
-	--_tone:       var(--_trip-bar-color, var(--rux-accent));
-	--_tone-hover: var(--_trip-bar-color-hover, var(--rux-accent-hover));
+	/* One step per tone per theme — docs/trip-bar.md rule 2.12, step 18. Rest
+	   is the hue's 500 in dark and 600 in light (the tone tokens carry the
+	   split; see scheduler/css/tokens.css), the only rungs where one label
+	   per theme clears 4.5:1 on all seven tones. Hover and pressed are NOT
+	   steps: they composite --rux-state-hover-overlay / -active-overlay over
+	   rest — see the interaction states below — which is one published token
+	   per state doing what step 4's six paired `-hover` tokens did. Selected
+	   is not a fill at all; see .is-active below.
+	   The default (confirmed) tone stopped falling back to --rux-accent at
+	   step 18: the accent rests at 800, a rung this component left. */
+	--_tone: var(--_trip-bar-color, var(--sched-trip-bar-confirmed-tone));
 	/* Kept in the relative-color shape the outline contract asserts, minus the
 	   lightness override: the tone is already an opaque catalog step, so there
 	   is nothing left to restate but the alpha. Only --partial-po gives this a
 	   width, and it overrides the colour too; the base value exists so base,
 	   head and tail agree when it does. */
 	--_outline: oklch(from var(--_tone) l c h / 100%);
-	--_surface:         var(--_tone);
-	--_surface-hover:   var(--_tone-hover);
-	--_surface-pressed: var(--_tone-hover);
-	--_surface-active:  var(--_tone);
+	--_surface:        var(--_tone);
+	--_surface-active: var(--_tone);
 	/* The tail is the one surface that keeps alpha (rule 2.5): it exists to read
 	   as subordinate to its day-1 head, and reduced alpha is the mechanism that
 	   says so. Each tail derives from the head surface it accompanies rather
 	   than from a parallel lightness recipe, so it tracks whatever the head
-	   does with no second ladder to keep in sync. */
+	   does with no second ladder to keep in sync. Hover and pressed need no
+	   tail derivation any more: the state overlay composites over head and
+	   tail alike, so the two halves cannot desync. */
 	--_tail-surface:         oklch(from var(--_surface) l c h / var(--sched-trip-bar-tail-opacity));
-	--_tail-surface-hover:   oklch(from var(--_surface-hover) l c h / var(--sched-trip-bar-tail-hover-opacity));
-	--_tail-surface-pressed: oklch(from var(--_surface-pressed) l c h / var(--sched-trip-bar-tail-pressed-opacity));
 	--_tail-surface-active:  oklch(from var(--_surface-active) l c h / var(--sched-trip-bar-tail-selected-opacity));
 
 	position: relative;
@@ -363,12 +366,26 @@
 
 /* ---------- Interaction states ---------- */
 
-.sched-trip-bar:hover {
-	background-color: var(--_surface-hover);
+/* Hover and pressed composite the published state overlays over the rest
+   fill — rule 2.12, step 18. The overlay is painted as a background-image
+   layer so the rest background-color never moves; its direction is the
+   theme's (white lightens in dark, black darkens in light), which is how
+   every list row and ghost control in the application already behaves.
+   :hover excludes .is-active so a selected bar's fill answers to its ring,
+   not to the pointer passing over it — the same suppression the old
+   background-color cascade produced by rule order.
+   Both exclude --multi-day explicitly rather than by cascade order: a
+   multi-day article spans the seam gap between its head and tail, which
+   paint their own states below. The old :active rule outranked the
+   multi-day transparent override on specificity and painted the pressed
+   fill across that gap — found by reading during step 18, fixed by the
+   same scoping. */
+.sched-trip-bar:hover:not(.is-active):not(.sched-trip-bar--multi-day) {
+	background-image: linear-gradient(var(--rux-state-hover-overlay), var(--rux-state-hover-overlay));
 }
 
-.sched-trip-bar:active:not(.is-active) {
-	background-color: var(--_surface-pressed);
+.sched-trip-bar:active:not(.is-active):not(.sched-trip-bar--multi-day) {
+	background-image: linear-gradient(var(--rux-state-active-overlay), var(--rux-state-active-overlay));
 }
 
 .sched-trip-bar[aria-disabled="true"] {
@@ -398,8 +415,30 @@
 	background-color: transparent;
 }
 
+/* The selection ring cannot live on a multi-day article: the article is
+   transparent and __head/__tail are positioned children (z-index 1+), so an
+   inset outline on the article paints BENEATH the head's opaque fill and
+   shows only as a dim band through the tail's alpha — a selected multi-day
+   bar looked unselected (D17). The ring is drawn by an overlay pseudo
+   spanning the article instead: same tokens, same inset, one ring around
+   the whole span. border-radius: inherit tracks the article, whose corners
+   already zero on --from-prev/--to-next, so the ring stays flat where the
+   span runs offscreen. z-index 3 clears the head's 2 and the shared
+   child layer's 1. */
 .sched-trip-bar--multi-day.is-active {
 	z-index: var(--sched-trip-bar-active-z-index);
+	outline: none;
+}
+
+.sched-trip-bar--multi-day.is-active::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 3;
+	pointer-events: none;
+	border-radius: inherit;
+	outline: var(--sched-trip-bar-selected-ring-width) solid var(--sched-trip-bar-selected-ring-color);
+	outline-offset: calc(var(--sched-trip-bar-selected-ring-width) * -1);
 }
 
 /* Keep bar sections, actions, text, and conflict content in one predictable
@@ -411,21 +450,20 @@
 
 /* ---------- Modifier: unconfirmed ---------- */
 
-/* Each tone sets BOTH steps. Setting only the rest colour would leave the
-   hover reading --rux-accent-hover, i.e. a teal bar hovering to blue. */
+/* One declaration per tone since step 18: hover and pressed are overlays
+   over rest, so there is no second step to keep in sync — the failure mode
+   the old "sets BOTH steps" comment warned about (a teal bar hovering to
+   blue) is no longer expressible. */
 .sched-trip-bar[data-trip-bar-color="teal"] {
-	--_trip-bar-color:       var(--sched-trip-color-teal);
-	--_trip-bar-color-hover: var(--sched-trip-color-teal-hover);
+	--_trip-bar-color: var(--sched-trip-color-teal);
 }
 
 .sched-trip-bar[data-trip-bar-color="green"] {
-	--_trip-bar-color:       var(--sched-trip-color-green);
-	--_trip-bar-color-hover: var(--sched-trip-color-green-hover);
+	--_trip-bar-color: var(--sched-trip-color-green);
 }
 
 .sched-trip-bar[data-trip-bar-color="purple"] {
-	--_trip-bar-color:       var(--sched-trip-color-purple);
-	--_trip-bar-color-hover: var(--sched-trip-color-purple-hover);
+	--_trip-bar-color: var(--sched-trip-color-purple);
 }
 
 /* Amber's lightness exception is GONE, and step 4 is why it can be. It read
@@ -438,21 +476,19 @@
    drop, in the opposite direction to every other tone, which is the bug the
    exception quietly carried. */
 .sched-trip-bar[data-trip-bar-color="amber"] {
-	--_trip-bar-color:       var(--sched-trip-color-amber);
-	--_trip-bar-color-hover: var(--sched-trip-color-amber-hover);
+	--_trip-bar-color: var(--sched-trip-color-amber);
 }
 
 .sched-trip-bar[data-trip-bar-color="pink"] {
-	--_trip-bar-color:       var(--sched-trip-color-pink);
-	--_trip-bar-color-hover: var(--sched-trip-color-pink-hover);
+	--_trip-bar-color: var(--sched-trip-color-pink);
 }
 
 /* Unconfirmed read --sched-trip-bar-danger-border (red-800) as its REST
    colour, which left it one step darker than every other tone at rest and
-   with nowhere to hover to. It takes 700/800 like the rest now. */
+   with nowhere to hover to. It takes the same per-theme rest step as every
+   other tone now (rule 2.12). */
 .sched-trip-bar--unconfirmed:not([data-trip-bar-color]) {
-	--_tone:       var(--sched-trip-bar-unconfirmed-tone);
-	--_tone-hover: var(--sched-trip-bar-unconfirmed-tone-hover);
+	--_tone: var(--sched-trip-bar-unconfirmed-tone);
 }
 
 /* ---------- Modifier: trip-type pattern overlay ---------- */
@@ -609,12 +645,12 @@
 	display: contents;
 }
 
-.sched-trip-bar--multi-day:hover .sched-trip-bar__head {
-	background-color: var(--_surface-hover);
+.sched-trip-bar--multi-day:hover:not(.is-active) .sched-trip-bar__head {
+	background-image: linear-gradient(var(--rux-state-hover-overlay), var(--rux-state-hover-overlay));
 }
 
 .sched-trip-bar--multi-day:active:not(.is-active) .sched-trip-bar__head {
-	background-color: var(--_surface-pressed);
+	background-image: linear-gradient(var(--rux-state-active-overlay), var(--rux-state-active-overlay));
 }
 
 .sched-trip-bar--multi-day.is-active .sched-trip-bar__head {
@@ -642,17 +678,15 @@
 
 }
 
-/* Matches __head's hover/active shading (below) — before this was flattened
-   to a solid color, the gradient made __tail's own static shade less
-   noticeable; now that it's flat like every other surface, __tail needs the
-   same hover/active response __head already has or the two halves of a
-   multi-day bar visibly desync on interaction. */
-.sched-trip-bar--multi-day:hover .sched-trip-bar__tail {
-	background-color: var(--_tail-surface-hover);
+/* Matches __head's hover/active response above: the same overlay composites
+   over the tail's translucent rest fill, so the two halves of a multi-day
+   bar cannot desync on interaction — one token per state, painted twice. */
+.sched-trip-bar--multi-day:hover:not(.is-active) .sched-trip-bar__tail {
+	background-image: linear-gradient(var(--rux-state-hover-overlay), var(--rux-state-hover-overlay));
 }
 
 .sched-trip-bar--multi-day:active:not(.is-active) .sched-trip-bar__tail {
-	background-color: var(--_tail-surface-pressed);
+	background-image: linear-gradient(var(--rux-state-active-overlay), var(--rux-state-active-overlay));
 }
 
 .sched-trip-bar--multi-day.is-active .sched-trip-bar__tail {
@@ -958,7 +992,10 @@
 	display: flex;
 	align-items: center;
 	min-height: var(--sched-trip-bar-row-line-height);
-	color: var(--rux-warning-on-vivid);
+	/* A warning-coloured ink, per theme — NOT --rux-warning-on-vivid, which
+	   is the near-black for text ON a warning fill and read as black text
+	   on the step-18 dark fills. docs/trip-bar.md D18, step 20. */
+	color: var(--sched-trip-bar-notes-fg);
 	font-size: var(--sched-trip-bar-row-font-size);
 	font-weight: var(--rux-weight-400);
 }
