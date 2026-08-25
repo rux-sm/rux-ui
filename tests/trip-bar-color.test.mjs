@@ -291,16 +291,27 @@ test("one label per theme, and every dependent token resolves against it (D16)",
 		tripBarCss,
 		/\.sched-trip-bar\s*\{[\s\S]*?--rux-fg-on-accent:\s*var\(--sched-trip-bar-fg\);[\s\S]*?--rux-fg-on-accent-muted:\s*var\(--sched-trip-bar-fg-muted\);[\s\S]*?--rux-fg-on-accent-subtle:\s*var\(--sched-trip-bar-fg-muted\);/,
 	);
-	// D16's shape: a var() in a :root declaration substitutes at :root, so
-	// tokens that must follow the theme read --sched-trip-bar-fg directly —
-	// pointing them at --rux-fg-on-accent would freeze them to the root's
-	// white forever.
-	assert.match(tokensCss, /--sched-trip-bar-meta-fg:\s*var\(--sched-trip-bar-fg\)/);
+	// D16's shape: a var() in a :root declaration substitutes at :root, so a
+	// :root token that must follow the theme reads --sched-trip-bar-fg
+	// directly — pointing it at --rux-fg-on-accent would freeze it to the
+	// root's white forever. (--sched-trip-bar-meta-fg, D16's original site,
+	// was deleted with the rest of the meta-panel family at step 8; the time
+	// row now reads --rux-fg-on-accent on-element, where the bar's own
+	// override makes that correct.)
 	assert.match(tokensCss, /--sched-trip-bar-selected-ring-color:\s*var\(--sched-trip-bar-fg\)/);
 	assert.doesNotMatch(
 		tokensCss.replace(/\/\*[\s\S]*?\*\//g, ""),
-		/--sched-trip-bar-(meta-fg|selected-ring-color):\s*var\(--rux-fg-on-accent\)/,
+		/--sched-trip-bar-selected-ring-color:\s*var\(--rux-fg-on-accent\)/,
 		"a :root trip-bar token is reading the on-accent family again (D16)",
+	);
+	assert.doesNotMatch(
+		tokensCss.replace(/\/\*[\s\S]*?\*\//g, ""),
+		/--sched-trip-bar-meta-/,
+		"the meta-panel token family stays deleted (Q3, step 8)",
+	);
+	assert.match(
+		tripBarCss,
+		/\.sched-trip-bar__time\s*\{[^}]*color:\s*var\(--rux-fg-on-accent\)/s,
 	);
 	// The notes row is a warning-coloured ink per theme — amber-900 dark,
 	// amber-1000 light — never --rux-warning-on-vivid, which is the

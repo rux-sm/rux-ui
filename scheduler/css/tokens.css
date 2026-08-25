@@ -107,9 +107,8 @@
 	   Of the -tail-* opacities, -tail-opacity and -tail-selected-opacity ARE
 	   still read: rule 2.5 keeps alpha on the continuation rail, which is
 	   where transparency does real work. -tail-hover-opacity and
-	   -tail-pressed-opacity lost their readers at step 18 (hover and pressed
-	   are overlays now) and sit in the same kept-not-removed bucket as the
-	   recipe tokens above, awaiting step 8's cleanup pass. */
+	   -tail-pressed-opacity lost their readers at step 18 and were deleted
+	   by step 8's cleanup pass. */
 	--sched-trip-bar-bg-lightness:              60%;
 	--sched-trip-bar-state-lightness-step:      4%;
 	--sched-trip-bar-hover-bg-lightness:        calc(var(--sched-trip-bar-bg-lightness) + var(--sched-trip-bar-state-lightness-step));
@@ -126,12 +125,9 @@
 	--sched-trip-bar-pressed-bg-opacity:        50%;
 	--sched-trip-bar-selected-bg-opacity:       80%;
 	--sched-trip-bar-tail-opacity:              20%;
-	--sched-trip-bar-tail-hover-opacity:        20%;
-	--sched-trip-bar-tail-pressed-opacity:      20%;
 	--sched-trip-bar-tail-selected-opacity:     20%;
 	--sched-trip-bar-disabled-opacity:          0.45;
 	--sched-trip-bar-ghost-bg-opacity:          16%;
-	--sched-trip-bar-meta-bg: oklch(from var(--rux-black) l c h / 0%);
 	--sched-trip-dialog-width:           min(480px, calc(100vw - (var(--rux-space-4) * 2)));
 	--sched-request-window-width:        clamp(600px, 70vw, 1100px);
 	--sched-manifest-window-width:       clamp(480px, 65vw, 1200px);
@@ -158,13 +154,6 @@
 	--sched-trip-bar-radius: var(--rux-radius-container);
 	--sched-trip-bar-action-button-size: 32px;
 	--sched-trip-bar-actions-radius:   var(--rux-radius-control);
-	--sched-trip-bar-meta-radius:      var(--rux-radius-sm);
-	/* --sched-trip-bar-fg, NOT --rux-fg-on-accent — this declaration was D16:
-	   the var() substituted against the :root's white where it sits, so the
-	   time and driver rows could never follow a per-theme label. Fixed by
-	   step 18, which shipped the first per-theme label and would have gone
-	   live with white-on-near-white meta rows otherwise. */
-	--sched-trip-bar-meta-fg: var(--sched-trip-bar-fg);
 	/* None, and deliberately so: Materials' Base preset is stroke-only, which is
 	   the correct elevation for a card that sits INSIDE a grid rather than
 	   floating over one. The 1px --_outline carries the edge.
@@ -174,7 +163,6 @@
 	   depth claim, so the right number of layers is zero, not fewer.
 	   docs/trip-bar.md rule 2.3, step 3. */
 	--sched-trip-bar-shadow: none;
-	--sched-trip-bar-meta-shadow: none; /* recessed rim, same as input fields */
 	--sched-trip-bar-stripe-color:   var(--rux-white);
 	--sched-trip-bar-stripe-opacity: 0.04;
 	/* The Label role, whole — never Tier 0 primitives (typography.md rule
@@ -295,10 +283,7 @@
 	--sched-trip-bar-pressed-bg-opacity:     82%;
 	--sched-trip-bar-selected-bg-opacity:    82%;
 	--sched-trip-bar-tail-opacity:           48%;
-	--sched-trip-bar-tail-hover-opacity:     58%;
-	--sched-trip-bar-tail-pressed-opacity:   64%;
 	--sched-trip-bar-tail-selected-opacity:  64%;
-	--sched-trip-bar-meta-bg: oklch(from var(--rux-white) l c h / 0%);
 
 	/* Calendar light overrides, moved with the block above. */
 	--sched-calendar-grid:           var(--rux-border-width) solid var(--rux-grid-guide);

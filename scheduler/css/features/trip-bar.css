@@ -906,8 +906,6 @@
 
 .sched-trip-bar__pending-icon {
 	flex: none;
-	stroke-width: 2;
-	padding-right: var(--rux-space-2);
 }
 
 .sched-trip-bar__pending-icon--warning {
@@ -1031,10 +1029,12 @@
 	   with the bus rail beside them, which already sets this.
 	   docs/trip-bar.md rule 2.11, step 11. */
 	font-variant-numeric: tabular-nums;
-	background: var(--sched-trip-bar-meta-bg);
-	border-radius: var(--sched-trip-bar-meta-radius) var(--sched-trip-bar-meta-radius) 0 0;
-	box-shadow: var(--sched-trip-bar-meta-shadow);
-	color: var(--sched-trip-bar-meta-fg);
+	/* No meta panel — Q3, answered 2026-08-24: the recessed treatment this
+	   row and __drivers once painted (a shared background, rim shadow and
+	   paired corner-roundings) was zeroed long ago and the owner chose
+	   deletion over restoration. The rows read the bar's own label like
+	   every other row; docs/trip-bar.md step 8. */
+	color: var(--rux-fg-on-accent);
 	font-size: var(--sched-trip-bar-row-font-size);
 	letter-spacing: var(--sched-trip-bar-row-tracking, var(--rux-tracking-normal));
 	line-height: var(--sched-trip-bar-row-line-height);
@@ -1099,9 +1099,6 @@
 	min-height: var(--sched-trip-bar-row-line-height);
 	flex-wrap: nowrap;
 	align-items: center;
-	background: var(--sched-trip-bar-meta-bg);
-	border-radius: 0 0 var(--sched-trip-bar-meta-radius) var(--sched-trip-bar-meta-radius);
-	box-shadow: var(--sched-trip-bar-meta-shadow);
 }
 
 .sched-trip-bar__driver {
@@ -1316,9 +1313,6 @@
 /* ---------- Responsive container queries ---------- */
 
 @container (max-width: 24rem) {
-	.sched-trip-bar__time {
-	}
-
 	.sched-trip-bar__pending {
 		gap: var(--sched-trip-bar-tight-gap);
 	}
