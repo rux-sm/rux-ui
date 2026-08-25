@@ -817,7 +817,7 @@ import {
 								<div class="sched-driver-week-info__share-actions">
 									<button type="button" class="rux-button rux-button--default rux-button--sm" data-driver-share-action="copy"><span class="rux-icon" aria-hidden="true">content_copy</span>Copy link</button>
 									<button type="button" class="rux-button rux-button--default rux-button--sm" data-driver-share-action="preview"><span class="rux-icon" aria-hidden="true">open_in_new</span>Preview</button>
-									<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--sm" data-driver-share-action="revoke">Deactivate</button>
+									<button type="button" class="rux-button rux-button--ghost rux-button--danger" data-driver-share-action="revoke">Deactivate</button>
 								</div>
 							</div>
 						</div>

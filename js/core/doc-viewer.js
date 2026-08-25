@@ -42,7 +42,7 @@
 				<a class="rux-button rux-button--default rux-button--icon" data-doc-viewer-external target="_blank" rel="noopener" aria-label="Open document externally" title="Open externally">
 					<span class="rux-icon" aria-hidden="true">open_in_new</span>
 				</a>
-				<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--lg" data-doc-viewer-close aria-label="Close document viewer">
+				<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-doc-viewer-close aria-label="Close document viewer">
 					<span class="rux-icon" aria-hidden="true">close</span>
 				</button>
 			</header>
