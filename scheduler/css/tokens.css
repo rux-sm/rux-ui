@@ -221,9 +221,17 @@
 	/* — shell — */
 	--sched-calendar-bg:         var(--rux-surface-0);
 	--sched-calendar-border:     1px solid var(--rux-card-border); /* calender outline border*/
-	/* Routed through the container role (currently also 0) rather than
-	   hardcoded — see --rux-workspace-radius above for why. */
-	--sched-calendar-radius: var(--rux-radius-0);
+	/* The calendar viewport is a card-shaped surface and takes the container
+	   rung, like every card, panel, button and field since layout.md step 8.
+	   It read --rux-radius-0 until 2026-08-24, behind a comment claiming it
+	   was "routed through the container role (currently also 0)" — which was
+	   wrong twice: it named --rux-radius-0 directly rather than the role, and
+	   the parenthetical expired at step 8, when container moved 0 → 6px. The
+	   viewport is the OUTER layer and clips with overflow:hidden, so its 0
+	   squared off the inner grid's own 6px corners (and the corner cell's
+	   matching --sched-calendar-header-radius below): three layers rounded,
+	   the only visible one square. Found by eye, on the board. */
+	--sched-calendar-radius: var(--rux-radius-container);
 	/* A fill that carries a white label (--sched-calendar-now-line-label-bg reads
 	   this, and -label-fg is --rux-fg-on-accent), so rule 2.11 applies: white on
 	   the 700 step measures 4.44 and fails. 800 it is. */
