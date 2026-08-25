@@ -699,7 +699,7 @@
 	   `background` directly and so outranks this rule, which is what keeps a
 	   driver's real state visible underneath any marker. */
 	background: var(--sched-driver-grid-cell-bg, var(--rux-surface-0));
-	/* Transparent, not --rux-border-subtle: an idle cell should read as
+	/* Transparent rather than any painted border colour: an idle cell should read as
 	   quietly as a plain .sched-mini-cal__date, which has no border at all
 	   until it means something (today/active-week). The status modifiers
 	   below still set a real border-color, same border-width throughout so

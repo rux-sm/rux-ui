@@ -992,7 +992,13 @@
 	--rux-ui-header-min-height: var(--rux-ui-header-height);
 	--rux-ui-header-gap:     	var(--rux-space-0);
 	/* — brand — */
-	--rux-ui-header-brand-padding-inline: var(--rux-space-4);  /* 8px — matches the buttons' optical inset */
+	--rux-ui-header-brand-padding-inline: var(--rux-space-4);  /* 16px */
+	/* That annotation read "8px — matches the buttons' optical inset" until
+	   2026-08-24 and was wrong twice: space-4 is 16px, and the button inset
+	   is --rux-button-padding-inline-standard (space-3, 12px), so this has
+	   not matched a button for some time. Corrected to the measured value
+	   rather than moved to 12px: the brand's inset is what renders today and
+	   re-tying it to the button rung is a visible change, not a comment fix. */
 	/* Divider between the menu trigger and the brand. The header's left run is
 	   [menu] [logo] [title], which is two jobs — navigation, then identity and
 	   context — sharing one undifferentiated row. This states the split.
@@ -1104,7 +1110,13 @@
 	/* — header — */
 	/* Keep header and view content on the same inline grid. */
 	--rux-workspace-header-padding: 0 ;
-	/* control height + space-3 top/bottom = 56px, matching panel header */
+	/* A 40px floor — the same height the UI header takes, so the two bars
+	   above a view agree. The comment here read "control height + space-3
+	   top/bottom = 56px, matching panel header" until 2026-08-24 and was
+	   wrong three ways: that arithmetic is 44 + 12 + 12 = 68, not 56; the
+	   value is 40; and the panel header is --rux-panel-header-height, 64px.
+	   Left at 40 rather than moved to any of the three figures it named —
+	   the value renders correctly and only the description was false. */
 	--rux-workspace-header-min-height: 40px;
 	--rux-workspace-header-gap: 0;
 
