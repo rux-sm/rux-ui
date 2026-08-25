@@ -8,11 +8,22 @@
 
 .sched-app {
 	--sched-app-gap: var(--rux-space-5);
-	/* The one frame every view shares — an asymmetric shape (top 2,
-	   inline+bottom 3), kept distinct from --sched-app-gap since that
+	/* The one frame every view shares: no block gutter, one space-5 inline
+	   gutter to each app edge. Kept distinct from --sched-app-gap since that
 	   token also drives the inter-panel gutter and inner content insets
 	   below. Set here, on the app shell, so no view can drift from the
-	   others: .rux-app-view (rux-ui/css/base/app-shell.css) reads both. */
+	   others: .rux-app-view (rux-ui/css/base/app-shell.css) reads both.
+	   The inline gutter collapses on the right while a right drawer is open
+	   — see the .rux-app-view:has(> .rux-drawer--right.is-open) rule below,
+	   which is why this renders 0/20 rather than 20/20 on the board today.
+	   Radius stays 0 and is not drift: the view box is full-bleed to the
+	   window edges and paints nothing — transparent, borderless, shadowless
+	   — so a rung here would round an edge that is not drawn. Rounding on
+	   this shell belongs to the surfaces inside it (the calendar viewport
+	   takes --rux-radius-container). Verified 2026-08-24.
+	   The comment this replaces described "an asymmetric shape (top 2,
+	   inline+bottom 3)" — a shape none of these three values has had for
+	   some time. */
 	--rux-app-view-padding: var(--rux-space-0) var(--rux-space-5);
 	--rux-app-view-radius: var(--rux-radius-0);
 	/* Drawer measurements. The mechanism is portable
