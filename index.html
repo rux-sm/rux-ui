@@ -6,14 +6,19 @@
 			name="viewport"
 			content="width=device-width, initial-scale=1, viewport-fit=cover"
 		/>
+		<!-- Browser chrome matches the page ground: --rux-surface-0, which is
+		     background-200 per theme (docs/foundations/color.md rule 2.3).
+		     media= approximates the boot script above; a stored preference that
+		     disagrees with the OS is the one case these tags cannot follow.
+		     tests/theme-color-meta.test.mjs keeps the values honest. -->
 		<meta
 			name="theme-color"
-			content="#f0f1f3"
+			content="#fafafa"
 			media="(prefers-color-scheme: light)"
 		/>
 		<meta
 			name="theme-color"
-			content="#202022"
+			content="#000000"
 			media="(prefers-color-scheme: dark)"
 		/>
 		<script>
@@ -116,7 +121,7 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/driver-share.css?v=89"
+			href="./scheduler/css/features/driver-share.css?v=90"
 		/>
 		<link
 			rel="stylesheet"

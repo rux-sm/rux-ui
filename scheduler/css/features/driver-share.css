@@ -25,8 +25,11 @@
 	--sched-driver-module-icon-size:        48px;
 	--sched-driver-module-grid-gap:         var(--rux-space-4);
 	--sched-driver-action-rail-width:       96px;
-	--sched-driver-module-divider:          oklch(from var(--rux-neutral) 100% c h / 12%);
-	--sched-driver-internal-divider:        oklch(from var(--rux-neutral) 100% c h / 9%);
+	/* gray-alpha-300/200: white 12.94%/9.02% in dark, nearly the white 12%/9%
+	   these were as recipes on the retired --rux-neutral — and unlike those
+	   recipes they flip to black-alpha if this page ever renders light. */
+	--sched-driver-module-divider:          var(--rux-gray-alpha-300);
+	--sched-driver-internal-divider:        var(--rux-gray-alpha-200);
 	--sched-driver-touch-target:            48px;
 	--sched-driver-copy-max-width:          28rem;
 	--sched-driver-status-min-height:       60dvh;

@@ -15,7 +15,9 @@
 		<!-- Matches index.html's own light-theme chrome color. A meta tag can't
 		     read a CSS custom property, so this is the one place the value is
 		     written out rather than tokenized. -->
-		<meta name="theme-color" content="#f0f1f3" />
+		<!-- Forced-light page (data-theme on <html>); chrome matches light
+		     --rux-surface-0 (tests/theme-color-meta.test.mjs). -->
+		<meta name="theme-color" content="#fafafa" />
 		<title>Trip Request · Escamilla Tour Buses</title>
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=123" />

@@ -1257,9 +1257,9 @@ scheduler/css/features/driver-share.css :: :where(.driver-share-page, .component
 scheduler/css/features/driver-share.css :: :where(.driver-share-page, .components-app__driver-assignment-demo) :: --sched-driver-date-primary-size: var(--rux-size-16)
 scheduler/css/features/driver-share.css :: :where(.driver-share-page, .components-app__driver-assignment-demo) :: --sched-driver-date-primary-weight: var(--rux-weight-400)
 scheduler/css/features/driver-share.css :: :where(.driver-share-page, .components-app__driver-assignment-demo) :: --sched-driver-focus-ring: 0 0 0 3px var(--rux-accent-ring)
-scheduler/css/features/driver-share.css :: :where(.driver-share-page, .components-app__driver-assignment-demo) :: --sched-driver-internal-divider: oklch(from var(--rux-neutral) 100% c h / 9%)
+scheduler/css/features/driver-share.css :: :where(.driver-share-page, .components-app__driver-assignment-demo) :: --sched-driver-internal-divider: var(--rux-gray-alpha-200)
 scheduler/css/features/driver-share.css :: :where(.driver-share-page, .components-app__driver-assignment-demo) :: --sched-driver-label-size: var(--rux-size-12)
-scheduler/css/features/driver-share.css :: :where(.driver-share-page, .components-app__driver-assignment-demo) :: --sched-driver-module-divider: oklch(from var(--rux-neutral) 100% c h / 12%)
+scheduler/css/features/driver-share.css :: :where(.driver-share-page, .components-app__driver-assignment-demo) :: --sched-driver-module-divider: var(--rux-gray-alpha-300)
 scheduler/css/features/driver-share.css :: :where(.driver-share-page, .components-app__driver-assignment-demo) :: --sched-driver-module-grid-gap: var(--rux-space-4)
 scheduler/css/features/driver-share.css :: :where(.driver-share-page, .components-app__driver-assignment-demo) :: --sched-driver-module-icon-size: 48px
 scheduler/css/features/driver-share.css :: :where(.driver-share-page, .components-app__driver-assignment-demo) :: --sched-driver-module-label-min: 112px
