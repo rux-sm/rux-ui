@@ -17,7 +17,7 @@ roles onto that vocabulary.
 |---|---|---|---|
 | [`typography.md`](typography.md) | 5.0.0 | 63 done · 1 deferred · 3 withdrawn | — |
 | [`layout.md`](layout.md) | 2.12.0 | 27 done | — |
-| [`color.md`](color.md) | 3.1.0 | 21 done | — |
+| [`color.md`](color.md) | 3.1.1 | 22 done | — |
 | [`motion.md`](motion.md) | 1.6.0 | 6 done | — |
 | [`naming.md`](naming.md) | 1.18.0 | 15 done | — |
 | [`state.md`](state.md) | 1.8.1 | 11 done | — |
