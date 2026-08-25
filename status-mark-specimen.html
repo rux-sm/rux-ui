@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Status marks on a category fill — F2 exploration</title>
+<link rel="stylesheet" href="./rux-ui/css/rux.css?v=18" />
+<link rel="stylesheet" href="./scheduler/css/components.css?v=27" />
+<style>
+	body { background: var(--rux-surface-0); color: var(--rux-text-primary);
+	       font-family: var(--rux-font-sans); margin: 0; padding: var(--rux-space-5) var(--rux-space-5) 6rem; }
+	header { display: flex; align-items: flex-start; gap: var(--rux-space-4);
+	         justify-content: space-between; margin-bottom: var(--rux-space-5); }
+	header > div:first-child { flex: 1 1 auto; min-width: 0; }
+	h1 { font-size: var(--rux-text-heading-24-size); line-height: var(--rux-text-heading-24-line-height);
+	     letter-spacing: var(--rux-text-heading-24-tracking); font-weight: var(--rux-weight-600); margin: 0 0 var(--rux-space-2); }
+	h2 { font-size: var(--rux-text-heading-16-size); line-height: var(--rux-text-heading-16-line-height);
+	     font-weight: var(--rux-weight-600); margin: 0 0 var(--rux-space-1); }
+	p  { color: var(--rux-text-secondary); margin: 0; max-width: 72ch;
+	     font-size: var(--rux-text-copy-14-size); line-height: var(--rux-text-copy-14-line-height); }
+	section { margin-bottom: 2.5rem; }
+	.sec-head { margin-bottom: var(--rux-space-4); padding-bottom: var(--rux-space-2);
+	            border-bottom: 1px solid var(--rux-card-border); }
+	.note { background: var(--rux-surface-2); border: 1px solid var(--rux-card-border);
+	        border-radius: var(--rux-radius-container); padding: var(--rux-space-3) var(--rux-space-4);
+	        margin-bottom: var(--rux-space-5); font-size: var(--rux-text-copy-14-size);
+	        line-height: var(--rux-text-copy-14-line-height); color: var(--rux-text-secondary); max-width: 78ch; }
+	table { border-collapse: collapse; }
+	th { font-size: var(--rux-text-label-12-size); font-weight: var(--rux-weight-500);
+	     color: var(--rux-text-secondary); text-align: left; padding: 0 var(--rux-space-3) var(--rux-space-2) 0; }
+	th.rowh { vertical-align: top; padding-top: 10px; padding-right: var(--rux-space-4); min-width: 11rem; }
+	th.rowh small { display: block; font-weight: var(--rux-weight-400); color: var(--rux-text-secondary); max-width: 16rem; }
+	td { padding: 0 var(--rux-space-3) var(--rux-space-4) 0; vertical-align: top; }
+	.swatch { width: 8.5rem; height: 44px; border-radius: var(--rux-radius-control);
+	          display: flex; align-items: center; gap: 10px; padding: 0 12px; box-sizing: border-box; }
+	.swatch .rux-icon { font-size: 16px; }
+	.chipdisc { display: inline-flex; align-items: center; justify-content: center;
+	            width: 22px; height: 22px; border-radius: 50%; flex: none; }
+	.ratios { font-family: var(--rux-font-mono); font-size: var(--rux-text-label-12-size);
+	          line-height: 1.5; color: var(--rux-text-secondary); padding-top: 4px; white-space: nowrap; }
+	.ratios b { font-weight: var(--rux-weight-500); color: var(--rux-text-primary); }
+	.fail { color: var(--rux-danger); }
+	.scroll { overflow-x: auto; }
+</style>
+</head>
+<body>
+<header>
+	<div>
+		<h1>Status marks on a category fill — F2 exploration</h1>
+		<p>The trip bar's pending marks (danger / warning / success 900s) sit on a bar whose fill is
+		itself a category colour. F2's floor is 3:1 against <em>that fill</em>, and
+		<code>color.md</code> Q13 measured today's shape failing universally (1.14–1.93). Q12 records
+		that the owner declined a rung swap — the 1000 inks read too desaturated — and that what
+		remains is a <em>different mark</em>. This page renders those marks. Toggle the theme;
+		every number re-measures in the sRGB branch.</p>
+	</div>
+	<div class="controls">
+		<button class="rux-button rux-button--default" id="theme" type="button">Toggle theme</button>
+	</div>
+</header>
+<div class="note">
+	<strong>Exploration, not a proposal.</strong> Treatment A is what ships today. B backs the mark
+	with a <code>surface-1</code> disc, so the ink returns to the F3 surface it was measured for and
+	the disc itself becomes the thing that must clear the fill (non-text, 3:1). C keeps the bare
+	glyph and adds a <code>surface-1</code> ring — the glyph-on-fill number does not improve; the
+	ring supplies the separation. D surrenders the status hue and uses the fill's own published
+	label. Nothing here is recorded in any amendment log, and no token has been changed.
+</div>
+<div id="out"></div>
+<script>
+const STATUSES = [["danger","paperclip"],["warning","request_quote"],["success","receipt"]];
+const BOARD = [["teal","teal"],["green","green"],["purple","purple"],["amber","amber"],["pink","pink"]];
+const BAND_HUES = [["blue","blue"],["teal","teal"],["green","green"],["purple","purple"],["amber","amber"],["pink","pink"],["red","red"]];
+
+let TOK = { dark:{}, light:{} }, BANDV = { dark:{}, light:{} };
+function oklchToSrgb(L, C, hDeg) {
+	const h = (hDeg * Math.PI) / 180;
+	const a = C * Math.cos(h), b = C * Math.sin(h);
+	const l_ = L + 0.3963377774*a + 0.2158037573*b;
+	const m_ = L - 0.1055613458*a - 0.0638541728*b;
+	const s_ = L - 0.0894841775*a - 1.2914855480*b;
+	const l = l_**3, m = m_**3, s = s_**3;
+	const lin = [ 4.0767416621*l - 3.3077115913*m + 0.2309699292*s,
+	             -1.2684380046*l + 2.6097574011*m - 0.3413193965*s,
+	             -0.0041960863*l - 0.7034186147*m + 1.7076147010*s ];
+	const enc = (v) => { v = Math.min(1, Math.max(0, v));
+		return v <= 0.0031308 ? 12.92*v : 1.055*Math.pow(v, 1/2.4) - 0.055; };
+	return lin.map(v => Math.round(enc(v) * 255));
+}
+const parseOklch = (v) => { const m = v.match(/oklch\(\s*([\d.]+)%\s+([\d.]+)\s+([\d.]+)/);
+	return m ? [+m[1]/100, +m[2], +m[3]] : null; };
+
+async function load() {
+	const css = await (await fetch("./rux-ui/css/tokens.css")).text();
+	const srgb = css.slice(0, css.indexOf("@media (color-gamut: p3)"));
+	const lightAt = srgb.indexOf(':root[data-theme="light"]');
+	const scope = { dark: srgb.slice(0, lightAt), light: srgb.slice(lightAt) };
+	for (const t of ["dark","light"]) {
+		/* every literal oklch token in scope, then a var-chain resolver on top,
+		   falling through light -> dark the way the cascade does */
+		const lits = {};
+		const re = /--([\w-]+)\s*:\s*([^;]+);/g; let m;
+		while ((m = re.exec(scope[t]))) lits[m[1]] = m[2].trim();
+		TOK[t] = { lits };
+	}
+	const resolve = (t, name, hops) => {
+		hops = hops ?? 8;
+		const raw = TOK[t].lits[name] ?? TOK.dark.lits[name];
+		if (!raw || hops < 0) return null;
+		const lch = parseOklch(raw);
+		if (lch) return oklchToSrgb(...lch);
+		const v = raw.match(/var\(\s*(--[\w-]+)/);
+		return v ? resolve(t, v[1].slice(2), hops - 1) : null;
+	};
+	for (const t of ["dark","light"]) TOK[t].get = (n) => resolve(t, n);
+}
+const theme = () => document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+const lum = (r) => { const f = r.map(v => { v/=255; return v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055,2.4); });
+	return 0.2126*f[0] + 0.7152*f[1] + 0.0722*f[2]; };
+const ratio = (a,b) => { const la = lum(a), lb = lum(b);
+	return ((Math.max(la,lb)+0.05)/(Math.min(la,lb)+0.05)); };
+const rgbStr = (c) => `rgb(${c[0]},${c[1]},${c[2]})`;
+const fmt = (r, floor) => { const s = r.toFixed(2);
+	return r >= floor ? `<b>${s}</b>` : `<span class="fail">${s} ✗</span>`; };
+
+function grid(title, blurb, fills) {
+	const t = theme();
+	const S1 = TOK[t].get("rux-surface-1");
+	const sec = document.createElement("section");
+	sec.innerHTML = `<div class="sec-head"><h2>${title}</h2><p>${blurb}</p></div>`;
+	const scroll = document.createElement("div"); scroll.className = "scroll";
+	const tbl = document.createElement("table");
+	let head = `<tr><th></th>` + fills.map(f => `<th>${f.label}</th>`).join("") + `</tr>`;
+	const rows = [
+		["A · today — bare 900 ink", "the status colour straight on the fill; the number is ink / fill",
+		 (f, ink) => [swatch(f.rgb, glyph(ink.rgb)), `ink/fill ${fmt(ratio(ink.rgb, f.rgb), 3)}`]],
+		["B · backed chip", "ink on a surface-1 disc; ink/chip is F3-healthy by construction, disc/fill is the new question",
+		 (f, ink) => [swatch(f.rgb, `<span class="chipdisc" style="background:${rgbStr(S1)}">${glyph(ink.rgb)}</span>`),
+		              `ink/chip ${fmt(ratio(ink.rgb, S1), 4.5)}<br>disc/fill ${fmt(ratio(S1, f.rgb), 3)}`]],
+		["C · outlined glyph", "bare ink with a surface-1 ring; ink/fill stays as A, the ring carries the edge",
+		 (f, ink) => [swatch(f.rgb, glyph(ink.rgb, `text-shadow:0 0 1.5px ${rgbStr(S1)},0 0 1.5px ${rgbStr(S1)},0 0 2.5px ${rgbStr(S1)}`)),
+		              `ink/ring ${fmt(ratio(ink.rgb, S1), 3)}<br>ring/fill ${fmt(ratio(S1, f.rgb), 3)}`]],
+		["D · the fill's own label", "the band's published on-fill ink; clears by construction and loses the status hue entirely",
+		 (f) => { const ink = f.onfill; return [swatch(f.rgb, glyph(ink)), `ink/fill ${fmt(ratio(ink, f.rgb), 3)}`]; }],
+	];
+	let body = "";
+	for (const [label, small, cell] of rows) {
+		body += `<tr><th class="rowh">${label}<small>${small}</small></th>`;
+		for (const f of fills) {
+			const ink = { rgb: TOK[t].get(`rux-${f.status}`) };
+			const [sw, ratios] = cell(f, ink);
+			body += `<td>${sw}<div class="ratios">${ratios}</div></td>`;
+		}
+		body += "</tr>";
+	}
+	tbl.innerHTML = head + body;
+	scroll.appendChild(tbl); sec.appendChild(scroll);
+	return sec;
+}
+const glyph = (rgb, extra) =>
+	`<span class="rux-icon" translate="no" style="color:${rgbStr(rgb)};${extra||""}">paperclip</span>` +
+	`<span class="rux-icon" translate="no" style="color:${rgbStr(rgb)};${extra||""}">request_quote</span>`;
+function swatch(fill, inner) {
+	return `<div class="swatch" style="background:${rgbStr(fill)}">${inner}</div>`;
+}
+
+function render() {
+	const t = theme(), out = document.getElementById("out");
+	out.textContent = "";
+	/* one status per board section keeps the grid readable: danger is the
+	   pending mark that actually ships on every unconfirmed bar */
+	const boardFills = BOARD.map(([label, hue]) => ({
+		label, status: "danger",
+		rgb: TOK[t].get(`rux-${hue}-${t === "dark" ? 500 : 600}`),
+		onfill: TOK[t].get("rux-fg-on-fill"),
+	}));
+	const bandFills = BAND_HUES.map(([label, hue]) => ({
+		label, status: "danger",
+		rgb: TOK[t].get(`rux-${hue}-fill`),
+		onfill: TOK[t].get(hue === "amber" ? "rux-fg-on-fill-inverse" : "rux-fg-on-fill"),
+	}));
+	out.appendChild(grid(
+		`Today's board — the five category fills at ${t === "dark" ? "500" : "600"}, danger ink`,
+		"The surface D18 actually ships on. Q12 records the light half of A as accepted drift (trip-bar.md D19).",
+		boardFills));
+	out.appendChild(grid(
+		"The step-24 band — seven normalized fills, danger ink",
+		"Where the board goes if trip-bar.md rule 2.12 ever repoints. Q13 measured A here at 1.14–1.93.",
+		bandFills));
+	/* the other two status inks, band only, one row of A + B for comparison */
+	const t2 = document.createElement("section");
+	t2.innerHTML = `<div class="sec-head"><h2>Warning and success inks, same treatments</h2>
+	<p>Same shapes with the other two status colours, on the band.</p></div>`;
+	for (const [status] of [["warning"],["success"]]) {
+		const fills = BAND_HUES.map(([label, hue]) => ({
+			label: `${label}`, status,
+			rgb: TOK[t].get(`rux-${hue}-fill`),
+			onfill: TOK[t].get(hue === "amber" ? "rux-fg-on-fill-inverse" : "rux-fg-on-fill"),
+		}));
+		t2.appendChild(grid(`${status} ink`, "", fills));
+	}
+	out.appendChild(t2);
+}
+
+document.getElementById("theme").addEventListener("click", () => {
+	const next = theme() === "dark" ? "light" : "dark";
+	document.documentElement.setAttribute("data-theme", next);
+	render();
+});
+load().then(render);
+</script>
+</body>
+</html>
