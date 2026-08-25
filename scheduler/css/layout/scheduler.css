@@ -349,8 +349,16 @@
 	display: none;
 }
 
+/* The reveal. This rule read `display: none` — the same value as the base
+   rule it exists to override — so the ticks were unreachable in every state
+   and 42 DOM nodes rendered 0x0 (typography.md D17, found by toggling
+   time-aligned mode in a browser rather than by reading). Revealed on the
+   owner's call, 2026-08-24: the hour marks are what time-aligned mode was
+   built to show, and they render as the design intended — 12 / 6 / 6 in
+   disabled-tier ink on the day-head baseline. The nth-child(1) rule above
+   keeps hiding the tick that would collide with the bus rail. */
 .sched-scheduler--time-aligned .sched-scheduler__time-ticks {
-	display: none;
+	display: block;
 }
 
 /* ---------- Row wrapper ---------- */
