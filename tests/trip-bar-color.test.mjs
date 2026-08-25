@@ -319,6 +319,40 @@ test("one label per theme, and every dependent token resolves against it (D16)",
 	);
 });
 
+test("driver status is a modifier class, and the dead dot mechanism stays dead", () => {
+	// docs/trip-bar.md rule 2.9, step 7 (state.md rule 2.1): a status colour
+	// is a class the stylesheet owns, never element.style — and the classes
+	// read the same status-icon tokens the pending icons use. The only
+	// .style write left in the component is measured geometry
+	// (--_details-height), which is state, not a design value.
+	assert.match(
+		tripBarSource,
+		/classList\.add\(`sched-trip-bar__driver-role-icon--\$\{tone\}`\)/,
+	);
+	assert.doesNotMatch(
+		tripBarSource,
+		/\.style\.color\s*=/,
+		"a design value is being written from JS again (rule 2.9)",
+	);
+	// Declarations only — the rationale comments may name the dead family.
+	assert.doesNotMatch(
+		tripBarSource.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, ""),
+		/driver-dot|driverStateClass/,
+	);
+	assert.doesNotMatch(
+		tripBarCss.replace(/\/\*[\s\S]*?\*\//g, ""),
+		/__driver-dot/,
+	);
+	for (const tone of ["danger", "warning", "success"]) {
+		assert.match(
+			tripBarCss,
+			new RegExp(
+				`\\.sched-trip-bar__driver-role-icon--${tone}\\s*\\{[^}]*color:\\s*var\\(--sched-trip-bar-${tone}-icon\\)`,
+			),
+		);
+	}
+});
+
 test("trip tails use direct state surfaces instead of compounding transparency", () => {
 	assert.match(tripBarCss, /--_tail-surface:\s*oklch\([^;]*var\(--sched-trip-bar-tail-opacity\)\)/);
 	assert.match(tripBarCss, /--_tail-surface-active:\s*oklch\([^;]*var\(--sched-trip-bar-tail-selected-opacity\)\)/);

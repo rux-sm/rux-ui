@@ -1154,19 +1154,20 @@
 	color: var(--rux-fg-on-accent-subtle);
 }
 
-.sched-trip-bar__driver-dot {
-	width: var(--rux-status-dot-size);
-	height: var(--rux-status-dot-size);
-	flex: none;
-	border-radius: var(--rux-radius-full);
-	background: var(--rux-warning-on-vivid);
+/* Driver-role status — a modifier class, never element.style (state.md rule
+   2.1 via docs/trip-bar.md rule 2.9, step 7). Same tone vocabulary and the
+   same status-icon tokens as __pending-icon--*, so both kinds of status
+   mark on this surface stay one system. The __driver-dot* family this
+   replaces was dead — driverStateClass() had no caller and its rules no
+   emitter — and described a dot the current design does not draw. */
+.sched-trip-bar__driver-role-icon--danger {
+	color: var(--sched-trip-bar-danger-icon);
 }
-
-.sched-trip-bar__driver-dot--confirmed {
-	background: var(--rux-success-on-vivid);
+.sched-trip-bar__driver-role-icon--warning {
+	color: var(--sched-trip-bar-warning-icon);
 }
-.sched-trip-bar__driver-dot--unconfirmed {
-	background: var(--rux-danger-on-vivid);
+.sched-trip-bar__driver-role-icon--success {
+	color: var(--sched-trip-bar-success-icon);
 }
 
 /* ---------- Conflict row ---------- */

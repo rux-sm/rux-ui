@@ -456,14 +456,6 @@ function timeItem(label, value, className = "") {
   return item;
 }
 
-function driverStateClass(state) {
-  if (state === "conf" || state === "confirmed")
-    return "sched-trip-bar__driver-dot--confirmed";
-  if (state === "unconf" || state === "unconfirmed")
-    return "sched-trip-bar__driver-dot--unconfirmed";
-  return "";
-}
-
 /* ── Requirement icons ──────────────────────────────────────────────────── */
 
 const LEGACY_REQ_MAP = {
@@ -1106,17 +1098,23 @@ export function createTripBar(trip, callbacks = {}) {
     roleStateMap[role] = legacyState[savedState] || savedState || "off";
   });
 
-  const STATUS_COLORS = {
-    "pending-assignment": "var(--rux-danger)",
-    "pending-response": "var(--rux-warning)",
-    "confirmed": "var(--rux-success)",
-    "declined": "var(--rux-danger)",
+  // A status colour is a modifier class, never element.style — state.md
+  // rule 2.1 via docs/trip-bar.md rule 2.9, step 7. The classes read the
+  // same --sched-trip-bar-*-icon tokens the pending icons use, so the two
+  // kinds of status mark stay one system. The old inline paint also set
+  // --_icon-fill to the selected fill, which was a no-op here: the bar's
+  // own icon fill and --rux-icon-fill-selected both resolve to 1.
+  const STATUS_TONES = {
+    "pending-assignment": "danger",
+    "pending-response": "warning",
+    "confirmed": "success",
+    "declined": "danger",
   };
 
   function applyDriverStatus(iconEl, state) {
-    if (!STATUS_COLORS[state]) return;
-    iconEl.style.color = STATUS_COLORS[state];
-    iconEl.style.setProperty("--_icon-fill", "var(--rux-icon-fill-selected)");
+    const tone = STATUS_TONES[state];
+    if (!tone) return;
+    iconEl.classList.add(`sched-trip-bar__driver-role-icon--${tone}`);
   }
 
   (trip.drivers || []).forEach((driver) => {
