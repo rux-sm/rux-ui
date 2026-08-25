@@ -648,7 +648,7 @@ html {
 	--_h: var(--sched-driver-touch-target);
 	margin-top: 0;
 	padding-inline: 0;
-	color: var(--rux-accent);
+	color: var(--rux-accent-text);
 }
 
 /* Documents and notes ---------------------------------------------------- */

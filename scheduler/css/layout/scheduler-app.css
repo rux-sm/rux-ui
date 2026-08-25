@@ -661,7 +661,7 @@
 
 .sched-driver-grid__day-label.is-today .sched-driver-grid__day-label-weekday,
 .sched-driver-grid__day-label.is-today .sched-driver-grid__day-label-date {
-	color: var(--rux-accent);
+	color: var(--rux-accent-text);
 }
 
 /* A trip bar is selected on the calendar — marks which day column(s) it

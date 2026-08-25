@@ -112,7 +112,7 @@
 
 .sched-trip-history__action {
 	flex: none;
-	color: var(--rux-accent);
+	color: var(--rux-accent-text);
 	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	text-transform: capitalize;

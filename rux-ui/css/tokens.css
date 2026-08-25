@@ -201,6 +201,14 @@
 	--rux-link-fg:       var(--rux-accent-900);
 	--rux-link-fg-hover: var(--rux-accent-1000);
 
+	/* Accent-coloured text that is not a link — the "is-today" labels, ref
+	   numbers, filtered table headers. D13's lesson one tier up: --rux-accent
+	   is the 700 FILL step and measures 4.26-4.45 as small text on the
+	   surfaces (D21), so text reads this 900-step role instead. Rides
+	   --rux-accent-900, so it tracks data-rux-accent the same way the link
+	   does. docs/foundations/color.md D21, §5 step 28. */
+	--rux-accent-text:   var(--rux-accent-900);
+
 	/* ─── TYPOGRAPHY · font family ─────────────────────────────────────────── */
 
 	--rux-font-sans:			"Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;

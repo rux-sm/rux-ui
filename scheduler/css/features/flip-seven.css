@@ -44,7 +44,7 @@
 .flip-seven__lobby-card h2 { margin-bottom: var(--rux-space-2); }
 .flip-seven__eyebrow {
 	margin: 0 0 var(--rux-space-2);
-	color: var(--rux-accent);
+	color: var(--rux-accent-text);
 	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	letter-spacing: var(--rux-tracking-normal);
@@ -132,7 +132,7 @@
 	font: var(--rux-weight-400) var(--rux-size-12)/1 var(--rux-font-mono);
 }
 .flip-seven__score .rux-avatar { background: var(--rux-bg-active); color: var(--rux-text-secondary); }
-.flip-seven__score.is-active .rux-avatar { background: var(--rux-accent-subtle); color: var(--rux-accent); }
+.flip-seven__score.is-active .rux-avatar { background: var(--rux-accent-subtle); color: var(--rux-accent-text); }
 .flip-seven__score-name { overflow: hidden; font-weight: var(--rux-weight-400); text-overflow: ellipsis; white-space: nowrap; }
 .flip-seven__score-name .rux-badge { margin-left: var(--rux-space-2); vertical-align: middle; }
 .flip-seven__score-total { font: var(--rux-weight-400) var(--rux-size-16)/1 var(--rux-font-mono); text-align: right; }
@@ -221,7 +221,7 @@
 	overflow-wrap: anywhere;
 }
 .flip-seven__messages p:last-child { margin-bottom: 0; }
-.flip-seven__messages strong { color: var(--rux-accent); }
+.flip-seven__messages strong { color: var(--rux-accent-text); }
 .flip-seven__messages-empty { color: var(--rux-text-disabled) !important; font-style: italic; }
 .flip-seven__message-form {
 	display: grid;
@@ -270,7 +270,7 @@
 	min-height: 24px;
 	gap: var(--rux-space-2);
 }
-.flip-seven__player-hand-header .rux-avatar { background: var(--rux-accent-subtle); color: var(--rux-accent); }
+.flip-seven__player-hand-header .rux-avatar { background: var(--rux-accent-subtle); color: var(--rux-accent-text); }
 .flip-seven__player-hand-name {
 	overflow: hidden;
 	font-size: var(--rux-size-14);
@@ -280,7 +280,7 @@
 }
 .flip-seven__player-hand-name .rux-badge { margin-left: var(--rux-space-1); vertical-align: middle; }
 .flip-seven__player-hand-score { color: var(--rux-text-secondary); font: var(--rux-weight-400) var(--rux-size-12)/1 var(--rux-font-mono); }
-.flip-seven__player-hand.is-active .flip-seven__player-hand-score { color: var(--rux-accent); }
+.flip-seven__player-hand.is-active .flip-seven__player-hand-score { color: var(--rux-accent-text); }
 .flip-seven__player-hand.is-bust .flip-seven__player-hand-score { color: var(--rux-danger); }
 .flip-seven__player-cards {
 	display: flex;

@@ -15,7 +15,7 @@
 .maintenance-schedule__days span:first-child { position: sticky; z-index: 3; left: 0; background: var(--rux-surface-1); border-left: 0; border-inline-end: var(--rux-border-width) solid var(--rux-grid-guide); }
 .maintenance-schedule__days .is-today {
 	background: transparent;
-	color: var(--rux-accent);
+	color: var(--rux-accent-text);
 }
 .maintenance-schedule__row { display: grid; grid-template-columns: var(--maintenance-bus-column-width) 1fr; border-bottom: var(--rux-border-width) solid var(--rux-grid-guide); }
 .maintenance-schedule__row:last-child { border-bottom: 0; }

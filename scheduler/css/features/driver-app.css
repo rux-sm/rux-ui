@@ -201,7 +201,7 @@
 .driver-app__driver-ref {
 	font-family: var(--rux-font-mono);
 	font-size: var(--rux-size-12);
-	color: var(--rux-accent);
+	color: var(--rux-accent-text);
 	font-weight: var(--rux-weight-400);
 }
 

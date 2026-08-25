@@ -134,7 +134,7 @@
 }
 
 .rux-table th[data-col-filter].is-filtered {
-	color: var(--rux-accent);
+	color: var(--rux-accent-text);
 }
 
 .rux-col-filter-icon {
