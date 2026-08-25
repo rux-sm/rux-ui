@@ -248,7 +248,6 @@
 	   a duplicate: -lg and -xl were both 1.75rem, so nine rungs became eight.
 	   A ladder that named the same length twice could not say which rung a
 	   role meant. docs/foundations/typography.md Q8, step 31. */
-	--rux-line-height-12:	0.75rem;	/* paired with size-11 until step 45 retired it; no published size pairs with it now. One reader left — the trip-bar pill's default tier, 12/12 in a 16px box (typography.md D19) */
 	--rux-line-height-16:	1rem;		/* pairs with size-12, and size-13 in Label */
 	--rux-line-height-18:	1.125rem;	/* pairs with size-13 in Copy — the catalog's copy-13 is 13/18. Off the 4px grid the way 26 is: a catalog value, named per rule 2.10 (step 50) */
 	--rux-line-height-20:	1.25rem;	/* pairs with size-14, and 16/18 in Label and Button */
