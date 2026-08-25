@@ -23,15 +23,21 @@ function buttonFor(marker) {
 }
 
 test("every panel toggle is the same ghost button", () => {
+	// --lg was required here until 2026-08-24, when the owner settled that
+	// every ghost outside the UI header takes the standard 32px so the
+	// emphasis has one height. The point of this test is unchanged — the
+	// three toggles must be the SAME button — so it now pins the standard
+	// size by forbidding a size modifier rather than requiring one.
 	for (const marker of TOGGLES) {
 		const button = buttonFor(marker);
-		for (const cls of [
-			"rux-button--ghost",
-			"rux-button--icon",
-			"rux-button--lg",
-		]) {
+		for (const cls of ["rux-button--ghost", "rux-button--icon"]) {
 			assert.match(button, new RegExp(cls), `${marker} is missing ${cls}`);
 		}
+		assert.doesNotMatch(
+			button,
+			/rux-button--(?:lg|sm)/,
+			`${marker} must take the standard 32px height, not a size modifier`,
+		);
 	}
 });
 

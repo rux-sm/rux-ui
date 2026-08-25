@@ -368,7 +368,10 @@ test("the Calendar tools panel is workspace-controlled and fully hideable", () =
 	const drawerMarkup = page.match(
 		/<div\s+class="[^"]*rux-drawer--right[^"]*"\s+id="right-panel-drawer"/,
 	)?.[0] ?? "";
-	assert.match(page, /class="rux-button rux-button--ghost rux-button--icon rux-button--lg calendar-app__panel-toggle"/);
+	// Standard 32px since 2026-08-24, like every ghost outside the UI header;
+	// the --lg mechanism assertions below still hold because the header
+	// itself still uses that size role.
+	assert.match(page, /class="rux-button rux-button--ghost rux-button--icon calendar-app__panel-toggle"/);
 	assert.doesNotMatch(page, /calendar-app__panel-toggle"[\s\S]{0,500}<span class="rux-button__label">Tools<\/span>/);
 	assert.match(tokens, /--rux-button-height-standard:\s+32px;/);
 	assert.match(tokens, /--rux-button-height-header:\s+44px;/);
@@ -437,9 +440,18 @@ test("Today remains a text-only header action at every breakpoint", () => {
 	assert.doesNotMatch(layoutStyles, /#today-btn\s*>\s*\.rux-icon/);
 });
 
-test("mini calendar navigation uses shared 44px header icon buttons", () => {
+test("mini calendar navigation uses the shared standard icon button", () => {
+	// Was "shared 44px header icon buttons" and required --lg, which resolved
+	// to 40px desktop / 44px under the 500px touch block. The owner moved
+	// every non-header ghost to the standard 32px on 2026-08-24 for one
+	// consistent emphasis height; --rux-button-height-standard has no touch
+	// step, so these two arrows are 32px on a phone as well. Recorded rather
+	// than quietly dropped: the shared-button half of this contract is what
+	// still matters, and it is what this now asserts.
 	for (const id of ["mini-cal-prev", "mini-cal-next"]) {
-		assert.match(openingTag(id), /rux-button--icon rux-button--lg/);
+		assert.match(openingTag(id), /rux-button--ghost/);
+		assert.match(openingTag(id), /rux-button--icon/);
+		assert.doesNotMatch(openingTag(id), /rux-button--(?:lg|sm)/);
 	}
 });
 
