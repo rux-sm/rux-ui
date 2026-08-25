@@ -214,6 +214,9 @@ disagree, the foundation document wins and this section is corrected in the same
 | rule 2.9 | the gamut a value is published for, and the sRGB fallback behind every P3 one |
 | rule 2.11 | the contrast floor, evaluated in the worse gamut |
 | rule 2.12 | the accent is a scale selection |
+| rule 2.13 | a published band states one luminance |
+| rule 2.14 | a role names one function, and a role used as a fill publishes its label |
+| rule 2.15 | a hue's meanings are scoped by co-occurrence, not reserved |
 | §3 | the catalog as measured, and what every role resolves to today |
 
 Three things worth knowing before reading further: the system is **[Vercel

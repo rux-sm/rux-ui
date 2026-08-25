@@ -17,7 +17,7 @@ roles onto that vocabulary.
 |---|---|---|---|
 | [`typography.md`](typography.md) | 6.1.0 | 67 done · 1 deferred · 3 withdrawn | — |
 | [`layout.md`](layout.md) | 2.12.0 | 27 done | — |
-| [`color.md`](color.md) | 3.5.1 | 29 done | — |
+| [`color.md`](color.md) | 3.6.3 | 32 done | — |
 | [`motion.md`](motion.md) | 1.6.0 | 6 done | — |
 | [`naming.md`](naming.md) | 1.18.0 | 15 done | — |
 | [`state.md`](state.md) | 1.8.1 | 11 done | — |
@@ -238,7 +238,7 @@ counts.
 
 | Document | Open questions | Open defects | Accepted debt |
 |---|---|---|---|
-| [`color.md`](color.md) | 6 | 3 | 0 |
+| [`color.md`](color.md) | 5 | 3 | 0 |
 | [`composition.md`](composition.md) | 2 | 2 | 0 |
 | [`content.md`](content.md) | 2 | 1 | 0 |
 | [`forms.md`](forms.md) | 4 | 3 | 0 |
