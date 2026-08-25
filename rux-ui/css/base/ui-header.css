@@ -94,6 +94,18 @@
 	display: none;
 }
 
+/* Ghost buttons in the header stay SQUARE, and this is the one place they
+   do. Every other ghost in the application takes --rux-button-radius with
+   the rest of the button family (controls.css, 2026-08-24); the header's
+   run of icon triggers sits edge to edge in a 40px bar with hairline
+   dividers between zones, and rounding each one turns a continuous strip
+   into a row of separate pills. Scoped to the block that owns it rather
+   than left as a global default, so the exception is visible as an
+   exception — naming.md rule 2.1. */
+.rux-ui-header .rux-button--ghost {
+	border-radius: var(--rux-radius-0);
+}
+
 /* .rux-button--ghost sets `color` directly rather than through --_fg, so
    both rest and active states below have to match that directly too (a
    --_fg override alone is a no-op here) — same reasoning as the ghost

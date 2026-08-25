@@ -183,8 +183,17 @@
 	background: var(--rux-button-ghost-background);
 	color: var(--rux-button-ghost-text);
 	border: var(--rux-button-ghost-border);
-	/* Ghost buttons are square — overrides the base control radius. */
-	border-radius: var(--rux-radius-0);
+	/* No radius override: a ghost button is the same control shape as every
+	   other button and takes --rux-button-radius from the base rule. It
+	   carried border-radius: var(--rux-radius-0) until 2026-08-24, which
+	   made its focus ring, hover wash and pressed overlay square while the
+	   default, accent and danger emphases beside it were rounded — a
+	   difference in shape standing in for a difference in emphasis, which
+	   emphasis already carries. Height was never overridden here: ghost
+	   takes --_h from the base rule and the shared --sm/--lg size modifiers,
+	   same as any other button.
+	   The UI header is the one exception and keeps square corners; that rule
+	   lives with its block in base/ui-header.css (naming.md rule 2.1). */
 }
 
 /* The generic .rux-button:hover rule above sets border/color directly (not

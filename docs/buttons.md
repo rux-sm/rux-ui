@@ -73,6 +73,19 @@ destructive action should be prominent and danger ghost when it should be
 quiet. Components on saturated surfaces use the shared ghost emphasis and own
 any necessary contrast treatment in the surrounding component.
 
+**Emphasis changes the fill, never the shape.** Every emphasis takes the same
+`--rux-button-radius` and the same height for its size role — ghost included,
+since 2026-08-24. Ghost carried a square override before that, which gave its
+focus ring, hover wash and pressed overlay a different silhouette from the
+buttons beside it and used shape to say something emphasis already says.
+
+**One exception, scoped to the block that owns it:** ghost buttons inside
+`.rux-ui-header` stay square (`base/ui-header.css`). That header is a run of
+icon triggers sitting edge to edge in a 40px bar with hairline dividers
+between zones, and rounding each one turns a continuous strip into a row of
+separate pills. Do not generalise this to other toolbars without the same
+edge-to-edge run.
+
 ## Examples
 
 ```html

@@ -992,13 +992,14 @@
 	--rux-ui-header-min-height: var(--rux-ui-header-height);
 	--rux-ui-header-gap:     	var(--rux-space-0);
 	/* — brand — */
-	--rux-ui-header-brand-padding-inline: var(--rux-space-4);  /* 16px */
-	/* That annotation read "8px — matches the buttons' optical inset" until
-	   2026-08-24 and was wrong twice: space-4 is 16px, and the button inset
-	   is --rux-button-padding-inline-standard (space-3, 12px), so this has
-	   not matched a button for some time. Corrected to the measured value
-	   rather than moved to 12px: the brand's inset is what renders today and
-	   re-tying it to the button rung is a visible change, not a comment fix. */
+	/* Matches the buttons' optical inset BY CONSTRUCTION rather than by
+	   restating its rung — the same shape --rux-segment-background and
+	   --rux-number-stepper-ghost-height already use to track another
+	   component. It was var(--rux-space-4) (16px) behind a comment claiming
+	   "8px — matches the buttons' optical inset": wrong on the figure and on
+	   the match, since the button inset is space-3 (12px). Reading the button
+	   token is what stops that drifting a third time. 16px → 12px. */
+	--rux-ui-header-brand-padding-inline: var(--rux-button-padding-inline-standard);
 	/* Divider between the menu trigger and the brand. The header's left run is
 	   [menu] [logo] [title], which is two jobs — navigation, then identity and
 	   context — sharing one undifferentiated row. This states the split.
