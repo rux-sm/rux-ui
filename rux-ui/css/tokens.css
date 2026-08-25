@@ -1076,9 +1076,27 @@
 	--rux-workspace-fg:            var(--rux-text-primary);
 	--rux-workspace-border-inline: none;
 	--rux-workspace-border-block:  none;
-	/* Routed through the container role (currently also 0) rather than
-	   hardcoded, so a future radius change only needs the two role tokens
-	   edited, per the role's own stated purpose above. */
+	/* ZERO IS REQUIRED HERE — do not "fix" this to the container rung.
+	   Two independent reasons, both checked 2026-08-24:
+	   (a) It would paint nothing. The workspace is transparent, borderless
+	       and shadowless (the four declarations above and the note below),
+	       and a radius on such a box has no edge to round. Measured: setting
+	       6px live changed no rendered pixel.
+	   (b) shell.md forbids it. The inset outer frame — gutter AND rounding —
+	       belongs to `.rux-app-view` and is "configured once on the
+	       application shell, never per view, so no view can drift from the
+	       others"; giving one workspace its own frame is the drift that rule
+	       exists to stop, and a rounded workspace beside an attached panel
+	       is a decorative gap, which shell.md lists as an invalid
+	       composition.
+	   This replaces a comment that said it was "routed through the container
+	   role (currently also 0)" — wrong twice: it names --rux-radius-0
+	   directly, not the role, and the parenthetical expired at layout.md
+	   step 8 when container moved 0 → 6px. That wording read as drift
+	   awaiting a sweep and invited exactly the change this note forbids.
+	   An identically-worded comment in the application tier WAS drift, and
+	   hid a real square-cornered card until it was found by eye — see
+	   foundations/shell.md step 4. */
 	--rux-workspace-radius: var(--rux-radius-0);
 	/* --rux-workspace-shadow: not set — flattened alongside the header/
 	   side-nav redesign, no inset shadow on the primary view shell */
