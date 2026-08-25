@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Trip bar — fill band exploration</title>
+<link rel="stylesheet" href="./rux-ui/css/rux.css?v=17" />
+<link rel="stylesheet" href="./scheduler/css/components.css?v=26" />
+<style>
+	body { background: var(--rux-surface-0); color: var(--rux-text-primary);
+	       font-family: var(--rux-font-sans); margin: 0; padding: var(--rux-space-5) var(--rux-space-5) 6rem; }
+	header { display: flex; align-items: flex-start; gap: var(--rux-space-4);
+	         justify-content: space-between; margin-bottom: var(--rux-space-5); }
+	header > div:first-child { flex: 1 1 auto; min-width: 0; }
+	h1 { font-size: var(--rux-text-heading-24-size); line-height: var(--rux-text-heading-24-line-height);
+	     letter-spacing: var(--rux-text-heading-24-tracking); font-weight: var(--rux-weight-600); margin: 0 0 var(--rux-space-2); }
+	h2 { font-size: var(--rux-text-heading-16-size); line-height: var(--rux-text-heading-16-line-height);
+	     font-weight: var(--rux-weight-600); margin: 0 0 var(--rux-space-1); }
+	p  { color: var(--rux-text-secondary); margin: 0; max-width: 72ch;
+	     font-size: var(--rux-text-copy-14-size); line-height: var(--rux-text-copy-14-line-height); }
+	section { margin-bottom: var(--rux-space-7, 2.5rem); }
+	.sec-head { margin-bottom: var(--rux-space-4); padding-bottom: var(--rux-space-2);
+	            border-bottom: 1px solid var(--rux-card-border); }
+	.grid { display: grid; grid-template-columns: repeat(7, minmax(10rem, 1fr));
+	        gap: var(--rux-space-3) var(--rux-space-2); align-items: start; }
+	.colhead { font-weight: var(--rux-weight-500); color: var(--rux-text-primary);
+	           font-size: var(--rux-text-label-12-size); line-height: var(--rux-text-label-12-line-height); }
+	.cell { display: flex; flex-direction: column; gap: var(--rux-space-1); }
+	.cell > .sched-trip-bar { position: relative; height: auto; }
+	.ratio { font-family: var(--rux-font-mono); font-size: var(--rux-text-label-12-size);
+	         line-height: var(--rux-text-label-12-line-height); font-variant-numeric: tabular-nums; }
+	.pass { color: var(--rux-success-base); } .fail { color: var(--rux-danger-base); }
+	.legend { display: flex; gap: var(--rux-space-4); flex-wrap: wrap; margin-top: var(--rux-space-2);
+	          color: var(--rux-text-secondary); font-size: var(--rux-text-label-12-size); }
+	.controls { display: flex; gap: var(--rux-space-2); flex: none; }
+	.note { background: var(--rux-surface-1); border: 1px solid var(--rux-card-border);
+	        border-radius: var(--rux-radius-container); padding: var(--rux-space-3);
+	        margin-bottom: var(--rux-space-4); }
+	.note strong { color: var(--rux-text-primary); }
+	.sum { display: flex; gap: var(--rux-space-5); flex-wrap: wrap; margin: var(--rux-space-2) 0 var(--rux-space-4);
+	       font-family: var(--rux-font-mono); font-size: var(--rux-text-label-12-size);
+	       font-variant-numeric: tabular-nums; color: var(--rux-text-secondary); }
+	.sum b { color: var(--rux-text-primary); font-weight: var(--rux-weight-600); }
+</style>
+</head>
+<body>
+<header>
+	<div>
+		<h1>Trip bar — fill band exploration</h1>
+		<p>Three ways to put a label on seven category fills. Every number is measured live in
+		   this page, canvas-composited in the <strong>sRGB branch</strong> per <code>color.md</code>
+		   rule 2.11 — the P3 block is sliced off before parsing, so these ratios are what a
+		   non-P3 display actually renders. Toggle the theme; every option re-measures.</p>
+		<div class="legend">
+			<span><span class="pass">■</span> clears 4.5:1</span>
+			<span><span class="fail">■</span> below the floor</span>
+			<span>separation = minimum pairwise sRGB distance between fills, against trip-bar.md's 40 floor</span>
+		</div>
+	</div>
+	<div class="controls">
+		<button class="rux-button rux-button--default" id="theme" type="button">Toggle theme</button>
+	</div>
+</header>
+<div class="note">
+	<strong>Exploration, not a proposal.</strong> Option A is what ships today (<code>trip-bar.md</code>
+	rule 2.12). Options B and C are the two takeaways from measuring Atlassian's published tokens:
+	B copies their <em>polarity</em>, C shows what a <em>lightness-normalized fill band</em> would buy.
+	Nothing here is recorded in any amendment log, and no token has been changed.
+</div>
+<div id="out"></div>
+<script>
+const HUES = [
+	["accent / default", "blue"], ["teal", "teal"], ["green", "green"], ["purple", "purple"],
+	["amber", "amber"], ["pink", "pink"], ["unconfirmed", "red"],
+];
+
+/* ---- measurement — lifted from trip-bar-specimen.html ----
+   The floor is the WORSE gamut (color.md 2.11), so this page cannot read computed
+   styles: a P3 display would resolve the generous branch and inflate everything.
+   Fetch tokens.css, slice off the P3 block, convert the sRGB oklch() values here. */
+let SRGB = null, OKLCH = null;
+const BAND = { dark: {}, light: {} };
+
+function oklchToSrgb(L, C, hDeg) {
+	const h = (hDeg * Math.PI) / 180;
+	const a = C * Math.cos(h), b = C * Math.sin(h);
+	const l_ = L + 0.3963377774*a + 0.2158037573*b;
+	const m_ = L - 0.1055613458*a - 0.0638541728*b;
+	const s_ = L - 0.0894841775*a - 1.2914855480*b;
+	const l = l_**3, m = m_**3, s = s_**3;
+	const lin = [ 4.0767416621*l - 3.3077115913*m + 0.2309699292*s,
+	             -1.2684380046*l + 2.6097574011*m - 0.3413193965*s,
+	             -0.0041960863*l - 0.7034186147*m + 1.7076147010*s ];
+	const enc = (v) => { v = Math.min(1, Math.max(0, v));
+		return v <= 0.0031308 ? 12.92*v : 1.055*Math.pow(v, 1/2.4) - 0.055; };
+	return lin.map(v => Math.round(enc(v) * 255));
+}
+const parseOklch = (v) => { const m = v.match(/oklch\(\s*([\d.]+)%\s+([\d.]+)\s+([\d.]+)/);
+	return m ? [+m[1]/100, +m[2], +m[3]] : null; };
+
+async function loadSrgbBranch() {
+	const css = await (await fetch("./rux-ui/css/tokens.css")).text();
+	const srgb = css.slice(0, css.indexOf("@media (color-gamut: p3)"));
+	const lightAt = srgb.indexOf(':root[data-theme="light"]');
+	const scope = { dark: srgb.slice(0, lightAt), light: srgb.slice(lightAt) };
+	const rgbOut = { dark: {}, light: {} }, lchOut = { dark: {}, light: {} };
+	for (const theme of ["dark","light"]) {
+		const re = /--(rux-[a-z]+-\d+)\s*:\s*([^;]+);/g; let m;
+		while ((m = re.exec(scope[theme]))) {
+			const lch = parseOklch(m[2]);
+			if (lch) { lchOut[theme][m[1]] = lch; rgbOut[theme][m[1]] = oklchToSrgb(...lch); }
+		}
+		/* The published band, per theme — read from source rather than computed
+		   style so section G can paint DARK's values on a LIGHT canvas. */
+		BAND[theme] = {};
+		const fre = /--rux-([a-z]+)-fill\s*:\s*(oklch\([^;]+)\);/g; let f;
+		while ((f = fre.exec(scope[theme]))) BAND[theme][f[1]] = `${f[2]})`;
+		const ire = /--rux-([a-z]+)-on-fill\s*:\s*var\((--rux-fg-on-fill[a-z-]*)\)/g; let i;
+		while ((i = ire.exec(scope[theme]))) BAND[theme][`${i[1]}__ink`] = i[2];
+	}
+	SRGB = rgbOut; OKLCH = lchOut;
+}
+const theme = () => document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+
+const cv = document.createElement("canvas"); cv.width = cv.height = 4;
+const cx = cv.getContext("2d", { willReadFrequently: true });
+const px = (...layers) => { cx.clearRect(0,0,4,4);
+	for (const l of layers) { if (!l) continue; cx.fillStyle = l; cx.fillRect(0,0,4,4); }
+	const d = cx.getImageData(1,1,1,1).data; return [d[0],d[1],d[2]]; };
+const lum = (r) => { const f = r.map(v => { v/=255; return v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055,2.4); });
+	return 0.2126*f[0] + 0.7152*f[1] + 0.0722*f[2]; };
+const ratio = (a,b) => { const la = lum(a), lb = lum(b);
+	return (Math.max(la,lb)+0.05)/(Math.min(la,lb)+0.05); };
+const rgbStr = (c) => `rgb(${c[0]},${c[1]},${c[2]})`;
+const dist = (a,b) => Math.hypot(a[0]-b[0], a[1]-b[1], a[2]-b[2]);
+
+const step = (hue, n) => rgbStr(SRGB[theme()][`rux-${hue}-${n}`]);
+const WHITE = "oklch(100% 0 0)", INK = "oklch(14.57% 0 0)";
+
+/* ---- option C: a fill band normalized on LUMINANCE ----
+   color.md's scale is normalized at 100-400 and 1000 and diverges to a 26-point
+   L spread at 700 — which is why no single label serves seven hues there. This
+   keeps each hue's chroma and angle from its own 700 and solves L so every hue
+   lands on ONE relative luminance. Contrast then cannot vary by hue, because
+   luminance is the only thing contrast reads. */
+function normalizedFill(hue, targetY) {
+	const base = OKLCH[theme()][`rux-${hue}-700`];
+	if (!base) return null;
+	const [, C, H] = base;
+	let lo = 0, hi = 1;
+	for (let i = 0; i < 40; i++) {
+		const mid = (lo + hi) / 2;
+		if (lum(oklchToSrgb(mid, C, H)) < targetY) lo = mid; else hi = mid;
+	}
+	return rgbStr(oklchToSrgb((lo + hi) / 2, C, H));
+}
+
+function options() {
+	const t = theme();
+	const A = { title: "A · ships today — rule 2.12",
+		sub: t === "dark" ? "fill 500 · white label" : "fill 600 · near-black label",
+		fills: HUES.map(([, h]) => step(h, t === "dark" ? 500 : 600)),
+		ink: t === "dark" ? WHITE : INK };
+
+	/* Atlassian publishes light = {hue}700 + white and dark = {hue}400 + near-black:
+	   a BRIGHT fill carrying dark ink in dark theme. Rux's 900 is the rung that is
+	   bright in dark and deep in light, so the polarity flips on one rung number. */
+	const B = { title: "B · Atlassian polarity",
+		sub: t === "dark" ? "fill 900 (bright) · near-black label" : "fill 900 (deep) · white label",
+		fills: HUES.map(([, h]) => step(h, 900)),
+		ink: t === "dark" ? INK : WHITE };
+
+	const ink = t === "dark" ? WHITE : INK;
+	/* Rule 2.12: the 87% tier is the binding number, not the primary label. So
+	   solve the band's luminance against the TIER, not against solid ink —
+	   targeting the primary lands the tier ~1.0 lower and two hues under the
+	   floor. Bisect on Y: every hue shares it by construction, so the tier
+	   ratio moves monotonically with it. */
+	const tint = ink === WHITE ? "oklch(100% 0 0 / 87%)" : "oklch(14.57% 0 0 / 87%)";
+	const tierAt = (Y) => {
+		const f = normalizedFill(HUES[0][1], Y);
+		return ratio(px(f), px(f, tint));
+	};
+	const TIER_TARGET = 5.0;
+	let lo = 0.001, hi = 0.999;
+	for (let i = 0; i < 40; i++) {
+		const mid = (lo + hi) / 2;
+		/* Contrast against a light ink falls as Y rises; against a dark ink it climbs. */
+		const rising = ink === INK;
+		if ((tierAt(mid) < TIER_TARGET) === rising) lo = mid; else hi = mid;
+	}
+	const Y = (lo + hi) / 2;
+	const C = { title: "C · normalized fill band",
+		sub: `every hue solved to one luminance (Y=${Y.toFixed(3)}), targeting the 87% tier · ${t === "dark" ? "white" : "near-black"} label`,
+		fills: HUES.map(([, h]) => normalizedFill(h, Y)),
+		ink };
+	return [A, B, C];
+}
+
+/* ---- one trip bar, same markup the app renders ---- */
+function bar(fill, label) {
+	const el = document.createElement("article");
+	el.className = "sched-trip-bar";
+	el.style.backgroundColor = fill;
+	el.style.setProperty("--rux-fg-on-accent", label);
+	el.style.setProperty("--sched-trip-bar-meta-fg", label);
+	const tint = (a) => label === WHITE ? `oklch(100% 0 0 / ${a}%)` : `oklch(14.57% 0 0 / ${a}%)`;
+	el.style.setProperty("--rux-fg-on-accent-muted", tint(87));
+	el.style.setProperty("--rux-fg-on-accent-subtle", tint(55));
+	const body = document.createElement("div");
+	body.className = "sched-trip-bar__body";
+	for (const [cls, text] of [["destination","Laredo, TX"],["client","PSJA North Early College"],
+	                           ["contact","Sarah Wright 956-354-2000"]]) {
+		const r = document.createElement("div");
+		r.className = "sched-trip-bar__" + cls; r.textContent = text; body.append(r);
+	}
+	const time = document.createElement("div"); time.className = "sched-trip-bar__time";
+	for (const t of ["11:38 am","12:00 pm","2:53 am"]) {
+		const i = document.createElement("div"); i.className = "sched-trip-bar__time-item";
+		const v = document.createElement("span"); v.className = "sched-trip-bar__time-value";
+		v.textContent = t; i.append(v); time.append(i);
+	}
+	body.append(time);
+	const drv = document.createElement("div"); drv.className = "sched-trip-bar__drivers";
+	const d = document.createElement("span"); d.className = "sched-trip-bar__driver";
+	d.textContent = "Raul"; drv.append(d); body.append(drv);
+	el.append(body);
+	return el;
+}
+
+
+/* ---- section D · the catalog's own fill steps, renormalized ----
+   Option 3: fix D19 where it lives. 700 and 800 are solved to ONE luminance so
+   white clears on all seven, and chroma is shrunk only as far as the sRGB gamut
+   forces. 800 anchors on blue-800 so --rux-accent-800 — the accent button — does
+   not move at all. Amber is the casualty: a saturated amber cannot be dark. */
+const rawLin = (L, C, hDeg) => {
+	const h = (hDeg * Math.PI) / 180;
+	const a = C * Math.cos(h), b = C * Math.sin(h);
+	const l_ = L + 0.3963377774*a + 0.2158037573*b;
+	const m_ = L - 0.1055613458*a - 0.0638541728*b;
+	const s_ = L - 0.0894841775*a - 1.2914855480*b;
+	const l = l_**3, m = m_**3, s = s_**3;
+	return [ 4.0767416621*l - 3.3077115913*m + 0.2309699292*s,
+	        -1.2684380046*l + 2.6097574011*m - 0.3413193965*s,
+	        -0.0041960863*l - 0.7034186147*m + 1.7076147010*s ];
+};
+const inGamut = (L,C,H) => rawLin(L,C,H).every(v => v >= -2e-3 && v <= 1+2e-3);
+const clampLin = (v) => v.map(x => Math.min(1, Math.max(0, x)));
+const linY = (l) => 0.2126*l[0] + 0.7152*l[1] + 0.0722*l[2];
+const solveL = (C,H,tY) => { let lo=0, hi=1;
+	for (let i=0;i<60;i++){ const m=(lo+hi)/2;
+		if (linY(clampLin(rawLin(m,C,H))) < tY) lo=m; else hi=m; }
+	return (lo+hi)/2; };
+const fitGamut = (C0,H,tY) => { let C=C0;
+	for (let i=0;i<80;i++){ const L=solveL(C,H,tY); if (inGamut(L,C,H)) return [L,C]; C*=0.98; }
+	return [solveL(C,H,tY), C]; };
+const toRgbStr = (L,C,H) => { const e=(v)=>{v=Math.min(1,Math.max(0,v));
+		return Math.round((v<=0.0031308?12.92*v:1.055*Math.pow(v,1/2.4)-0.055)*255); };
+	const l=rawLin(L,C,H); return `rgb(${e(l[0])},${e(l[1])},${e(l[2])})`; };
+
+function catalogSection() {
+	const lch = (h,n) => OKLCH[theme()][`rux-${h}-${n}`];
+	const blue800 = lch("blue", 800);
+	const Y800 = linY(clampLin(rawLin(...blue800)));
+	const Y700 = 1.05/4.60 - 0.05;
+	const sec = document.createElement("section");
+	const head = document.createElement("div"); head.className = "sec-head";
+	const h2 = document.createElement("h2");
+	h2.textContent = "D · option 3 — the catalog's 700 / 800 renormalized";
+	const p = document.createElement("p");
+	p.textContent = "Top row is today. Bottom row is normalized, white label on every hue. "
+	              + "800 anchors on blue-800, so the accent button does not move.";
+	head.append(h2, p); sec.append(head);
+
+	for (const [step, tY, target] of [[700, Y700, "4.60"], [800, Y800, "5.75"]]) {
+		const lab = document.createElement("p");
+		lab.style.cssText = "margin:var(--rux-space-3) 0 var(--rux-space-1)";
+		lab.innerHTML = `<strong style="color:var(--rux-text-primary)">step ${step}</strong> — normalized to ${target}:1 with white`;
+		sec.append(lab);
+		const grid = document.createElement("div"); grid.className = "grid";
+		for (const [name, h] of HUES) {
+			const [L0,C0,H] = lch(h, step);
+			const before = toRgbStr(L0,C0,H);
+			const [L1,C1] = fitGamut(C0,H,tY);
+			const after = toRgbStr(L1,C1,H);
+			const rb = ratio(px(before), px(before, WHITE));
+			const ra = ratio(px(after),  px(after,  WHITE));
+			const cell = document.createElement("div"); cell.className = "cell";
+			const cl = document.createElement("div"); cl.className = "colhead"; cl.textContent = name;
+			cell.append(cl);
+			for (const [fill, r, tag] of [[before, rb, "now"], [after, ra, "normalized"]]) {
+				const sw = document.createElement("div");
+				sw.style.cssText = `background:${fill};color:#fff;padding:var(--rux-space-2);`
+					+ `border-radius:var(--rux-radius-container);font-size:var(--rux-text-label-12-size)`;
+				sw.textContent = `${tag} · ${r.toFixed(2)}`;
+				if (r < 4.5) sw.textContent += "  ✗";
+				cell.append(sw);
+			}
+			const keep = document.createElement("div");
+			keep.className = "ratio";
+			keep.style.color = C1/C0 < 0.95 ? "var(--rux-warning-base, orange)" : "var(--rux-text-secondary)";
+			keep.textContent = `chroma ${(C1/C0*100).toFixed(0)}%`;
+			cell.append(keep);
+			grid.append(cell);
+		}
+		sec.append(grid);
+	}
+	return sec;
+}
+
+
+/* ---- section E · the band as shipped ----
+   Reads the PUBLISHED --rux-{hue}-fill / -on-fill straight off the element.
+   getComputedStyle is safe here where it is not safe above: the band has no P3
+   branch — it is gamut-fitted to sRGB by construction — so the computed value
+   is the published value on any display. color.md §5 step 24. */
+function shippedSection() {
+	const cs = getComputedStyle(document.documentElement);
+	const sec = document.createElement("section");
+	const head = document.createElement("div"); head.className = "sec-head";
+	const h2 = document.createElement("h2");
+	h2.textContent = "E · the band as shipped — --rux-{hue}-fill";
+	const p = document.createElement("p");
+	p.textContent = "Rendered from the published tokens, each with the label it publishes. "
+	              + "Ratios are the 87% tier, measured here.";
+	head.append(h2, p); sec.append(head);
+	const grid = document.createElement("div"); grid.className = "grid";
+	const tiers = [];
+	for (const [name, hue] of HUES) {
+		const fill = cs.getPropertyValue(`--rux-${hue}-fill`).trim();
+		const ink  = cs.getPropertyValue(`--rux-${hue}-on-fill`).trim();
+		const cell = document.createElement("div"); cell.className = "cell";
+		const cl = document.createElement("div"); cl.className = "colhead";
+		cl.textContent = name; cell.append(cl);
+		cell.append(bar(fill, ink));
+		const tintV = `color-mix(in srgb, ${ink} 87%, ${fill})`;
+		const r = ratio(px(fill), px(fill, tintV));
+		tiers.push(r);
+		const rr = document.createElement("div");
+		rr.className = "ratio " + (r >= 4.5 ? "pass" : "fail");
+		rr.textContent = `${r.toFixed(2)}${r >= 4.5 ? "" : "  ✗"}`;
+		cell.append(rr);
+		grid.append(cell);
+	}
+	const sum = document.createElement("div"); sum.className = "sum";
+	const lo = Math.min(...tiers), hi = Math.max(...tiers);
+	const solids = HUES.map(([, h]) => px(cs.getPropertyValue(`--rux-${h}-fill`).trim()));
+	let minSep = Infinity;
+	for (let i = 0; i < solids.length; i++)
+		for (let j = i + 1; j < solids.length; j++) minSep = Math.min(minSep, dist(solids[i], solids[j]));
+	sum.innerHTML = `<span>87% tier: <b>${lo.toFixed(2)}–${hi.toFixed(2)}</b></span>`
+		+ `<span>spread: <b>${(hi - lo).toFixed(2)}</b></span>`
+		+ `<span>separation: <b>${minSep.toFixed(0)}</b> / 40 floor ${minSep >= 40 ? "✓" : "✗"}</span>`;
+	sec.append(sum, grid);
+	return sec;
+}
+
+
+/* ---- section F · status marks on a category fill ----
+   D18, made visible: the bar renders a status icon whose hue may be the hue the
+   bar is already tagged with — amber-900 warning on an amber bar, green-900
+   success on a green bar, red-900 danger on a bar already red for unconfirmed.
+   Category hue and status hue, same element, same moment.
+
+   Both treatments are shown because the choice is real: the status colour (what
+   ships) carries meaning in the mark itself; the fill's own label colour reads
+   at any fill but hands the meaning back to position and shape.
+
+   Icons are NON-TEXT, so the floor here is 3:1, not rule 2.11's 4.5 — stated
+   rather than assumed, because using the text floor would fail marks that are
+   perfectly legible. Status colours are resolved through the sRGB branch: they
+   alias the 900 steps, which do have a P3 branch (scheduler/css/tokens.css
+   lines 15-17 -> --rux-{danger,warning,success}-base -> {red,amber,green}-900). */
+const MARKS = [
+	["success", "check_circle", "green"],
+	["warning", "warning",      "amber"],
+	["danger",  "error",        "red"  ],
+];
+const ICON_FLOOR = 3.0;
+
+function markGlyph(glyph, color) {
+	const el = document.createElement("span");
+	el.className = "rux-icon";
+	el.textContent = glyph;
+	el.style.color = color;
+	el.style.setProperty("--_icon-fill", "1");        /* solid, as the trip bar sets it */
+	el.style.fontSize = "20px";
+	return el;
+}
+
+function statusMarkSection() {
+	const cs = getComputedStyle(document.documentElement);
+	const sec = document.createElement("section");
+	const head = document.createElement("div"); head.className = "sec-head";
+	const h2 = document.createElement("h2");
+	h2.textContent = "F · status marks on the fill — D18 made visible";
+	const p = document.createElement("p");
+	p.textContent = "Solid success / warning / danger on every category fill. Top strip is the "
+	              + "status colour that ships today; bottom is the fill's own published label. "
+	              + "Non-text floor is 3:1.";
+	head.append(h2, p); sec.append(head);
+
+	const rows = [
+		["status colour", (hue) => null],
+		["fill's label",  (hue) => cs.getPropertyValue(`--rux-${hue}-on-fill`).trim()],
+	];
+	const failures = [];
+	for (const [rowName, inkFor] of rows) {
+		const lab = document.createElement("p");
+		lab.style.cssText = "margin:var(--rux-space-3) 0 var(--rux-space-1)";
+		lab.innerHTML = `<strong style="color:var(--rux-text-primary)">${rowName}</strong>`;
+		sec.append(lab);
+		const grid = document.createElement("div"); grid.className = "grid";
+		for (const [name, hue] of HUES) {
+			const fill = cs.getPropertyValue(`--rux-${hue}-fill`).trim();
+			const cell = document.createElement("div"); cell.className = "cell";
+			const cl = document.createElement("div"); cl.className = "colhead";
+			cl.textContent = name; cell.append(cl);
+
+			const strip = document.createElement("div");
+			strip.style.cssText = `background:${fill};display:flex;gap:var(--rux-space-2);`
+				+ `padding:var(--rux-space-2);border-radius:var(--rux-radius-container);align-items:center`;
+			const ratios = [];
+			for (const [mark, glyph, markHue] of MARKS) {
+				const ink = inkFor(hue) || step(markHue, 900);
+				strip.append(markGlyph(glyph, ink));
+				const r = ratio(px(fill), px(fill, ink));
+				ratios.push([mark, r, markHue === hue]);
+				if (r < ICON_FLOOR) failures.push(`${rowName}: ${mark} on ${name} ${r.toFixed(2)}`);
+			}
+			cell.append(strip);
+			for (const [mark, r, collides] of ratios) {
+				const line = document.createElement("div");
+				line.className = "ratio " + (r >= ICON_FLOOR ? "pass" : "fail");
+				line.textContent = `${mark} ${r.toFixed(2)}${r < ICON_FLOOR ? " ✗" : ""}`
+					+ (collides ? "  ← same hue" : "");
+				cell.append(line);
+			}
+			grid.append(cell);
+		}
+		sec.append(grid);
+	}
+	const sum = document.createElement("div"); sum.className = "sum";
+	sum.innerHTML = failures.length
+		? `<span><b>${failures.length}</b> mark/fill pairings below the 3:1 non-text floor</span>`
+		: "<span>every mark clears 3:1 on every fill</span>";
+	sec.insertBefore(sum, sec.children[1]);
+	return sec;
+}
+
+
+/* ---- section G · one palette for both themes ----
+   The band ships per-theme today. This asks the other question: what if it did
+   not? The catalog's own 700/800 ARE theme-invariant, on the ground that "a
+   high-contrast fill does not change with the canvas" — so there is precedent
+   for a fill that ignores the theme, and tests/color-scales.test.mjs guards it.
+
+   This paints DARK's published values whatever the canvas is. Contrast cannot
+   move (same fill, same ink), so the numbers below are constant by
+   construction; what changes is how the board READS on a light page, which is
+   the only question a measurement cannot answer. */
+function invariantSection() {
+	const sec = document.createElement("section");
+	const head = document.createElement("div"); head.className = "sec-head";
+	const h2 = document.createElement("h2");
+	h2.textContent = "G · one palette for both themes — dark's values, on the active canvas";
+	const p = document.createElement("p");
+	p.textContent = "Toggle the theme: these bars do not change. Only the page behind them does. "
+	              + "Status marks use the fill's own label, which is the only treatment that clears.";
+	head.append(h2, p); sec.append(head);
+
+	const ink = (hue) => BAND.dark[`${hue}__ink`] === "--rux-fg-on-fill-inverse"
+		? "oklch(14.57% 0 0)" : "oklch(100% 0 0)";
+	const grid = document.createElement("div"); grid.className = "grid";
+	const tiers = [], solids = [];
+	for (const [name, hue] of HUES) {
+		const fill = BAND.dark[hue];
+		if (!fill) continue;
+		const lab = ink(hue);
+		const cell = document.createElement("div"); cell.className = "cell";
+		const cl = document.createElement("div"); cl.className = "colhead";
+		cl.textContent = name; cell.append(cl);
+		cell.append(bar(fill, lab));
+
+		const strip = document.createElement("div");
+		strip.style.cssText = `background:${fill};display:flex;gap:var(--rux-space-2);`
+			+ `padding:var(--rux-space-2);border-radius:var(--rux-radius-container);margin-top:var(--rux-space-1)`;
+		for (const [, glyph] of MARKS) strip.append(markGlyph(glyph, lab));
+		cell.append(strip);
+
+		const tint = `color-mix(in srgb, ${lab} 87%, ${fill})`;
+		const r = ratio(px(fill), px(fill, tint));
+		tiers.push(r); solids.push(px(fill));
+		const rr = document.createElement("div");
+		rr.className = "ratio " + (r >= 4.5 ? "pass" : "fail");
+		rr.textContent = r.toFixed(2);
+		cell.append(rr);
+		grid.append(cell);
+	}
+	let minSep = Infinity;
+	for (let i = 0; i < solids.length; i++)
+		for (let j = i + 1; j < solids.length; j++) minSep = Math.min(minSep, dist(solids[i], solids[j]));
+	const sum = document.createElement("div"); sum.className = "sum";
+	const lo = Math.min(...tiers), hi = Math.max(...tiers);
+	sum.innerHTML = `<span>87% tier: <b>${lo.toFixed(2)}–${hi.toFixed(2)}</b></span>`
+		+ `<span>spread: <b>${(hi - lo).toFixed(2)}</b></span>`
+		+ `<span>separation: <b>${minSep.toFixed(0)}</b> / 40 ${minSep >= 40 ? "✓" : "✗"}</span>`
+		+ `<span><b>identical in both themes</b></span>`;
+	sec.append(sum, grid);
+	return sec;
+}
+
+function render() {
+	const out = document.getElementById("out");
+	out.textContent = "";
+	for (const opt of options()) {
+		const sec = document.createElement("section");
+		const head = document.createElement("div"); head.className = "sec-head";
+		const h2 = document.createElement("h2"); h2.textContent = opt.title;
+		const p = document.createElement("p"); p.textContent = opt.sub;
+		head.append(h2, p); sec.append(head);
+
+		const grid = document.createElement("div"); grid.className = "grid";
+		const ratios = [], solid = [];
+		HUES.forEach(([name], i) => {
+			const fill = opt.fills[i];
+			const cell = document.createElement("div"); cell.className = "cell";
+			const lab = document.createElement("div"); lab.className = "colhead"; lab.textContent = name;
+			cell.append(lab, bar(fill, opt.ink));
+			const base = px(fill); solid.push(base);
+			/* The 87% tier is the binding number, not the primary — rule 2.12. */
+			const tint = opt.ink === WHITE ? "oklch(100% 0 0 / 87%)" : "oklch(14.57% 0 0 / 87%)";
+			const r = ratio(base, px(fill, tint));
+			ratios.push(r);
+			const rr = document.createElement("div");
+			rr.className = "ratio " + (r >= 4.5 ? "pass" : "fail");
+			rr.textContent = r.toFixed(2) + (r >= 4.5 ? "" : "  ✗");
+			cell.append(rr);
+			grid.append(cell);
+		});
+		let minSep = Infinity;
+		for (let i = 0; i < solid.length; i++)
+			for (let j = i + 1; j < solid.length; j++) minSep = Math.min(minSep, dist(solid[i], solid[j]));
+
+		const sum = document.createElement("div"); sum.className = "sum";
+		const lo = Math.min(...ratios), hi = Math.max(...ratios);
+		sum.innerHTML =
+			`<span>87% tier: <b>${lo.toFixed(2)}–${hi.toFixed(2)}</b> ` +
+			`(${lo >= 4.5 ? "all clear" : ratios.filter(r => r < 4.5).length + " below floor"})</span>` +
+			`<span>spread: <b>${(hi - lo).toFixed(2)}</b></span>` +
+			`<span>separation: <b>${minSep.toFixed(0)}</b> / 40 floor ` +
+			`${minSep >= 40 ? "✓" : "✗"}</span>`;
+		sec.append(sum, grid);
+		out.append(sec);
+	}
+	out.append(catalogSection());
+	out.append(shippedSection());
+	out.append(statusMarkSection());
+	out.append(invariantSection());
+}
+
+document.getElementById("theme").addEventListener("click", () => {
+	const el = document.documentElement;
+	el.setAttribute("data-theme", el.getAttribute("data-theme") === "light" ? "dark" : "light");
+	render();
+});
+loadSrgbBranch().then(render);
+</script>
+</body>
+</html>

@@ -17,7 +17,7 @@ roles onto that vocabulary.
 |---|---|---|---|
 | [`typography.md`](typography.md) | 6.1.0 | 67 done · 1 deferred · 3 withdrawn | — |
 | [`layout.md`](layout.md) | 2.12.0 | 27 done | — |
-| [`color.md`](color.md) | 3.1.2 | 23 done | — |
+| [`color.md`](color.md) | 3.4.0 | 26 done | — |
 | [`motion.md`](motion.md) | 1.6.0 | 6 done | — |
 | [`naming.md`](naming.md) | 1.18.0 | 15 done | — |
 | [`state.md`](state.md) | 1.8.1 | 11 done | — |
@@ -126,17 +126,25 @@ it coming. This document is the mechanism.
 | **B · Behavioral** | An existing declaration's *resolved value* changes — a token's value, or a rule moving from a literal to a different token. No name moves. | **Re-renders without any name changing.** | Executes directly, but see 2.3. |
 | **C · Breaking** | A published token or class is removed or renamed. | Consumer's markup silently loses its styling. | **Stops and proposes first.** |
 
-### 2.2 The gates catch C and are blind to B
+### 2.2 Three gates are blind to B; the fourth is not
 
-`../design-system-distribution.md` §4 runs three gates — `@import` verification, the
-consumer name check, and the consumer's own build and tests. **All three are name-based.**
-A leading changed from 20px to 22px passes every one of them and reaches production having
-tripped nothing. This is the opposite of the `v0.1.0` incident that motivated gate 2, and
-it is not covered by the fix for it.
+`../design-system-distribution.md` §4 runs four gates. The first three — `@import`
+verification, the consumer name check, and the consumer's own build and tests — are
+**name-based**. A leading changed from 20px to 22px passes every one of them and reaches
+production having tripped nothing. This is the opposite of the `v0.1.0` incident that
+motivated gate 2, and it is not covered by the fix for it.
 
-Class B is therefore the class this section exists for. Naming it is most of the control:
-an unnamed behavioral change is indistinguishable from a bug when a consumer notices their
-spacing moved.
+Gate 4 closes that hole, and it is the only gate that runs here rather than in a consumer.
+`../../tests/token-value-contract.test.mjs` pins every declared custom property, per
+declaring context, against a committed snapshot: a changed value fails upstream, before
+anything can be tagged. The regenerated snapshot diff is the before/after record 2.3
+requires, and because each context is pinned separately it carries the per-theme pair.
+
+**It proves a value moved. It does not prove the new value is right**, and it is blind to
+plain declarations, which are not tokens. Class B is therefore still the class this
+section exists for: 2.3's named eyeball is the only thing that answers whether 22px was
+correct. What the gate removes is silence — an unnamed behavioral change is
+indistinguishable from a bug when a consumer notices their spacing moved.
 
 ### 2.3 What a Class B amendment MUST carry
 
@@ -230,7 +238,7 @@ counts.
 
 | Document | Open questions | Open defects | Accepted debt |
 |---|---|---|---|
-| [`color.md`](color.md) | 5 | 3 | 0 |
+| [`color.md`](color.md) | 6 | 3 | 0 |
 | [`composition.md`](composition.md) | 2 | 2 | 0 |
 | [`content.md`](content.md) | 2 | 1 | 0 |
 | [`forms.md`](forms.md) | 4 | 3 | 0 |

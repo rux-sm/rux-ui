@@ -100,15 +100,26 @@ hypothetical — the first CI run failed on exactly that line.
 
 ## 4. Gates
 
-Three gates, because no one of them is sufficient:
+Four gates, because no one of them is sufficient:
 
 | Gate | Catches | Blind to |
 |---|---|---|
 | `@import` verification | a partial or broken copy | renames |
 | Consumer name check | renamed, dropped, or invented names | how it looks |
 | Consumer build + tests | type errors, broken pages | CSS that matches nothing |
+| Token value snapshot | a value moving under a stable name | plain declarations, which are not tokens |
 
-The middle gate exists because of a real incident: `v0.1.0` renamed
+The last gate is the only one that runs **here** rather than in a consumer, and
+it is the only one that is not name-based. The other three read names: a token
+whose value moves while its name holds still passes all of them and reaches a
+vendored consumer having tripped nothing. That is the Class B amendment in
+`CLAUDE.md` § Foundation Work, and `tests/token-value-contract.test.mjs` pins
+every declared custom property, per declaring context, so the edit fails
+upstream. The regenerated snapshot diff is the before/after record the
+amendment step is required to carry — per theme, since each context is pinned
+separately.
+
+The consumer name check exists because of a real incident: `v0.1.0` renamed
 `.rux-card--boxed`, `.rux-cluster`, and `.rux-button--header`, and the consumer
 using them kept building green while the elements silently lost their styling.
 **A renamed class is not a build error, not a type error, and not a test
@@ -283,7 +294,7 @@ error, and not a test failure, whether the file arrived by `rsync` or by
 `npm install`.
 
 Any framing of this proposal as "npm makes the gates unnecessary" is wrong.
-§4's three gates survive intact; only their *plumbing* changes.
+§4's four gates survive intact; only their *plumbing* changes.
 
 **Tagging does not go away either.** npm needs a version. It is the same ritual
 with standard tooling around it, not one ritual fewer.

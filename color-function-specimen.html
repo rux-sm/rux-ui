@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Colour — the function axis</title>
+<link rel="stylesheet" href="./rux-ui/css/rux.css?v=17" />
+<link rel="stylesheet" href="./scheduler/css/components.css?v=26" />
+<style>
+	body { background: var(--rux-surface-0); color: var(--rux-text-primary);
+	       font-family: var(--rux-font-sans); margin: 0; padding: var(--rux-space-5) var(--rux-space-5) 6rem; }
+	header { display: flex; align-items: flex-start; gap: var(--rux-space-4);
+	         justify-content: space-between; margin-bottom: var(--rux-space-5); }
+	h1 { font-size: var(--rux-text-heading-24-size); line-height: var(--rux-text-heading-24-line-height);
+	     font-weight: var(--rux-weight-600); margin: 0 0 var(--rux-space-2); }
+	p  { color: var(--rux-text-secondary); margin: 0; max-width: 74ch;
+	     font-size: var(--rux-text-copy-14-size); line-height: var(--rux-text-copy-14-line-height); }
+	table { border-collapse: collapse; width: 100%; margin-top: var(--rux-space-4); }
+	th, td { text-align: left; padding: var(--rux-space-3) var(--rux-space-2);
+	         border-bottom: 1px solid var(--rux-card-border); vertical-align: top; }
+	th { font-size: var(--rux-text-label-12-size); color: var(--rux-text-primary);
+	     font-weight: var(--rux-weight-600); white-space: nowrap; }
+	th small { display: block; font-weight: var(--rux-weight-400); color: var(--rux-text-secondary); }
+	td.role { font-family: var(--rux-font-mono); font-size: var(--rux-text-label-12-size);
+	          color: var(--rux-text-primary); white-space: nowrap; }
+	td.role small { display: block; color: var(--rux-text-secondary); font-family: var(--rux-font-sans); }
+	.ratio { font-family: var(--rux-font-mono); font-size: var(--rux-text-label-12-size);
+	         font-variant-numeric: tabular-nums; margin-top: var(--rux-space-1); }
+	.pass { color: var(--rux-success-base); } .fail { color: var(--rux-danger-base); }
+	.pill { display: inline-flex; align-items: center; justify-content: center; min-width: 22px;
+	        height: 20px; padding: 0 var(--rux-space-2); border-radius: var(--rux-radius-full);
+	        font-size: var(--rux-text-label-12-size); }
+	.swatchline { height: 20px; border-radius: var(--rux-radius-container); border-style: solid;
+	              border-width: 2px; background: var(--rux-surface-1); }
+	.tintbox { padding: var(--rux-space-2); border-radius: var(--rux-radius-container);
+	           font-size: var(--rux-text-label-12-size); }
+	.markbox { display: flex; gap: var(--rux-space-1); padding: var(--rux-space-2);
+	           border-radius: var(--rux-radius-container); align-items: center; }
+	.legend { display: flex; gap: var(--rux-space-4); flex-wrap: wrap; margin-top: var(--rux-space-2);
+	          color: var(--rux-text-secondary); font-size: var(--rux-text-label-12-size); }
+	.note { background: var(--rux-surface-1); border: 1px solid var(--rux-card-border);
+	        border-radius: var(--rux-radius-container); padding: var(--rux-space-3);
+	        margin-bottom: var(--rux-space-4); }
+	.note strong { color: var(--rux-text-primary); }
+</style>
+</head>
+<body>
+<header>
+	<div>
+		<h1>Colour — the function axis</h1>
+		<p><code>color.md</code> rule 2.2 partitions the vertical axis: ten steps, one purpose
+		   each. That governs <em>steps</em>. This page asks the other question — what happens
+		   when one <strong>role</strong> is spent on several <strong>functions</strong>, each
+		   with a different floor and a different thing to clear against. Every number is
+		   measured here, in the sRGB branch, per rule 2.11's worse-gamut clause.</p>
+		<div class="legend">
+			<span><span class="pass">■</span> clears its floor</span>
+			<span><span class="fail">■</span> below it</span>
+			<span>F1/F3/F5 → 4.5:1 (text) · F2/F4 → 3:1 (non-text)</span>
+		</div>
+	</div>
+	<div><button class="rux-button rux-button--default" id="theme" type="button">Toggle theme</button></div>
+</header>
+<div class="note">
+	<strong>D20, and the shape behind it.</strong> A cell is red where that role, used for that
+	function, does not clear. The point is not any single number — it is that one row can hold
+	both. A role that is correct as text is not thereby correct as a fill, and nothing in the
+	system currently says so. Inventory: <code>docs/color-consumption-audit.md</code>.
+</div>
+<div id="out"></div>
+<script>
+/* ---- measurement (same method as trip-bar-fill-band-specimen.html) ----
+   The floor is the WORSE gamut, so computed styles cannot be trusted for
+   anything with a P3 branch: the status roles alias 800/900/100 steps, all of
+   which are re-stated in the P3 block. Fetch tokens.css, slice the P3 block
+   off, and resolve each role through the sRGB values by hand. */
+let SRGB = null, DECL = { dark: {}, light: {} };
+
+function oklchToSrgb(L, C, hDeg) {
+	const h = (hDeg * Math.PI) / 180;
+	const a = C * Math.cos(h), b = C * Math.sin(h);
+	const l_ = L + 0.3963377774*a + 0.2158037573*b;
+	const m_ = L - 0.1055613458*a - 0.0638541728*b;
+	const s_ = L - 0.0894841775*a - 1.2914855480*b;
+	const l = l_**3, m = m_**3, s = s_**3;
+	const lin = [ 4.0767416621*l - 3.3077115913*m + 0.2309699292*s,
+	             -1.2684380046*l + 2.6097574011*m - 0.3413193965*s,
+	             -0.0041960863*l - 0.7034186147*m + 1.7076147010*s ];
+	const enc = (v) => { v = Math.min(1, Math.max(0, v));
+		return v <= 0.0031308 ? 12.92*v : 1.055*Math.pow(v, 1/2.4) - 0.055; };
+	return lin.map(v => Math.round(enc(v) * 255));
+}
+const parseOklch = (v) => { const m = v.match(/oklch\(\s*([\d.]+)%\s+([\d.]+)\s+([\d.-]+)/);
+	return m ? oklchToSrgb(+m[1]/100, +m[2], +m[3]) : null; };
+
+async function load() {
+	const css = await (await fetch("./rux-ui/css/tokens.css")).text();
+	const srgb = css.slice(0, css.indexOf("@media (color-gamut: p3)"));
+	const lightAt = srgb.indexOf(':root[data-theme="light"]');
+	const scope = { dark: srgb.slice(0, lightAt), light: srgb.slice(lightAt) };
+	const out = { dark: {}, light: {} };
+	/* Selector-aware, and it has to be: tokens.css also carries
+	   :root[data-rux-accent="violet"|"green"|"amber"] blocks that re-point
+	   --rux-accent-*. A flat regex takes the LAST match and silently resolves
+	   the accent to amber-700, which reports the blue accent as failing text
+	   contrast it does not fail. Only the exact base and light-theme blocks
+	   count here. */
+	const WANT = { dark: ":root", light: ':root[data-theme="light"]' };
+	for (const theme of ["dark", "light"]) {
+		const body = scope[theme].replace(/\/\*[\s\S]*?\*\//g, "");
+		let i = 0;
+		while (i < body.length) {
+			const open = body.indexOf("{", i);
+			if (open === -1) break;
+			const sel = body.slice(i, open).trim().replace(/\s+/g, " ").split("\n").pop().trim();
+			let depth = 1, j = open + 1;
+			while (j < body.length && depth > 0) { if (body[j] === "{") depth++;
+				else if (body[j] === "}") depth--; j++; }
+			if (sel === WANT[theme]) {
+				const inner = body.slice(open + 1, j - 1);
+				const re = /--([a-z0-9-]+)\s*:\s*([^;]+);/g; let m;
+				while ((m = re.exec(inner))) DECL[theme][m[1]] = m[2].trim();
+			}
+			i = j;
+		}
+		for (const [k, v] of Object.entries(DECL[theme])) {
+			const rgb = parseOklch(v); if (rgb) out[theme][k] = rgb;
+		}
+	}
+	SRGB = out;
+}
+const theme = () => document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+
+/* Follow a role through its var() chain until it lands on a literal this page
+   has an sRGB value for. Light falls back to dark, which is what the cascade
+   does when a theme block does not override. */
+function resolve(name, depth = 0) {
+	if (depth > 8) return null;
+	const t = theme();
+	const direct = SRGB[t][name] || SRGB.dark[name];
+	if (direct) return direct;
+	const decl = DECL[t][name] ?? DECL.dark[name];
+	if (!decl) return null;
+	const v = decl.match(/var\(\s*--([a-z0-9-]+)/);
+	if (v) return resolve(v[1], depth + 1);
+	const lit = parseOklch(decl);
+	return lit || null;
+}
+const rgbStr = (c) => c ? `rgb(${c[0]},${c[1]},${c[2]})` : "transparent";
+
+const cv = document.createElement("canvas"); cv.width = cv.height = 4;
+const cx = cv.getContext("2d", { willReadFrequently: true });
+const px = (...layers) => { cx.clearRect(0,0,4,4);
+	for (const l of layers) { if (!l) continue; cx.fillStyle = l; cx.fillRect(0,0,4,4); }
+	const d = cx.getImageData(1,1,1,1).data; return [d[0],d[1],d[2]]; };
+const lum = (r) => { const f = r.map(v => { v/=255; return v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055,2.4); });
+	return 0.2126*f[0] + 0.7152*f[1] + 0.0722*f[2]; };
+const ratio = (a,b) => { const la = lum(a), lb = lum(b);
+	return (Math.max(la,lb)+0.05)/(Math.min(la,lb)+0.05); };
+
+const ROLES = [
+	["--rux-danger",  "red-900",    "27 color · 3 border · 2 background"],
+	["--rux-warning", "amber-900",  "21 color · 1 border · 2 background"],
+	["--rux-success", "green-900",  "11 color · 1 background"],
+	["--rux-info",    "blue-900",   "6 color · 1 background"],
+	["--rux-accent",  "blue-700",   "17 color · 6 border · 8 background"],
+];
+const HUES = ["blue","red","amber","green","teal","purple","pink"];
+
+function cell(node, r, floor) {
+	const td = document.createElement("td");
+	td.append(node);
+	const s = document.createElement("div");
+	s.className = "ratio " + (r >= floor ? "pass" : "fail");
+	s.textContent = `${r.toFixed(2)}${r >= floor ? "" : "  ✗"}`;
+	td.append(s);
+	return td;
+}
+
+function render() {
+	const out = document.getElementById("out");
+	out.textContent = "";
+	const surface = rgbStr(resolve("rux-surface-1"));
+	const white = "rgb(255,255,255)";
+	const table = document.createElement("table");
+	const thead = document.createElement("thead");
+	thead.innerHTML = "<tr><th>role<small>step · how it is read today</small></th>"
+		+ "<th>F1 · labelled fill<small>white label on it</small></th>"
+		+ "<th>F2 · mark on a fill<small>worst of the seven category fills</small></th>"
+		+ "<th>F3 · text<small>on surface-1</small></th>"
+		+ "<th>F4 · line<small>on surface-1</small></th>"
+		+ "<th>F5 · tint<small>primary text on -subtle</small></th></tr>";
+	table.append(thead);
+	const tbody = document.createElement("tbody");
+
+	for (const [role, step, usage] of ROLES) {
+		const c = rgbStr(resolve(role.replace(/^--/, "")));
+		const tr = document.createElement("tr");
+		const name = document.createElement("td");
+		name.className = "role";
+		name.innerHTML = `${role}<small>${step} · ${usage}</small>`;
+		tr.append(name);
+
+		/* F1 — the badge shape side-nav and ui-header both build. */
+		const pill = document.createElement("span");
+		pill.className = "pill"; pill.style.background = c; pill.style.color = white;
+		pill.textContent = "12";
+		tr.append(cell(pill, ratio(px(c), px(c, white)), 4.5));
+
+		/* F2 — the same colour as a mark, against the WORST of the fill band. */
+		let worstFill = null, worstR = Infinity;
+		for (const h of HUES) {
+			const f = rgbStr(resolve(`rux-${h}-fill`));
+			const r = ratio(px(f), px(f, c));
+			if (r < worstR) { worstR = r; worstFill = f; }
+		}
+		const mb = document.createElement("div");
+		mb.className = "markbox"; mb.style.background = worstFill;
+		for (const g of ["check_circle","warning","error"]) {
+			const i = document.createElement("span");
+			i.className = "rux-icon"; i.textContent = g; i.style.color = c;
+			i.style.setProperty("--_icon-fill", "1"); i.style.fontSize = "18px";
+			mb.append(i);
+		}
+		tr.append(cell(mb, worstR, 3.0));
+
+		/* F3 — text on the canvas, the function these roles were measured for. */
+		const txt = document.createElement("div");
+		txt.style.color = c; txt.style.fontSize = "var(--rux-text-copy-14-size)";
+		txt.textContent = "Itinerary pending";
+		tr.append(cell(txt, ratio(px(surface), px(surface, c)), 4.5));
+
+		/* F4 — a line, at the looser non-text floor. */
+		const line = document.createElement("div");
+		line.className = "swatchline"; line.style.borderColor = c;
+		tr.append(cell(line, ratio(px(surface), px(surface, c)), 3.0));
+
+		/* F5 — the -subtle tint carrying primary text. */
+		const subtleName = role.replace(/^--rux-/, "rux-") + "-subtle";
+		const sc = resolve(subtleName);
+		const box = document.createElement("div");
+		box.className = "tintbox";
+		if (sc) {
+			const scs = rgbStr(sc), fg = rgbStr(resolve("rux-text-primary"));
+			box.style.background = scs; box.style.color = fg;
+			box.textContent = "On tint";
+			tr.append(cell(box, ratio(px(scs), px(scs, fg)), 4.5));
+		} else {
+			box.textContent = "—"; box.style.color = "var(--rux-text-secondary)";
+			const td = document.createElement("td"); td.append(box);
+			const s = document.createElement("div"); s.className = "ratio";
+			s.style.color = "var(--rux-text-secondary)"; s.textContent = "no -subtle";
+			td.append(s); tr.append(td);
+		}
+		tbody.append(tr);
+	}
+	table.append(tbody);
+	out.append(table);
+}
+
+document.getElementById("theme").addEventListener("click", () => {
+	const el = document.documentElement;
+	el.setAttribute("data-theme", el.getAttribute("data-theme") === "light" ? "dark" : "light");
+	render();
+});
+load().then(render);
+</script>
+</body>
+</html>

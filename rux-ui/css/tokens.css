@@ -589,6 +589,45 @@
 	--rux-warning-on-fill: var(--rux-fg-on-fill-inverse);
 	--rux-success-on-fill: var(--rux-fg-on-fill-inverse);
 
+	/* ─── Category fills · a normalized band ───────────────────────────────── */
+	/* A NAMED RUX ROLE FAMILY, NOT A CATALOG STEP (rule 1.1a). §3.1 records
+	   what the catalog measures; D19 records what it cannot do. At 700 white
+	   clears on purple alone and at 800 on four of seven, so the two steps
+	   rule 2.2 designates for labelled fills admit no uniform label, and a
+	   consumer needing one has nowhere on the ladder to stand. §3.1 is left
+	   exactly as measured — the defect is the catalog's and stays recorded as
+	   such; this band is Rux's own answer to it.
+
+	   Every hue is solved to ONE luminance per theme, so label contrast is a
+	   property of the band rather than of the hue, and chroma is reduced only
+	   as far as the sRGB gamut forces. Measured on the 87% tier, which binds
+	   wherever a fill carries a second text level: dark 5.00-5.23, light
+	   5.00-5.07. Primary label: 6.34 dark, 5.70 light.
+
+	   AMBER IS THE EXCEPTION and it is the gamut's, not a preference: a
+	   saturated amber cannot be dark, so amber takes the inverse label in both
+	   themes and is the one hue whose value is identical across them.
+
+	   No P3 branch — these are gamut-fitted to sRGB by construction, so both
+	   branches render them identically. Each fill publishes its own label so
+	   the pairing cannot be got wrong (Q12's container/on-container shape).
+	   docs/foundations/color.md rule 1.1a, rule 2.11, §5 step 24. */
+	--rux-blue-fill:     oklch(49.33% 0.1860 257.97);
+	--rux-red-fill:      oklch(51.09% 0.1931 22.94);
+	--rux-amber-fill:    oklch(63.74% 0.1341 75.99);
+	--rux-green-fill:    oklch(47.19% 0.1417 147.33);
+	--rux-teal-fill:     oklch(47.57% 0.0867 181.88);
+	--rux-purple-fill:   oklch(50.86% 0.1825 305.87);
+	--rux-pink-fill:     oklch(51.44% 0.2082 1.24);
+
+	--rux-blue-on-fill:  var(--rux-fg-on-fill);
+	--rux-red-on-fill:   var(--rux-fg-on-fill);
+	--rux-amber-on-fill: var(--rux-fg-on-fill-inverse);
+	--rux-green-on-fill: var(--rux-fg-on-fill);
+	--rux-teal-on-fill:  var(--rux-fg-on-fill);
+	--rux-purple-on-fill:var(--rux-fg-on-fill);
+	--rux-pink-on-fill:  var(--rux-fg-on-fill);
+
 	/* Degenerate since the fills moved to 800: the catalog publishes 800 as
 	   700's hover and nothing as 800's, so these now name the step they were
 	   the hover for. Kept published because removing a name is Class C; they
@@ -2226,6 +2265,30 @@
 	   docs/foundations/color.md §5 steps 4, 5 and 6. */
 
 	/* ─── Text ────────────────────────────────────────────────────────────── */
+
+
+
+	/* Category fills — restated, NOT re-tuned. The band is theme-invariant: every
+	   value here is identical to its :root declaration, exactly as the catalog's own
+	   700/800 steps are restated (a high-contrast fill does not change with the
+	   canvas). Rule 2.1 requires an absolute lightness to carry a light-theme value,
+	   so "invariant" is spelled as an equal override rather than as an absence —
+	   which is also what makes the equality checkable. color.md §5 step 24. */
+	--rux-blue-fill:     oklch(49.33% 0.1860 257.97);
+	--rux-red-fill:      oklch(51.09% 0.1931 22.94);
+	--rux-amber-fill:    oklch(63.74% 0.1341 75.99);
+	--rux-green-fill:    oklch(47.19% 0.1417 147.33);
+	--rux-teal-fill:     oklch(47.57% 0.0867 181.88);
+	--rux-purple-fill:   oklch(50.86% 0.1825 305.87);
+	--rux-pink-fill:     oklch(51.44% 0.2082 1.24);
+	--rux-blue-on-fill:  var(--rux-fg-on-fill);
+	--rux-red-on-fill:   var(--rux-fg-on-fill);
+	--rux-amber-on-fill: var(--rux-fg-on-fill-inverse);
+	--rux-green-on-fill: var(--rux-fg-on-fill);
+	--rux-teal-on-fill:  var(--rux-fg-on-fill);
+	--rux-purple-on-fill:var(--rux-fg-on-fill);
+	--rux-pink-on-fill:  var(--rux-fg-on-fill);
+
 	/* Disabled is not on the scale (rule 2.6 — the catalog has no disabled
 	   step), so it still states its own value per theme. */
 	--rux-text-disabled:  oklch(from var(--rux-neutral) 58% c h);

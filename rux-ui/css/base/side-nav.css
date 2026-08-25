@@ -103,8 +103,12 @@
 	justify-content: center;
 	margin-inline-start: auto;
 	padding: 0 var(--rux-space-1);
-	background: var(--rux-danger);
-	color: var(--rux-fg-on-accent);
+	/* The published F1 pair, not the text role. --rux-danger is red-900, which
+	   rule 2.2 calls secondary text; white on it measures 2.94 in dark and fails
+	   rule 2.11's floor. A fill publishes its own label (rule 2.14) — this reads
+	   both halves of it. color.md D20, §5 step 26. */
+	background: var(--rux-danger-fill);
+	color: var(--rux-danger-on-fill);
 	border-radius: var(--rux-radius-full);
 	/* label-12. Was 11px with the dense rung; 11 has no rung in the catalog and
 	   at 12 rule 2.14 no longer applies. Step 42. */
