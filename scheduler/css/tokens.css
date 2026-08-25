@@ -177,8 +177,15 @@
 	--sched-trip-bar-meta-shadow: none; /* recessed rim, same as input fields */
 	--sched-trip-bar-stripe-color:   var(--rux-white);
 	--sched-trip-bar-stripe-opacity: 0.04;
-	--sched-trip-bar-row-font-size:   var(--rux-size-12);
-	--sched-trip-bar-row-line-height: var(--rux-line-height-16);
+	/* The Label role, whole — never Tier 0 primitives (typography.md rule
+	   2.2 via docs/trip-bar.md rule 2.6, step 5). Resolves to the same
+	   12/16/0 the primitives named; the point is that a future label-12
+	   amendment reaches these rows instead of silently leaving them behind.
+	   Tracking is declared with its pair: an axis adopted separately is the
+	   same defect the role exists to prevent. */
+	--sched-trip-bar-row-font-size:   var(--rux-text-label-12-size);
+	--sched-trip-bar-row-line-height: var(--rux-text-label-12-line-height);
+	--sched-trip-bar-row-tracking:    var(--rux-text-label-12-tracking);
 	--sched-trip-bar-icon-fill:         1;
 	--sched-trip-bar-icon-weight:       400;
 	--sched-trip-bar-icon-grade:        0;

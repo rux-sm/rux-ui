@@ -144,6 +144,27 @@ test("the size settings still drive the row typography", () => {
 	assert.equal(rowFont("xs"), 12, "the default tier renders 12px row text");
 });
 
+test("every tier reads a Label role whole, never Tier 0 primitives", () => {
+	// typography.md rule 2.2 via docs/trip-bar.md rule 2.6, step 5: "a role's
+	// metric axes are adopted together". That the primitives resolved to the
+	// same pixels was a coincidence, not conformance — the moment the role
+	// moves, a primitive-reading tier silently stops tracking it. Tracking is
+	// asserted with its pair for the same reason.
+	for (const tier of TIERS) {
+		for (const prop of [
+			"--sched-trip-bar-row-font-size",
+			"--sched-trip-bar-row-line-height",
+			"--sched-trip-bar-row-tracking",
+		]) {
+			assert.match(
+				valueOf(tier, prop),
+				/var\(--rux-text-label-\d+-/,
+				`${tier}: ${prop} must read a --rux-text-label-* role axis`,
+			);
+		}
+	}
+});
+
 test("the XXS tier stays retired (step 6)", () => {
 	// typography.md Q11 collapsed XXS into the default — no catalog-legal way
 	// to hold a third tier apart — and docs/trip-bar.md step 6 removed the

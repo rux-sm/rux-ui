@@ -158,8 +158,12 @@
    the destination row taking label-12 whole at every tier, so there is no
    per-tier pill geometry left to configure. docs/trip-bar.md rule 2.10. */
 .sched-scheduler--trip-bar-size-sm {
-	--sched-trip-bar-row-font-size:   var(--rux-size-14);           /* 14px */
-	--sched-trip-bar-row-line-height: var(--rux-line-height-20);    /* 20px */
+	/* label-14, whole — same rule-2.6 shape as the default tier's label-12
+	   (docs/trip-bar.md step 5). Resolves to the identical 14/20/0 the
+	   primitives named. */
+	--sched-trip-bar-row-font-size:   var(--rux-text-label-14-size);
+	--sched-trip-bar-row-line-height: var(--rux-text-label-14-line-height);
+	--sched-trip-bar-row-tracking:    var(--rux-text-label-14-tracking);
 }
 
 /* — Pull-to-change-week hint — */
