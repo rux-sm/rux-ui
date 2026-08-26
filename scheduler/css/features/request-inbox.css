@@ -19,13 +19,6 @@
 	font-weight: var(--rux-weight-400);
 }
 
-/* The only workspace override in this file. The base toolbar sets gap:0 so a
-   run of adjacent buttons reads as one group, which is right for Fleet and
-   Drivers; this toolbar holds two distinct groups — the status filter and the
-   primary action — so they take the standard button-group gap between them. */
-.sched-scope-request .rux-workspace__toolbar {
-	gap: var(--rux-button-group-gap);
-}
 
 /* ── Request table ────────────────────────────────────────────────────── */
 

@@ -303,7 +303,6 @@
 	.driver-roster__band .rux-workspace__toolbar {
 		flex-wrap: wrap;
 		justify-content: flex-start;
-		gap: var(--rux-space-2);
 	}
 
 	.driver-roster__band .rux-workspace__toolbar > .rux-input[type="search"] {

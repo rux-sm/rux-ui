@@ -151,10 +151,6 @@
 		justify-self: center;
 	}
 
-	/* Flush cluster, but not flush against the panel toggle beside it. */
-	.rux-app-view[data-view="calendar"] .rux-workspace__toolbar {
-		gap: var(--rux-space-2);
-	}
 }
 
 .calendar-app__panel-toggle {

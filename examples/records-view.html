@@ -79,13 +79,20 @@ body {
 	max-width: 74ch;
 }
 /* Stands in for the application shell: .rux-workspace is flex:1 inside a
-   bounded flex column and owns its own scrolling. */
+   bounded flex column and owns its own scrolling.
+
+   It draws NO border, because the real shell draws none — .rux-app-view carries
+   `padding: 0 20px` and no border or radius, and .rux-workspace__body none
+   either, so the only frame in a records view is .rux-table-wrap's. An earlier
+   draft of this file gave the stand-in a hairline of its own and produced two
+   identical 1px borders sitting 1px apart. An example that invents chrome the
+   shell does not have teaches that chrome. The inset below is the real
+   --rux-app-view-padding, so the table sits where it actually sits. */
 .example__shell {
 	display: flex;
 	height: 26rem;
-	border-radius: var(--rux-radius-container);
 	overflow: hidden;
-	border: var(--rux-border-width) solid var(--rux-card-border);
+	padding-inline: var(--rux-space-5);
 }
 .example__shell--short { height: 14rem; }
 

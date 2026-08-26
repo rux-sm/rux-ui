@@ -57,7 +57,14 @@
 	align-items: center;
 	justify-content: flex-end;
 	flex-wrap: nowrap;
-	gap: 0;
+	/* Groups separate; controls inside a group sit flush. This was `gap: 0` —
+	   flush by default — until shell.md step 6, and the default had it
+	   backwards: three of the four multi-group toolbars in the application had
+	   already overridden it to the same 8px under two different token names,
+	   two of them with comments explaining the same reasoning. A default that
+	   most consumers override is not a default. A toolbar that wants a genuinely
+	   flush cluster nests it in one child, which is what Calendar already does. */
+	gap: var(--rux-button-group-gap);
 	container-type: inline-size;
 }
 
