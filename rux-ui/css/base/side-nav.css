@@ -107,8 +107,11 @@
 	   rule 2.2 calls secondary text; white on it measures 2.94 in dark and fails
 	   rule 2.11's floor. A fill publishes its own label (rule 2.14) — this reads
 	   both halves of it. color.md D20, §5 step 26. */
-	background: var(--rux-danger-fill);
-	color: var(--rux-danger-on-fill);
+	/* The fill-control pair (step 37): a count badge carries a number and no
+	   mark, so rule 2.14's F1 is its only floor and it takes 500. White
+	   measures 6.60 in dark, down from 9.55 on the strict 400 fill. */
+	background: var(--rux-danger-fill-control);
+	color: var(--rux-danger-on-fill-control);
 	border-radius: var(--rux-radius-full);
 	/* label-12. Was 11px with the dense rung; 11 has no rung in the catalog and
 	   at 12 rule 2.14 no longer applies. Step 42. */

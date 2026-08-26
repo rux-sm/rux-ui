@@ -420,6 +420,22 @@
 	);
 }
 
+/* A selected day is a coloured fill, so it takes the control ladder and
+   DARKENS, the same direction as every button — rather than compositing the
+   lightening overlay above, which sent it the opposite way from the controls
+   beside it. An unselected day is a neutral surface and keeps the overlay.
+   color.md §5 step 41. */
+.sched-mini-cal__date--today:hover,
+.sched-mini-cal__date--active-week:hover {
+	background-image: none;
+	background-color: var(--rux-button-accent-hover-background);
+}
+.sched-mini-cal__date--today:active,
+.sched-mini-cal__date--active-week:active {
+	background-image: none;
+	background-color: var(--rux-button-accent-active-background);
+}
+
 .sched-mini-cal__date--outside {
 	color: var(--rux-text-disabled);
 }
@@ -670,7 +686,12 @@
    under .is-today's own inset box-shadow instead of fighting over the same
    property. */
 .sched-driver-grid__day-label.is-trip-range {
-	background: var(--rux-accent);
+	/* The control rest rung, not --rux-accent. --rux-accent is the 900 INK —
+	   a text colour — and painting it as a fill under a white label measured
+	   1.59 against color.md rule 2.14's 4.5 floor for F1. It now reads the
+	   same token every other filled cell in this grid does, at 6.24.
+	   color.md §5 step 40. */
+	background: var(--rux-button-accent-background);
 	color: var(--rux-fg-on-accent);
 }
 
@@ -725,8 +746,21 @@
 /* Same driver, two overlapping trips the same day — flagged distinctly from
    a normal single-trip day rather than just looking "extra busy". */
 .sched-driver-grid__cell--conflict {
-	background: color-mix(in oklab, oklch(from var(--rux-warning) var(--sched-trip-bar-bg-lightness) c h) var(--sched-trip-bar-bg-opacity), var(--rux-surface-1));
-	border-color: oklch(from var(--rux-warning) var(--sched-trip-bar-bg-lightness) c h / 100%);
+	/* The published warning control fill (color.md §5 step 43). This built its
+	   own colour inline from --rux-warning — the 900 INK — through a color-mix
+	   and two trip-bar lightness/opacity primitives, because when it was
+	   written no warning control fill existed to borrow. One has since step 37.
+	   The bespoke recipe was the reason this cell blocked steps 40 and 41: with
+	   no rung to step to, the generic overlay reached it and it LIGHTENED on
+	   hover while every other filled cell darkened. Its "!" glyph now clears at
+	   6.16 on the rest rung. */
+	background: var(--rux-warning-fill-control);
+	border-color: var(--rux-warning-fill-control);
+}
+
+.sched-driver-grid__cell--conflict:hover {
+	background-image: none;
+	background-color: var(--rux-warning-fill-control-hover);
 }
 
 /* Marked time off (Driver panel → Time Off tab) — its own color, distinct
@@ -764,14 +798,23 @@
    rings it in the time-off color so the conflict reads at a glance instead
    of looking like an ordinary assigned day. */
 .sched-driver-grid__cell--busy.sched-driver-grid__cell--unavailable {
-	background: var(--rux-accent);
+	/* Same fix as .is-trip-range above, and worse here because this cell
+	   carries the "!" glyph: white on --rux-accent measured 1.59 against
+	   rule 2.14's F2 floor of 3.0. On the rest rung the glyph clears at 6.24.
+	   The danger ring is F4 against the fill and is unchanged.
+	   color.md §5 step 40. */
+	background: var(--rux-button-accent-background);
 	box-shadow: 0 0 0 2px var(--rux-danger);
 }
 
 /* Double-booked trips on a day the driver is also marked unavailable —
    the trip conflict fill still wins visually, ringed the same way. */
 .sched-driver-grid__cell--conflict.sched-driver-grid__cell--unavailable {
-	background: var(--rux-warning);
+	/* --rux-warning is the 900 INK; this cell carries a white "!" glyph, so it
+	   is an F1+F2 surface and needs the published fill, not the text colour
+	   (step 43). Matches its own :hover rule below and the plain conflict cell
+	   above, which it must — they are the same cell in two states. */
+	background: var(--rux-warning-fill-control);
 	box-shadow: 0 0 0 2px var(--rux-danger);
 }
 
@@ -804,7 +847,41 @@
 }
 
 .sched-driver-grid__cell:hover {
-	filter: brightness(1.12);
+	/* Was `filter: brightness(1.12)`, which is not a token at all — it bypassed
+	   the whole system, LIGHTENED where every control darkens, and brightened
+	   the cell's glyph along with its fill. A filled cell now steps down the
+	   control ladder; an empty cell has no fill to step, so it takes the
+	   published neutral overlay. color.md §5 step 41. */
+	background-image: linear-gradient(
+		var(--rux-state-hover-overlay),
+		var(--rux-state-hover-overlay)
+	);
+}
+
+.sched-driver-grid__cell--busy:hover {
+	background-image: none;
+	background-color: var(--rux-button-accent-hover-background);
+}
+
+.sched-driver-grid__cell--unavailable:hover {
+	background-image: none;
+	background-color: var(--rux-button-danger-hover-background);
+}
+
+/* Both classes match, and --unavailable:hover is the later of the two at equal
+   specificity — so without this the cell would rest on accent and flip to
+   DANGER RED on hover. Its rest fill is accent (the trip is real and still
+   needs covering, see the rule above), so its hover is accent's too. */
+.sched-driver-grid__cell--busy.sched-driver-grid__cell--unavailable:hover {
+	background-image: none;
+	background-color: var(--rux-button-accent-hover-background);
+}
+
+/* Same compound-specificity trap as the pair above: --unavailable:hover would
+   otherwise win by document order and flip a conflict cell to danger red. */
+.sched-driver-grid__cell--conflict.sched-driver-grid__cell--unavailable:hover {
+	background-image: none;
+	background-color: var(--rux-warning-fill-control-hover);
 }
 
 /* revisit */

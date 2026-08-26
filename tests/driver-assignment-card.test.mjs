@@ -630,7 +630,6 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 		css,
 		/--sched-driver-card-header-padding:\s+28px var\(--rux-space-5\)/,
 	);
-	assert.match(tokens, /--rux-badge-background-opacity:\s+16%/);
 	assert.match(tokens, /--rux-badge-module-height:\s+44px/);
 	// The card's bus/role chips are --module, which keeps body-size type after
 	// the base badge stepped down to --rux-size-12.
@@ -639,21 +638,18 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 		css,
 		/--sched-driver-module-padding:\s+20px var\(--rux-space-5\)/,
 	);
-	assert.match(
-		badges,
-		/\.rux-badge\s*\{[^}]*--_badge-color:\s*var\(--rux-info\)[^}]*background:\s*color-mix\([^}]*var\(--rux-badge-background-opacity\)[^}]*border:\s*var\(--rux-border-width\) solid\s*color-mix\([^}]*var\(--rux-badge-border-opacity\)[^}]*color:\s*var\(--_badge-color\)/s,
-	);
-	for (const [tone, color] of [
-		["info", "info"],
-		["success", "success"],
-		["warning", "warning"],
-		["danger", "danger"],
-	]) {
-		assert.match(
-			badges,
-			new RegExp(`\\.rux-badge--${tone}[^}]*--_badge-color:\\s*var\\(--rux-${color}\\)`),
-		);
-	}
+	/* THE BADGE'S OWN COLOUR CONTRACT IS NOT ASSERTED HERE ANY MORE (step 46).
+	   This block re-stated .rux-badge's fill, border, text and all four colour
+	   modifiers — a second enforcement home for a rule that already had one in
+	   tests/badges.test.mjs. CLAUDE.md's "one home per rule" covers tests as
+	   much as prose: when step 46 moved the badge onto the published tint and
+	   fill bands, badges.test.mjs was repointed and THIS copy failed, still
+	   demanding the color-mix derivation that had just been removed as a
+	   defect. A duplicated assertion does not double the protection; it just
+	   picks a fight with the change that fixes the thing.
+
+	   What this card legitimately owns is that its chips are --module, which
+	   is the size contract, not the colour one. */
 	assert.match(
 		badges,
 		/\.rux-badge--module\s*\{[^}]*height:\s*var\(--rux-badge-module-height\)[^}]*border-radius:\s*var\(--rux-badge-module-radius\)/s,

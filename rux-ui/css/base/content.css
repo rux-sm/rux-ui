@@ -159,8 +159,16 @@
 	border-radius: var(--rux-radius-full);
 }
 
-.rux-priority-dot[data-priority="1"] { background: var(--rux-warning); }
-.rux-priority-dot[data-priority="2"] { background: var(--rux-purple-700); }
-.rux-priority-dot[data-priority="3"] { background: var(--rux-info); }
-.rux-priority-dot[data-priority="4"] { background: var(--rux-success); }
-.rux-priority-dot[data-priority="5"] { background: var(--rux-white); }
+/* ONE VOCABULARY FOR FIVE DOTS (color.md §5 step 46). These were four
+   different kinds of token: three status INK roles, one raw scale step
+   (--rux-purple-700, a rule 1.2 violation), and --rux-white — a legacy Tier 0
+   value that is out of gamut and clips, one of D5's thirty. A priority is a
+   CATEGORY, not a status: priority 1 is not a warning and priority 4 is not a
+   success, so borrowing those roles said something the data never meant.
+   All five now name the categorical ink band, which is what it is for, and
+   the neutral one takes the text role rather than a raw white. */
+.rux-priority-dot[data-priority="1"] { background: var(--rux-amber-ink); }
+.rux-priority-dot[data-priority="2"] { background: var(--rux-purple-ink); }
+.rux-priority-dot[data-priority="3"] { background: var(--rux-blue-ink); }
+.rux-priority-dot[data-priority="4"] { background: var(--rux-green-ink); }
+.rux-priority-dot[data-priority="5"] { background: var(--rux-text-primary); }

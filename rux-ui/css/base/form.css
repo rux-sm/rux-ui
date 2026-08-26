@@ -43,12 +43,19 @@
   border-color: var(--rux-input-hover);
 }
 
+/* THE RING AND THE BORDER MUST NOT BE THE SAME COLOUR. Both read the 900 ink
+   until step 45, so a 3px ring sitting directly against a 1px border of the
+   identical colour rendered as ONE 4px band — which is why a focused field
+   looked far heavier than a 3px ring should. The border now takes the same
+   accent-500 the field already uses on hover, so hover -> focus is continuous
+   (the border does not move; the ring appears) and the indicator reads as two
+   deliberate tones instead of one slab. color.md §5 step 45. */
 .rux-input:focus-visible,
 .rux-select:focus-visible,
 .rux-textarea:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px var(--rux-accent-ring);
-  border-color: var(--rux-accent);
+  border-color: var(--rux-input-hover);
 }
 
 .rux-input[aria-invalid="true"]:focus-visible,
@@ -199,9 +206,22 @@
   box-shadow: var(--rux-switch-thumb-pressed-shadow);
 }
 .rux-switch input:checked ~ .rux-switch__track {
+  /* `background` (not -color) is deliberate: it resets background-image too,
+     so the generic --_state-overlay gradient does not composite over a
+     coloured fill. The checked track's states are rungs instead, below. */
   background: var(--rux-switch-checked-bg);
   border: var(--rux-switch-checked-border);
   box-shadow: var(--rux-switch-track-shadow);
+}
+
+/* The control ladder on the checked track (color.md §5 step 41): darkens on
+   hover and again on press, the same direction as every button. The
+   unchecked track keeps the overlays above. */
+.rux-switch:hover input:checked:not(:disabled) ~ .rux-switch__track {
+  background: var(--rux-switch-checked-hover-bg);
+}
+.rux-switch:active input:checked:not(:disabled) ~ .rux-switch__track {
+  background: var(--rux-switch-checked-active-bg);
 }
 
 .rux-switch input:focus-visible ~ .rux-switch__track {
@@ -393,18 +413,25 @@
   background-color: var(--rux-checkbox-checked-bg);
   border-color: var(--rux-checkbox-checked-border);
 }
+/* Every state moves BOTH the fill and the border, in the same direction and by
+   the same rung. Before step 42 the unchecked active state and both checked
+   states left border-color behind on whatever the previous rule had set, so
+   the edge and the fill disagreed. color.md §5 step 42. */
 .rux-checkbox:hover input:not(:disabled):not(:checked) {
   background-color: var(--rux-checkbox-hover-bg);
   border-color: var(--rux-checkbox-hover-border);
 }
 .rux-checkbox:active input:not(:disabled):not(:checked) {
   background-color: var(--rux-checkbox-active-bg);
+  border-color: var(--rux-checkbox-active-border);
 }
 .rux-checkbox:hover input:checked:not(:disabled) {
   background-color: var(--rux-checkbox-checked-hover-bg);
+  border-color: var(--rux-checkbox-checked-hover-border);
 }
 .rux-checkbox:active input:checked:not(:disabled) {
   background-color: var(--rux-checkbox-checked-active-bg);
+  border-color: var(--rux-checkbox-checked-active-border);
 }
 
 .rux-checkbox:has(input:disabled) {
@@ -683,7 +710,7 @@
   height: var(--rux-color-swatch-size);
   border-radius: var(--rux-color-swatch-radius);
   border: var(--rux-color-swatch-border);
-  background-color: var(--color, var(--rux-accent));
+  background-color: var(--color, var(--rux-accent-500));
   transition: box-shadow var(--rux-color-swatch-transition);
 }
 
@@ -730,7 +757,8 @@
 .rux-color-input:focus-within {
   outline: none;
   box-shadow: 0 0 0 3px var(--rux-accent-ring);
-  border-color: var(--rux-accent);
+  /* Same two-tone fix as .rux-input above (step 45). */
+  border-color: var(--rux-input-hover);
 }
 
 .rux-color-input__swatch {

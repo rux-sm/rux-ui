@@ -84,7 +84,7 @@
 	--rux-blue-200:  oklch(20% 0.18 260);
 	--rux-blue-300:  oklch(30% 0.18 260);
 	--rux-blue-400:  oklch(40% 0.18 260);
-	--rux-blue-500:  oklch(50% 0.18 260);
+	--rux-blue-500:  oklch(50% 0.20 260);
 	--rux-blue-600:  oklch(60% 0.18 260);
 	--rux-blue-700:  oklch(70% 0.18 260);
 	--rux-blue-800:  oklch(80% 0.18 260);
@@ -95,7 +95,7 @@
 	--rux-red-200:  oklch(20% 0.18 24);
 	--rux-red-300:  oklch(30% 0.18 24);
 	--rux-red-400:  oklch(40% 0.18 24);
-	--rux-red-500:  oklch(50% 0.18 24);
+	--rux-red-500:  oklch(50% 0.20 24);
 	--rux-red-600:  oklch(60% 0.18 24);
 	--rux-red-700:  oklch(70% 0.18 24);
 	--rux-red-800:  oklch(80% 0.18 24);
@@ -172,7 +172,13 @@
 	   a switch happened. */
 	--rux-accent-100:    var(--rux-blue-100);
 	--rux-accent-200:    var(--rux-blue-200);
+	/* The pressed rung of the control ladder (step 39). */
+	--rux-accent-300:    var(--rux-blue-300);
 	--rux-accent-400:    var(--rux-blue-400);
+	/* The fill-control rung (step 37). The accent button carries a label and
+	   no mark, so it is bounded by rule 2.14's F1 alone and takes 500 rather
+	   than the strict 400. White on it measures 6.18 in dark. */
+	--rux-accent-500:    var(--rux-blue-500);
 	--rux-accent-700:    var(--rux-blue-700);
 	--rux-accent-800:    var(--rux-blue-800);
 	--rux-accent-900:    var(--rux-blue-900);
@@ -183,11 +189,32 @@
 	--rux-accent-subtle: var(--rux-accent-200);
 	/* The catalog's focus colour: 900 on a dark canvas, 700 on a light one.
 	   The light block overrides this one line and every accent follows. */
-	--rux-accent-ring:   var(--rux-accent-900);
+	/* 700, NOT 900 (step 45). The ring's job is to be unmissable, and 900 did
+	   that — 13.17 against the page — but it renders `#78d9ff`, because 900's
+	   declared chroma is roughly 5x what sRGB holds at L90 and the clip rotates
+	   the hue 34° into cyan. A focus ring is the most-seen expression of the
+	   brand accent and it was not the accent's colour.
+
+	   Visibility does not decide this: 900, 800, 700 and 500 ALL clear
+	   SC 2.4.11's 3:1 against the page, the card and a field (13.17 / 10.41 /
+	   7.54 / 3.37). Hue fidelity decides it, and 700 drifts 2° where 900 drifts
+	   34°. 7.54 is still more than twice the floor.
+
+	   ONE DECLARATION NOW SERVES BOTH THEMES. The light block overrode this to
+	   accent-700 because Geist's focus colour was 900 dark / 700 light; with
+	   both on 700 the ramps do the work — L70 on a dark canvas, L40 on a light
+	   one — and the override is deleted rather than left as a second source of
+	   truth. color.md rule 2.5, §5 step 45. */
+	--rux-accent-ring:   var(--rux-accent-700);
 	/* Was a less-chromatic variant of the accent for solid controls; the 700
 	   step IS the solid-control fill, so it converges on the accent itself.
 	   Kept published, Class C to retire. */
-	--rux-selection-bg:  var(--rux-accent);
+	/* F1 — text sits ON this, so it is a fill, not an ink (step 43). It read
+	   --rux-accent = the 900 ink, and --rux-selection-fg is white: selected
+	   text measured **1.59** against rule 2.14's 4.5 floor, app-wide, on
+	   every string a user could drag-select. On the control rest rung the
+	   pair measures 6.24. This is the widest-reach instance of D20 found. */
+	--rux-selection-bg:  var(--rux-accent-500);
 	--rux-selection-fg:  var(--rux-fg-on-accent);
 
 	/* A link is TEXT, so it takes the accent scale's text steps — 900, and 1000
@@ -200,8 +227,20 @@
 	   pass. 900 → 1000 moves the right way in BOTH themes, because the scale
 	   inverts around the fills: dark 8.4:1 → ~18:1, light ~5.5:1 → ~12:1.
 	   docs/foundations/color.md D13, §5 step 6. */
-	--rux-link-fg:       var(--rux-accent-900);
-	--rux-link-fg-hover: var(--rux-accent-900);
+	/* 700 REST, 800 HOVER (step 43). Two defects in one line before this.
+	   (a) The hover was a NO-OP: step 34 moved it 1000 -> 900 and landed it on
+	   the rest value, so `a:hover` changed nothing but the underline. Both
+	   targets were bad — accent-1000 is #dff0ff, which measures 1.00 against
+	   body text, so hovering turned a link INTO body text.
+	   (b) 900 is the wrong rung for a link twice over. It clips 34° toward
+	   cyan, and after clipping it sits at L84 against body text at L94.66 —
+	   1.36 between them, so a link barely read as a different colour.
+	   700 measures 7.54 on the canvas and 2.38 against body text, with only 2°
+	   of hue drift, so it is actually blue. 800 hovers LIGHTER on a dark canvas
+	   and DARKER on a light one, because the ramps mirror — the right direction
+	   in both themes without a per-theme token. color.md rule 2.11, §5 step 43. */
+	--rux-link-fg:       var(--rux-accent-700);
+	--rux-link-fg-hover: var(--rux-accent-800);
 
 	/* Accent-coloured text that is not a link — the "is-today" labels, ref
 	   numbers, filtered table headers. D13's lesson one tier up: --rux-accent
@@ -580,16 +619,18 @@
 	   resolve identically to the base. Kept as published names because removing
 	   one is Class C; recorded as retirement candidates. */
 
-	/* Fill: the 700 step, the catalog's high-contrast background, with 1000 —
-	   the scale's own near-white — as the text on it. Published for all four
-	   now rather than danger alone: a step is a step, and the reason the other
-	   three were missing was that nobody had hand-tuned them. */
-	/* 800, not 700 — chosen by rule 2.11's floor rather than by the step's
-	   name. Measured with a true white label: blue 700 gives 4.44 and 800 gives
-	   5.73; red 700 gives 3.91 and 800 gives 4.74. 700 fails for both, which is
-	   why Geist's own error button is 800 too. Amber, green and teal clear at
-	   no step with white and take the inverse label instead (9.25 / 4.85 /
-	   4.77). docs/foundations/color.md rule 2.11, §5 step 9. */
+	/* Fill: the 400 step, carrying a white label, published for all four.
+	   THIS COMMENT DESCRIBED 700/800 AND GEIST'S VALUES UNTIL STEP 37 — two
+	   amendments after the value moved. It is corrected here rather than in
+	   its own step because it sat directly above the line it misdescribed.
+
+	   400 is the strict rung: it is the last step that holds BOTH of rule
+	   2.14's floors at once — a white label at 4.5:1 (7.35 worst, teal) and a
+	   900 status ink at 3:1 (3.36 worst, danger on teal). L44 already drops
+	   the ink to 2.84. Anything carrying a mark as well as a label reads this;
+	   anything carrying only a label reads -fill-control below, which is one
+	   decade lighter. Measured 2026-08-26, dark, canvas-rasterised.
+	   docs/foundations/color.md rule 2.14, §5 steps 34, 37. */
 	--rux-danger-fill:    var(--rux-red-400);
 	--rux-warning-fill:   var(--rux-amber-400);
 	--rux-success-fill:   var(--rux-green-400);
@@ -598,6 +639,147 @@
 	--rux-info-on-fill:    var(--rux-fg-on-fill);
 	--rux-warning-on-fill: var(--rux-fg-on-fill);
 	--rux-success-on-fill: var(--rux-fg-on-fill);
+
+	/* Fill-control: the 500 step, for a fill that carries ONLY a label.
+	   The two fills exist because rule 2.14's functions have different floors
+	   and one rung cannot be the ceiling for both. A trip bar is F1 AND F2 —
+	   a white label at 4.5:1 and a 900 status ink at 3:1 — and 400 is the
+	   last step where the ink clears (3.36; L44 is already 2.84). A button
+	   is F1 only, so it is bounded by the label alone, and 500 is the last
+	   step where THAT clears (4.86 worst; L52 is 4.49). Neither rung is a
+	   compromise: each is the ceiling of its own function.
+
+	     --rux-{hue}-fill          400   carries a label and a mark
+	     --rux-{hue}-fill-control  500   carries a label only
+
+	   Named for who reads it, matching --rux-radius-control/-container
+	   already in this file: controls are buttons, count badges, fields.
+	   Measured 2026-08-26, dark, canvas-rasterised — danger 6.67, info 6.24,
+	   warning 6.15, success 5.40, all with a white label. Danger and info are
+	   at the chroma 0.20 the owner set mid-step; the other two are 0.18/0.14.
+
+	   LIGHT IS NOT MIGRATED. Light-500 is L60 on the ramp that ships today
+	   and a white label measures 3.29-4.35 there, so these four are
+	   known-broken in light exactly as the fills were between steps 34 and
+	   36. The light ramp is unfinished by decision; this is scoped to dark.
+	   docs/foundations/color.md rule 2.14, §5 step 37. */
+	--rux-danger-fill-control:  var(--rux-red-500);
+	--rux-warning-fill-control: var(--rux-amber-500);
+	--rux-success-fill-control: var(--rux-green-500);
+	--rux-info-fill-control:    var(--rux-blue-500);
+	/* Rule 2.14: a role used as F1 publishes its label beside it, so the
+	   pairing cannot be got wrong. Same white as the 400 fills — 500 is dark
+	   enough that one label still serves every hue. */
+	--rux-danger-on-fill-control:  var(--rux-fg-on-fill);
+	--rux-warning-on-fill-control: var(--rux-fg-on-fill);
+	--rux-success-on-fill-control: var(--rux-fg-on-fill);
+	--rux-info-on-fill-control:    var(--rux-fg-on-fill);
+
+	/* THE CONTROL LADDER (step 39). One rule for every solid control:
+	     rest 500 -> hover 400 -> pressed 300, darkening at each stop.
+
+	   It replaces four different mechanisms doing three different things —
+	   `color-mix` toward black on the accent button, `calc(l + 0.05)` on the
+	   default and danger buttons (which LIGHTENED on hover, so pressing
+	   travelled back through rest to the other side), and composited alpha
+	   overlays elsewhere. Three rungs of one even ramp instead, which is what
+	   the ramp was for. This is D15's fix: a fill's states are steps now, not
+	   arithmetic on a value.
+
+	   Measured dark, canvas-rasterised, worst of seven hues (teal):
+	     rest 500   4.86      hover 400  7.35      pressed 300  11.13
+	   and each transition is visible — 1.36 rest->hover, 1.33 hover->pressed.
+	   Darkening never costs label contrast, so hover and pressed are the two
+	   states that cannot fail; rest is the tight one and it is pinned.
+
+	   THE HOVER RUNG IS THE SAME VALUE AS --rux-{status}-fill, AND THAT IS A
+	   COINCIDENCE OF VALUE, NOT OF PURPOSE. 400 is the strict rest fill for a
+	   surface carrying a mark, and it is the hover of a control that carries
+	   only a label. Two components' mappings onto one rung, which rule 2.15
+	   permits because they never occur in the same element. Published under
+	   its own name so a future retune of one does not silently move the other.
+
+	   LIGHT INVERTS THIS, AND IT IS RECORDED RATHER THAN SOLVED. The ramps
+	   mirror, so these same rungs read L60 -> L70 -> L80 in light: the control
+	   gets PALER on hover where convention says it should deepen. The owner
+	   chose the darker direction knowing this; the light ramp is unfinished,
+	   and the rungs it lands on are what will settle whether this needs a
+	   per-theme mapping. docs/foundations/color.md rule 2.5, §5 step 39. */
+	--rux-danger-fill-control-hover:    var(--rux-red-400);
+	--rux-warning-fill-control-hover:   var(--rux-amber-400);
+	--rux-success-fill-control-hover:   var(--rux-green-400);
+	--rux-info-fill-control-hover:      var(--rux-blue-400);
+	--rux-danger-fill-control-pressed:  var(--rux-red-300);
+	--rux-warning-fill-control-pressed: var(--rux-amber-300);
+	--rux-success-fill-control-pressed: var(--rux-green-300);
+	--rux-info-fill-control-pressed:    var(--rux-blue-300);
+
+	/* ─── COLOR · the categorical fill band ──────────────────────────────── */
+	/* The same 500 rung, named by HUE instead of by meaning. Both bands exist
+	   because rule 2.15 does: a hue carries many meanings, and the name a
+	   consumer reaches for should say which one it means. An avatar tagged
+	   "green" is a CATEGORY — an arbitrary label its owner picked — not
+	   success, and reading `--rux-success-fill-control` for it would assert a
+	   status the data never carried. A consuming application already made this
+	   call once for blue, giving its own "confirmed" meaning a name of its own
+	   rather than reading the accent, for exactly this reason.
+
+	   All seven, not just the three no status claims, so a categorical
+	   consumer never has to know which hues happen to be spoken for. Same
+	   values as the status band where they overlap — one rung, two vocabularies.
+
+	   F1 ONLY, like the status band: these carry a label and no mark. A
+	   categorical surface that also carries a mark takes `--rux-{hue}-400`
+	   directly, the way a consuming application's status bars do.
+
+	   Every one takes --rux-fg-on-fill, white, and that is not a shortcut:
+	   at 500 the darkest pairing is teal at 4.86 and the lightest red at 6.67,
+	   so one label clears all seven. Note --rux-text-primary does NOT — it is
+	   gray-1000, and on teal-500 it measures 4.16, under the floor. A
+	   categorical fill must take the published label, not the text role.
+	   docs/foundations/color.md rule 2.14, 2.15, §5 step 38. */
+	--rux-blue-fill-control:   var(--rux-blue-500);
+	--rux-red-fill-control:    var(--rux-red-500);
+	--rux-amber-fill-control:  var(--rux-amber-500);
+	--rux-green-fill-control:  var(--rux-green-500);
+	--rux-teal-fill-control:   var(--rux-teal-500);
+	--rux-purple-fill-control: var(--rux-purple-500);
+	--rux-pink-fill-control:   var(--rux-pink-500);
+	/* One label for the whole band (rule 2.14). Not seven aliases to one white:
+	   a hue has no meaning layer to hang a per-hue label on, and seven names
+	   resolving to the same literal is the kind of ceremony that reads as a
+	   real distinction later. */
+	--rux-on-fill-control:     var(--rux-fg-on-fill);
+
+	/* ─── COLOR · the categorical ink band ───────────────────────────────── */
+	/* The 900 step, named by hue — the band's fourth and last rung, completing
+	   it (step 46):
+
+	     tint 200 · fill 400 · fill-control 500 · ink 900
+
+	   Same argument as the fill band above: a status names a MEANING and these
+	   name a HUE, and a categorical consumer should not have to borrow
+	   `--rux-success` to draw a green dot that means nothing about success.
+	   Published for all seven so the set is uniform.
+
+	   F3 and F4 — coloured text on a neutral surface, and dots, lines and
+	   indicators. NOT a fill: nothing may sit on these. The fill band is two
+	   rungs up and publishes a label; this one publishes none, deliberately.
+
+	   THESE INHERIT A KNOWN DEFECT AND THAT IS THE POINT OF NAMING THEM. The
+	   900 rung's declared chroma exceeds sRGB above roughly L70, so blue, red,
+	   purple and pink clip and render off-hue (34°, 19°, 21°, 11°). Every
+	   consumer that reaches past a role to `--rux-{hue}-900` inherits it
+	   invisibly; consumers that name this band inherit it in ONE place, and
+	   repairing the rung repairs all of them at once.
+	   docs/foundations/color.md rule 2.14, §5 step 46. */
+	--rux-blue-ink:   var(--rux-blue-900);
+	--rux-red-ink:    var(--rux-red-900);
+	--rux-amber-ink:  var(--rux-amber-900);
+	--rux-green-ink:  var(--rux-green-900);
+	--rux-teal-ink:   var(--rux-teal-900);
+	--rux-purple-ink: var(--rux-purple-900);
+	--rux-pink-ink:   var(--rux-pink-900);
 
 
 
@@ -627,8 +809,11 @@
 	   from. Two tiers, matching the bar's existing intensity split — icon
 	   markers stay muted (-base), border overrides stay punchy (-vivid). */
 
-	--rux-tag-purple:	var(--rux-purple-900);
-	--rux-tag-default:	var(--rux-gray-900);
+	/* Through roles, not steps (rule 1.2, step 46). These read --rux-purple-900
+	   and --rux-gray-900 directly; the purple one now names the categorical ink
+	   band and the neutral one names the text role that IS the gray 900 step. */
+	--rux-tag-purple:	var(--rux-purple-ink);
+	--rux-tag-default:	var(--rux-text-secondary);
 
 	/* ─── SHAPE · radius roles ───────────────────────────────────────────── */
 	/* Components route through these roles even while both are square. This
@@ -1411,7 +1596,10 @@
 	--rux-textarea-min-height: 84px;
 
 	/* — states — */
-	--rux-input-hover:           var(--rux-accent);
+	/* The form-family hover border (step 43) — the same answer the checkbox
+	   took at step 42, applied to the whole family so one rule serves all
+	   three. Was --rux-accent, the 900 ink, at 12.41 against the surface. */
+	--rux-input-hover:           var(--rux-accent-500);
 	--rux-input-disabled-bg:     var(--rux-input-bg-disabled);
 	--rux-input-disabled-border: 1px solid var(--rux-card-border);
 	--rux-input-disabled-fg:     var(--rux-text-disabled);
@@ -1516,7 +1704,10 @@
 	   itself stays at 700 — it is the identity colour for borders, icons and
 	   focus, none of which carries a label, and links go through the 900 text
 	   step. docs/foundations/color.md §5 step 9. */
-	--rux-button-accent-background:   		var(--rux-accent-400);
+	/* The fill-control rung, not the strict fill (step 37): a button
+	   carries a label and no mark, so rule 2.14's F1 is its only floor.
+	   White measures 6.18 at rest, 7.98 hovered, 9.83 pressed. */
+	--rux-button-accent-background:   		var(--rux-accent-500);
 	--rux-button-accent-text:         		var(--rux-fg-on-accent);
 	--rux-button-accent-border:       		none;
 	/* Hover DARKENS. Rule 2.5 already has fills hovering to a darker step
@@ -1533,10 +1724,17 @@
 	   darkening raises the contrast with a white label, lightening lowers it.
 	   Theme-invariant, because the 800 step is.
 	   docs/foundations/color.md D15, §5 step 18. */
+	/* Unread since step 39 — the accent button's states are rungs now, not a
+	   mix. Kept published because removing a name is Class C; retirement
+	   candidates with no consumer. */
 	--rux-fill-hover-mix:  12%;
 	--rux-fill-active-mix: 22%;
-	--rux-button-accent-hover-background: 	color-mix(in oklab, var(--rux-black) var(--rux-fill-hover-mix), var(--rux-button-accent-background));
-	--rux-button-accent-active-background:	color-mix(in oklab, var(--rux-black) var(--rux-fill-active-mix), var(--rux-button-accent-background));
+	/* The control ladder (step 39): 500 rest, 400 hover, 300 pressed. This
+	   button used to darken by color-mix while the default and danger buttons
+	   LIGHTENED by calc() — same component, opposite directions. Now all three
+	   darken, by step. White measures 6.24 / 9.57 / 14.31. */
+	--rux-button-accent-hover-background: 	var(--rux-accent-400);
+	--rux-button-accent-active-background:	var(--rux-accent-300);
 
 	/* ─── COMPONENT · button ghost ─────────────────────────────────────────────── */
 
@@ -1563,11 +1761,19 @@
 
 	/* ─── COMPONENT · button danger ─────────────────────────────────────────────── */
 
-	--rux-button-danger-background:       	var(--rux-danger-fill);
-	--rux-button-danger-text:             	var(--rux-danger-on-fill);
+	/* The fill-control pair, not the strict fill (step 37) — F1 only.
+	   White measures 6.60 at rest, 5.32 hovered, 8.19 pressed. Hover is
+	   the floor case here because this button's hover LIGHTENS, which is
+	   D15's mechanism and still unfixed. */
+	--rux-button-danger-background:       	var(--rux-danger-fill-control);
+	--rux-button-danger-text:             	var(--rux-danger-on-fill-control);
 	--rux-button-danger-border:           	none;
-	--rux-button-danger-hover-background: 	oklch(from var(--rux-button-danger-background) calc(l + 0.05) c h);
-	--rux-button-danger-active-background:	oklch(from var(--rux-button-danger-background) calc(l - 0.05) c h);
+	/* The control ladder (step 39). Was calc(l + 0.05) hovering and
+	   calc(l - 0.05) pressing — a hover that LIGHTENED and a press that
+	   darkened, so pressing crossed back through rest. White now measures
+	   6.67 rest / 9.07 hover / 12.07 pressed. */
+	--rux-button-danger-hover-background: 	var(--rux-danger-fill-control-hover);
+	--rux-button-danger-active-background:	var(--rux-danger-fill-control-pressed);
 
 	/* ─── COMPONENT · button ghost danger ─────────────────────────────────────────────── */
 
@@ -1709,7 +1915,20 @@
 	--rux-switch-thumb-size:           20px;
 
 	/* — checked — */
-	--rux-switch-checked-bg:       var(--rux-accent-400);
+	/* The rest rung of the control ladder (step 40). The track carries no
+	   label — the thumb is its own element — so this is F4 against the
+	   surface, not F1; it takes 500 for consistency with every other control
+	   rather than because a floor forced it. Hover and press stay on the
+	   published overlays below, which is what a track has always used. */
+	--rux-switch-checked-bg:       var(--rux-accent-500);
+	/* The checked track's own ladder (step 41). The UNCHECKED track keeps the
+	   published overlays below — it is a neutral surface and lightening is
+	   right for it — but once the track is a coloured fill it is a control
+	   like any other and darkens. Without these two, the generic overlay
+	   composited over the checked fill and the switch hovered in the opposite
+	   direction from the button beside it. */
+	--rux-switch-checked-hover-bg:  var(--rux-accent-400);
+	--rux-switch-checked-active-bg: var(--rux-accent-300);
 	--rux-switch-checked-border:   none;
 	--rux-switch-checked-thumb-bg: var(--rux-thumb-bg);
 
@@ -1746,7 +1965,9 @@
 	--rux-slider-track-height: 8px;
 	--rux-slider-track-bg:     var(--rux-surface-2);
 	--rux-slider-track-radius: var(--rux-radius-0);
-	--rux-slider-fill-bg:      var(--rux-accent-400);
+	/* Rest rung (step 40). An indicator, not a labelled fill — it takes the
+	   control rung so a slider and a switch read as the same family. */
+	--rux-slider-fill-bg:      var(--rux-accent-500);
 
 	--rux-slider-thumb-height: 16px;
 	--rux-slider-thumb-width:  8px;
@@ -1770,16 +1991,57 @@
 	--rux-checkbox-font-size:        var(--rux-size-14);
 	--rux-checkbox-transition-speed: var(--rux-duration-instant);
 
-	/* — states — */
-	--rux-checkbox-hover-bg: var(--rux-state-hover-overlay);
-	--rux-checkbox-hover-border: var(--rux-accent);
+	/* — states, unchecked — */
+	/* OPAQUE, and that is a fix (step 42). This read --rux-state-hover-overlay,
+	   an ALPHA token, assigned straight to `background-color` — which REPLACES
+	   the opaque --rux-checkbox-bg rather than compositing over it, so a
+	   hovered box turned 9%-white over whatever happened to be behind the
+	   input instead of its own surface lightened. The overlays are built to be
+	   layered as a background-image gradient (see .rux-switch__track); the
+	   published opaque pair is --rux-bg-hover / --rux-bg-active, and the active
+	   state below was already using it. Now both states use one mechanism. */
+	--rux-checkbox-hover-bg:     var(--rux-bg-hover);
 	--rux-checkbox-active-bg:    var(--rux-bg-active);
+	/* THE HOVER BORDER PREVIEWS WHAT CHECKING WILL DO. It read --rux-accent —
+	   the 900 INK — which is wrong three ways: rule 2.4 puts borders on
+	   400/500/600 and 900 is not a border step; the 900 blue clips 34° toward
+	   cyan, so hovering showed #78d9ff and checking showed #0559d2, two hues on
+	   one control; and at 12.41 against the box's own fill it shouted, where
+	   the rest border sits at 1.46. accent-500 is the same colour the box
+	   becomes when checked, and measures 3.17 — the ONLY candidate that clears
+	   rule 2.14's F4 floor of 3:1 (gray-500 gives 2.06, accent-400 2.07).
+	   color.md D20, §5 step 42. */
+	--rux-checkbox-hover-border:  var(--rux-accent-500);
+	/* THE UNCHECKED BOX'S BORDER DOES NOT LADDER, DELIBERATELY. Its fill runs
+	   on the neutral pair (--rux-bg-hover -> --rux-bg-active), which LIGHTENS,
+	   because that is the catalog's convention for a neutral surface and the
+	   gray scale has no even rungs to do otherwise. Darkening the border on
+	   press while the fill lightened pulled the two apart — edge-vs-fill fell
+	   2.64 -> 1.52, so the affordance faded exactly as the user committed to
+	   the click. The border is the accent affordance, not a state ladder: it
+	   says "this is interactive and this is the colour you are about to get",
+	   and the FILL carries the state change. Named rather than left to fall
+	   through, so the choice is visible at the state it belongs to.
+	   This is the neutral scale's irregularity surfacing on a control that
+	   mixes both families; it resolves properly when gray becomes an even
+	   ramp (§5 step 39, deliberately-not-done (a)). */
+	--rux-checkbox-active-border: var(--rux-checkbox-hover-border);
 
 	/* — checked — */
-	--rux-checkbox-checked-bg:        var(--rux-accent);
-	--rux-checkbox-checked-border:    var(--rux-accent);
-	--rux-checkbox-checked-hover-bg:  var(--rux-accent-hover);
-	--rux-checkbox-checked-active-bg: var(--rux-accent);
+	/* The control ladder (step 40): 500 rest, 400 hover, 300 pressed. These
+	   four were ALL --rux-accent-400 — three state names resolving to one
+	   value, so a checked box gave no hover or press feedback at all. The
+	   border tracks rest so the box reads as one shape. */
+	--rux-checkbox-checked-bg:        var(--rux-accent-500);
+	--rux-checkbox-checked-border:    var(--rux-accent-500);
+	--rux-checkbox-checked-hover-bg:  var(--rux-accent-400);
+	--rux-checkbox-checked-active-bg: var(--rux-accent-300);
+	/* THE BORDER HAS TO TRAVEL WITH THE FILL (step 42). Step 40 moved the fill
+	   down the ladder and left the border on rest, so a hovered checked box was
+	   a 400 fill inside a 500 border — an edge LIGHTER than the thing it
+	   encloses, reading as a halo rather than a border. */
+	--rux-checkbox-checked-hover-border:  var(--rux-accent-400);
+	--rux-checkbox-checked-active-border: var(--rux-accent-300);
 
 	/* — disabled — */
 	--rux-checkbox-disabled-bg:     var(--rux-input-disabled-bg);
@@ -1809,9 +2071,10 @@
 	--rux-choicebox-transition: var(--rux-duration-base) var(--rux-ease-out);
 
 	/* — states — */
-	--rux-choicebox-hover-border:   var(--rux-accent);
-	--rux-choicebox-checked-border: var(--rux-accent);
-	--rux-choicebox-checked-ring:   inset 0 0 0 var(--rux-border-width) var(--rux-accent);
+	/* Same family fix as the checkbox and input (step 43). */
+	--rux-choicebox-hover-border:   var(--rux-accent-500);
+	--rux-choicebox-checked-border: var(--rux-accent-500);
+	--rux-choicebox-checked-ring:   inset 0 0 0 var(--rux-border-width) var(--rux-accent-500);
 	--rux-choicebox-focus-ring:     0 0 0 3px var(--rux-accent-ring);
 
 	/* — content — */
@@ -1826,8 +2089,10 @@
 	--rux-color-swatch-radius: var(--rux-radius-control);
 	--rux-color-swatch-size:   var(--rux-button-height-standard);
 	--rux-color-swatch-ring-bg:      var(--rux-surface-1);
-	--rux-color-swatch-hover-ring:   0 0 0 2px var(--rux-color-swatch-ring-bg), 0 0 0 3px var(--color, var(--rux-accent));
-	--rux-color-swatch-checked-ring: 0 0 0 2px var(--rux-color-swatch-ring-bg), 0 0 0 4px var(--color, var(--rux-accent));
+	/* The --color fallback is what a swatch shows when it carries no colour of
+	   its own; it joins the family rung too (step 43). */
+	--rux-color-swatch-hover-ring:   0 0 0 2px var(--rux-color-swatch-ring-bg), 0 0 0 3px var(--color, var(--rux-accent-500));
+	--rux-color-swatch-checked-ring: 0 0 0 2px var(--rux-color-swatch-ring-bg), 0 0 0 4px var(--color, var(--rux-accent-500));
 	--rux-color-swatch-transition:   var(--rux-duration-fast) var(--rux-ease-out);
 
 	/* ─── COMPONENT · color input ─────────────────────────────────────────── */
@@ -2080,7 +2345,9 @@
 :root[data-rux-accent="violet"] {
 	--rux-accent-100: var(--rux-purple-100);
 	--rux-accent-200: var(--rux-purple-200);
+	--rux-accent-300: var(--rux-purple-300);
 	--rux-accent-400: var(--rux-purple-400);
+	--rux-accent-500: var(--rux-purple-500);
 	--rux-accent-700: var(--rux-purple-700);
 	--rux-accent-800: var(--rux-purple-800);
 	--rux-accent-900: var(--rux-purple-900);
@@ -2090,7 +2357,9 @@
 :root[data-rux-accent="green"] {
 	--rux-accent-100: var(--rux-green-100);
 	--rux-accent-200: var(--rux-green-200);
+	--rux-accent-300: var(--rux-green-300);
 	--rux-accent-400: var(--rux-green-400);
+	--rux-accent-500: var(--rux-green-500);
 	--rux-accent-700: var(--rux-green-700);
 	--rux-accent-800: var(--rux-green-800);
 	--rux-accent-900: var(--rux-green-900);
@@ -2100,7 +2369,9 @@
 :root[data-rux-accent="amber"] {
 	--rux-accent-100: var(--rux-amber-100);
 	--rux-accent-200: var(--rux-amber-200);
+	--rux-accent-300: var(--rux-amber-300);
 	--rux-accent-400: var(--rux-amber-400);
+	--rux-accent-500: var(--rux-amber-500);
 	--rux-accent-700: var(--rux-amber-700);
 	--rux-accent-800: var(--rux-amber-800);
 	--rux-accent-900: var(--rux-amber-900);
@@ -2263,11 +2534,6 @@
 	--rux-text-heading:  var(--rux-text-primary);
 
 	/* ─── Accent ──────────────────────────────────────────────────────────── */
-	/* The catalog's focus colour is the accent scale's 900 on a dark canvas and
-	   its 700 on a light one — the one accent role that is not theme-invariant.
-	   Reading --rux-accent-700 rather than --rux-blue-700 means every
-	   [data-rux-accent] follows this automatically. */
-	--rux-accent-ring: var(--rux-accent-700);
 
 	/* ─── Status ───────────────────────────────────────────────────────────── */
 	/* A solid badge inverts here: the dark-theme recipe (bright fill, dark

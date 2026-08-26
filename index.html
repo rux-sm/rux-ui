@@ -45,8 +45,8 @@
 		<!-- The design system's public entrypoint: tokens, typography, webfonts,
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
-		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=145" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=371" />
+		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=146" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=372" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=17"
@@ -89,7 +89,7 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/bus-picker.css?v=7"
+			href="./scheduler/css/features/bus-picker.css?v=8"
 		/>
 		<link
 			rel="stylesheet"
@@ -113,7 +113,7 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/team-chat.css?v=21"
+			href="./scheduler/css/features/team-chat.css?v=22"
 		/>
 		<link
 			rel="stylesheet"
@@ -592,7 +592,7 @@
 									<span
 										class="rux-color-swatch__dot"
 										style="
-											--color: var(--sched-trip-color-teal);
+											--color: var(--rux-teal-fill-control);
 										"
 									></span>
 								</label>
@@ -607,7 +607,7 @@
 										class="rux-color-swatch__dot"
 										style="
 											--color: var(
-												--sched-trip-color-green
+												--rux-green-fill-control
 											);
 										"
 									></span>
@@ -623,7 +623,7 @@
 										class="rux-color-swatch__dot"
 										style="
 											--color: var(
-												--sched-trip-color-purple
+												--rux-purple-fill-control
 											);
 										"
 									></span>
@@ -639,7 +639,7 @@
 										class="rux-color-swatch__dot"
 										style="
 											--color: var(
-												--sched-trip-color-amber
+												--rux-amber-fill-control
 											);
 										"
 									></span>
@@ -654,7 +654,7 @@
 									<span
 										class="rux-color-swatch__dot"
 										style="
-											--color: var(--sched-trip-color-pink);
+											--color: var(--rux-pink-fill-control);
 										"
 									></span>
 								</label>
@@ -1366,6 +1366,15 @@
 											role="radiogroup"
 											aria-labelledby="tp-trip-bar-color-label"
 										>
+											<!-- A swatch previews the token the BAR renders, not an
+											     approximation of it. This read --rux-accent — the 900
+											     ink — while a trip with no override paints
+											     --sched-trip-bar-confirmed-tone, so the swatch showed
+											     a bright #78d9ff for something that renders #0038b0:
+											     wrong rung and, because 900 clips 34°, wrong hue. The
+											     five colour swatches below already read the same
+											     --sched-trip-color-* tokens the bar does.
+											     docs/foundations/color.md §5 step 44. -->
 											<label
 												class="rux-color-swatch"
 												title="Standard blue"
@@ -1381,7 +1390,7 @@
 													class="rux-color-swatch__dot"
 													style="
 														--color: var(
-															--rux-accent
+															--sched-trip-bar-confirmed-tone
 														);
 													"
 												></span>
@@ -6474,7 +6483,7 @@
 			} from "./js/core/profile.js";
 			import {
 				profileAvatarEl,
-				avatarColorValue,
+				applyAvatarColor,
 				driverInitials,
 			} from "./js/core/avatar.js";
 
@@ -6623,9 +6632,7 @@
 					} else {
 						const initials = document.createElement("span");
 						initials.className = "rux-ui-header__profile-initials";
-						initials.style.backgroundColor = avatarColorValue(
-							profile.avatar_color,
-						);
+						applyAvatarColor(initials, profile.avatar_color);
 						initials.textContent = driverInitials(
 							profile.display_name,
 						);
@@ -6740,8 +6747,7 @@
 
 			function setAddAvatarPreview(url, color) {
 				profilePickerAddAvatar.replaceChildren();
-				profilePickerAddAvatar.style.backgroundColor =
-					avatarColorValue(color);
+				applyAvatarColor(profilePickerAddAvatar, color);
 				if (url) {
 					const img = document.createElement("img");
 					img.src = url;

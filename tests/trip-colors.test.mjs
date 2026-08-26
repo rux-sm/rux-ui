@@ -40,15 +40,87 @@ test("a live colour passes through and an unknown one is dropped", () => {
 });
 
 test("every published colour has a token, and no token outlives its colour", () => {
-	/* avatarColorValue builds `--sched-trip-color-${color}` by hand, so a colour
-	   without a token renders nothing and a token without a colour is dead.
-	   Unique names, not raw declarations: each tone is legitimately declared
-	   once per theme since docs/trip-bar.md step 18 (500 dark, 600 light). */
-	const css = readFileSync("scheduler/css/tokens.css", "utf8");
-	const declared = new Set(
-		[...css.matchAll(/--sched-trip-color-([a-z]+)\s*:/g)].map((m) => m[1]),
+	/* TWO FAMILIES SINCE color.md §5 step 38, because a trip bar and an avatar
+	   are not the same function. The bar carries a white label AND a 900 status
+	   icon — rule 2.14's F1 and F2 together — so it stays on 400 through
+	   --sched-trip-color-*. The avatar carries initials alone, F1 only, so it
+	   takes the categorical fill band at 500. Each is built by hand from a
+	   colour name, so a colour without a token renders nothing and a token
+	   without a colour is dead — asserted for both.
+
+	   Unique names, not raw declarations: each trip tone is legitimately
+	   declared once per theme since docs/trip-bar.md step 18. */
+	const sched = readFileSync("scheduler/css/tokens.css", "utf8");
+	const tripTones = new Set(
+		[...sched.matchAll(/--sched-trip-color-([a-z]+)\s*:/g)].map((m) => m[1]),
 	);
-	assert.deepEqual([...declared].sort(), [...TRIP_COLORS].sort());
+	assert.deepEqual(
+		[...tripTones].sort(),
+		[...TRIP_COLORS].sort(),
+		"the trip bar's 400 family must match the palette",
+	);
+
+	/* avatarColorValue builds `--rux-${color}-fill-control`. The band publishes
+	   all seven hues, not just the five a user can pick, so this is coverage
+	   rather than equality — an unpickable hue on the band is not dead, it is
+	   there for the next categorical consumer. */
+	const tokens = readFileSync("rux-ui/css/tokens.css", "utf8");
+	const band = new Set(
+		[...tokens.matchAll(/--rux-([a-z]+)-fill-control\s*:/g)].map((m) => m[1]),
+	);
+	const missing = TRIP_COLORS.filter((c) => !band.has(c));
+	assert.deepEqual(
+		missing,
+		[],
+		"a pickable avatar colour has no fill-control token, so it renders nothing",
+	);
+});
+
+test("every swatch previews the token the thing actually renders", () => {
+	/* A swatch is a PROMISE about what you will get. Both pickers had drifted
+	   from what they preview, in opposite directions and for different reasons:
+	   the avatar swatches showed the trip bar's rung until step 38 moved
+	   avatars off it, and the trip bar's "Standard blue" showed --rux-accent —
+	   the 900 ink — while a default bar paints --sched-trip-bar-confirmed-tone,
+	   so it promised #78d9ff and delivered #0038b0 (step 44).
+
+	   Both sides are derived from source here rather than listed, so this fails
+	   when EITHER the renderer or the swatch moves and the other does not. */
+	const html = readFileSync("index.html", "utf8");
+	const swatches = [
+		...html.matchAll(
+			/name="(tripBarColor|profileAvatarColor)"\s*\n?\s*value="([a-z]*)"[\s\S]*?--color:\s*var\(\s*([-a-z0-9]+)/g,
+		),
+	].map((m) => ({ picker: m[1], value: m[2], token: m[3] }));
+	assert.ok(swatches.length >= 12, `only found ${swatches.length} swatches`);
+
+	// What the TRIP BAR renders: the per-colour rule, and the no-override fallback.
+	const barCss = readFileSync("scheduler/css/features/trip-bar.css", "utf8");
+	const barFallback = barCss.match(
+		/--_tone:\s*var\(\s*--_trip-bar-color\s*,\s*var\(\s*([-a-z0-9]+)/,
+	)?.[1];
+	assert.ok(barFallback, "could not read the trip bar's no-override tone");
+
+	// What an AVATAR renders: avatarColorValue builds the name from the colour.
+	const avatarJs = readFileSync("js/core/avatar.js", "utf8");
+	const avatarPattern = avatarJs.match(/`var\(--rux-\$\{color\}([-a-z]+)\)`/)?.[1];
+	assert.ok(avatarPattern, "could not read avatarColorValue's token shape");
+	const avatarDefault = readFileSync("rux-ui/css/base/content.css", "utf8")
+		.match(/\.rux-avatar \{[^}]*background:\s*var\(\s*([-a-z0-9]+)/)?.[1];
+	assert.ok(avatarDefault, "could not read .rux-avatar's default background");
+
+	const wrong = [];
+	for (const { picker, value, token } of swatches) {
+		let expected;
+		if (picker === "tripBarColor") {
+			expected = value ? `--sched-trip-color-${value}` : barFallback;
+		} else {
+			expected = value ? `--rux-${value}${avatarPattern}` : avatarDefault;
+		}
+		if (token !== expected)
+			wrong.push(`${picker} "${value}" previews ${token}, renders ${expected}`);
+	}
+	assert.deepEqual(wrong, [], "a swatch promises a colour its target does not paint");
 });
 
 test("no swatch offers a colour the palette does not publish", () => {

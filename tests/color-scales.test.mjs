@@ -201,11 +201,23 @@ const ON_A_STEP = {
 	"--rux-warning-fill": "--rux-amber-400",
 	"--rux-success-fill": "--rux-green-400",
 	"--rux-info-fill": "--rux-blue-400",
+	// 500 · fill-control: a fill carrying ONLY a label (color.md §5 step 37).
+	// 400 is the last step holding BOTH of rule 2.14's floors — white at 4.5
+	// (7.35 worst) and a 900 ink at 3.0 (3.36 worst, danger on teal). Drop the
+	// mark and the label alone binds, so the ceiling rises one decade: white
+	// clears at 500 (4.86 worst) and fails at L52 (4.49). Buttons and count
+	// badges read this; trip bars, which carry both, stay on 400.
+	"--rux-danger-fill-control": "--rux-red-500",
+	"--rux-warning-fill-control": "--rux-amber-500",
+	"--rux-success-fill-control": "--rux-green-500",
+	"--rux-info-fill-control": "--rux-blue-500",
 	// The accent publishes a mirror per step it is read at; 100/700/800/1000
 	// stay published and unread, pending the Class C sweep.
 	"--rux-accent-100": "--rux-blue-100",
 	"--rux-accent-200": "--rux-blue-200",
+	"--rux-accent-300": "--rux-blue-300",
 	"--rux-accent-400": "--rux-blue-400",
+	"--rux-accent-500": "--rux-blue-500",
 	"--rux-accent-700": "--rux-blue-700",
 	"--rux-accent-800": "--rux-blue-800",
 	"--rux-accent-900": "--rux-blue-900",
@@ -228,6 +240,32 @@ test("a role on a step is not overridden per theme", () => {
 	   such overrides is most of what step 4 did. */
 	const redundant = Object.keys(ON_A_STEP).filter((r) => declOf(LIGHT_BLOCK, r));
 	assert.deepEqual(redundant, []);
+});
+
+test("every state pair actually moves (color.md §5 steps 41-43)", () => {
+	/* The recurring defect in this component set is not a wrong value — it is
+	   TWO STATE NAMES RESOLVING TO ONE VALUE, which renders as a control that
+	   does not respond. It has now been found four times: the link hover
+	   (step 43), the checkbox's three checked states (step 40), the driver
+	   grid's busy+unavailable hover (step 41), and the owner's own
+	   hover/pressed proposal (step 39). A value test cannot catch it; this
+	   compares the pair. */
+	const pairs = [
+		["--rux-link-fg", "--rux-link-fg-hover"],
+		["--rux-checkbox-checked-bg", "--rux-checkbox-checked-hover-bg"],
+		["--rux-checkbox-checked-hover-bg", "--rux-checkbox-checked-active-bg"],
+		["--rux-checkbox-checked-border", "--rux-checkbox-checked-hover-border"],
+		["--rux-button-accent-background", "--rux-button-accent-hover-background"],
+		["--rux-button-accent-hover-background", "--rux-button-accent-active-background"],
+		["--rux-switch-checked-bg", "--rux-switch-checked-hover-bg"],
+		["--rux-switch-checked-hover-bg", "--rux-switch-checked-active-bg"],
+	];
+	const collapsed = [];
+	for (const [a, b] of pairs) {
+		const va = declOf(DARK_BLOCK, a), vb = declOf(DARK_BLOCK, b);
+		if (va && vb && va === vb) collapsed.push(`${a} and ${b} are both ${va}`);
+	}
+	assert.deepEqual(collapsed, [], "a state pair collapsed — that control gives no feedback");
 });
 
 test("the accent is a scale selection, not a colour (rule 2.12)", () => {
@@ -253,18 +291,94 @@ test("the accent is a scale selection, not a colour (rule 2.12)", () => {
 	}
 });
 
-test("every published fill reads the 400 step (rule 2.11)", () => {
-	/* The fills sit at 400 since step 34. On the even ramp every step is one
-	   lightness across all seven hues, so the fill band is chosen once: 400 is
-	   the lightest step where a white label clears on every hue (7.36-10.15),
-	   and 500 is the first that does not (4.44 worst). Asserted structurally,
-	   so a re-tune that moves a fill off the band fails here. Pinned 800 from
-	   step 9 to step 34, when the scales stopped being Geist's. */
+test("every published fill reads the step its function needs (rule 2.14)", () => {
+	/* TWO BANDS SINCE STEP 37, because rule 2.14's functions have different
+	   floors and one rung cannot be the ceiling for both.
+
+	     400  -fill          F1 + F2   white 7.35 worst, 900 ink 3.36 worst
+	     500  -fill-control  F1 only   white 4.86 worst
+
+	   Each is the LAST step that works for its function, which is what makes
+	   this assertable rather than a preference: at L44 the ink is 2.84 and 400
+	   is already the ceiling for a marked fill; at L52 the label is 4.49 and
+	   500 is the ceiling for an unmarked one. Measured 2026-08-26, dark,
+	   canvas-rasterised.
+
+	   A CORRECTION THIS TEST CARRIED: the previous comment said "500 is the
+	   first that does not (4.44 worst)". 500 measures 4.86 and clears. 4.44 is
+	   Geist's blue-700 number, quoted throughout the pre-step-34 document and
+	   left behind here when the scales stopped being Geist's — a stale figure
+	   that would have blocked exactly this amendment. color.md §5 step 37.
+
+	   Pinned 800 from step 9 to step 34. */
 	for (const [role, step] of [
 		["--rux-danger-fill", "--rux-red-400"],
 		["--rux-warning-fill", "--rux-amber-400"],
 		["--rux-success-fill", "--rux-green-400"],
 		["--rux-info-fill", "--rux-blue-400"],
+		["--rux-danger-fill-control", "--rux-red-500"],
+		["--rux-warning-fill-control", "--rux-amber-500"],
+		["--rux-success-fill-control", "--rux-green-500"],
+		["--rux-info-fill-control", "--rux-blue-500"],
+		// The categorical half of the same rung (step 38), named by hue rather
+		// than by meaning. All seven, so a categorical consumer never has to
+		// know which hues a status has already claimed.
+		["--rux-blue-fill-control", "--rux-blue-500"],
+		["--rux-red-fill-control", "--rux-red-500"],
+		["--rux-amber-fill-control", "--rux-amber-500"],
+		["--rux-green-fill-control", "--rux-green-500"],
+		["--rux-teal-fill-control", "--rux-teal-500"],
+		["--rux-purple-fill-control", "--rux-purple-500"],
+		["--rux-pink-fill-control", "--rux-pink-500"],
+		// The control ladder (step 39): rest 500 -> hover 400 -> pressed 300.
+		// Darkening never costs label contrast, so these two states cannot fail
+		// the floor; they are pinned so the LADDER cannot be broken — a hover
+		// that stops darkening, or a pressed that lands on the hover rung and
+		// gives no feedback, both fail here.
+		["--rux-danger-fill-control-hover", "--rux-red-400"],
+		["--rux-warning-fill-control-hover", "--rux-amber-400"],
+		["--rux-success-fill-control-hover", "--rux-green-400"],
+		["--rux-info-fill-control-hover", "--rux-blue-400"],
+		["--rux-danger-fill-control-pressed", "--rux-red-300"],
+		["--rux-warning-fill-control-pressed", "--rux-amber-300"],
+		["--rux-success-fill-control-pressed", "--rux-green-300"],
+		["--rux-info-fill-control-pressed", "--rux-blue-300"],
+		// Every solid control on the same ladder (step 40). The checkbox is
+		// pinned as a TRIPLE because its three states were one value before —
+		// three names, one colour, no feedback. If they collapse again, here.
+		["--rux-checkbox-checked-bg", "--rux-accent-500"],
+		["--rux-checkbox-checked-hover-bg", "--rux-accent-400"],
+		["--rux-checkbox-checked-active-bg", "--rux-accent-300"],
+		// The border travels with the fill (step 42). Pinned because step 40
+		// moved the fill and left the border behind, which is exactly the
+		// failure this catches: an edge lighter than the thing it encloses.
+		["--rux-checkbox-checked-border", "--rux-accent-500"],
+		["--rux-checkbox-checked-hover-border", "--rux-accent-400"],
+		["--rux-checkbox-checked-active-border", "--rux-accent-300"],
+		// The unchecked hover border is the colour the box BECOMES when
+		// checked, and the only candidate clearing F4's 3:1 against the box's
+		// own fill (3.17; gray-500 gives 2.06, accent-400 2.07). It read
+		// --rux-accent, the 900 ink, at 12.41 and in a 34°-clipped hue.
+		["--rux-checkbox-hover-border", "--rux-accent-500"],
+		// The whole form family on one rung (step 43), so the three cannot
+		// drift apart again — they held the same wrong value for as long as
+		// they have held the same right one.
+		["--rux-input-hover", "--rux-accent-500"],
+		["--rux-choicebox-hover-border", "--rux-accent-500"],
+		["--rux-choicebox-checked-border", "--rux-accent-500"],
+		// F1: text sits ON the selection, so it is a fill, not an ink.
+		["--rux-selection-bg", "--rux-accent-500"],
+		// A link is TEXT: 700 rest, 800 hover. Pinned as a PAIR because the
+		// defect this replaced was the two collapsing onto one value.
+		["--rux-link-fg", "--rux-accent-700"],
+		["--rux-link-fg-hover", "--rux-accent-800"],
+		// The focus ring (step 45). On a step, so the companion test
+		// "a role on a step is not overridden per theme" now guards the light
+		// override that was deleted with it — one declaration, both themes.
+		["--rux-accent-ring", "--rux-accent-700"],
+		["--rux-switch-checked-bg", "--rux-accent-500"],
+		["--rux-slider-fill-bg", "--rux-accent-500"],
+		["--rux-button-accent-background", "--rux-accent-500"],
 	]) {
 		assert.match(
 			stripComments(SRGB),

@@ -54,7 +54,12 @@
 /* — Current bus row — primary button style, non-interactive — */
 
 .sched-bus-picker__row.is-current .sched-bus-picker__number {
-	--_bg:     var(--rux-accent);
+	/* F1 — this row paints a number ON the fill, so it needs a fill rung, not
+	   the 900 ink. White on --rux-accent measured 1.59 against rule 2.14's 4.5
+	   floor; on the control rest rung it is 6.24. The comment above calls this
+	   "primary button style", so it takes the primary button's own token.
+	   color.md §5 step 45. */
+	--_bg:     var(--rux-button-accent-background);
 	--_fg:     var(--rux-fg-on-accent);
 
 	flex: 1;

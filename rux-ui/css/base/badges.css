@@ -26,39 +26,37 @@
 /* — base — */
 
 .rux-badge {
-  --_badge-color: var(--rux-info);
+  /* Four published tokens rather than one derived colour. A new semantic
+     costs four lines here instead of one — and gets the system's own
+     tint, ink, fill and label instead of an approximation of them. */
+  --_badge-tint:    var(--rux-info-subtle);
+  --_badge-ink:     var(--rux-info);
+  --_badge-fill:    var(--rux-info-fill-control);
+  --_badge-on-fill: var(--rux-info-on-fill-control);
 
   display: inline-flex;
   align-items: center;
   gap: var(--rux-space-1);
   height: var(--rux-badge-height);
   padding: 0 var(--rux-badge-padding-inline);
-  /* Pre-mixed opaque against the base canvas, not a real alpha blend — same
-     reasoning as --rux-button-accent-background (css/tokens.css): badges
-     appear in dense lists where a small, genuinely transparent fill can end
-     up barely distinguishable from a neutral background depending on what's
-     actually behind it. */
-  /* oklab, not oklch: --rux-surface-1 carries a tiny residual chroma
-     inherited from --rux-neutral, and oklch's hue-arc interpolation can pull
-     the mix through an unrelated hue (e.g. red drifting toward purple) on
-     its way toward a backdrop that's visually just "gray". oklab blends the
-     Cartesian a/b axes directly instead, so a near-zero-chroma backdrop
-     can't warp the result's hue. */
-  background: color-mix(
-    in oklab,
-    var(--_badge-color) var(--rux-badge-background-opacity),
-    var(--rux-surface-1)
-  );
-  /* Mixed toward the surface for the same reason as the fill above, and so
-     the outline stays a hairline instead of out-shouting what it encloses. */
-  border: var(--rux-border-width) solid
-    color-mix(
-      in oklab,
-      var(--_badge-color) var(--rux-badge-border-opacity),
-      var(--rux-surface-1)
-    );
+  /* THE PUBLISHED TINT, NOT A DERIVED ONE (color.md D22, §5 step 46).
+     This mixed its own fill and border out of --_badge-color and the surface,
+     at two opacities — a band nobody published, reachable by no other
+     component and pinned by no test. The catalog's 200 step IS the tint, and
+     since step 37 every status publishes it as --rux-{status}-subtle with its
+     900 ink as the text on it. Reading them makes a subtle badge the same
+     colour as every other tint in the system instead of a near-miss.
+
+     The two color-mix comments this replaced are kept in tokens.css beside
+     --rux-badge-background-opacity, which is now unread: the oklab-not-oklch
+     reasoning was correct and is worth not re-deriving if a mix is ever
+     needed again. */
+  background: var(--_badge-tint);
+  /* The tint's own ink at hairline weight — the border is the same family as
+     the fill it encloses rather than a third mixed value. */
+  border: var(--rux-border-width) solid var(--_badge-fill);
   border-radius: var(--rux-badge-radius);
-  color: var(--_badge-color);
+  color: var(--_badge-ink);
   font-size: var(--rux-badge-font-size);
   font-weight: var(--rux-badge-font-weight);
   line-height: var(--rux-badge-line-height);
@@ -73,11 +71,18 @@
    would collapse the 1px the subtle badge occupies and make the two emphases
    different sizes. */
 .rux-badge--solid {
-  background: oklch(from var(--_badge-color) var(--rux-badge-solid-lightness) c h);
-  border-color: oklch(from var(--_badge-color) var(--rux-badge-solid-lightness) c h);
-  color: oklch(
-    from var(--_badge-color) var(--rux-badge-solid-fg-lightness) calc(c * 0.25) h
-  );
+  /* THE PUBLISHED FILL AND ITS LABEL (color.md D22, §5 step 46). This rewrote
+     --_badge-color's lightness to invent a fill, so a solid danger badge
+     painted #ff6467 while a danger button painted #bb0522 — the same semantic
+     rendering as two different reds depending on which component you were
+     looking at. Both now read --rux-{status}-fill-control and its published
+     label, so a badge and a button of one meaning are one colour.
+     The border still matches the fill rather than vanishing: a transparent
+     border would collapse the 1px the subtle badge occupies and make the two
+     emphases different sizes. */
+  background: var(--_badge-fill);
+  border-color: var(--_badge-fill);
+  color: var(--_badge-on-fill);
 }
 
 .rux-badge--module {
@@ -102,10 +107,26 @@
 
 /* — color variants — */
 
-.rux-badge--info    { --_badge-color: var(--rux-info); }
-.rux-badge--success { --_badge-color: var(--rux-success); }
-.rux-badge--warning { --_badge-color: var(--rux-warning); }
-.rux-badge--danger  { --_badge-color: var(--rux-danger); }
+.rux-badge--info {
+  --_badge-tint: var(--rux-info-subtle);    --_badge-ink: var(--rux-info);
+  --_badge-fill: var(--rux-info-fill-control);
+  --_badge-on-fill: var(--rux-info-on-fill-control);
+}
+.rux-badge--success {
+  --_badge-tint: var(--rux-success-subtle); --_badge-ink: var(--rux-success);
+  --_badge-fill: var(--rux-success-fill-control);
+  --_badge-on-fill: var(--rux-success-on-fill-control);
+}
+.rux-badge--warning {
+  --_badge-tint: var(--rux-warning-subtle); --_badge-ink: var(--rux-warning);
+  --_badge-fill: var(--rux-warning-fill-control);
+  --_badge-on-fill: var(--rux-warning-on-fill-control);
+}
+.rux-badge--danger {
+  --_badge-tint: var(--rux-danger-subtle);  --_badge-ink: var(--rux-danger);
+  --_badge-fill: var(--rux-danger-fill-control);
+  --_badge-on-fill: var(--rux-danger-on-fill-control);
+}
 
 /* — dot indicator — */
 

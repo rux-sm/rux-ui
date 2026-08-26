@@ -239,10 +239,11 @@
 	   white with the same fill and failed at 2.94 — the same count badge
 	   rendering two different ways is the defect, not either number. Both now
 	   read the pair. color.md D20, §5 step 26. */
-	background: var(--rux-danger-fill);
+	/* The fill-control rung (step 37) — F1 only, same as the side-nav twin. */
+	background: var(--rux-danger-fill-control);
 	border: 2px solid var(--rux-ui-header-bg);
 	border-radius: var(--rux-radius-full);
-	color: var(--rux-danger-on-fill);
+	color: var(--rux-danger-on-fill-control);
 	/* A count badge is a badge, so it takes label-12 — which is what rule 2.12's
 	   tree calls a badge and what D16 settled at step 41. It read 11px/500 until
 	   step 42: 11 has no rung in the catalog, and 500 was the weight step 41

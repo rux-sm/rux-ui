@@ -294,7 +294,8 @@
 }
 
 .sched-ui-header-chat-btn.has-mention .rux-ui-header__badge-count {
-	background: var(--rux-info-fill);
+	/* The fill-control rung (step 37): a mention count is F1 only. */
+	background: var(--rux-info-fill-control);
 }
 
 .sched-team-chat__emoji-grid {

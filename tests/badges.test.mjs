@@ -11,6 +11,12 @@ const tokens = await readFile(
 	"utf8",
 );
 
+/* Structural assertions run against comment-stripped CSS. Prose must not be
+   able to break a rule match or satisfy one — a brace inside a comment (this
+   file's own `--rux-{status}-fill-control`) truncated a `[^}]*` block match at
+   step 46 and failed a rule that was correct. */
+const badgeRules = badges.replace(/\/\*[\s\S]*?\*\//g, "");
+
 function tokenValue(name) {
 	return tokens.match(new RegExp(`${name}:\\s*([^;]+);`))[1].trim();
 }
@@ -49,31 +55,44 @@ test("a badge recedes from the content it annotates", () => {
 });
 
 test("the fill carries the color, not the outline", () => {
-	// Previously a full-saturation border around a 12% fill.
-	assert.match(badges, /--rux-badge-border-opacity/);
-	assert.doesNotMatch(
-		badges,
-		/border:\s*var\(--rux-border-width\) solid var\(--_badge-color\)/,
+	/* The border is a hairline in the badge's own family, not a third mixed
+	   value and not a full-saturation ring around a faint fill (the original
+	   regression). Since step 46 it reads the published fill token rather than
+	   a color-mix, so the assertion moved with the mechanism. */
+	assert.match(
+		badgeRules,
+		/border:\s*var\(--rux-border-width\) solid var\(--_badge-fill\)/,
 	);
-	// backdrop-filter over an already-opaque pre-mixed background was pure cost.
+	assert.doesNotMatch(badgeRules, /--rux-badge-border-opacity/);
+	// backdrop-filter over an already-opaque background was pure cost.
 	assert.doesNotMatch(badges, /backdrop-filter/);
 });
 
-test("solid emphasis derives from whichever semantic is set", () => {
-	// One rule serves every variant, so a new semantic needs no addition here.
+test("solid emphasis reads the published fill and its label", () => {
+	/* REPOINTED AT STEP 46, AND THE OLD ASSERTION WAS THE DEFECT MADE
+	   EXECUTABLE. It required `oklch(from var(--_badge-color) ...)` — that is,
+	   it required the badge to INVENT its fill by rewriting an ink's lightness.
+	   That band was published nowhere, reachable by no other component, and it
+	   is why a solid danger badge painted #ff6467 while a danger button painted
+	   #bb0522: one meaning, two reds. color.md D22.
+
+	   A fill and its label are published together (rule 2.14) precisely so a
+	   component cannot get the pairing wrong, and the badge now reads both. */
 	assert.match(
-		badges,
-		/\.rux-badge--solid\s*\{[^}]*background:\s*oklch\(from var\(--_badge-color\) var\(--rux-badge-solid-lightness\)/s,
+		badgeRules,
+		/\.rux-badge--solid\s*\{[^}]*background:\s*var\(--_badge-fill\)/s,
 	);
 	assert.match(
-		badges,
-		/\.rux-badge--solid\s*\{[^}]*color:\s*oklch\([^}]*var\(--rux-badge-solid-fg-lightness\)/s,
+		badgeRules,
+		/\.rux-badge--solid\s*\{[^}]*color:\s*var\(--_badge-on-fill\)/s,
 	);
 	// A transparent border would make solid and subtle badges different sizes.
 	assert.match(
-		badges,
-		/\.rux-badge--solid\s*\{[^}]*border-color:\s*oklch\(/s,
+		badgeRules,
+		/\.rux-badge--solid\s*\{[^}]*border-color:\s*var\(--_badge-fill\)/s,
 	);
+	// The derivation must not come back.
+	assert.doesNotMatch(badgeRules, /oklch\(from var\(--_badge-color\)/);
 });
 
 test("solid emphasis inverts between themes", () => {
@@ -101,16 +120,30 @@ test("the legacy --accent alias is gone", () => {
 	assert.doesNotMatch(badges, /rux-badge--accent/);
 });
 
-test("every semantic keeps its color modifier", () => {
-	/* Reads the status role itself. It was `--rux-${tone}-strong` until
-	   color.md step 14 retired that name: step 5 moved the base onto the
-	   catalog's 900 step, which is readable in both themes, and "strong" —
-	   which existed only because the base was not — became the same colour.
-	   A badge wants the status colour, and that is what it now names. */
+test("every semantic names all four published tokens", () => {
+	/* Was one derived colour per semantic (`--_badge-color`); since step 46 it
+	   is the four the system publishes for a status — tint, ink, fill, label.
+	   A new semantic costs four lines instead of one, and gets the system's own
+	   colours rather than an approximation of them.
+
+	   Asserted per token, not as a block, so a modifier that names three of the
+	   four fails here rather than falling back to whatever the base set. */
 	for (const tone of ["info", "success", "warning", "danger"]) {
-		assert.match(
-			badges,
-			new RegExp(`\\.rux-badge--${tone}[^}]*--_badge-color:\\s*var\\(--rux-${tone}\\)`),
+		const block = badgeRules.match(
+			new RegExp(`\\.rux-badge--${tone}\\s*\\{([^}]*)\\}`),
 		);
+		assert.ok(block, `no .rux-badge--${tone} rule`);
+		for (const [prop, token] of [
+			["--_badge-tint", `--rux-${tone}-subtle`],
+			["--_badge-ink", `--rux-${tone}`],
+			["--_badge-fill", `--rux-${tone}-fill-control`],
+			["--_badge-on-fill", `--rux-${tone}-on-fill-control`],
+		]) {
+			assert.match(
+				block[1],
+				new RegExp(`${prop}:\\s*var\\(${token}\\)`),
+				`.rux-badge--${tone} must set ${prop} to var(${token})`,
+			);
+		}
 	}
 });
