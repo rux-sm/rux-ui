@@ -1,10 +1,10 @@
 # Rux UI Foundations — Layout
 
-**Contract version: 2.14.0** · Stamped at the top so a downstream document can state the
+**Contract version: 2.15.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 29 steps: **29 done**
+**Status** · 30 steps: **30 done**
 This document is canonical for **breakpoints (§1), the space scale (§7), and the radius
 scale and Materials presets (§8)**. Steps 4 and 5 brought the last two in, and **step 9
 adopted the elevation presets**, which was the last thing §8 had measured but not applied.
@@ -160,6 +160,7 @@ correctly so.
 | D4 | ~~Nothing enforces §2.4 against the application layer.~~ | **closed, step 3** — the contract test covers both layers |
 | D5 | ~~`README.md` § Layout states `--rux-container-xs` (480px) and it has no canonical home — layout does not publish container widths, and whether it should is **Q3**. Not a duplicate, so step 7 left it: the fix is to answer Q3, not to move a value into a document that has not claimed the category. ~~ | **closed, step 10** — §10 publishes it, and Q3 is answered |
 | D6 | ~~**Nothing enforces §11**, and two declarations sit outside the scale.~~ **Closed, step 14.** §11.3.3 gave the rule a checkable floor drawn from the scale itself, and `layout-contract` enforces it with no exception list. `.rux-splash`'s `9999` became `--rux-z-splash`, a rung the scale had been missing. `.rux-resize-gutter`'s `10` is **legal and stays** — it is below every global rung, and 11.3.2 leaves that judgement to the author. | **closed, step 14** |
+| D7 | **Four unrelated content max-widths, none published.** 736px (Settings' column), 720px (`request.html`), 520px (`driver.html`'s `--sched-driver-page-max-width`), 480px (`--rux-container-xs`). Each was chosen locally and none knows about the others; §10's own rationale denied they existed until step 30. Whether they collapse onto a published scale, or are four honest answers to four different questions, is unsettled — and inventing rungs to hold them is how a scale gets published that nothing measured. Recorded at step 30, deliberately unfixed. | **open** |
 
 ---
 
@@ -198,6 +199,7 @@ do.
 | 26 | Answer the cards-document question; fix its duplicated number | **done · Class A** | **Executed 2026-08-23** alongside `composition.md` step 7, which decided the component-doc tier as a set. **The answer: no family foundation for cards** — `docs/cards.md` already exists at the component tier and gains the governance header; this document keeps owning the card's rules (§8, §9.1–9.2). **The numbering defect is the second finding**: step 17 appended the question as a second Q5 at the file's end while §6 already held one, so a citation by number was ambiguous — it is now Q6, answered, with the original preserved. Nothing renders differently. |
 | 28 | Adopt Carbon as the density gap source; publish the tier scale and the band pairing | **done · Class A + Class B ×2** | **Executed 2026-08-26, at the owner's direction** (*"open to changing sizes anywhere to follow guidance"*), and the step exists because a rebuild exposed the gap the hard way: the Driver Roster looked *almost identical* to the module it replaced, and the reason was that nothing here governed density, column width or band proportion — so the rebuild inherited the defaults of the thing it was replacing. **An absent rule is not neutral; it is an instruction to copy the neighbour.** **Source chosen on evidence.** Geist publishes no density layer. Cloudscape's Density settings is named in `composition.md` Q5 but its guidance is not open — rendered pages only, verified against the GitHub API. Carbon publishes both code and guidance under Apache-2.0, 317 MDX rule pages in a separate repository, and is the system this repo already borrowed gate 4's snapshot mechanism from. Guidance-only under the standing rule. **Class A** — the five row rungs and two band rungs are new names; nothing resolved differently until something read them. **Class B (1)** — `--rux-table-row-height` 36px → `var(--rux-row-height-md)` = **40px**. The old value was not on any scale, because there was no scale to be on. Measured across every table in the app before and after: Drivers, Fleet, Customers and Documents 36 → 40; Requests already ran 61 and is unmoved (the property is a floor). **Class B (2)** — `.rux-workspace__header--table` gains `min-height: var(--rux-band-height-lg)` = **48px**, from 40px. Four bands: Drivers, Fleet, Customers, Requests. Scoped to `--table` so Calendar's canvas band, which has no table to pair with, is untouched. **The Driver Roster opts into lg (48px)** under the two-line rule, and its data columns size to content — at 1440 the equal split gave phone 289px for a 100px number; content-sizing returns that width to the identity column. **States still needing an eyeball**: every table at narrow widths in both themes. The measurements above are at 1440. **Deliberately not done**: no table measure or max-width — §10 holds that app shells have no content max-width, Carbon caps nothing either, and changing that is its own step with its own argument. `--rux-field-height` stays 36px: it is a control rung, not a row rung, and conflating them is how the band got its 40px in the first place. The four shipped tables are **not** re-tiered — they take the md default and stay there until each is rebuilt. Contract 2.12.0 → **2.13.0**. |
 | 29 | Publish the column-width rule; open the alignment question | **done · Class A** | **Executed 2026-08-26**, the second half of step 28's Carbon read and the half that answers *why the rebuilt table looked stretched*. Carbon publishes that column widths vary by content with a 16px minimum between them, and that a table needs three or more columns; both are additive rule text and nothing resolved differently. **One value confirmed rather than changed**: `--rux-table-cell-padding-inline` is 8px per side, so adjacent cells already sit at Carbon's `$spacing-05` = 16px between content. It was right before the rule existed and is now written down so it is not casually retuned. **Deliberately not done — and this is the honest half of the step.** Carbon publishes **no numeric-alignment guidance** on its data table pages; grepped, not assumed. This application right-aligns numeric columns in at least three places (`driver-app.css` workload, `driver-week-info.css`, `trip-panel.css`) and that practice is therefore **undocumented and unsourced**. Writing a rule for it here would be originating one while appearing to cite Carbon, which is the mistake `typography.md` Q7 made with the Badge. It goes to **Q7** instead. No table measure or max-width either: §10 holds that app shells have no content max-width and Carbon caps nothing, so that stays step 28's deliberate omission. Contract 2.13.0 → **2.14.0**. |
+| 30 | The table frame hugs its content; §9.5's slack rule and §10's rationale are both corrected | **done · Class B ×2** | **Executed 2026-08-26**, prompted by the owner asking whether there is an app standard for table or content width. There was not, and the search found worse than a gap: **two shipped practices that contradict each other, and a foundation sentence the application disproves.** **The measurements, at 1440px.** Five of six tables were paying for `width: 100%` — Documents rendered **315px of content in 1358px of frame**, Requests 782 in 1398, Customers 917 in 1398, Driver Roster 809 in 1398, Fleet 702 in 1038. Only Drivers filled honestly, at 1078 of 1078. **Class B (1)** — `.rux-table-wrap` and `.rux-table-wrap > .rux-table` take `width: max-content; max-width: 100%`. After: each frame ends where its content does, and the wrap's existing `overflow: auto` takes over past the cap (Drivers scrolls when its rail is open, which is honest rather than new). **The frame hugs as well as the table, and that is the whole finding**: hugging the table alone left the row hover and selection band **591px short of the frame** on Driver Roster — the exact trade `fleet-app.css`'s spacer comment had warned about. With both hugging the band reaches its frame's edge at 2px, identical to before. **Class B (2)** — §9.5's *slack goes to the identity column*, published at step 29, is **withdrawn**. It was contradicted by Fleet before it was written: Fleet had been absorbing surplus into a dead trailing column, and its own comment named the exit — *"swap the spacer out the day a genuinely variable column is on by default."* I did not read that comment before writing the rule, and an 871px identity column holding a 282px name is not content sizing by any reading. **Three workarounds retire together**, which is the value of the step: Fleet's spacer column (CSS, markup and the `<td>` per row), §9.5's identity rule, and the `width: 1%` shrink-to-content idiom in Driver Roster and the records example — measured column-for-column identical with it and without it. **§10's rationale was false and is corrected.** It read *"app shells have no content max-width — the workspace fills available width"*; Settings is an app view and caps its column at 736px. Four unrelated content widths exist and none was published: **D7** records them rather than inventing a scale today to hold them. **States still needing an eyeball**: all six tables at narrow widths and in light theme; Documents especially, whose frame now ends at 317px and which the change makes honest rather than pretty — three columns of little content is a fact about Documents, not about this rule. **Deliberately not done**: no measure token and no container scale. Capping a table at a published width is a different rule from letting it hug, Carbon caps nothing, and D7 is the open question. Contract 2.14.0 → **2.15.0**. |
 | 27 | Claim `--rux-ui-header-height` in §10 | **done · Class A** | **Executed 2026-08-23**, with `shell.md`'s founding step: its header bullet stated a literal `44px` that contradicted the token's 40px desktop value, and correcting it to a token reference needed the token to have a published home. §10 carries it beside its panel and card siblings from steps 20 and 25. Prose references to `../layout-composition.md` in live sections now say `shell.md`; log history keeps the old path, as history. |
 
 ---
@@ -546,7 +548,8 @@ directly below a 40px shell header, so the two bands read as one. *(Step 28.)*
 guidance-only (step 29)** — the same adoption as §9.4.
 
 **Column widths MUST vary by content.** They are not shared equally across the available
-width. Carbon's rule is that columns *"can vary by content and only require a minimum
+width, and with a hugging frame they do so without a per-column width: the `width: 1%`
+shrink-to-content idiom measured identical with it and without it, and is retired. Carbon's rule is that columns *"can vary by content and only require a minimum
 spacing between columns"*, and the failure the other way is measurable: the Driver Roster
 at 1440px gave a phone column 289px for a 100px number and a compliance column 273px for a
 ~150px string, while the identity column — the one that benefits from room — got 487px.
@@ -556,9 +559,16 @@ at 1440px gave a phone column 289px for a 100px number and a compliance column 2
 rung is Carbon's `$spacing-05` and this system already matched it before the rule was
 written; it is recorded so the next person changing that token knows what it is holding up.
 
-**Slack goes to one column, named.** In a full-width table something must absorb the
-remainder. It SHOULD be the column carrying record identity, because that is the column
-whose content varies most and truncates worst.
+**A table's frame hugs its content, so there is no slack to place.** Both
+`.rux-table-wrap` and the table inside it take `width: max-content` capped at `100%`; past
+that the wrap scrolls. The frame hugs as well as the table, because hugging the table alone
+leaves the row hover and selection bands stopping short of the frame — 591px short, measured.
+
+*This replaces the rule step 29 published here, which said the slack SHOULD go to the column
+carrying record identity. That rule was wrong twice over: it was contradicted by Fleet, which
+had been absorbing slack into a dead trailing column since before it was written and whose own
+comment described the exit taken here; and "slack goes to identity" is not content sizing — it
+produced an 871px identity column for a 282px name. Step 30 records the correction.*
 
 **A table MUST have three or more columns.** Fewer is a description list
 (`content.md`), not a table.
@@ -587,10 +597,15 @@ which layout *changes*; this section governs the widths layout *is*.
 | `--rux-textarea-min-height` | 84px | the floor a textarea may be resized to |
 | `--rux-checkbox-target-height` | 32px | the hit target a checkbox or switch fills |
 
-**There is no container scale**, and `--rux-container-xs` is deliberately alone: app shells
-have no content max-width — the workspace fills available width — and Rux UI has no
-marketing surfaces to need a wider one. The `xs` suffix names the rung it would occupy if a
-scale ever existed, not a family that does.
+**There is no container scale**, and `--rux-container-xs` is deliberately alone. The `xs`
+suffix names the rung it would occupy if a scale ever existed, not a family that does.
+
+*This paragraph used to justify that by saying app shells have no content max-width because
+the workspace fills available width. **That was false in the application it described**, and
+step 30 corrected it: Settings is an app view and caps its column at 736px. Content
+max-widths do exist here — four of them, unrelated and none published: 736px (Settings),
+720px (`request.html`), 520px (`driver.html`), and this token's 480px. **D7** records them
+rather than forcing them onto a scale invented today to hold them.*
 
 **Why the drawer widths are absent.** `--rux-drawer-left-default-width` and its right twin
 resolve to `auto`, and that is the rule working rather than a gap: `shell.md`

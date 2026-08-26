@@ -251,17 +251,12 @@ body {
 	--rux-table-row-height: var(--rux-row-height-lg);
 }
 
-/* layout.md §9.5 — data columns size to content; the identity column absorbs
-   the remainder. width: 1% is the table-layout idiom for "shrink to content" —
-   with white-space: nowrap it resolves to the widest cell, not to one percent. */
-.records-example__table th[data-col="standing"],
-.records-example__table th[data-col="phone"],
-.records-example__table th[data-col="compliance"] {
-	width: 1%;
+/* layout.md §9.5 — the frame hugs its content, so every column sizes to its own
+   and there is no surplus for anything to absorb. Headers stay on one line: a
+   wrapped header makes a column wider than its data needs, which under a
+   hugging frame widens the whole table. */
+.records-example__table thead th {
 	white-space: nowrap;
-}
-.records-example__table th[data-col="flag"] {
-	width: var(--rux-row-height-md);
 }
 
 /* — identity cell: name over secondary line — */

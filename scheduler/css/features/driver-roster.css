@@ -36,15 +36,12 @@
 	--rux-table-row-height: var(--rux-row-height-lg);
 }
 
-.driver-roster__table th[data-col="standing"],
-.driver-roster__table th[data-col="phone"],
-.driver-roster__table th[data-col="compliance"] {
-	width: 1%;
+/* The `width: 1%` shrink-to-content idiom retired at layout.md step 30 — the
+   frame hugs now, so every column already sizes to its content and the hack
+   measured identical with it and without it. Headers still stay on one line:
+   a wrapped header makes a column wider than its data needs. */
+.driver-roster__table thead th {
 	white-space: nowrap;
-}
-
-.driver-roster__table th[data-col="notes"] {
-	width: var(--rux-row-height-md);
 }
 
 /* — Columns popover —

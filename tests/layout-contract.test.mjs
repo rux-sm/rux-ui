@@ -356,13 +356,64 @@ test("mobile Calendar reserves the fixed toolbar's full rendered height", () => 
 	);
 });
 
-test("the canonical example contains the required accessible composition", () => {
+/* The reference composition, asserted at composition level rather than at
+   substring level.
+
+   Until 2026-08-26 this block read `assert.match(exampleHtml, /class="rux-app"/)`
+   and eleven more of the same shape. Each proved a string was present in the
+   file and nothing whatever about what it was doing, and five rules the example
+   exists to demonstrate had drifted out of it under a green suite: the shared
+   view frame (.rux-app-view was absent entirely, so § Right Panel's "every view
+   MUST use the shared one" had nothing to show), the panel's disclosure trigger,
+   the toolbar's group nesting, the resize boundary, and working tabs — the tab
+   strip was dead markup, because the page never loaded controls.js.
+
+   A reference composition that only has to contain the right words is not a
+   reference. Every assertion below names the rule it enforces. */
+
+function tagAttrs(tag) {
+	const out = {};
+	for (const match of tag.matchAll(/([a-z][\w:-]*)(?:="([^"]*)")?/gi)) {
+		out[match[1]] = match[2] ?? "";
+	}
+	return out;
+}
+
+/* Attribute values are quoted throughout and `[^>]` spans newlines, so this
+   reads the example's multi-line tags without a parser. */
+const exampleTags = [...exampleHtml.matchAll(/<[a-z][\w-]*[^>]*>/gi)].map((match) => ({
+	name: match[0].match(/^<([a-z][\w-]*)/i)[1].toLowerCase(),
+	attrs: tagAttrs(match[0]),
+}));
+
+const exampleStyles = exampleHtml.match(/<style>([\s\S]*?)<\/style>/)?.[1] ?? "";
+const toolbarRegion = exampleHtml.slice(
+	exampleHtml.indexOf('class="rux-workspace__toolbar"'),
+	exampleHtml.indexOf("</header>", exampleHtml.indexOf('class="rux-workspace__toolbar"')),
+);
+const drawerId = exampleTags.find((t) => t.attrs.class === "rux-drawer rux-drawer--right")?.attrs.id;
+
+test("the reference composition carries the shared view frame", () => {
 	assert.match(exampleHtml, /class="rux-app"/);
 	assert.match(exampleHtml, /class="rux-app__body"/);
 	assert.match(exampleHtml, /class="rux-workspace"/);
-	assert.equal((exampleHtml.match(/class="rux-panel example-panel"/g) ?? []).length, 1);
-	assert.match(exampleHtml, /aria-current="page"/);
 	assert.match(exampleHtml, /class="rux-ui-header"/);
+
+	/* shell.md § Application Anatomy — the panels + workspace row sits directly
+	   in the body or in one .rux-app-view. The frame belongs to the view
+	   (§ Right Panel), so a composition that skips the view has no frame to
+	   share and cannot demonstrate the rule at all. */
+	const views = exampleTags.filter((t) => t.attrs.class === "rux-app-view");
+	assert.equal(views.length, 1, "the reference row is wrapped in exactly one .rux-app-view");
+
+	/* "configured once on the application shell, never per view, so no view can
+	   drift from the others" — the tokens are declared on .rux-app, and the view
+	   carries no inline geometry of its own. */
+	assert.match(exampleStyles, /\.rux-app\s*\{[^}]*--rux-app-view-padding:/s);
+	assert.doesNotMatch(exampleStyles, /\.rux-app-view\s*\{[^}]*--rux-app-view-padding:/s);
+	assert.ok(!("style" in views[0].attrs), ".rux-app-view carries no inline frame");
+
+	assert.match(exampleHtml, /aria-current="page"/);
 	// shell.md D1 (fixed by its step 2): the example must carry the page h1
 	// in the UI header — the composition it exists to demonstrate.
 	assert.match(exampleHtml, /<h1[^>]*class="rux-ui-header__title"/);
@@ -370,9 +421,108 @@ test("the canonical example contains the required accessible composition", () =>
 	assert.match(exampleHtml, /aria-label="Primary Navigation"/);
 	assert.match(exampleHtml, /data-rux-side-nav-toggle/);
 	assert.match(exampleHtml, /data-rux-side-nav-scrim/);
-	assert.doesNotMatch(exampleHtml, /margin-inline-end:\s*calc\(-1 \* var\(--rux-side-nav-width\)\)/);
+	// The overlay recipe is Tier 1 (portability-audit entry 11); the example
+	// must not hand-roll it again.
+	assert.doesNotMatch(exampleStyles, /margin-inline-end:\s*calc\(-1 \* var\(--rux-side-nav-width\)\)/);
+});
+
+test("a disclosed panel in the reference is controlled from its workspace header", () => {
+	/* shell.md § Right Panel: "A view-specific panel … SHOULD be controlled from
+	   that view's workspace header" and "The trigger MUST expose aria-controls
+	   and aria-expanded." A panel with no trigger passed the old name-presence
+	   assertions without complaint. */
+	assert.ok(drawerId, "the tools panel is a right drawer carrying an id");
 	assert.match(exampleHtml, /aria-label="Calendar Tools"/);
+
+	const triggers = exampleTags.filter(
+		(t) => t.name === "button" && t.attrs["aria-controls"] === drawerId,
+	);
+	assert.equal(triggers.length, 1, `exactly one control discloses #${drawerId}`);
+	assert.ok(
+		"aria-expanded" in triggers[0].attrs,
+		"the panel trigger exposes aria-expanded",
+	);
+	assert.ok(
+		toolbarRegion.includes(`aria-controls="${drawerId}"`),
+		"the trigger sits in the view's own workspace toolbar, not the UI header",
+	);
+
+	// Persistent attached panels MUST NOT use role="dialog" (§ Right Panel).
 	assert.doesNotMatch(exampleHtml, /role="dialog"/);
+});
+
+test("the reference workspace/panel boundary is a separator, not an invented gap", () => {
+	/* shell.md § Application Anatomy: panels and the workspace attach with no
+	   decorative gutter, but "a separator or resize hit target MAY occupy their
+	   shared boundary". The shared mechanism is .rux-drawer-gutter +
+	   .rux-resize-gutter (portability-audit entry 11) — the page must use it
+	   rather than restate the geometry. */
+	const gutter = exampleTags.find((t) => t.attrs.class === "rux-drawer-gutter rux-resize-gutter");
+	assert.ok(gutter, "the boundary carries the shared gutter pair");
+	assert.equal(gutter.attrs.role, "separator");
+	assert.equal(gutter.attrs["aria-orientation"], "vertical");
+	assert.equal(gutter.attrs["aria-controls"], drawerId);
+	assert.equal(gutter.attrs.tabindex, "0");
+	assert.ok(gutter.attrs["aria-label"], "the separator is named");
+
+	// The shell MUST NOT define product drawer widths; the page does, and only
+	// on the shell element.
+	assert.match(exampleStyles, /\.rux-app\s*\{[^}]*--rux-drawer-right-default-width:/s);
+	// Drawer position/animation belongs to rux-ui/css/base/drawer.css.
+	assert.doesNotMatch(exampleStyles, /\.rux-drawer[^{]*\{[^}]*position:\s*fixed/s);
+});
+
+test("the reference toolbar demonstrates group nesting", () => {
+	/* shell.md § Workspace, step 6: the toolbar separates GROUPS with
+	   --rux-button-group-gap; controls within one group sit flush, "nested in a
+	   single child". Two loose buttons in a toolbar is the ambiguous case the
+	   rule exists to settle, and is what this example used to show. */
+	assert.match(toolbarRegion, /role="group"/);
+
+	const nested = [...toolbarRegion.matchAll(/<div class="([\w-]+)"\s*>/g)];
+	assert.ok(nested.length >= 1, "the toolbar nests at least one flush group");
+
+	// Buttons contain no divs, so the first </div> after a group's open tag is
+	// that group's close.
+	const [, groupClass] = nested[0];
+	const openIndex = toolbarRegion.indexOf(nested[0][0]);
+	const groupInner = toolbarRegion.slice(openIndex, toolbarRegion.indexOf("</div>", openIndex));
+	assert.ok(
+		(groupInner.match(/<button/g) ?? []).length >= 2,
+		"a flush group holds more than one control",
+	);
+	assert.match(
+		exampleStyles,
+		new RegExp(`\\.${groupClass}\\s*\\{[^}]*gap:\\s*0`, "s"),
+		"the nested group is what makes its controls flush",
+	);
+});
+
+test("the reference panel tabs are wired and labelled in both directions", () => {
+	/* The tab strip carried aria-controls but the page loaded only ui-shell.js,
+	   so clicking a tab did nothing: aria-selected never moved and no pane
+	   changed. data-rux-tabs + controls.js is the shared single-select
+	   behaviour. */
+	assert.match(exampleHtml, /<script src="\.\.\/rux-ui\/js\/controls\.js"><\/script>/);
+	const tablist = exampleTags.find((t) => t.attrs.role === "tablist");
+	assert.ok(tablist, "the panel's top region is a tablist");
+	assert.ok("data-rux-tabs" in tablist.attrs, "the tablist opts into the shared controller");
+	assert.ok(tablist.attrs["aria-label"], "the tablist is named");
+
+	const tabs = exampleTags.filter((t) => t.attrs.role === "tab");
+	const panes = exampleTags.filter((t) => t.attrs.role === "tabpanel");
+	assert.ok(tabs.length >= 2 && tabs.length === panes.length);
+
+	for (const tab of tabs) {
+		assert.ok(tab.attrs.id, "every tab has an id for its pane to point back at");
+		const pane = panes.find((p) => p.attrs.id === tab.attrs["aria-controls"]);
+		assert.ok(pane, `tab #${tab.attrs.id} controls a real pane`);
+		assert.equal(
+			pane.attrs["aria-labelledby"],
+			tab.attrs.id,
+			"the pane names the tab that labels it",
+		);
+	}
 });
 
 test("panel cards in the reference are composed through panel panes", () => {

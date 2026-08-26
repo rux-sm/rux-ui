@@ -10,12 +10,63 @@
 		/>
 		<link rel="stylesheet" href="../rux-ui/css/rux.css" />
 		<style>
-			/* Example-only sizing. Drawer and responsive behavior belong to the app. */
-			.rux-app__body { position: relative; }
-			.example-panel { flex: 0 0 18rem; min-width: 0; min-height: 0; }
-			.example-workspace-content > * + * { margin-top: var(--rux-space-4); }
-			@media (max-width: 760px) {
-				.rux-panel.example-panel { display: none; }
+			/* ─────────────────────────────────────────────────────────────────
+			   Everything in this block is the CONSUMING APPLICATION's job.
+			   shell.md § Application Anatomy: "The shared shell MUST NOT define
+			   product drawer widths, collapsed rails, feature breakpoints, or a
+			   workspace content minimum width." So the shell ships those tokens
+			   at zero/auto and every consumer configures them once, here. This
+			   block is what that seam looks like — not example scaffolding to
+			   be skipped over.
+			   ───────────────────────────────────────────────────────────────── */
+
+			.rux-app {
+				/* One frame for every view, set on the shell and never on a view,
+				   so no view can drift from the others. It is why the workspace
+				   and the tools panel below sit inside a shared inset instead of
+				   running to the window edge — shell.md § Right Panel. */
+				--rux-app-view-padding: var(--rux-space-4);
+				--rux-app-view-radius: var(--rux-radius-0);
+
+				/* Drawer measurements. The mechanism is portable
+				   (rux-ui/css/base/drawer.css); this number is the product's,
+				   and the shared layer defaults it to `auto`. */
+				--rux-drawer-right-default-width: 320px;
+
+				/* --rux-drawer-gap is deliberately NOT set here. Left at its
+				   Tier 0 default it opens 20px between the workspace and the
+				   panel — which shell.md § Application Anatomy forbids ("A
+				   separator or resize hit target MAY occupy their shared
+				   boundary without creating a visible gap"). That contradiction
+				   is real, it is what this page renders, and it is recorded as
+				   shell.md D2. An example that picked its own number here would
+				   have hidden it. */
+			}
+
+			/* .rux-workspace__body owns scrolling and nothing else — it ships
+			   with no padding, because a canvas view (a scheduler grid, a map)
+			   has to run to its own edges. A document-shaped view supplies its
+			   own inset. */
+			.layout-example__content {
+				display: flex;
+				flex-direction: column;
+				gap: var(--rux-space-4);
+				padding: var(--rux-space-4);
+			}
+
+			/* One toolbar GROUP. The toolbar separates groups with
+			   --rux-button-group-gap; controls *within* a group sit flush, and a
+			   group is how you say so — a single child with its own gap: 0.
+			   shell.md § Workspace, step 6. Delete this rule and the three date
+			   controls drift apart into three groups of one. */
+			.layout-example__date-controls {
+				display: flex;
+				align-items: center;
+				gap: 0;
+			}
+
+			.layout-example__meta {
+				color: var(--rux-text-secondary);
 			}
 		</style>
 	</head>
@@ -97,56 +148,249 @@
 					</ul>
 				</nav>
 
-				<section
-					class="rux-workspace"
-					id="workspace"
-					aria-label="Calendar"
-				>
-					<header class="rux-workspace__header">
-						<div class="rux-workspace__toolbar" aria-label="Calendar Actions">
-							<button class="rux-button rux-button--default" type="button">Today</button>
-							<button class="rux-button rux-button--accent" type="button">New Trip</button>
+				<!-- One routable view. A single-view application MAY put the
+				     workspace and its panels directly in .rux-app__body instead —
+				     but the shared inset frame belongs to .rux-app-view, so a
+				     composition that skips it has no frame to share. Pairs with
+				     rux-ui/js/view-router.js; inactive views carry `hidden`. -->
+				<div class="rux-app-view" data-view="trips">
+					<section class="rux-workspace" id="workspace" aria-label="Trips">
+						<header class="rux-workspace__header">
+							<div class="rux-workspace__heading">
+								<button class="rux-button rux-button--accent" type="button">
+									<span class="rux-icon" aria-hidden="true">add</span>
+									<span class="rux-button__label">New Trip</span>
+								</button>
+							</div>
+							<div
+								class="rux-workspace__toolbar"
+								role="group"
+								aria-label="View controls"
+							>
+								<!-- Group one: three controls, flush. -->
+								<div class="layout-example__date-controls">
+									<button
+										class="rux-button rux-button--ghost rux-button--icon"
+										type="button"
+										aria-label="Previous week"
+									>
+										<span class="rux-icon" aria-hidden="true">chevron_left</span>
+									</button>
+									<button class="rux-button rux-button--ghost" type="button">
+										<span class="rux-button__label">Today</span>
+									</button>
+									<button
+										class="rux-button rux-button--ghost rux-button--icon"
+										type="button"
+										aria-label="Next week"
+									>
+										<span class="rux-icon" aria-hidden="true">chevron_right</span>
+									</button>
+								</div>
+								<!-- Group two: the panel's disclosure. A view-specific panel
+								     is controlled from its own workspace header, and the
+								     trigger MUST carry aria-controls and aria-expanded —
+								     shell.md § Right Panel. RuxDrawer keeps both in sync,
+								     and swaps the glyph via data-panel-toggle-icon. -->
+								<button
+									class="rux-button rux-button--ghost rux-button--icon"
+									type="button"
+									id="example-tools-toggle"
+									aria-label="Hide Calendar Tools"
+									aria-expanded="true"
+									aria-controls="example-tools-drawer"
+								>
+									<span class="rux-icon" data-panel-toggle-icon aria-hidden="true"
+										>right_panel_close</span
+									>
+								</button>
+							</div>
+						</header>
+						<div class="rux-workspace__body">
+							<div class="layout-example__content">
+								<article class="rux-card">
+									<header class="rux-card__header">
+										<h2 class="rux-card__title">Laughlin — Riverside Resort</h2>
+									</header>
+									<div class="rux-card__body">
+										<p class="layout-example__meta">Mon 24 Aug · 42 passengers · Coach 118</p>
+									</div>
+								</article>
+								<article class="rux-card">
+									<header class="rux-card__header">
+										<h2 class="rux-card__title">Primm — Buffalo Bill's</h2>
+									</header>
+									<div class="rux-card__body">
+										<p class="layout-example__meta">Tue 25 Aug · 38 passengers · Coach 104</p>
+									</div>
+								</article>
+								<article class="rux-card">
+									<header class="rux-card__header">
+										<h2 class="rux-card__title">Pala — Pala Casino</h2>
+									</header>
+									<div class="rux-card__body">
+										<p class="layout-example__meta">Wed 26 Aug · 51 passengers · Coach 122</p>
+									</div>
+								</article>
+								<article class="rux-card">
+									<header class="rux-card__header">
+										<h2 class="rux-card__title">Laughlin — Golden Nugget</h2>
+									</header>
+									<div class="rux-card__body">
+										<p class="layout-example__meta">Thu 27 Aug · 44 passengers · Coach 118</p>
+									</div>
+								</article>
+								<article class="rux-card">
+									<header class="rux-card__header">
+										<h2 class="rux-card__title">Valley View — Harrah's</h2>
+									</header>
+									<div class="rux-card__body">
+										<p class="layout-example__meta">Fri 28 Aug · 47 passengers · Coach 110</p>
+									</div>
+								</article>
+								<article class="rux-card">
+									<header class="rux-card__header">
+										<h2 class="rux-card__title">Primm — Whiskey Pete's</h2>
+									</header>
+									<div class="rux-card__body">
+										<p class="layout-example__meta">Sat 29 Aug · 40 passengers · Coach 104</p>
+									</div>
+								</article>
+							</div>
 						</div>
-					</header>
-					<div class="rux-workspace__body example-workspace-content">
-						<p>Primary workspace content</p>
-					</div>
-				</section>
+					</section>
 
-				<aside
-					class="rux-panel example-panel"
-					aria-label="Calendar Tools"
-				>
-					<div class="rux-panel__nav">
-						<div
-							class="rux-tabs rux-tabs--attached"
-							role="tablist"
-							aria-label="Calendar Tool Sections"
+					<!-- The shared boundary. Panels and the workspace attach with no
+					     decorative gutter, but a separator or resize hit target MAY
+					     occupy that boundary — shell.md § Application Anatomy. This
+					     element is both: .rux-drawer-gutter opens the app's gap with
+					     the drawer, .rux-resize-gutter makes it the splitter. It
+					     removes itself from layout and tab order while closed. -->
+					<div
+						class="rux-drawer-gutter rux-resize-gutter"
+						id="example-tools-gutter"
+						role="separator"
+						aria-orientation="vertical"
+						aria-label="Resize Calendar Tools"
+						aria-controls="example-tools-drawer"
+						tabindex="0"
+					></div>
+
+					<div
+						class="rux-drawer rux-drawer--right"
+						id="example-tools-drawer"
+					>
+						<aside
+							class="rux-panel rux-panel--attached"
+							aria-label="Calendar Tools"
 						>
-							<button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="example-calendar-tools">
-								Calendar
-							</button>
-							<button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="example-driver-tools" tabindex="-1">
-								Drivers
-							</button>
-						</div>
+							<!-- A panel needs an identifiable purpose, not necessarily a
+							     title header: attached tabs are one of the three valid top
+							     regions. shell.md § Panels. -->
+							<div class="rux-panel__nav rux-panel__nav--attached">
+								<div
+									class="rux-tabs rux-tabs--attached"
+									role="tablist"
+									aria-label="Calendar Tool Sections"
+									data-rux-tabs
+								>
+									<button
+										class="rux-tab"
+										type="button"
+										role="tab"
+										id="example-tab-calendar"
+										aria-selected="true"
+										aria-controls="example-pane-calendar"
+									>
+										Calendar
+									</button>
+									<button
+										class="rux-tab"
+										type="button"
+										role="tab"
+										id="example-tab-drivers"
+										aria-selected="false"
+										aria-controls="example-pane-drivers"
+										tabindex="-1"
+									>
+										Drivers
+									</button>
+								</div>
+							</div>
+							<div class="rux-panel__body">
+								<div
+									class="rux-panel__pane"
+									id="example-pane-calendar"
+									role="tabpanel"
+									aria-labelledby="example-tab-calendar"
+								>
+									<article class="rux-card">
+										<header class="rux-card__header">
+											<h2 class="rux-card__title">Mini Calendar</h2>
+										</header>
+										<div class="rux-card__body">Calendar controls</div>
+									</article>
+								</div>
+								<div
+									class="rux-panel__pane"
+									id="example-pane-drivers"
+									role="tabpanel"
+									aria-labelledby="example-tab-drivers"
+									hidden
+								>
+									<article class="rux-card">
+										<header class="rux-card__header">
+											<h2 class="rux-card__title">Unassigned</h2>
+										</header>
+										<div class="rux-card__body">Driver tools</div>
+									</article>
+								</div>
+							</div>
+						</aside>
 					</div>
-					<div class="rux-panel__body">
-						<div class="rux-panel__pane" id="example-calendar-tools" role="tabpanel">
-							<article class="rux-card">
-								<header class="rux-card__header">
-									<h2 class="rux-card__title">Mini Calendar</h2>
-								</header>
-								<div class="rux-card__body">Calendar controls</div>
-							</article>
-						</div>
-						<div class="rux-panel__pane" id="example-driver-tools" role="tabpanel" hidden>
-							<p>Driver tools</p>
-						</div>
-					</div>
-				</aside>
+				</div>
 			</main>
 		</div>
+
+		<script src="../rux-ui/js/controls.js"></script>
+		<script src="../rux-ui/js/drawer.js"></script>
 		<script src="../rux-ui/js/ui-shell.js"></script>
+		<script>
+			/* RuxDrawer.create() wires open/close/resize; the application wires the
+			   toggle's click. Note the absent RuxDrawer.configure() call — the
+			   module's portable defaults already name .rux-app-view, the gutter,
+			   and .rux-app as the width host, which is exactly this composition. */
+			(() => {
+				const drawer = document.getElementById("example-tools-drawer");
+				const toggle = document.getElementById("example-tools-toggle");
+				const tools = Rux.drawer.create({
+					drawer,
+					panel: drawer.querySelector(".rux-panel"),
+					toggleBtn: toggle,
+					handle: document.getElementById("example-tools-gutter"),
+					direction: "right",
+				});
+
+				toggle.addEventListener("click", () => {
+					if (tools.isOpen()) {
+						tools.close();
+						toggle.setAttribute("aria-label", "Show Calendar Tools");
+					} else {
+						tools.open();
+						toggle.setAttribute("aria-label", "Hide Calendar Tools");
+					}
+				});
+
+				/* Opens by default, but not where it would leave no workspace
+				   behind it. A breakpoint is the application's call, never the
+				   shared shell's. */
+				if (window.innerWidth >= 900) {
+					tools.open();
+				} else {
+					tools.close();
+					toggle.setAttribute("aria-label", "Show Calendar Tools");
+				}
+			})();
+		</script>
 	</body>
 </html>

@@ -30,6 +30,10 @@
    list does not chain out to the page. */
 .rux-table-wrap {
 	flex: 1;
+	/* Hug horizontally so the frame ends where the content does (layout.md
+	   §9.5); vertical fill is unchanged. */
+	width: max-content;
+	max-width: 100%;
 	min-width: 0;
 	min-height: 0;
 	overflow: auto;
@@ -40,12 +44,26 @@
 	border-radius: var(--rux-table-wrap-radius);
 }
 
-/* Inside a wrap the table distributes across the available width instead of
-   hugging its content — the wrap, not the table, decides how wide a roster is.
-   Auto layout still lets columns push past 100% when the content demands it,
-   which is what the wrap's overflow is for. */
+/* The frame hugs the content, and so does the table inside it — capped at the
+   space available, with the wrap's overflow taking over past that.
+
+   This read `width: 100%` on the table alone until layout.md step 30, which
+   made the wrap decide the width and left auto layout to spread the surplus
+   across the columns. Measured at 1440px, five of the six tables in the
+   application were paying for that: Documents rendered 315px of content in
+   1358px of frame, Requests 782 in 1398, Driver Roster 809 in 1398. Both
+   published workarounds for it are now unnecessary — Fleet's dead spacer
+   column and layout.md §9.5's "slack goes to the identity column", which
+   contradicted each other and are replaced by there being no slack.
+
+   The wrap hugs too, not just the table. Hugging the table alone leaves the
+   row hover and selection bands stopping short of the frame — measured at
+   591px short on Driver Roster, which is the trade fleet-app.css's spacer
+   comment warned about. With both hugging, the band still reaches its frame's
+   edge: 2px, exactly as before this change. */
 .rux-table-wrap > .rux-table {
-	width: 100%;
+	width: max-content;
+	max-width: 100%;
 }
 
 .rux-table {

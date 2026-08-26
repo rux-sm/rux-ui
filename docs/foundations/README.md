@@ -16,14 +16,14 @@ roles onto that vocabulary.
 | Document | Contract | Status | Blocked on |
 |---|---|---|---|
 | [`typography.md`](typography.md) | 6.1.0 | 67 done · 1 deferred · 3 withdrawn | — |
-| [`layout.md`](layout.md) | 2.14.0 | 29 done | — |
+| [`layout.md`](layout.md) | 2.15.0 | 30 done | — |
 | [`color.md`](color.md) | 4.10.0 | 46 done | — |
 | [`motion.md`](motion.md) | 1.6.0 | 6 done | — |
 | [`naming.md`](naming.md) | 1.18.0 | 15 done | — |
 | [`state.md`](state.md) | 1.8.1 | 11 done | — |
 | [`forms.md`](forms.md) | 1.4.2 | 8 done | — |
 | [`composition.md`](composition.md) | 1.10.0 | 12 done | — |
-| [`shell.md`](shell.md) | 1.4.0 | 6 done | — |
+| [`shell.md`](shell.md) | 1.4.0 | 7 done | — |
 | [`content.md`](content.md) | 1.0.2 | 3 done | — |
 
 `../motion.md` stays at the component tier — which token a panel, menu or scrim consumes,
@@ -242,13 +242,13 @@ counts.
 | [`composition.md`](composition.md) | 2 | 2 | 0 |
 | [`content.md`](content.md) | 2 | 1 | 0 |
 | [`forms.md`](forms.md) | 4 | 3 | 0 |
-| [`layout.md`](layout.md) | 3 | 0 | 0 |
+| [`layout.md`](layout.md) | 3 | 1 | 0 |
 | [`motion.md`](motion.md) | 1 | 1 | 2 |
 | [`naming.md`](naming.md) | 0 | 2 | 0 |
-| [`shell.md`](shell.md) | 3 | 0 | 0 |
+| [`shell.md`](shell.md) | 3 | 1 | 0 |
 | [`state.md`](state.md) | 1 | 0 | 1 |
 | [`typography.md`](typography.md) | 1 | 1 | 0 |
-| **total** | **18** | **5** | **3** |
+| **total** | **18** | **6** | **3** |
 
 *Forms' defects counted zero until 2026-08-24 — not because they were fixed, but because
 its §4 marked defect numbers in bold and the counter matches them plain, so four listed

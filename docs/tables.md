@@ -2,7 +2,7 @@
 
 > **Tier: component recipe.** This document is the component tier — which class and token
 > each part consumes — not a foundation document. The foundation set outranks it wherever
-> they touch: [`layout.md`](foundations/layout.md) 2.14.0 (§9.4 density, §9.5 columns),
+> they touch: [`layout.md`](foundations/layout.md) 2.15.0 (§9.4 density, §9.5 columns),
 > [`color.md`](foundations/color.md) 4.10.0, [`typography.md`](foundations/typography.md) 6.1.0,
 > [`content.md`](foundations/content.md) 1.0.2, [`composition.md`](foundations/composition.md) 1.10.0
 > (§2.3 records, §2.3.1 narrow). Where they disagree, the foundation document wins and this

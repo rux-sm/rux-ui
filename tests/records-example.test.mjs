@@ -19,6 +19,7 @@ const read = (p) => readFileSync(new URL(p, import.meta.url), "utf8");
 const page = read("../examples/records-view.html");
 const tokens = read("../rux-ui/css/tokens.css");
 const workspace = read("../rux-ui/css/base/workspace.css");
+const tableCss = read("../rux-ui/css/base/table.css");
 
 /* Structural assertions run against comment-stripped markup and CSS: prose
  * about a rule must not be able to satisfy the test for that rule. This file's
@@ -135,17 +136,19 @@ test("the band is paired to the rung by the shared layer, not by the view (§9.4
 		"the example must not restate the band height — that would be a second home for the rule");
 });
 
-test("data columns size to content and identity absorbs the slack (§9.5)", () => {
-	// Selectors group, so collect every [data-col] named in the selector list of
-	// a rule that sets width: 1% — matching the rule once and reading only its
-	// first name under-counts a grouped list.
-	const sized = [...styles.matchAll(/([^{}]*?)\{([^}]*)\}/g)]
-		.filter(([, , body]) => /width:\s*1%/.test(body))
-		.flatMap(([, selector]) => [...selector.matchAll(/th\[data-col="([a-z-]+)"\]/g)].map((m) => m[1]));
-	assert.ok(sized.length >= 2, "§9.5: data columns size to content rather than sharing width");
-	assert.ok(!sized.includes("driver"),
-		"§9.5: the identity column absorbs the remainder, so it is not content-sized");
-	// §9.5: three or more columns.
+test("the frame hugs its content, and no view restates that (§9.5)", () => {
+	// Step 30 replaced step 29's "slack goes to the identity column" — Fleet had
+	// contradicted it before it was written, and an 871px identity column holding
+	// a 282px name was not content sizing. The rule lives in table.css now, so
+	// the example must NOT carry a copy: the `width: 1%` idiom it used to need
+	// measured identical with and without, and is retired.
+	assert.match(tableCss, /\.rux-table-wrap\s*\{[^}]*width:\s*max-content/,
+		"the frame hugs — layout.md §9.5");
+	assert.match(tableCss, /\.rux-table-wrap\s*>\s*\.rux-table\s*\{[^}]*width:\s*max-content/,
+		"and so does the table inside it");
+	assert.ok(!/width:\s*1%/.test(styles),
+		"the example must not carry the retired shrink-to-content idiom");
+	// §9.5 still requires three or more columns.
 	const headers = (markup.match(/<th[^>]*data-col=/g) || []).length;
 	assert.ok(headers >= 3, `§9.5 requires three or more columns, found ${headers}`);
 });
