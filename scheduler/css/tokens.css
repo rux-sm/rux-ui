@@ -124,8 +124,8 @@
 	--sched-trip-bar-hover-bg-opacity:          70%;
 	--sched-trip-bar-pressed-bg-opacity:        50%;
 	--sched-trip-bar-selected-bg-opacity:       80%;
-	--sched-trip-bar-tail-opacity:              20%;
-	--sched-trip-bar-tail-selected-opacity:     20%;
+	--sched-trip-bar-tail-opacity:              50%;
+	--sched-trip-bar-tail-selected-opacity:     50%;
 	--sched-trip-bar-disabled-opacity:          0.45;
 	--sched-trip-bar-ghost-bg-opacity:          16%;
 	--sched-trip-dialog-width:           min(480px, calc(100vw - (var(--rux-space-4) * 2)));

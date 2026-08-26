@@ -1709,7 +1709,7 @@
 	--rux-switch-thumb-size:           20px;
 
 	/* — checked — */
-	--rux-switch-checked-bg:       var(--rux-accent);
+	--rux-switch-checked-bg:       var(--rux-accent-400);
 	--rux-switch-checked-border:   none;
 	--rux-switch-checked-thumb-bg: var(--rux-thumb-bg);
 
@@ -1746,7 +1746,7 @@
 	--rux-slider-track-height: 8px;
 	--rux-slider-track-bg:     var(--rux-surface-2);
 	--rux-slider-track-radius: var(--rux-radius-0);
-	--rux-slider-fill-bg:      var(--rux-accent);
+	--rux-slider-fill-bg:      var(--rux-accent-400);
 
 	--rux-slider-thumb-height: 16px;
 	--rux-slider-thumb-width:  8px;
@@ -2154,47 +2154,47 @@
 
 	--rux-blue-100:  oklch(95% 0.18 260);
 	--rux-blue-200:  oklch(90% 0.18 260);
-	--rux-blue-300:  oklch(65% 0.18 260);
-	--rux-blue-400:  oklch(40% 0.18 260);
-	--rux-blue-500:  oklch(36% 0.18 260);
-	--rux-blue-600:  oklch(32% 0.18 260);
-	--rux-blue-700:  oklch(28% 0.18 260);
-	--rux-blue-800:  oklch(24% 0.18 260);
+	--rux-blue-300:  oklch(80% 0.18 260);
+	--rux-blue-400:  oklch(70% 0.18 260);
+	--rux-blue-500:  oklch(60% 0.18 260);
+	--rux-blue-600:  oklch(50% 0.18 260);
+	--rux-blue-700:  oklch(40% 0.18 260);
+	--rux-blue-800:  oklch(30% 0.18 260);
 	--rux-blue-900:  oklch(20% 0.18 260);
-	--rux-blue-1000: oklch(12% 0.18 260);
+	--rux-blue-1000: oklch(10% 0.18 260);
 
 	--rux-red-100:  oklch(95% 0.18 24);
 	--rux-red-200:  oklch(90% 0.18 24);
-	--rux-red-300:  oklch(65% 0.18 24);
-	--rux-red-400:  oklch(40% 0.18 24);
-	--rux-red-500:  oklch(36% 0.18 24);
-	--rux-red-600:  oklch(32% 0.18 24);
-	--rux-red-700:  oklch(28% 0.18 24);
-	--rux-red-800:  oklch(24% 0.18 24);
+	--rux-red-300:  oklch(80% 0.18 24);
+	--rux-red-400:  oklch(70% 0.18 24);
+	--rux-red-500:  oklch(60% 0.18 24);
+	--rux-red-600:  oklch(50% 0.18 24);
+	--rux-red-700:  oklch(40% 0.18 24);
+	--rux-red-800:  oklch(30% 0.18 24);
 	--rux-red-900:  oklch(20% 0.18 24);
-	--rux-red-1000: oklch(12% 0.18 24);
+	--rux-red-1000: oklch(10% 0.18 24);
 
 	--rux-amber-100:  oklch(95% 0.14 70);
 	--rux-amber-200:  oklch(90% 0.14 70);
-	--rux-amber-300:  oklch(65% 0.14 70);
-	--rux-amber-400:  oklch(40% 0.14 70);
-	--rux-amber-500:  oklch(36% 0.14 70);
-	--rux-amber-600:  oklch(32% 0.14 70);
-	--rux-amber-700:  oklch(28% 0.14 70);
-	--rux-amber-800:  oklch(24% 0.14 70);
+	--rux-amber-300:  oklch(80% 0.14 70);
+	--rux-amber-400:  oklch(70% 0.14 70);
+	--rux-amber-500:  oklch(60% 0.14 70);
+	--rux-amber-600:  oklch(50% 0.14 70);
+	--rux-amber-700:  oklch(40% 0.14 70);
+	--rux-amber-800:  oklch(30% 0.14 70);
 	--rux-amber-900:  oklch(20% 0.14 70);
-	--rux-amber-1000: oklch(12% 0.14 70);
+	--rux-amber-1000: oklch(10% 0.14 70);
 
 	--rux-green-100:  oklch(95% 0.18 147);
 	--rux-green-200:  oklch(90% 0.18 147);
-	--rux-green-300:  oklch(65% 0.18 147);
-	--rux-green-400:  oklch(40% 0.18 147);
-	--rux-green-500:  oklch(36% 0.18 147);
-	--rux-green-600:  oklch(32% 0.18 147);
-	--rux-green-700:  oklch(28% 0.18 147);
-	--rux-green-800:  oklch(24% 0.18 147);
+	--rux-green-300:  oklch(80% 0.18 147);
+	--rux-green-400:  oklch(70% 0.18 147);
+	--rux-green-500:  oklch(60% 0.18 147);
+	--rux-green-600:  oklch(50% 0.18 147);
+	--rux-green-700:  oklch(40% 0.18 147);
+	--rux-green-800:  oklch(30% 0.18 147);
 	--rux-green-900:  oklch(20% 0.18 147);
-	--rux-green-1000: oklch(12% 0.18 147);
+	--rux-green-1000: oklch(10% 0.18 147);
 
 	--rux-teal-100:  oklch(95% 0.18 181);
 	--rux-teal-200:  oklch(90% 0.18 181);
