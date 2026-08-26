@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Colour-carrying components — the rule 2.15 gallery</title>
-<link rel="stylesheet" href="./rux-ui/css/rux.css?v=19" />
+<link rel="stylesheet" href="./rux-ui/css/rux.css?v=20" />
 <link rel="stylesheet" href="./scheduler/css/components.css?v=28" />
 <style>
 	body { background: var(--rux-surface-0); color: var(--rux-text-primary);
@@ -287,9 +287,12 @@ const parseOklch = (v) => { const m = v.match(/oklch\(\s*([\d.]+)%\s+([\d.]+)\s+
 
 async function load() {
 	const css = await (await fetch("./rux-ui/css/tokens.css")).text();
-	const srgb = css.slice(0, css.indexOf("@media (color-gamut: p3)"));
-	const lightAt = srgb.indexOf(':root[data-theme="light"]');
-	const scope = { dark: srgb.slice(0, lightAt), light: srgb.slice(lightAt) };
+	/* One gamut since color.md §5 step 33, so there is no P3 branch to slice
+	   off first. This used to read css.slice(0, indexOf("@media (color-gamut:
+	   p3)")), which silently became slice(0, -1) when that block went away —
+	   harmless here only because the file's last character is a newline. */
+	const lightAt = css.indexOf(':root[data-theme="light"]');
+	const scope = { dark: css.slice(0, lightAt), light: css.slice(lightAt) };
 	for (const t of ["dark","light"]) {
 		const lits = {};
 		const re = /--([\w-]+)\s*:\s*([^;]+);/g; let m;
@@ -974,10 +977,6 @@ function render() {
 	measureLive();
 }
 
-document.getElementById("theme").addEventListener("click", () => {
-	document.documentElement.setAttribute("data-theme", theme() === "dark" ? "light" : "dark");
-	render();
-});
 /* The bar writes to every element at once; each element's own strip overrides
    it afterwards. "Set all" is a starting point, not the state. */
 function setAll(el, options, key) {

@@ -103,34 +103,35 @@ test("the neutral scale is neutral (rule 2.8, Q3)", () => {
 	}
 });
 
-test("the high-contrast steps are theme-invariant, but for one measured exception", () => {
-	/* Measured on the catalog and recorded in color.md §3.1: 700 and 800 are
-	   the same colour in both themes in every hue scale — a high-contrast fill
-	   does not change with the canvas — while 100-600 and 900-1000 invert
-	   around them. This is the catalog's whole theming model, so it is worth a
-	   ratchet: a light-theme override on a 700 means someone re-tuned a fill.
+test("the fill step is theme-invariant, with no exceptions", () => {
+	/* THE INVARIANT STEP MOVED, AND SO DID THE REASON. Under Geist it was 700
+	   and 800: those were the same colour in both themes in every hue while
+	   100-600 and 900-1000 inverted around them, and it was a measurement of
+	   the catalog rather than a rule — carried with one exception, red-800,
+	   which differed by a single code value nobody could see.
 
-	   THE EXCEPTION IS RED-800, and it is the catalog's, not this system's.
-	   It measures hsl(358 69% 52%) dark and hsl(358 70% 52%) light — one
-	   percentage point of saturation, which is one code value in the red
-	   channel (217 vs 218) and nothing a reader can see. It is carried rather
-	   than smoothed away because these values are a measurement: flattening the
-	   two to one number would be choosing, and the point of §3.1 is that
-	   nothing here was chosen. Found by this test when it was first written
-	   asserting invariance across all fourteen pairs. */
-	const EXCEPTIONS = new Set(["--rux-red-800"]);
+	   Since color.md §5 step 34 the roles land on 200/400/900 and the fill is
+	   400, and the invariance is now DERIVED rather than observed: every fill
+	   carries `--rux-fg-on-fill`, a theme-invariant white literal, so a fill
+	   that changed with the canvas would need two different labels and there
+	   is only one. Both themes therefore declare L40 at the hue's own chroma,
+	   and the measured contrast is identical either side — 9.58 danger, 9.56
+	   info, 9.42 warning, 8.07 success.
+
+	   No exception list. The old one existed because §3.1 recorded what the
+	   catalog measured and flattening it would have been choosing; these
+	   values ARE chosen, so an exception here would mean a mistake. */
 	const differ = [];
 	for (const scale of HUES) {
-		for (const step of [700, 800]) {
-			const name = `--rux-${scale}-${step}`;
-			if (declOf(LIGHT_BLOCK, name) !== declOf(DARK_BLOCK, name)) differ.push(name);
-		}
+		const name = `--rux-${scale}-400`;
+		if (declOf(LIGHT_BLOCK, name) !== declOf(DARK_BLOCK, name)) differ.push(name);
 	}
 	assert.deepEqual(
 		differ,
-		[...EXCEPTIONS],
-		"A high-contrast step gained or lost a theme difference. If the catalog " +
-			"really differs there, measure it and name it here; otherwise it is a re-tune.",
+		[],
+		"The fill step gained a theme difference. Every fill shares one white " +
+			"label, so a per-theme fill cannot be labelled — move the value back " +
+			"or amend color.md rule 2.11 first.",
 	);
 });
 
