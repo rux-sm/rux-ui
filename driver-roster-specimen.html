@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Driver Roster — the proposed layout</title>
+<link rel="stylesheet" href="./rux-ui/css/rux.css?v=22" />
+<link rel="stylesheet" href="./scheduler/css/components.css?v=30" />
+<style>
+/* ==========================================================================
+   SPECIMEN — docs/driver-roster-plan.md §3, built before step 3's amendments
+   --------------------------------------------------------------------------
+   Purpose: test whether the proposed layout composes from published vocabulary
+   BEFORE any of it is written into foundations/composition.md, and before a
+   panel module exists to make the markup expensive to change.
+
+   The plan promises: "No new --rux-* primitive or semantic token and no new
+   .rux-* class." Everything below is either a published .rux-* component or a
+   driver-roster__* app-tier class, and every value is a --rux-* token. What
+   could NOT be built that way is listed at the foot of this file.
+
+   ALL DATA IS SYNTHETIC. This file is in a public repository; the roster it
+   mimics is real and its columns are anon-readable. Phone numbers are in the
+   555-01xx block reserved for fiction.
+   ========================================================================== */
+
+/* — specimen page chrome, not part of the proposal — */
+body {
+	background: var(--rux-surface-0);
+	color: var(--rux-text-primary);
+	font-family: var(--rux-font-sans);
+	margin: 0;
+	padding: 0 var(--rux-space-5) 6rem;
+}
+.page-head { padding-top: var(--rux-space-5); margin-bottom: var(--rux-space-5); }
+.page-head h1 {
+	font-size: var(--rux-text-heading-24-size);
+	line-height: var(--rux-text-heading-24-line-height);
+	letter-spacing: var(--rux-text-heading-24-tracking);
+	font-weight: var(--rux-weight-600);
+	margin: 0 0 var(--rux-space-2);
+}
+.page-head p {
+	color: var(--rux-text-secondary);
+	margin: 0 0 var(--rux-space-3);
+	max-width: 74ch;
+	font-size: var(--rux-text-copy-14-size);
+	line-height: var(--rux-text-copy-14-line-height);
+}
+.specimen { margin-bottom: var(--rux-space-6); }
+.specimen h2 {
+	font-size: var(--rux-text-heading-16-size);
+	line-height: var(--rux-text-heading-16-line-height);
+	font-weight: var(--rux-weight-600);
+	margin: 0 0 var(--rux-space-1);
+}
+.specimen__note {
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-text-copy-13-size);
+	line-height: var(--rux-text-copy-13-line-height);
+	margin: 0 0 var(--rux-space-3);
+	max-width: 74ch;
+}
+/* Stands in for the application shell: .rux-workspace is flex:1 inside a
+   bounded flex column, and owns its own scrolling. */
+.specimen__shell {
+	display: flex;
+	height: 32rem;
+	border-radius: var(--rux-radius-container);
+	overflow: hidden;
+	border: var(--rux-border-width) solid var(--rux-card-border);
+}
+
+/* ==========================================================================
+   THE PROPOSAL — block: driver-roster
+   ========================================================================== */
+
+/* — Driver cell: name over short name — */
+.driver-roster__name {
+	display: block;
+	font-size: var(--rux-text-label-14-size);
+	line-height: var(--rux-text-label-14-line-height);
+	font-weight: var(--rux-text-label-14-weight);
+	color: var(--rux-text-primary);
+}
+.driver-roster__short {
+	display: block;
+	font-size: var(--rux-text-copy-13-size);
+	line-height: var(--rux-text-copy-13-line-height);
+	color: var(--rux-text-secondary);
+}
+
+/* — Standing cell: employment word + priority, both as words — */
+.driver-roster__standing {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+	/* The narrow rule gives cells white-space: normal so long values can wrap;
+	   these two are short labels that must not break inside themselves. */
+	white-space: nowrap;
+}
+.driver-roster__priority {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--rux-space-1-5);
+	white-space: nowrap;
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-text-copy-13-size);
+	line-height: var(--rux-text-copy-13-line-height);
+}
+
+/* — Notes indicator: presence only; the text lives in the editor — */
+.driver-roster__notes-flag {
+	--_icon-size: var(--rux-icon-sm);
+	color: var(--rux-text-secondary);
+}
+
+/* — A stub record: name and reference only. Six of forty. — */
+.driver-roster__empty { color: var(--rux-text-disabled); }
+
+/* — Phone is the one column that hides by width, and it hides as a pair.
+     [data-col] carries the identity so the <th> and the <td> travel
+     together — this is defect B1's fix, expressed structurally. — */
+@media (max-width: 720px) {
+	.driver-roster__table [data-col="phone"] { display: none; }
+}
+
+/* ==========================================================================
+   BELOW 720px — the two-line row
+   --------------------------------------------------------------------------
+   layout.md §1.1 publishes 720 as "the workspace stops fitting two columns:
+   side-by-side bodies stack, wide tables shed their money columns." It does
+   not say what a RECORDS body does there, which is the gap step 3(i) fills.
+   This is the candidate rule, rendered.
+
+   display:block on table elements drops the implicit table/row/cell roles in
+   every engine, so the roles are declared in the markup and hold in both
+   layouts. Without them the narrow view is a stack of anonymous generics.
+   ========================================================================== */
+@media (max-width: 720px) {
+	.driver-roster__table,
+	.driver-roster__table thead,
+	.driver-roster__table tbody,
+	.driver-roster__table tr,
+	.driver-roster__table th,
+	.driver-roster__table td {
+		display: block;
+	}
+
+	/* The header row goes entirely — not column by column. Every cell loses
+	   its header at the same moment, so no cell can outlive its <th>. */
+	.driver-roster__table thead { display: none; }
+
+	.driver-roster__table tr {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto auto;
+		/* Phone is hidden at this width by the [data-col] pair rule above, so
+		   its area is dead and standing takes the whole second line. Sharing
+		   line two with a hidden column left standing ~150px for ~180px of
+		   label, which broke "Full-time" across two lines. */
+		grid-template-areas:
+			"driver   notes    compliance"
+			"standing standing standing";
+		align-items: baseline;
+		column-gap: var(--rux-space-3);
+		row-gap: var(--rux-space-1);
+		padding: var(--rux-space-3) var(--rux-space-4);
+		border-bottom: var(--rux-table-border-width) solid var(--rux-table-border-color);
+	}
+
+	/* .rux-table td publishes four properties that assume table layout and
+	   become hard constraints the moment display:block applies:
+	     height: var(--rux-table-row-height)  → 36px floor on every cell
+	     white-space: nowrap                  → no wrapping in a stacked row
+	     overflow: hidden + text-overflow     → silent truncation, not ellipsis
+	   All four have to be given back. Un-reset, a one-line cell reserves 36px
+	   and a 20px row costs 101px. This is the concrete content of step 3(i). */
+	.driver-roster__table td {
+		height: auto;
+		white-space: normal;
+		overflow: visible;
+		text-overflow: clip;
+		padding: 0;
+		border: 0;
+	}
+
+	/* The band. .rux-workspace__toolbar is flex-wrap: nowrap by contract, which
+	   is right for a desktop table band and unsurvivable at 375: search, two
+	   tracks and Columns crush to "Se", "A", "Columns". Scoped to this block
+	   rather than patched into workspace.css — what a records BAND does below
+	   720 is the second half of the same unanswered question as the body. */
+	.driver-roster__band {
+		flex-wrap: wrap;
+		align-items: stretch;
+	}
+	.driver-roster__band .rux-workspace__heading,
+	.driver-roster__band .rux-workspace__toolbar {
+		flex: 1 1 100%;
+		min-width: 0;
+	}
+	.driver-roster__band .rux-workspace__toolbar {
+		flex-wrap: wrap;
+		justify-content: flex-start;
+		gap: var(--rux-space-2);
+	}
+	.driver-roster__band .rux-workspace__toolbar > .rux-input[type="search"] {
+		flex: 1 1 100%;
+	}
+
+	.driver-roster__table td[data-col="driver"]     { grid-area: driver; }
+	.driver-roster__table td[data-col="standing"]   { grid-area: standing; }
+	.driver-roster__table td[data-col="compliance"] { grid-area: compliance; text-align: right; }
+	.driver-roster__table td[data-col="notes"]      { grid-area: notes; }
+}
+</style>
+</head>
+<body>
+
+<div class="page-head">
+	<h1>Driver Roster — the proposed layout</h1>
+	<p>
+		<code>docs/driver-roster-plan.md</code> §3, rendered against the real stylesheets
+		so the "no new tokens, no new classes" promise can fail rather than be asserted.
+		Resize past 720px to see the row treatment step 3(i) has to publish. All data is
+		synthetic.
+	</p>
+	<div class="rux-u-cluster">
+		<button class="rux-button rux-button--default" id="theme" type="button">Toggle Theme</button>
+		<button class="rux-button rux-button--default" id="bandfix" type="button" aria-pressed="false">
+			Candidate Fix: Heading <code>flex: 0 0 auto</code>
+		</button>
+	</div>
+
+	<div class="rux-alert rux-alert--warning" role="note">
+		<span class="rux-icon rux-alert__icon" aria-hidden="true">warning</span>
+		<div>
+			<strong>The band as specified does not fit.</strong>
+			<code>.rux-workspace__header--table</code> gives <code>__heading</code> and
+			<code>__toolbar</code> <code>flex: 1 1 auto</code> each, so at 1440 the heading
+			takes 760px to hold one 122px button and the toolbar gets 638px for 801px of
+			controls. <code>.rux-segmented-track</code> is <code>overflow: hidden</code>, so
+			the two tracks lose 101px and 64px <em>silently</em> — no scrollbar, no overflow,
+			nothing a layout test would catch. The shipped Drivers view is unaffected: its
+			toolbar needs 210px of the same 639px. This is new to the proposal, and the fix
+			is shared-tier, so it is a step 3 amendment rather than an app-tier patch. The
+			toggle above applies the candidate live; it is not in any stylesheet.
+		</div>
+	</div>
+</div>
+
+<section class="specimen">
+	<h2>Header band and roster</h2>
+	<p class="specimen__note">
+		The band is <code>.rux-workspace__header--table</code> unchanged. Search is a bare
+		<code>.rux-input[type="search"]</code> as a direct child of the toolbar, which the
+		published contract already sizes at <code>flex: 1 1 24rem</code>. Status is a scope
+		with counts, not a filter in a rail.
+	</p>
+
+	<div class="specimen__shell">
+		<section class="rux-workspace" aria-label="Driver roster">
+			<header class="rux-workspace__header rux-workspace__header--table driver-roster__band">
+				<div class="rux-workspace__heading">
+					<button class="rux-button rux-button--ghost" type="button">
+						<span class="rux-icon" aria-hidden="true">add</span>
+						<span class="rux-button__label">New Driver</span>
+					</button>
+				</div>
+				<div class="rux-workspace__toolbar">
+					<input
+						class="rux-input"
+						type="search"
+						placeholder="Search name, short name, phone, licence…"
+						aria-label="Search drivers"
+						autocomplete="off"
+						spellcheck="false"
+					/>
+					<div class="rux-segmented-track" role="group" aria-label="Status scope">
+						<button class="rux-button rux-button--segment" type="button" aria-pressed="true">Active 25</button>
+						<button class="rux-button rux-button--segment" type="button" aria-pressed="false">Inactive 15</button>
+						<button class="rux-button rux-button--segment" type="button" aria-pressed="false">All 40</button>
+					</div>
+					<div class="rux-segmented-track" role="group" aria-label="Driver view">
+						<button class="rux-button rux-button--segment" type="button" aria-pressed="true">Roster</button>
+						<button class="rux-button rux-button--segment" type="button" aria-pressed="false">Workload</button>
+					</div>
+					<button class="rux-button rux-button--ghost" type="button" aria-haspopup="menu" aria-expanded="false">
+						<span class="rux-icon" aria-hidden="true">view_column</span>
+						<span class="rux-button__label">Columns</span>
+					</button>
+				</div>
+			</header>
+
+			<div class="rux-workspace__body">
+				<div class="rux-table-wrap">
+					<table class="rux-table driver-roster__table" role="table" aria-label="Drivers">
+						<thead>
+							<tr role="row">
+								<th scope="col" role="columnheader" data-col="driver">Driver</th>
+								<th scope="col" role="columnheader" data-col="standing">Standing</th>
+								<th scope="col" role="columnheader" data-col="phone">Phone</th>
+								<th scope="col" role="columnheader" data-col="compliance">Compliance</th>
+								<th scope="col" role="columnheader" data-col="notes">Notes</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr role="row">
+								<td role="cell" data-col="driver">
+									<span class="driver-roster__name">Marisol Vega</span>
+									<span class="driver-roster__short">Mari</span>
+								</td>
+								<td role="cell" data-col="standing">
+									<span class="driver-roster__standing">Full-time<span class="driver-roster__priority"><span class="rux-priority-dot" data-priority="1" aria-hidden="true"></span>Priority 1</span></span>
+								</td>
+								<td role="cell" data-col="phone">555-0142</td>
+								<td role="cell" data-col="compliance">CDL 12 Mar 2028</td>
+								<td role="cell" data-col="notes">
+									<span class="rux-icon driver-roster__notes-flag" title="Has notes">sticky_note_2</span>
+								</td>
+							</tr>
+							<tr role="row">
+								<td role="cell" data-col="driver">
+									<span class="driver-roster__name">Dee Okonkwo</span>
+									<span class="driver-roster__short">Dee</span>
+								</td>
+								<td role="cell" data-col="standing">
+									<span class="driver-roster__standing">Full-time<span class="driver-roster__priority"><span class="rux-priority-dot" data-priority="2" aria-hidden="true"></span>Priority 2</span></span>
+								</td>
+								<td role="cell" data-col="phone">555-0177</td>
+								<td role="cell" data-col="compliance">
+									<span class="rux-status-text rux-status-text--warning">Medical in 41 days</span>
+								</td>
+								<td role="cell" data-col="notes"></td>
+							</tr>
+							<tr role="row">
+								<td role="cell" data-col="driver">
+									<span class="driver-roster__name">Tomasz Brandt</span>
+									<span class="driver-roster__short">Tom</span>
+								</td>
+								<td role="cell" data-col="standing">
+									<span class="driver-roster__standing">Part-time<span class="driver-roster__priority"><span class="rux-priority-dot" data-priority="3" aria-hidden="true"></span>Priority 3</span></span>
+								</td>
+								<td role="cell" data-col="phone">555-0108</td>
+								<td role="cell" data-col="compliance">
+									<span class="rux-status-text rux-status-text--danger">CDL expired 12 days ago</span>
+								</td>
+								<td role="cell" data-col="notes">
+									<span class="rux-icon driver-roster__notes-flag" title="Has notes">sticky_note_2</span>
+								</td>
+							</tr>
+							<tr role="row">
+								<td role="cell" data-col="driver">
+									<span class="driver-roster__name">Aisha Lindqvist</span>
+									<span class="driver-roster__short">Ash</span>
+								</td>
+								<td role="cell" data-col="standing">
+									<span class="driver-roster__standing">Full-time<span class="driver-roster__priority"><span class="rux-priority-dot" data-priority="2" aria-hidden="true"></span>Priority 2</span></span>
+								</td>
+								<td role="cell" data-col="phone">555-0193</td>
+								<td role="cell" data-col="compliance">Medical 04 Sep 2027</td>
+								<td role="cell" data-col="notes"></td>
+							</tr>
+							<tr role="row">
+								<td role="cell" data-col="driver">
+									<span class="driver-roster__name">Rafael Nunes</span>
+									<span class="driver-roster__short">Rafa</span>
+								</td>
+								<td role="cell" data-col="standing">
+									<span class="driver-roster__standing">Part-time<span class="driver-roster__priority"><span class="rux-priority-dot" data-priority="3" aria-hidden="true"></span>Priority 3</span></span>
+								</td>
+								<td role="cell" data-col="phone">555-0126</td>
+								<td role="cell" data-col="compliance">CDL 30 Jun 2027</td>
+								<td role="cell" data-col="notes">
+									<span class="rux-icon driver-roster__notes-flag" title="Has notes">sticky_note_2</span>
+								</td>
+							</tr>
+							<!-- A stub record. Six of forty carry a name and a reference and
+							     nothing else; before 2026-08-26 they were status
+							     inactive_historical, now folded into inactive. The roster has
+							     to render one without looking broken. -->
+							<tr role="row">
+								<td role="cell" data-col="driver">
+									<span class="driver-roster__name">Glenda Pryor</span>
+									<span class="driver-roster__short driver-roster__empty">No short name</span>
+								</td>
+								<td role="cell" data-col="standing">
+									<span class="driver-roster__standing">Full-time<span class="driver-roster__priority"><span class="rux-priority-dot" data-priority="3" aria-hidden="true"></span>Priority 3</span></span>
+								</td>
+								<td role="cell" data-col="phone"><span class="driver-roster__empty">—</span></td>
+								<td role="cell" data-col="compliance"><span class="driver-roster__empty">Not on file</span></td>
+								<td role="cell" data-col="notes"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+	</div>
+</section>
+
+<script>
+	const theme = () =>
+		document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+	document.documentElement.setAttribute("data-theme", "light");
+	document.getElementById("theme").addEventListener("click", () => {
+		document.documentElement.setAttribute("data-theme", theme() === "dark" ? "light" : "dark");
+	});
+
+	/* The candidate fix, applied from here rather than from a stylesheet: it is a
+	   Class B change to workspace.css that reaches all eight views, and it is not
+	   authorized. This exists so both states can be compared, not to ship one. */
+	const fixBtn = document.getElementById("bandfix");
+	fixBtn.addEventListener("click", () => {
+		const on = fixBtn.getAttribute("aria-pressed") === "true";
+		fixBtn.setAttribute("aria-pressed", String(!on));
+		document.querySelector(".rux-workspace__heading").style.flex = on ? "" : "0 0 auto";
+	});
+</script>
+</body>
+</html>

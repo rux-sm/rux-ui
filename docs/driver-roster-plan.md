@@ -30,6 +30,7 @@ is not the problem; the information design and three defects are.
 | B1 | At ≤720px the Phone `<td>` hides via `.col-phone` but its `<th>` carries only `data-col="phone"` and stays — six headers, five cells. Every column right of Phone is shifted one to the left. Reproduced at 375px. | `driver-app.css:244`, `driver-panel.js:649,666` |
 | B2 | `drivers.status` holds three values — `active` (25), `inactive` (9), `inactive_historical` (6) — and the filter offers All / Active / On leave / Inactive with an equality compare. The six historical records match no option but "All", and render as the word "Inactive". | `driver-panel.js:215,1606–1611,1631` |
 | B3 | The "Next trip" column is `defaultOn: true` and renders a literal em-dash for every driver in every state. | `driver-panel.js:750–755` |
+| B4 | **Two disjoint populations both mean "legacy import placeholder", and they disagree.** Six rows were `status = 'inactive_historical'` and carry no short name, hire date, notes or expiry dates — structural stubs. A *different* five rows carry notes reading "Inactive historical placeholder created for the … legacy import" and do have short names. The sets do not overlap, and **one of the five is `status = 'active'`** — a record whose own notes call it an inactive placeholder while it sits in the roster's default Active scope. No false expiry alerts result (`notification-db.js:22` returns false on a null date), so the effect is confined to the roster count. Found 2026-08-26 while verifying step 2. | `drivers.notes` / `drivers.status` |
 
 ### System conformance
 
@@ -62,7 +63,9 @@ The identity half is governed by `CLAUDE.md` § Data and Risk (decided 2026-08-2
 being remediated separately — `supabase/drivers-notes-id-strip.sql`, which the owner runs.
 **That patch is remediation, not the fix.** The fix is structural and belongs to step 7:
 model what the column is carrying so nobody has a reason to type an identifier into a
-textarea again. Until then, treat every column this client reads as public — the app
+textarea again. **B4 is the sharpest case for that work**: provenance is currently asserted
+in two places that name different records, and step 2 removed the status half without
+reconciling them — deliberately, since reconciling them is modelling, not a status fold. Until then, treat every column this client reads as public — the app
 authenticates as `anon` with the key in page source and has no authentication of any kind.
 
 ---
@@ -73,7 +76,7 @@ Same archetype, same components. **No new `--rux-*` primitive or semantic token 
 `.rux-*` class.**
 
 1. **Search is the primary control** — `.rux-input` in the workspace header over name, short name, phone and licence number.
-2. **Status becomes a scope with counts** — `.rux-segmented-track` in the header. Names the third bucket (closing B2), labels the current scope without a title, defaults to 25 rows instead of 40.
+2. **Status becomes a scope with counts** — `.rux-segmented-track` in the header. Two scopes plus All, since step 2 folded the third bucket rather than naming it; labels the current scope without a title, defaults to 25 rows instead of 40.
 3. **One compliance column, always on** — nearest of CDL and medical expiry, using the warning/danger treatment `licExpiryClass` already writes. Today it is off by default while Licence # is on.
 4. **Employment and priority fold into one "Standing" cell, with words** — not a tooltip-only dot.
 5. **Notes leaves the roster** — indicator only; text lives in the editor.
@@ -109,9 +112,9 @@ Amendment classes are `foundations/README.md` §2.1.
 
 | # | Step | Class |
 |---|---|---|
-| 0 | Run `supabase/drivers-notes-id-strip.sql`. Owner-run; it deletes data. | — |
+| 0 | Run `supabase/drivers-notes-id-strip.sql`. Owner-run; it deletes data. **Done 2026-08-26.** Verified from the `anon` position: 0 notes match the ID pattern, 0 carry any nine-digit run, and the `private` backup is unreachable over REST (`PGRST205`). Section 5 — dropping that backup — is still pending and deliberate. | — |
 | 1 | Patch B1 in the current module — hide by `[data-col]` so header and cell go together. | A |
-| 2 | Settle the status vocabulary. **Blocking:** the header's scope control is three segments or four depending on the answer. | data |
+| 2 | Settle the status vocabulary. **Answered 2026-08-26 by the owner: `inactive_historical` folds into `inactive`** — two values, so the scope control is All / Active / Inactive. Patch written, owner-run: `supabase/drivers-status-historical-fold.sql`. | data |
 | 3 | Two amendments to `foundations/composition.md` §2.3, **before any code**: (i) what a records table does below 720px — `layout.md` §1.1 publishes the width but nothing states what changes there for a records body; (ii) the attached rail's status, since §2.3 currently calls it "Optional" and cites Drivers and Fleet as having one. | A |
 | 4 | Scaffold the view — `scheduler/css/features/driver-roster.css`, `js/panels/driver-roster-panel.js`, block `driver-roster`. Side-nav item, `data-archetype="records"`, router `allow`, lazy boot. | A |
 | 5 | **Phase 1 — the table.** Header band, narrow layout, Columns popover. Cells via `textContent` (closes S1 by construction), one delegated `<tbody>` listener, real row semantics (S4). Editor markup copied across as scaffolding only. | A |
@@ -133,11 +136,15 @@ Nothing gates assignment eligibility on `drivers.status`; the only reader outsid
 `driver-panel.js` is `notification-db.js:96`, which uses `status === "active"` for licence and
 medical expiry warnings, and every candidate answer to step 2 keeps those six non-active.
 
-**Those six records are not deletable.** Whatever "Archived" comes to mean, it is a status and
-never a removal, or past trips lose their driver.
+**Those six records are not deletable.** Step 2 folded them into `inactive` rather than naming
+them — a status change, never a removal, or past trips lose their driver. What that fold costs
+is recorded in the patch: the six are import stubs, carrying a name and a `driver_ref` and
+nothing else (no short name, hire date, notes, or expiry dates, where the other 34 all carry
+some), and after the fold that distinction survives only as an absence of data rather than as a
+fact. Modelling it properly, if it is worth keeping, is step 7's question alongside notes.
 
-Steps 1, 3–6, 8 and 9 touch CSS, markup and rendering only — no data path. Step 7's notes
-modelling is a data migration and needs the same preview-and-rollback treatment as step 0.
+Steps 1, 3–6, 8 and 9 touch CSS, markup and rendering only — no data path. Step 2 and step 7's
+notes modelling are data migrations and need the same preview-and-rollback treatment as step 0.
 
 ---
 
