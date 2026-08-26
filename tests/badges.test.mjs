@@ -21,15 +21,29 @@ function tokenValue(name) {
 	return tokens.match(new RegExp(`${name}:\\s*([^;]+);`))[1].trim();
 }
 
+/* Follow var() indirection to a literal. --rux-table-row-height stopped being
+   one at layout.md step 28, which put it on the density scale — it now reads
+   --rux-row-height-md. Resolving rather than re-pinning keeps this test about
+   the badge/row relationship instead of about a particular number. */
+function resolvedPx(name, depth = 0) {
+	const raw = tokenValue(name);
+	const ref = raw.match(/^var\(\s*(--[a-z0-9-]+)\s*\)$/i);
+	if (ref) {
+		assert.ok(depth < 5, `${name}: var() indirection too deep`);
+		return resolvedPx(ref[1], depth + 1);
+	}
+	const px = Number.parseInt(raw, 10);
+	assert.ok(Number.isFinite(px), `${name} does not resolve to a px literal (got ${raw})`);
+	return px;
+}
+
 test("a badge is sized as a label, not as a control", () => {
 	// The regression this guards: --rux-badge-height was --rux-control-height
-	// (44px), taller than --rux-table-row-height (36px), so every status cell
-	// silently set the row height for its whole table.
-	const badgeHeight = Number.parseInt(tokenValue("--rux-badge-height"), 10);
-	const rowHeight = Number.parseInt(
-		tokenValue("--rux-table-row-height"),
-		10,
-	);
+	// (44px), taller than --rux-table-row-height (36px at the time, 40px since
+	// layout.md step 28), so every status cell silently set the row height for
+	// its whole table.
+	const badgeHeight = resolvedPx("--rux-badge-height");
+	const rowHeight = resolvedPx("--rux-table-row-height");
 	assert.ok(
 		badgeHeight < rowHeight,
 		`badge height ${badgeHeight}px must fit inside a ${rowHeight}px table row`,

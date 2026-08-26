@@ -853,6 +853,24 @@
 
 	--rux-control-height:    44px;
 	--rux-control-height-sm: var(--rux-control-height);
+	/* — density: row and band tiers —
+	   Adopted from Carbon's data table (layout.md §9.4, step 28), which is the
+	   only published source with a density MODEL rather than a list of
+	   exceptions. Guidance-only under the standing rule: the rungs are
+	   measured, the names are this system's. Geist publishes no density layer,
+	   so it is silent here rather than overridden. */
+	--rux-row-height-xs: 24px;
+	--rux-row-height-sm: 32px;
+	--rux-row-height-md: 40px;
+	--rux-row-height-lg: 48px;
+	--rux-row-height-xl: 64px;
+
+	/* A control band is paired to the tier of the table beneath it — it is not
+	   an independent value. Carbon publishes two band sizes for five row tiers;
+	   §9.4 carries the mapping, including the md rung Carbon leaves unstated. */
+	--rux-band-height-sm: 32px;
+	--rux-band-height-lg: 48px;
+
 	--rux-field-height:      36px;
 
 	--rux-avatar-sm: 24px;
@@ -2162,7 +2180,10 @@
 	--rux-table-header-tracking: var(--rux-text-label-12-tracking);
 
 	/* — row / cell — */
-	--rux-table-row-height:           36px;
+	/* The density tier. layout.md §9.4 states the model and the pairing rule;
+	   read it there. Was a lone 36px until layout.md step 28, which is off the
+	   scale entirely — the value predates having a scale to be on. */
+	--rux-table-row-height:           var(--rux-row-height-md);
 	--rux-table-cell-padding-inline:  var(--rux-space-2);
 	--rux-table-edge-padding-inline:  var(--rux-space-4);
 	--rux-table-cell-font-size:       var(--rux-size-14);

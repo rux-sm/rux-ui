@@ -1,10 +1,10 @@
 # Rux UI Foundations — Layout
 
-**Contract version: 2.12.0** · Stamped at the top so a downstream document can state the
+**Contract version: 2.13.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 27 steps: **27 done**
+**Status** · 28 steps: **28 done**
 This document is canonical for **breakpoints (§1), the space scale (§7), and the radius
 scale and Materials presets (§8)**. Steps 4 and 5 brought the last two in, and **step 9
 adopted the elevation presets**, which was the last thing §8 had measured but not applied.
@@ -196,6 +196,7 @@ do.
 | 24 | A card inside a section does not pay the gap twice | **done · Class B, inert** | **Executed 2026-08-23**, found while migrating `tasks-panel` onto `.rux-section` (typography.md §3.5). `.rux-section` spaces its children with a **flex gap** of `--rux-card-content-gap`; `.rux-card` carries its own `+` sibling **margin** of the same token for when cards stack outside a section. Inside one they compound. **Measured, not assumed: a run of two cards under a section heading rendered a 32px gap** where every other card pair in the app renders 16px. Added `.rux-section > .rux-card + .rux-card { margin-top: 0 }` — the gap wins, because it is the primitive's own contract and the margin exists for cards that have no section to space them. **Class B by kind but inert in fact, and that was checked rather than assumed:** `.rux-section` had zero callers until the same day, and its one prior caller — the itinerary's day group — holds exactly **one** card child, so it has no adjacent pair and measured unchanged. The first content this rule affects is the tasks panel migrated in the same commit, which now renders 16px between trip cards. **Deliberately not done:** the reverse case — a `.rux-card` containing `.rux-section` children — was not addressed. No such markup exists, and inventing a rule for it would be guessing at a shape nothing has asked for yet. |
 | 25 | The card header floor moves to 64px; the pane inset loses its 0 top | **done · Class B ×3** | **Executed 2026-08-23, adopting the owner's two working-tree edits after a measured A/B** — stock values overridden live, every point measured both ways. **Before → after: `--rux-card-header-height` 40px → 64px; `--rux-panel-padding` `0 20 20 20` → `20px` all round.** **The 64 is Geist's own arithmetic**: a 16px title sets a 24px line, 24 + 20 + 20 = 64 — closing the "card header top padding" item (~9px at the 40 floor vs Geist's 20). Single-line headers 40 → 64. **Correction (2026-08-23, 2.10.1): the "subtitled headers 84 → 84" this step first recorded was a measurement artifact** — the A/B revealed the Settings view without hiding the active one, and the overlapped layout wrapped the header taller. Properly navigated, subtitled headers measure **64 under both floors**: they are content-sized past the old 40 floor, so the conclusion — unchanged by the token — holds, and the figure is corrected. **One reader takes it as a fixed height, accepted knowingly**: `itinerary.css` sets `height:` on stop headers — the densest form grows 24px per stop; a §9.2 dense-exception was offered, the owner chose uniformity. **The pane edit makes §9.1's row true**: it promised 20px "adjusted when attached navigation owns the top seam", but the token was 0-top everywhere and no adjustment existed — the clause described nothing and is deleted rather than kept as fiction. Tab-strip seams in all four editors 0 → 20; rail panes 0 → 20 top; a flush-seam variant was offered and declined. **The third Class B was found by an assert, not the A/B**: §1.1's ≤500px touch block held a second `--rux-card-header-height: 44px` — a *grow* against the 40 floor, a **shrink** against 64, the exact defect step 20 removed for the panel header. Removed from the block; **before → after at ≤500px: 44px → 64px.** The desktop-only A/B missed it, and the claim that the token had a single definition shipped wrong in `19352a2` before this step corrected it. Consumer renders zero `.rux-card__header` and zero `.rux-panel__pane`; gate clean. **Eyeball**: single-line card headers, the itinerary tab, the editors' tab seams, the rails, driver-week-info — and card headers at ≤500px. **Recording note**: commit `19352a2` shipped the values with a message claiming this step — the recording script had died on a stale anchor and the commit chain was gated on the test run instead of the script. This step is that record, one commit late and saying so. |
 | 26 | Answer the cards-document question; fix its duplicated number | **done · Class A** | **Executed 2026-08-23** alongside `composition.md` step 7, which decided the component-doc tier as a set. **The answer: no family foundation for cards** — `docs/cards.md` already exists at the component tier and gains the governance header; this document keeps owning the card's rules (§8, §9.1–9.2). **The numbering defect is the second finding**: step 17 appended the question as a second Q5 at the file's end while §6 already held one, so a citation by number was ambiguous — it is now Q6, answered, with the original preserved. Nothing renders differently. |
+| 28 | Adopt Carbon as the density gap source; publish the tier scale and the band pairing | **done · Class A + Class B ×2** | **Executed 2026-08-26, at the owner's direction** (*"open to changing sizes anywhere to follow guidance"*), and the step exists because a rebuild exposed the gap the hard way: the Driver Roster looked *almost identical* to the module it replaced, and the reason was that nothing here governed density, column width or band proportion — so the rebuild inherited the defaults of the thing it was replacing. **An absent rule is not neutral; it is an instruction to copy the neighbour.** **Source chosen on evidence.** Geist publishes no density layer. Cloudscape's Density settings is named in `composition.md` Q5 but its guidance is not open — rendered pages only, verified against the GitHub API. Carbon publishes both code and guidance under Apache-2.0, 317 MDX rule pages in a separate repository, and is the system this repo already borrowed gate 4's snapshot mechanism from. Guidance-only under the standing rule. **Class A** — the five row rungs and two band rungs are new names; nothing resolved differently until something read them. **Class B (1)** — `--rux-table-row-height` 36px → `var(--rux-row-height-md)` = **40px**. The old value was not on any scale, because there was no scale to be on. Measured across every table in the app before and after: Drivers, Fleet, Customers and Documents 36 → 40; Requests already ran 61 and is unmoved (the property is a floor). **Class B (2)** — `.rux-workspace__header--table` gains `min-height: var(--rux-band-height-lg)` = **48px**, from 40px. Four bands: Drivers, Fleet, Customers, Requests. Scoped to `--table` so Calendar's canvas band, which has no table to pair with, is untouched. **The Driver Roster opts into lg (48px)** under the two-line rule, and its data columns size to content — at 1440 the equal split gave phone 289px for a 100px number; content-sizing returns that width to the identity column. **States still needing an eyeball**: every table at narrow widths in both themes. The measurements above are at 1440. **Deliberately not done**: no table measure or max-width — §10 holds that app shells have no content max-width, Carbon caps nothing either, and changing that is its own step with its own argument. `--rux-field-height` stays 36px: it is a control rung, not a row rung, and conflating them is how the band got its 40px in the first place. The four shipped tables are **not** re-tiered — they take the md default and stay there until each is rebuilt. Contract 2.12.0 → **2.13.0**. |
 | 27 | Claim `--rux-ui-header-height` in §10 | **done · Class A** | **Executed 2026-08-23**, with `shell.md`'s founding step: its header bullet stated a literal `44px` that contradicted the token's 40px desktop value, and correcting it to a token reference needed the token to have a published home. §10 carries it beside its panel and card siblings from steps 20 and 25. Prose references to `../layout-composition.md` in live sections now say `shell.md`; log history keeps the old path, as history. |
 
 ---
@@ -475,6 +476,49 @@ width* — and it is a **portability** rule about which layer may define a value
 rule about what the value is. **Q3 is the open question of whether layout owns those fixed
 dimensions at all**, so moving the rule here would have answered Q3 by accident. Step 7
 removed the duplicate.
+
+---
+
+### 9.4 Density is a tier, and a control band is paired to it
+
+**Source: [Carbon data table](https://carbondesignsystem.com/components/data-table/style/),
+guidance-only (step 28).** Geist publishes no density layer, so it is silent here rather
+than overridden; Carbon is the only surveyed system publishing a density *model* rather
+than a list of exceptions. Rungs are measured from its published tables, names are this
+system's, nothing is imported.
+
+**A repeating row takes one of five tiers.** §9.2's dense exception describes *when* to
+leave the 16px card rhythm; this is *what to leave it for*.
+
+| Tier | Token | Height |
+|---|---|---|
+| xs | `--rux-row-height-xs` | 24px |
+| sm | `--rux-row-height-sm` | 32px |
+| **md** | `--rux-row-height-md` | **40px** — the default; `--rux-table-row-height` reads it |
+| lg | `--rux-row-height-lg` | 48px |
+| xl | `--rux-row-height-xl` | 64px |
+
+**A row whose cell holds two lines of content MUST take `lg` or higher.** This is Carbon's
+rule and it is the one that catches real defects: the Driver Roster identity cell stacks a
+name over a short name and ran at the 36px default, which is a two-line stack in a
+one-line row.
+
+**A control band above a table MUST be paired to that table's tier — it is not an
+independent value.**
+
+| Row tier | Band | Token |
+|---|---|---|
+| xs · sm | 32px | `--rux-band-height-sm` |
+| **md · lg · xl** | **48px** | `--rux-band-height-lg` |
+
+Carbon pairs its large 48px toolbar with lg and xl, and its small toolbar with sm and xs,
+and **leaves md unstated**. This system assigns md to the large band, because the measured
+failure was at md: a 40px band held a 36px control — 2px of slack per side — and sat
+directly below a 40px shell header, so the two bands read as one. *(Step 28.)*
+
+**A band that has no table has nothing to pair with** and keeps
+`--rux-workspace-header-min-height`. The rule is scoped to
+`.rux-workspace__header--table` for exactly that reason.
 
 ---
 

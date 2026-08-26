@@ -83,6 +83,16 @@
 	flex: 0 0 auto;
 }
 
+/* A table band is paired to the density tier of the table beneath it
+   (layout.md §9.4) — it is not an independent value. It held 40px against a
+   36px control, which is 2px of slack per side, and it is the same height as
+   the shell header directly above it, so two bands stacked and read as one.
+   Scoped to --table: a canvas band (Calendar) has no table to pair with and
+   keeps the shared min-height. */
+.rux-workspace__header--table {
+	min-height: var(--rux-band-height-lg);
+}
+
 .rux-workspace__header--table .rux-workspace__toolbar {
 	flex: 1 1 auto;
 	min-width: 0;

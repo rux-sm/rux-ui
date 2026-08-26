@@ -18,6 +18,34 @@
    and every value is a --rux-* token.
    ========================================================================== */
 
+/* — Density and column width — layout.md §9.4 —
+
+   The identity cell is two lines (name over short name), and §9.4 holds that
+   two-line content takes the lg rung or higher. At the md default it ran 39px
+   against a 20px + 16px stack, which is the cramp with a name.
+
+   Columns size to content rather than sharing the width equally. At 1440 the
+   equal split gave phone 289px for a 100px number and compliance 273px for a
+   ~150px string; content-sizing returns that to the identity column, which is
+   the one that benefits from room. width: 1% is the table-layout idiom for
+   "shrink to content" — with white-space: nowrap it resolves to the widest
+   cell rather than to 1%. */
+
+.driver-roster__table {
+	--rux-table-row-height: var(--rux-row-height-lg);
+}
+
+.driver-roster__table th[data-col="standing"],
+.driver-roster__table th[data-col="phone"],
+.driver-roster__table th[data-col="compliance"] {
+	width: 1%;
+	white-space: nowrap;
+}
+
+.driver-roster__table th[data-col="notes"] {
+	width: var(--rux-row-height-md);
+}
+
 /* — Detail window —
      Same window geometry as the trip, fleet and driver editors
      (.sched-driver-dialog, driver-app.css). Plan step 7 rebuilds what is
