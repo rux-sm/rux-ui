@@ -31,7 +31,10 @@ const views = starts.map((s, i) => {
 });
 
 test("every view declares a valid archetype (§2.1)", () => {
-	assert.equal(views.length, 8, "eight views expected");
+	// Nine since 2026-08-26: driver-roster joined as the rebuild of the drivers
+	// module (docs/driver-roster-plan.md step 4). Both run side by side until
+	// that plan's step 9 deletes the old one, which takes this back to eight.
+	assert.equal(views.length, 9, "nine views expected");
 	for (const v of views) {
 		assert.ok(v.view, "view without data-view");
 		assert.ok(v.archetype, `${v.view}: no data-archetype`);

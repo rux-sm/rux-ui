@@ -57,6 +57,10 @@
 		/>
 		<link
 			rel="stylesheet"
+			href="./scheduler/css/features/driver-roster.css?v=1"
+		/>
+		<link
+			rel="stylesheet"
 			href="./scheduler/css/features/fleet-panel.css?v=14"
 		/>
 		<link
@@ -774,6 +778,18 @@
 									>person</span
 								>
 								<span class="rux-side-nav__label" data-view-label>Drivers</span>
+							</button>
+						</li>
+						<li class="rux-side-nav__item">
+							<button
+								class="rux-side-nav__link"
+								type="button"
+								data-view="driver-roster"
+							>
+								<span class="rux-icon" aria-hidden="true"
+									>badge</span
+								>
+								<span class="rux-side-nav__label" data-view-label>Driver Roster</span>
 							</button>
 						</li>
 						<li class="rux-side-nav__item">
@@ -4940,6 +4956,89 @@
 				<!-- /module:drivers -->
 
 				<!-- ════════════════════════════════════════════════════════════════
+             MODULE: DRIVER ROSTER — docs/driver-roster-plan.md
+             Runs beside module:drivers until plan step 9 cuts over.
+             composition.md 1.10.0 §2.3 · no rail (§2.3.2) · shell.md 1.3.0
+             ════════════════════════════════════════════════════════════════ -->
+				<div class="rux-app-view" data-view="driver-roster" data-archetype="records" hidden>
+					<section class="rux-workspace" aria-label="Driver roster">
+						<header class="rux-workspace__header rux-workspace__header--table driver-roster__band">
+							<div class="rux-workspace__heading">
+								<button class="rux-button rux-button--ghost" type="button" id="droster-new" aria-haspopup="dialog">
+									<span class="rux-icon" aria-hidden="true">add</span>
+									<span class="rux-button__label">New Driver</span>
+								</button>
+							</div>
+							<div class="rux-workspace__toolbar">
+								<input
+									class="rux-input"
+									type="search"
+									id="droster-search"
+									placeholder="Search name, short name, phone, licence…"
+									aria-label="Search drivers"
+									autocomplete="off"
+									spellcheck="false"
+								/>
+								<div class="rux-segmented-track" id="droster-scope" role="group" aria-label="Status scope">
+									<button class="rux-button rux-button--segment" type="button" data-scope="active" aria-pressed="true">
+										Active <span data-scope-count>0</span>
+									</button>
+									<button class="rux-button rux-button--segment" type="button" data-scope="inactive" aria-pressed="false">
+										Inactive <span data-scope-count>0</span>
+									</button>
+									<button class="rux-button rux-button--segment" type="button" data-scope="all" aria-pressed="false">
+										All <span data-scope-count>0</span>
+									</button>
+								</div>
+							</div>
+						</header>
+						<div class="rux-workspace__body">
+							<div class="rux-table-wrap">
+								<table class="rux-table driver-roster__table" id="droster-grid" role="table" aria-label="Driver roster">
+									<thead>
+										<tr role="row">
+											<th scope="col" role="columnheader" data-col="driver">Driver</th>
+											<th scope="col" role="columnheader" data-col="standing">Standing</th>
+											<th scope="col" role="columnheader" data-col="phone">Phone</th>
+											<th scope="col" role="columnheader" data-col="compliance">Compliance</th>
+											<th scope="col" role="columnheader" data-col="notes" aria-label="Notes"></th>
+										</tr>
+									</thead>
+									<tbody id="droster-body"></tbody>
+								</table>
+							</div>
+						</div>
+					</section>
+
+					<!-- Read-only detail. Plan step 7 rebuilds this as the editor;
+					     §2.3 requires a floating window and this is it meanwhile. -->
+					<aside
+						class="rux-panel rux-panel--floating driver-roster__detail"
+						id="droster-detail"
+						role="dialog"
+						aria-labelledby="droster-detail-title"
+						hidden
+					>
+						<header class="rux-panel__header" data-droster-detail-header>
+							<h2 class="rux-panel__title" id="droster-detail-title">Driver</h2>
+							<button
+								type="button"
+								class="rux-button rux-button--ghost rux-button--icon"
+								id="droster-detail-close"
+								aria-label="Close driver details"
+							>
+								<span class="rux-icon" aria-hidden="true">close</span>
+							</button>
+						</header>
+						<div class="rux-panel__body">
+							<div class="rux-panel__pane" id="droster-detail-body"></div>
+						</div>
+					</aside>
+				</div>
+				<!-- /module:driver-roster -->
+
+
+				<!-- ════════════════════════════════════════════════════════════════
              MODULE: CUSTOMERS
              ════════════════════════════════════════════════════════════════ -->
 				<div
@@ -6406,6 +6505,7 @@
 		<script src="./js/panels/trip-panel.js?v=49"></script>
 		<script src="./js/components/itinerary.js?v=64"></script>
 		<script src="./js/panels/driver-panel.js?v=32" defer></script>
+		<script src="./js/panels/driver-roster-panel.js?v=2" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=18" defer></script>
 		<script src="./js/panels/customers-panel.js?v=13" defer></script>
 		<script src="./js/panels/settings-panel.js?v=12" defer></script>
@@ -6507,6 +6607,7 @@
 					"calendar",
 					"fleet",
 					"drivers",
+					"driver-roster",
 					"customers",
 					"requests",
 					"documents",
@@ -6519,6 +6620,7 @@
 				title: "#app-module-title",
 				onChange(name) {
 					if (name === "drivers") window.DriverPanel?.init();
+					if (name === "driver-roster") window.DriverRosterPanel?.init();
 					if (name === "fleet") window.FleetPanel?.init();
 					if (name === "customers") window.CustomersPanel?.init();
 					if (name === "requests") window.RequestInbox?.init();

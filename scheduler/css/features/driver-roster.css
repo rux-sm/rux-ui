@@ -1,0 +1,280 @@
+/* ==========================================================================
+   DRIVER ROSTER — the rebuilt drivers module
+   --------------------------------------------------------------------------
+   docs/driver-roster-plan.md, step 4. Runs beside the shipped `driver-app`
+   block rather than replacing it; the old module stays working until the
+   plan's step 9 cuts over and deletes it.
+
+   Conforms to foundations/composition.md 1.10.0 §2.3 — records archetype,
+   with §2.3.1's narrow contract and §2.3.2's rail test. There is no rail:
+   search, scope and the view switch are workspace-header controls, and
+   column configuration is a popover. See composition.md §2.3.2.
+
+   Every rule here was rendered and measured in driver-roster-specimen.html
+   before it was written into a stylesheet.
+
+   No new --rux-* primitive or semantic token, and no new .rux-* class. What
+   is not a published .rux-* component is a driver-roster__* app-tier class,
+   and every value is a --rux-* token.
+   ========================================================================== */
+
+/* — Detail window —
+     Same window geometry as the trip, fleet and driver editors
+     (.sched-driver-dialog, driver-app.css). Plan step 7 rebuilds what is
+     inside it; the frame is what §2.3 requires of a records view now. — */
+
+.driver-roster__detail {
+	top: 50%;
+	left: 50%;
+	width: min(460px, calc(100vw - (var(--rux-space-4) * 2)));
+	height: min(720px, calc(100dvh - (var(--rux-space-4) * 2)));
+	max-width: calc(100vw - (var(--rux-space-4) * 2));
+	max-height: calc(100dvh - (var(--rux-space-4) * 2));
+	transform: translate(-50%, -50%);
+	overflow: hidden;
+}
+
+.driver-roster__detail[hidden] {
+	display: none;
+}
+
+/* — Driver cell: name over short name — */
+
+.driver-roster__name {
+	display: block;
+	font-size: var(--rux-text-label-14-size);
+	line-height: var(--rux-text-label-14-line-height);
+	font-weight: var(--rux-text-label-14-weight);
+	color: var(--rux-text-primary);
+}
+
+.driver-roster__short {
+	display: block;
+	font-size: var(--rux-text-copy-13-size);
+	line-height: var(--rux-text-copy-13-line-height);
+	color: var(--rux-text-secondary);
+}
+
+/* A stub record carries a name and a driver_ref and nothing else — fifteen of
+   forty after the status fold. The absence is the only thing distinguishing
+   an import stub from someone who was employed and offboarded, which is the
+   modelling question plan step 7 opens. */
+.driver-roster__empty {
+	color: var(--rux-text-disabled);
+}
+
+/* — Identity cell — */
+
+.driver-roster__identity {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-3);
+	min-width: 0;
+}
+
+.driver-roster__avatar {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	overflow: hidden;
+	width: var(--rux-avatar-md);
+	height: var(--rux-avatar-md);
+	background: var(--rux-surface-1);
+	border-radius: var(--rux-radius-control);
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-size-12);
+	font-weight: var(--rux-weight-400);
+	font-family: var(--rux-font-mono);
+	letter-spacing: 0;
+	user-select: none;
+}
+
+.driver-roster__avatar img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.driver-roster__avatar--inactive {
+	opacity: 0.4;
+}
+
+.driver-roster__id-text {
+	min-width: 0;
+}
+
+/* — Standing cell: employment word + priority, both as words —
+   The old module carried priority as a bare colour dot whose only label was a
+   title attribute, which touch and screen-reader users never get (plan S4). */
+
+.driver-roster__standing {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+	/* §2.3.1 gives cells white-space: normal so long values can wrap; these two
+	   are short labels that must not break inside themselves. */
+	white-space: nowrap;
+}
+
+.driver-roster__priority {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--rux-space-1-5);
+	white-space: nowrap;
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-text-copy-13-size);
+	line-height: var(--rux-text-copy-13-line-height);
+}
+
+/* — Compliance cell: the nearest of CDL and medical expiry — */
+
+.driver-roster__compliance--warn {
+	color: var(--rux-warning);
+}
+
+.driver-roster__compliance--expired {
+	color: var(--rux-danger);
+}
+
+/* — Notes indicator: presence only; the text lives in the editor.
+     The column itself is gone — see plan §2 for why a free-text column on an
+     anon-readable table is not a display problem. — */
+
+.driver-roster__notes-flag {
+	--_icon-size: var(--rux-icon-sm);
+	--_icon-optical-size: var(--rux-icon-optical-size-sm);
+	color: var(--rux-text-secondary);
+}
+
+/* — Read-only detail facts —
+     A label/value list. There is no published .rux-* component for one, and
+     inventing a .rux-key-value would be adding shared vocabulary to fit a
+     feature — so this stays app-tier. If a second view needs the same shape,
+     that is the moment to propose promoting it. — */
+
+.driver-roster__facts {
+	display: grid;
+	grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+	gap: var(--rux-space-2) var(--rux-space-4);
+	margin: 0;
+}
+
+.driver-roster__facts dt {
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-text-copy-13-size);
+	line-height: var(--rux-text-copy-13-line-height);
+}
+
+.driver-roster__facts dd {
+	margin: 0;
+	min-width: 0;
+	color: var(--rux-text-primary);
+	font-size: var(--rux-text-copy-13-size);
+	line-height: var(--rux-text-copy-13-line-height);
+	overflow-wrap: anywhere;
+}
+
+/* — Empty state — */
+
+.driver-roster__none {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-8);
+	color: var(--rux-text-disabled);
+	font-size: var(--rux-size-14);
+	text-align: center;
+}
+
+/* ==========================================================================
+   BELOW 720px — the two-line row
+   --------------------------------------------------------------------------
+   foundations/composition.md §2.3.1, contract 1.10.0. Every rule below is one
+   of that section's four; read it there rather than restating why here.
+   ========================================================================== */
+
+@media (max-width: 720px) {
+	.driver-roster__table,
+	.driver-roster__table thead,
+	.driver-roster__table tbody,
+	.driver-roster__table tr,
+	.driver-roster__table th,
+	.driver-roster__table td {
+		display: block;
+	}
+
+	/* §2.3.1: the header row goes whole, so no cell can outlive its <th>. */
+	.driver-roster__table thead {
+		display: none;
+	}
+
+	/* Compliance sits on line two beside standing, not on line one beside the
+	   name. Its text is a label plus a date — "Medical May 8, 2027" — so as a
+	   line-one `auto` column it took whatever it needed and left the name 107px.
+	   Measured over the first twelve rows at 375px: names wrapping to a second
+	   line went 7/12 → 3/12, the name column 107px → 138px, and mean row height
+	   107px → 97px. The three that still wrap are genuinely long names. */
+	.driver-roster__table tr {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		grid-template-areas:
+			"driver   notes"
+			"standing compliance";
+		align-items: baseline;
+		column-gap: var(--rux-space-3);
+		row-gap: var(--rux-space-1);
+		padding: var(--rux-space-3) var(--rux-space-4);
+		border-bottom: var(--rux-table-border-width) solid var(--rux-table-border-color);
+	}
+
+	/* §2.3.1: the four properties .rux-table td publishes become hard
+	   constraints under display: block and MUST be given back. */
+	.driver-roster__table td {
+		height: auto;
+		white-space: normal;
+		overflow: visible;
+		text-overflow: clip;
+		padding: 0;
+		border: 0;
+	}
+
+	.driver-roster__table td[data-col="driver"]     { grid-area: driver; }
+	.driver-roster__table td[data-col="standing"]   { grid-area: standing; }
+	.driver-roster__table td[data-col="compliance"] { grid-area: compliance; text-align: right; }
+	.driver-roster__table td[data-col="notes"]      { grid-area: notes; }
+
+	/* §2.3.1: hide a column as a header/cell pair, both keyed off [data-col].
+	   Phone's area is dead at this width, so standing takes the whole second
+	   line — sharing it with a hidden column left ~150px for ~180px of label
+	   and broke "Full-time" across two lines. */
+	.driver-roster__table [data-col="phone"] {
+		display: none;
+	}
+
+	/* §2.3.1: the band wraps rather than crushing. Scoped here, not patched
+	   into workspace.css — the shared flex-wrap: nowrap is right for the width
+	   it was written for. */
+	.driver-roster__band {
+		flex-wrap: wrap;
+		align-items: stretch;
+	}
+
+	.driver-roster__band .rux-workspace__heading,
+	.driver-roster__band .rux-workspace__toolbar {
+		flex: 1 1 100%;
+		min-width: 0;
+	}
+
+	.driver-roster__band .rux-workspace__toolbar {
+		flex-wrap: wrap;
+		justify-content: flex-start;
+		gap: var(--rux-space-2);
+	}
+
+	.driver-roster__band .rux-workspace__toolbar > .rux-input[type="search"] {
+		flex: 1 1 100%;
+	}
+}

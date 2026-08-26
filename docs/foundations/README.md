@@ -22,7 +22,7 @@ roles onto that vocabulary.
 | [`naming.md`](naming.md) | 1.18.0 | 15 done | — |
 | [`state.md`](state.md) | 1.8.1 | 11 done | — |
 | [`forms.md`](forms.md) | 1.4.2 | 8 done | — |
-| [`composition.md`](composition.md) | 1.9.2 | 11 done | — |
+| [`composition.md`](composition.md) | 1.10.0 | 12 done | — |
 | [`shell.md`](shell.md) | 1.3.0 | 5 done | — |
 | [`content.md`](content.md) | 1.0.2 | 3 done | — |
 

@@ -1,10 +1,10 @@
 # Rux UI Foundations — Composition
 
-**Contract version: 1.9.2** · Stamped at the top so a downstream document can state the
+**Contract version: 1.10.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 11 steps: **11 done**
+**Status** · 12 steps: **12 done**
 Founding entry. This document answers **what to build**: which **floorplan** a shipped
 page takes (§2.9–2.10), and which **anatomy** a view inside the application gets
 (§2.1–2.6), given what kind of content each holds. Every other foundation document
@@ -94,9 +94,9 @@ The dominant archetype: **four of eight views**, and the target for a fifth.
 
 | | |
 |---|---|
-| Workspace header | Controls only — a "New …" button, panel toggles. **No title.** |
-| Workspace body | A table. |
-| Attached panel | **Optional** — table/view options. Present on Drivers and Fleet, absent on Customers and Requests. |
+| Workspace header | Controls only — a "New …" button, search, scope, view switch, panel toggles. **No title.** |
+| Workspace body | A table. Below 720px it becomes a stack — see **2.3.1**. |
+| Attached panel | **Optional, and the exception** — secondary configuration only. See **2.3.2**. |
 | Floating window | **Required** — the editor, titled with the record. |
 | Opening a record | Populates and shows the floating window. It does not navigate. |
 
@@ -107,6 +107,56 @@ their own. A records view whose editor is shared declares it: `data-editor="shar
 the enforcement exception-free. And **a records view with no controls may omit the header
 band entirely**: Documents' Print and Open-in-new moved into the viewer beside the document
 they act on, leaving nothing for a band to hold. *(Step 6.)*
+
+#### 2.3.1 Below 720px a records table becomes a stack, and gives back what `.rux-table` assumes
+
+`layout.md` §1.1 publishes 720px as the width where *"the workspace stops fitting two
+columns: side-by-side bodies stack, wide tables shed their money columns."* It says what
+changes; it does not say what a **records body** does there, and shedding columns one at a
+time is not an answer — it is how Drivers shipped a table whose headers and cells disagreed
+(the plan's B1). Four rules, all measured on the Driver Roster specimen at 375px:
+
+- **The header row goes whole, never column by column.** `<thead>` takes `display: none`
+  so every cell loses its header at the same moment. A rule that hides one column MUST hide
+  its `<th>` and its `<td>` together — key both off the same `[data-col]` — so no cell can
+  outlive its header.
+- **The four cell properties `.rux-table td` publishes MUST be given back.**
+  `white-space: nowrap`, `overflow: hidden`, `text-overflow: ellipsis` and
+  `height: var(--rux-table-row-height)` are reasonable under table layout and become hard
+  constraints under `display: block`: content cannot wrap, and it truncates *silently*
+  rather than showing the ellipsis the property promises. The 36px floor applies per cell
+  rather than per row, so an un-reset three-line stack reserves 108px for 20px of text.
+- **Roles MUST be declared in the markup.** `display: block` drops the implicit
+  `table`/`row`/`cell` roles in every engine. Measured on the specimen at 375px: the
+  elements compute to `block`/`grid`/`block`, and the accessible names survive only because
+  it carries explicit `role="table"`, `role="row"`, `role="cell"` and
+  `role="columnheader"`. Without them the narrow view is a stack of anonymous generics.
+- **The band wraps rather than crushing.** `.rux-workspace__toolbar` is `flex-wrap: nowrap`
+  by contract, which is right for a desktop table band and unsurvivable at 375px, where
+  search, two segmented tracks and a Columns button compress to `Se`, `A`, `Columns`. A
+  records band MUST allow its heading and toolbar to take full width and wrap. This lives
+  in the view's own block, not `workspace.css`: the shared contract is right for the width
+  it was written for, and `.rux-segmented-track`'s `overflow: hidden` (`shell.md` step 5)
+  means the failure is silent, so the wrap is what keeps it visible.
+
+The page body MUST NOT scroll sideways. Verified on the specimen at 375px: 0px toolbar
+overflow, 0px track clipping, no horizontal document scroll. *(Step 12.)*
+
+#### 2.3.2 A rail holds secondary configuration, never the controls that drive the table
+
+§2.8 says an attached panel is supportive, never essential. In a records view that has a
+decidable edge: **controls determining *what the table shows* — search, status scope, the
+view switch — belong in the workspace header. A rail may hold only configuration a user
+sets rarely and can leave shut**, such as which columns are visible.
+
+The measured failure was Drivers, and it is the same shape as D6: filters lived in a
+collapsible rail as nine always-visible radio rows, two of whose options matched zero
+records, while the rail was *also* the only home for column configuration — so it could not
+simply be closed. With filters in the header the rail has one job left, and one job is a
+popover.
+
+**A records view with no rail is the expected case, not a deviation.** Driver Roster ships
+with none. *(Step 12.)*
 
 *Checked against Cloudscape's Table view (step 3): its page header **does** carry a title —
 the resource-category name — because its chrome is breadcrumbs plus side navigation, with no
@@ -316,6 +366,7 @@ the remaining split.)*
 | 8 | D1 fixed — `layout-composition.md` promotes to `shell.md` | **done · Class A** | **Executed 2026-08-23.** The one-home test decided the direction: 29 MUSTs are foundation material, so the file became a foundation document rather than gaining a tier header — the opposite call from step 7's four, for the stated reason (those are recipes; this is rules). Content moved verbatim; `tests/layout-contract.test.mjs` moved its read path so enforcement never lapsed; the old path is a shipping stub so the twelve referencing files and the vendored consumer keep resolving, with live pointers updated and log history left as written. One correction rode along — the `44px` header literal contradicted `--rux-ui-header-height`'s 40px desktop value (fixed in the move; `layout.md` step 27 claims the token). `shell.md` records its own D1: the example file the contract cites no longer shows the contract's composition. |
 | 9 | D2 fixed — two homeless rules get homes; the third never was | **done · Class A** | **Executed 2026-08-23.** **`.rux-card` frames only via `:has(> .rux-card__body)`** — a bare `.rux-card` is an unstyled structural marker — is now stated in `../cards.md`'s anatomy, with the failure mode named: adding the class to a bodyless element produces no visible card, which cost two debugging cycles in one session (the itinerary day group and Settings' "App Updates"). **`.rux-u-row` vs `.rux-u-cluster`** got a home by giving the whole family one: `../utilities.md`, a component-tier document under step 7's governance header, covering all seven `.rux-u-*` classes (36 uses in app markup) — the family had **no document at all**, and `typography.md` §3.3 explicitly scopes them out. It ships with its siblings via `DOCS_SHIP`. **The third rule was already homed, and this defect was wrong about it**: the itinerary's continuous-surface rule is rationale beside the code it explains, which `CLAUDE.md` names a legitimate form, and `../cards.md` already pointed at it. The session that nearly overturned it failed to *read* the file header, not to find a home — recorded rather than fixed, because manufacturing a third relocation to match the defect's count would be worse than correcting the count. **Both CSS comments became pointers**, keeping their explanation and surrendering the rule. |
 | 10 | The page tier — four floorplans; the print rule gets its home | **done · Class A** | **Executed 2026-08-24, at the owner's direction** ("draft the page floorplans doc first"). **The home was the first decision**: the ask arrived as a new document, and the one-home rule routed it here — this document already answers *what to build*, and a `floorplans.md` beside it would split one question across two authorities; the same test step 8 ran, landed the other way for the stated reason. **The floorplans are read off the nine shipped pages, not designed** (§3.1): a static census, unlike §3's live pass, because chrome, column, and script list are markup facts — the one runtime-shaped claim, what the share scripts build, was checked in the page scripts themselves. **The word is SAP Fiori's, the taxonomy is not**: *floorplan* names exactly this and is borrowed as vocabulary only under the standing guidance-only rule; Cloudscape stays the gap source and is silent here — the 59-pattern index step 2 verified live is console interiors throughout and reaches no standalone page, so the tier originates like the archetypes before it. **One rule consolidated (§2.10)**: print's light-on-paper discipline was stated only as rationale beside the two scoped palettes in `print-schedule.css` and `trip-envelope.css`; the MUST now has a home, the values stay in the feature CSS, and the comments stay rationale — unedited, because they explain values and no longer carry the rule alone. **Found and recorded, not fixed**: D8, and two divergences no rule can be read off — the title's home (Q6) and the loading treatment (Q7). **Deliberately not done**: no enforcement (D9 — D5's stance repeated, with the design note that a page checker needs no markup declaration because the file list is the census); no card-discipline rule for share columns (one instance each way — §2.9 declines it with the reasons in place); no stub cleanup (`doc.html` states no reason-to-exist while `d.html`/`m.html` do — recorded in §2.9 and §3.1 as a SHOULD gap, below a defect's threshold). Class A throughout: rule text only, nothing renders differently, no name moves. |
+| 12 | §2.3 gains a narrow-width contract and a rail test | **done · Class A** | **Executed 2026-08-26**, ahead of the Driver Roster code rather than after it, because four more record views inherit whatever the first one does. Both halves were **built before they were written**: `driver-roster-specimen.html` renders §3 of `../driver-roster-plan.md` against the real stylesheets so the "no new tokens, no new classes" promise could fail rather than be asserted. It failed once — the header band — and that failure was **not** a composition defect but a shell one, fixed as `shell.md` step 5 and deliberately not absorbed here. **2.3.1 — the narrow rule.** `layout.md` §1.1 already published 720px; what a *records body* does there was stated nowhere, and the gap is not academic: Drivers shipped a table that hid `<td>`s by one class and `<th>`s by another, so every column right of Phone rendered one place left of its own header (plan B1, measured six headers against five cells at 375px). Four rules, each measured on the specimen: the header row goes whole; the four properties `.rux-table td` publishes — `white-space: nowrap`, `overflow: hidden`, `text-overflow: ellipsis`, `height: var(--rux-table-row-height)` — are given back, because under `display: block` they stop content wrapping and truncate it **silently** while the 36px floor applies per cell rather than per row; roles are declared in markup, since `display: block` drops the implicit `table`/`row`/`cell` roles and the specimen's elements compute to `block`/`grid`/`block` at 375px; and the band wraps instead of crushing search, two tracks and Columns into `Se`, `A`, `Columns`. Verified at 375px: 0px toolbar overflow, 0px track clipping, no horizontal document scroll. **2.3.2 — the rail test.** §2.8's "supportive, never essential" had no decidable edge, so Drivers put its only filters in a collapsible rail — nine always-visible radio rows, two options matching zero records — while that rail was also the sole home for column configuration, so it could not be closed. The edge is now stated: controls determining what the table shows belong in the header; a rail holds only configuration a user can leave shut. **A records view with no rail is the expected case**, which is what the §2.3 row said backwards by naming which views happen to have one. **Deliberately not done:** the band-wrap rule is scoped to the view's own block rather than patched into `workspace.css` — the shared `flex-wrap: nowrap` is correct for the width it was written for, and widening it would reach every consumer's toolbar. The shipped Drivers, Fleet, Customers and Requests tables are **not** migrated to 2.3.1; the rule binds new work and those four are rebuilt on their own schedule, with B1 patched in place meanwhile. No enforcement written — D5's checker asserts anatomy, not breakpoint behaviour, and a test for this is real work rather than a line. Additive throughout: no rule changed meaning, no name moved, nothing renders differently until a view opts in. Contract 1.9.2 → **1.10.0**. |
 | 11 | Record the Specimen census defect (D10) | **done · Class A** | **Executed 2026-08-24.** Wording and evidence only — patch **1.9.1 → 1.9.2**; no rule changes, nothing renders differently, no name moves. §2's Specimen row has named two surfaces and two contracts since it was written, but `tests/gallery-coverage` has only ever read one of them — so the row's classification and its enforcement have disagreed from the start, and nothing could surface it, because a coverage ratchet that under-counts still passes. **Found from outside the document**, checking an external design-system audit's "every component has a specimen" item against this repository; the defect is this document's, but no work inside it would have looked. **Verified rather than reasoned:** the five blocks were read out of `examples/app-layout.html`'s markup, and the panel specimen was checked for *visibility* — its `display: none` sits inside `@media (max-width: 760px)`, so it renders above that. Dead markup that satisfies a class census and a live specimen are indistinguishable to the test, which is the trap this check exists to avoid. **Recorded, not fixed** — the fix is test work carrying a decision (whether the example counts as coverage at all, taken yes on 2026-08-24), and this document moves no code. **Deliberately did not** record the gallery's other two findings here: that the page loads no behavior modules against R9's "with behavior modules loaded", and that `README.md:41` advertises the opposite, are process and tooling findings whose home is `../todo.md` under its own routing table. **Deliberately did not** claim R9 for this document either — `foundations/README.md` §1 routes R9 to `CLAUDE.md`, that pointer is dead, and moving a rule between homes is its own step with its own reasoning, not a rider on recording a defect. |
 
 ---
