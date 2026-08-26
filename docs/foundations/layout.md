@@ -1,10 +1,10 @@
 # Rux UI Foundations — Layout
 
-**Contract version: 2.13.0** · Stamped at the top so a downstream document can state the
+**Contract version: 2.14.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 28 steps: **28 done**
+**Status** · 29 steps: **29 done**
 This document is canonical for **breakpoints (§1), the space scale (§7), and the radius
 scale and Materials presets (§8)**. Steps 4 and 5 brought the last two in, and **step 9
 adopted the elevation presets**, which was the last thing §8 had measured but not applied.
@@ -197,6 +197,7 @@ do.
 | 25 | The card header floor moves to 64px; the pane inset loses its 0 top | **done · Class B ×3** | **Executed 2026-08-23, adopting the owner's two working-tree edits after a measured A/B** — stock values overridden live, every point measured both ways. **Before → after: `--rux-card-header-height` 40px → 64px; `--rux-panel-padding` `0 20 20 20` → `20px` all round.** **The 64 is Geist's own arithmetic**: a 16px title sets a 24px line, 24 + 20 + 20 = 64 — closing the "card header top padding" item (~9px at the 40 floor vs Geist's 20). Single-line headers 40 → 64. **Correction (2026-08-23, 2.10.1): the "subtitled headers 84 → 84" this step first recorded was a measurement artifact** — the A/B revealed the Settings view without hiding the active one, and the overlapped layout wrapped the header taller. Properly navigated, subtitled headers measure **64 under both floors**: they are content-sized past the old 40 floor, so the conclusion — unchanged by the token — holds, and the figure is corrected. **One reader takes it as a fixed height, accepted knowingly**: `itinerary.css` sets `height:` on stop headers — the densest form grows 24px per stop; a §9.2 dense-exception was offered, the owner chose uniformity. **The pane edit makes §9.1's row true**: it promised 20px "adjusted when attached navigation owns the top seam", but the token was 0-top everywhere and no adjustment existed — the clause described nothing and is deleted rather than kept as fiction. Tab-strip seams in all four editors 0 → 20; rail panes 0 → 20 top; a flush-seam variant was offered and declined. **The third Class B was found by an assert, not the A/B**: §1.1's ≤500px touch block held a second `--rux-card-header-height: 44px` — a *grow* against the 40 floor, a **shrink** against 64, the exact defect step 20 removed for the panel header. Removed from the block; **before → after at ≤500px: 44px → 64px.** The desktop-only A/B missed it, and the claim that the token had a single definition shipped wrong in `19352a2` before this step corrected it. Consumer renders zero `.rux-card__header` and zero `.rux-panel__pane`; gate clean. **Eyeball**: single-line card headers, the itinerary tab, the editors' tab seams, the rails, driver-week-info — and card headers at ≤500px. **Recording note**: commit `19352a2` shipped the values with a message claiming this step — the recording script had died on a stale anchor and the commit chain was gated on the test run instead of the script. This step is that record, one commit late and saying so. |
 | 26 | Answer the cards-document question; fix its duplicated number | **done · Class A** | **Executed 2026-08-23** alongside `composition.md` step 7, which decided the component-doc tier as a set. **The answer: no family foundation for cards** — `docs/cards.md` already exists at the component tier and gains the governance header; this document keeps owning the card's rules (§8, §9.1–9.2). **The numbering defect is the second finding**: step 17 appended the question as a second Q5 at the file's end while §6 already held one, so a citation by number was ambiguous — it is now Q6, answered, with the original preserved. Nothing renders differently. |
 | 28 | Adopt Carbon as the density gap source; publish the tier scale and the band pairing | **done · Class A + Class B ×2** | **Executed 2026-08-26, at the owner's direction** (*"open to changing sizes anywhere to follow guidance"*), and the step exists because a rebuild exposed the gap the hard way: the Driver Roster looked *almost identical* to the module it replaced, and the reason was that nothing here governed density, column width or band proportion — so the rebuild inherited the defaults of the thing it was replacing. **An absent rule is not neutral; it is an instruction to copy the neighbour.** **Source chosen on evidence.** Geist publishes no density layer. Cloudscape's Density settings is named in `composition.md` Q5 but its guidance is not open — rendered pages only, verified against the GitHub API. Carbon publishes both code and guidance under Apache-2.0, 317 MDX rule pages in a separate repository, and is the system this repo already borrowed gate 4's snapshot mechanism from. Guidance-only under the standing rule. **Class A** — the five row rungs and two band rungs are new names; nothing resolved differently until something read them. **Class B (1)** — `--rux-table-row-height` 36px → `var(--rux-row-height-md)` = **40px**. The old value was not on any scale, because there was no scale to be on. Measured across every table in the app before and after: Drivers, Fleet, Customers and Documents 36 → 40; Requests already ran 61 and is unmoved (the property is a floor). **Class B (2)** — `.rux-workspace__header--table` gains `min-height: var(--rux-band-height-lg)` = **48px**, from 40px. Four bands: Drivers, Fleet, Customers, Requests. Scoped to `--table` so Calendar's canvas band, which has no table to pair with, is untouched. **The Driver Roster opts into lg (48px)** under the two-line rule, and its data columns size to content — at 1440 the equal split gave phone 289px for a 100px number; content-sizing returns that width to the identity column. **States still needing an eyeball**: every table at narrow widths in both themes. The measurements above are at 1440. **Deliberately not done**: no table measure or max-width — §10 holds that app shells have no content max-width, Carbon caps nothing either, and changing that is its own step with its own argument. `--rux-field-height` stays 36px: it is a control rung, not a row rung, and conflating them is how the band got its 40px in the first place. The four shipped tables are **not** re-tiered — they take the md default and stay there until each is rebuilt. Contract 2.12.0 → **2.13.0**. |
+| 29 | Publish the column-width rule; open the alignment question | **done · Class A** | **Executed 2026-08-26**, the second half of step 28's Carbon read and the half that answers *why the rebuilt table looked stretched*. Carbon publishes that column widths vary by content with a 16px minimum between them, and that a table needs three or more columns; both are additive rule text and nothing resolved differently. **One value confirmed rather than changed**: `--rux-table-cell-padding-inline` is 8px per side, so adjacent cells already sit at Carbon's `$spacing-05` = 16px between content. It was right before the rule existed and is now written down so it is not casually retuned. **Deliberately not done — and this is the honest half of the step.** Carbon publishes **no numeric-alignment guidance** on its data table pages; grepped, not assumed. This application right-aligns numeric columns in at least three places (`driver-app.css` workload, `driver-week-info.css`, `trip-panel.css`) and that practice is therefore **undocumented and unsourced**. Writing a rule for it here would be originating one while appearing to cite Carbon, which is the mistake `typography.md` Q7 made with the Badge. It goes to **Q7** instead. No table measure or max-width either: §10 holds that app shells have no content max-width and Carbon caps nothing, so that stays step 28's deliberate omission. Contract 2.13.0 → **2.14.0**. |
 | 27 | Claim `--rux-ui-header-height` in §10 | **done · Class A** | **Executed 2026-08-23**, with `shell.md`'s founding step: its header bullet stated a literal `44px` that contradicted the token's 40px desktop value, and correcting it to a token reference needed the token to have a published home. §10 carries it beside its panel and card siblings from steps 20 and 25. Prose references to `../layout-composition.md` in live sections now say `shell.md`; log history keeps the old path, as history. |
 
 ---
@@ -245,6 +246,23 @@ Geist would give 4px and 8px. Closing that means either three radius tokens keye
 height ladder, or accepting one radius as a deliberate simplification. *Blocks nothing.
 Recorded because it was measured, not because it is a defect — a single radius across sizes
 is a defensible choice, but it should be a choice on record rather than an accident.*
+
+**Q7 — Is right-aligning numeric table columns a rule, and whose?** Step 29 adopted
+Carbon's column guidance and found it publishes **nothing** on alignment — checked on the
+`data-table` `usage` and `style` pages, not assumed. Meanwhile this application right-aligns
+numeric columns in at least three places: `driver-app.css`'s workload table
+(`td:nth-child(n + 3)`), `driver-week-info.css`, and `trip-panel.css`. So the practice is
+real, consistent, and sourced to nobody.
+
+Three things have to be settled together, which is why this is a question and not a step.
+**Whether** the rule exists — digits compare by place value, which is an argument, but
+`typography.md` rule 2.9 already publishes tabular figures and may be doing the work
+already. **Which document owns it** — alignment by data type is arguably `typography.md`'s
+rather than this one's. And **whether it originates here**: Carbon is silent, Geist
+publishes no table layer, so answering yes means originating a rule while step 29 cites
+Carbon three lines above it. That adjacency is exactly the confusion `typography.md` Q7
+recorded with the Badge, so the answer has to be explicit about its own source or it will
+read as adopted when it is not.
 
 **Q3 — Does layout own the shell's fixed dimensions? — ANSWERED: split, and the split is
 the answer.** Layout owns the **vocabulary** of dimensions the portable layer publishes —
@@ -519,6 +537,33 @@ directly below a 40px shell header, so the two bands read as one. *(Step 28.)*
 **A band that has no table has nothing to pair with** and keeps
 `--rux-workspace-header-min-height`. The rule is scoped to
 `.rux-workspace__header--table` for exactly that reason.
+
+---
+
+### 9.5 A table's columns size to content, and there are at least three
+
+**Source: [Carbon data table](https://carbondesignsystem.com/components/data-table/style/),
+guidance-only (step 29)** — the same adoption as §9.4.
+
+**Column widths MUST vary by content.** They are not shared equally across the available
+width. Carbon's rule is that columns *"can vary by content and only require a minimum
+spacing between columns"*, and the failure the other way is measurable: the Driver Roster
+at 1440px gave a phone column 289px for a 100px number and a compliance column 273px for a
+~150px string, while the identity column — the one that benefits from room — got 487px.
+
+**The minimum between two columns' content is 16px.** `--rux-table-cell-padding-inline` is
+`--rux-space-2` (8px) *per side*, so adjacent cells already resolve to exactly that. This
+rung is Carbon's `$spacing-05` and this system already matched it before the rule was
+written; it is recorded so the next person changing that token knows what it is holding up.
+
+**Slack goes to one column, named.** In a full-width table something must absorb the
+remainder. It SHOULD be the column carrying record identity, because that is the column
+whose content varies most and truncates worst.
+
+**A table MUST have three or more columns.** Fewer is a description list
+(`content.md`), not a table.
+
+*(Step 29.)*
 
 ---
 
