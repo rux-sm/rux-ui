@@ -23,9 +23,25 @@ const workspace = read("../rux-ui/css/base/workspace.css");
 /* Structural assertions run against comment-stripped markup and CSS: prose
  * about a rule must not be able to satisfy the test for that rule. This file's
  * own commentary quotes several of the selectors it checks. */
-const markup = page.replace(/<!--[\s\S]*?-->/g, "");
-const styles = (page.match(/<style>([\s\S]*?)<\/style>/) || ["", ""])[1]
+const fullMarkup = page.replace(/<!--[\s\S]*?-->/g, "");
+
+/* The page documents its own antipatterns and wraps the composition in doc
+ * chrome, so both halves have to be separated before anything is asserted.
+ *
+ * `markup` is the composition only — every .rux-workspace on the page. The doc
+ * chrome has its own tables (the anatomy parts list) whose <th> are prose
+ * headers, not columnheaders, and scanning those would fail a rule they were
+ * never meant to follow.
+ *
+ * `styles` is every rule except the quarantined .antipattern__* ones. Removing
+ * the rules rather than truncating at the first of them matters: the
+ * antipattern block sits above the composition block in the file. */
+const markup = [...fullMarkup.matchAll(/<section class="rux-workspace"[\s\S]*?<\/section>/g)]
+	.map((m) => m[0]).join("\n");
+
+const allStyles = (page.match(/<style>([\s\S]*?)<\/style>/) || ["", ""])[1]
 	.replace(/\/\*[\s\S]*?\*\//g, "");
+const styles = allStyles.replace(/[^{}]*antipattern__[^{}]*\{[^}]*\}/g, "");
 
 /* ── composition.md §2.3 — the records anatomy ───────────────────────────── */
 
@@ -97,7 +113,11 @@ test("the band wraps rather than crushing its controls (§2.3.1)", () => {
 /* ── layout.md §9.4 / §9.5 — density and columns ─────────────────────────── */
 
 test("the table opts into a rung, and the rung is a published token (§9.4)", () => {
-	const opt = styles.match(/--rux-table-row-height:\s*var\((--rux-row-height-[a-z]+)\)/);
+	// Anchored to the composition block by name: the page also carries doc-chrome
+	// swatches that set their own rung, and a first-match read picked one of those.
+	const opt = styles.match(
+		/\.records-example__table\s*\{[^}]*--rux-table-row-height:\s*var\((--rux-row-height-[a-z]+)\)/,
+	);
 	assert.ok(opt, "the example must show how a table takes a rung other than the default");
 	assert.match(tokens, new RegExp(`${opt[1]}:\\s*\\d+px`),
 		`${opt[1]} must be a published rung, not an invented name`);
@@ -141,6 +161,31 @@ test("a severity class on a cell out-specifies .rux-table td (tables.md T5)", ()
 		assert.match(sel, /\btd\./,
 			`"${sel.trim()}" must qualify with td, or .rux-table td wins and the severity never paints`);
 	}
+});
+
+test("wrong code stays inside a Don't panel", () => {
+	// The page shows five defects it actually shipped, beside the right version.
+	// A counter-example that escapes its panel stops being a counter-example and
+	// becomes the thing it warns about, so the quarantine is asserted, not
+	// trusted: every .antipattern__* in the markup must sit inside .doc-panel--dont.
+	const uses = [...fullMarkup.matchAll(/class="([^"]*\bantipattern__[^"]*)"/g)];
+	assert.ok(uses.length > 0, "the page must actually demonstrate its antipatterns");
+	const panels = [...fullMarkup.matchAll(/<div class="doc-panel doc-panel--dont"[\s\S]*?<\/div>\s*<\/div>/g)]
+		.map((m) => m[0]).join("\n");
+	for (const [, cls] of uses) {
+		assert.ok(panels.includes(cls),
+			`"${cls}" is used outside a .doc-panel--dont — a Don't that escapes its panel is just a bug`);
+	}
+});
+
+test("the page points at rules rather than restating them", () => {
+	// Every section cites the document that owns its rule. A value stated here
+	// would be a second home for it, which is the failure the one-home rule names.
+	for (const doc of ["composition.md", "layout.md", "tables.md"]) {
+		assert.ok(page.includes(doc), `the page must cite ${doc}`);
+	}
+	assert.match(page, /\.\.\/docs\/foundations\/composition\.md/,
+		"citations must be links a reader can follow, not bare filenames");
 });
 
 /* ── the example's own hygiene ───────────────────────────────────────────── */

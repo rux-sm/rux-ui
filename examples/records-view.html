@@ -3,98 +3,239 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Records view — reference composition</title>
+<title>Records — archetype reference</title>
 <link rel="stylesheet" href="../rux-ui/css/rux.css?v=148" />
 <style>
 /* ==========================================================================
-   RECORDS VIEW — the reference composition for composition.md §2.3
+   RECORDS — the reference page for composition.md §2.3
    --------------------------------------------------------------------------
-   WHAT THIS IS. One view of the records archetype, built to the published
-   rules, against the real stylesheets. It exists to be COPIED — when a records
-   view is built or rebuilt, its proportions come from here rather than from
-   whichever neighbouring module happened to be open.
+   WHAT THIS IS. The records archetype: when to reach for it, what it is made
+   of, what it renders like, and the five ways it has actually been got wrong
+   in this repository. Built against the real stylesheets so the rules can fail
+   here rather than be asserted.
 
    WHY IT EXISTS. The Driver Roster rebuild came out looking almost identical
-   to the module it replaced, and the reason was not carelessness: nothing
-   published governed density, column width or band proportion, so the rebuild
-   inherited the defaults of the thing being replaced. An absent rule is not
-   neutral — it is an instruction to copy the neighbour. This file is the
-   neighbour worth copying.
+   to the module it replaced, because nothing published governed density,
+   column width or band proportion — so it inherited the defaults of the thing
+   being replaced. An absent rule is not neutral; it is an instruction to copy
+   the neighbour. This page is the neighbour worth copying.
 
-   WHAT IT IS NOT. Not a component gallery — that is gallery.html, one specimen
-   per role. Not a shell composition — that is examples/app-layout.html, the
-   smallest complete shell. This is the tier between them: one VIEW.
+   HOW IT STAYS HONEST. Every section is a POINTER plus a DEMONSTRATION. None
+   restates a rule or a value — those live in the foundation documents linked
+   at the top, and a second copy here would be the one-home violation this
+   system exists to prevent. tests/records-example.test.mjs reads this file
+   against the sections it cites.
 
-   THE RULES IT DEMONSTRATES, none of them restated here:
-     composition.md §2.3    records anatomy — band, table, editor, no rail
-     composition.md §2.3.1  what the body does below 720px
-     composition.md §2.3.2  what may live in a rail, and why this has none
-     layout.md      §9.4    density tier, and the band paired to it
-     layout.md      §9.5    columns size to content; slack to identity
-     tables.md              which class and token each part consumes
-
-   tests/records-example.test.mjs reads this file against those sections. If a
-   rule changes and this file does not, the test fails — which is the point.
-   An example nobody checks teaches the wrong thing with authority.
+   The page format is adapted from a component-documentation layout — its
+   structure only. Its API vocabulary (Root/Cell/size="1") belongs to another
+   system and is not imported, the same stance taken with Geist and Carbon.
+   Its sidebar and prev/next pager are deliberately absent: they would link to
+   pages that do not exist, and a reference that links to fiction teaches
+   fiction.
 
    ALL DATA IS SYNTHETIC. Phone numbers are in the 555-01xx block reserved for
    fiction. This file is in a public repository.
    ========================================================================== */
 
-/* — page chrome, not part of the composition — */
+/* ── page chrome — not part of the composition ───────────────────────────── */
+
 body {
+	margin: 0;
 	background: var(--rux-surface-0);
 	color: var(--rux-text-primary);
 	font-family: var(--rux-font-sans);
-	margin: 0;
-	padding: 0 var(--rux-space-5) var(--rux-space-8);
+	font-size: var(--rux-text-copy-14-size);
+	line-height: var(--rux-text-copy-14-line-height);
 }
-.example__head { padding-top: var(--rux-space-5); margin-bottom: var(--rux-space-5); }
-.example__head h1 {
+
+.doc-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 12rem;
+	gap: var(--rux-space-8);
+	max-width: 76rem;
+	margin: 0 auto;
+	padding: var(--rux-space-6) var(--rux-space-5) var(--rux-space-8);
+	align-items: start;
+}
+
+.doc-head { margin-bottom: var(--rux-space-6); }
+.doc-head__eyebrow {
+	font-size: var(--rux-text-copy-13-size);
+	color: var(--rux-text-secondary);
+	margin: 0 0 var(--rux-space-2);
+}
+.doc-head__title {
 	font-size: var(--rux-text-heading-24-size);
 	line-height: var(--rux-text-heading-24-line-height);
 	letter-spacing: var(--rux-text-heading-24-tracking);
 	font-weight: var(--rux-weight-600);
-	margin: 0 0 var(--rux-space-2);
+	margin: 0;
 }
-.example__head p {
+.doc-head__lead {
 	color: var(--rux-text-secondary);
-	margin: 0 0 var(--rux-space-3);
-	max-width: 74ch;
-	font-size: var(--rux-text-copy-14-size);
-	line-height: var(--rux-text-copy-14-line-height);
+	margin: var(--rux-space-3) 0 0;
+	max-width: 60ch;
 }
-.example__section { margin-bottom: var(--rux-space-6); }
-.example__section h2 {
+.doc-head__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--rux-space-4);
+	margin-top: var(--rux-space-4);
+	font-size: var(--rux-text-copy-13-size);
+}
+.doc-head__meta a { color: var(--rux-accent-text); }
+
+.doc-section { margin-top: var(--rux-space-8); }
+.doc-section > h2 {
 	font-size: var(--rux-text-heading-16-size);
 	line-height: var(--rux-text-heading-16-line-height);
 	font-weight: var(--rux-weight-600);
-	margin: 0 0 var(--rux-space-1);
-}
-.example__note {
-	color: var(--rux-text-secondary);
-	font-size: var(--rux-text-copy-13-size);
-	line-height: var(--rux-text-copy-13-line-height);
 	margin: 0 0 var(--rux-space-3);
-	max-width: 74ch;
+	scroll-margin-top: var(--rux-space-5);
 }
-/* Stands in for the application shell: .rux-workspace is flex:1 inside a
-   bounded flex column and owns its own scrolling.
+.doc-section > h3 {
+	font-size: var(--rux-text-label-14-size);
+	font-weight: var(--rux-weight-600);
+	margin: var(--rux-space-5) 0 var(--rux-space-2);
+}
+.doc-section p {
+	margin: 0 0 var(--rux-space-3);
+	max-width: 68ch;
+	color: var(--rux-text-secondary);
+}
+.doc-section ul { margin: 0 0 var(--rux-space-3); padding-inline-start: var(--rux-space-5); color: var(--rux-text-secondary); }
+.doc-section li + li { margin-top: var(--rux-space-2); }
 
-   It draws NO border, because the real shell draws none — .rux-app-view carries
-   `padding: 0 20px` and no border or radius, and .rux-workspace__body none
-   either, so the only frame in a records view is .rux-table-wrap's. An earlier
-   draft of this file gave the stand-in a hairline of its own and produced two
-   identical 1px borders sitting 1px apart. An example that invents chrome the
-   shell does not have teaches that chrome. The inset below is the real
-   --rux-app-view-padding, so the table sits where it actually sits. */
-.example__shell {
-	display: flex;
-	height: 26rem;
-	overflow: hidden;
-	padding-inline: var(--rux-space-5);
+.doc-toc {
+	position: sticky;
+	top: var(--rux-space-5);
+	font-size: var(--rux-text-copy-13-size);
 }
-.example__shell--short { height: 14rem; }
+.doc-toc__label { color: var(--rux-text-secondary); margin: 0 0 var(--rux-space-2); }
+.doc-toc ul { list-style: none; margin: 0; padding: 0; }
+.doc-toc li + li { margin-top: var(--rux-space-2); }
+.doc-toc a { color: var(--rux-text-secondary); text-decoration: none; }
+.doc-toc a:hover { color: var(--rux-text-primary); }
+
+@media (max-width: 900px) {
+	.doc-layout { grid-template-columns: minmax(0, 1fr); }
+	.doc-toc { display: none; }
+}
+
+/* ── preview / markup ────────────────────────────────────────────────────── */
+
+.doc-example {
+	border: var(--rux-border-width) solid var(--rux-card-border);
+	border-radius: var(--rux-radius-container);
+	overflow: hidden;
+	margin: var(--rux-space-4) 0;
+	background: var(--rux-surface-1);
+}
+.doc-example__tabs {
+	display: flex;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-2);
+	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
+}
+.doc-example__preview { padding: var(--rux-space-5); background: var(--rux-surface-0); }
+.doc-example__code {
+	margin: 0;
+	padding: var(--rux-space-4);
+	background: var(--rux-surface-0);
+	font-family: var(--rux-font-mono);
+	font-size: var(--rux-text-copy-13-size);
+	line-height: var(--rux-line-height-20);
+	overflow-x: auto;
+}
+
+/* The stage holds a workspace, which is flex:1 inside a bounded column. It
+   draws NO frame: .rux-app-view carries padding and no border, and
+   .rux-workspace__body none either, so a records view has exactly one frame
+   and it belongs to .rux-table-wrap. An earlier draft gave this stand-in a
+   hairline and produced two identical borders 1px apart — the fifth Don't
+   below is that mistake, kept on purpose. */
+.doc-stage { display: flex; height: 24rem; overflow: hidden; }
+.doc-stage--short { height: 13rem; }
+.doc-stage--swatch { height: 5rem; }
+
+/* A one-cell table, so the specificity contest in the Don't below actually
+   happens. An earlier draft put the counter-example on a <span>, where no
+   .rux-table td rule competes — so the "broken" version rendered correctly and
+   demonstrated nothing. A counter-example that does not reproduce the defect is
+   worse than none: it teaches that the defect is harmless. */
+.doc-swatch { --rux-table-row-height: var(--rux-row-height-md); margin-top: var(--rux-space-2); }
+.doc-swatch td { border-bottom: 0; padding-inline: 0; }
+
+/* ── do / don't ──────────────────────────────────────────────────────────── */
+
+.doc-split {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+	gap: var(--rux-space-4);
+	margin: var(--rux-space-4) 0;
+}
+.doc-panel {
+	border: var(--rux-border-width) solid var(--rux-card-border);
+	border-radius: var(--rux-radius-container);
+	padding: var(--rux-space-4);
+	background: var(--rux-surface-1);
+}
+.doc-panel__title {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+	font-size: var(--rux-text-label-14-size);
+	font-weight: var(--rux-weight-600);
+	margin: 0 0 var(--rux-space-2);
+}
+.doc-panel p { margin: 0; font-size: var(--rux-text-copy-13-size); }
+.doc-panel ul { margin: 0; padding-inline-start: var(--rux-space-5); }
+.doc-panel--do { border-color: var(--rux-success); }
+.doc-panel--dont { border-color: var(--rux-danger); }
+.doc-panel--do .doc-panel__title { color: var(--rux-success); }
+.doc-panel--dont .doc-panel__title { color: var(--rux-danger); }
+
+.doc-receipt {
+	display: block;
+	margin-top: var(--rux-space-2);
+	color: var(--rux-text-disabled);
+	font-family: var(--rux-font-mono);
+	font-size: var(--rux-text-copy-13-size);
+}
+.doc-receipt--good { color: var(--rux-danger); }
+
+.doc-parts { width: 100%; border-collapse: collapse; margin: var(--rux-space-3) 0; }
+.doc-parts th, .doc-parts td {
+	text-align: start;
+	vertical-align: top;
+	padding: var(--rux-space-2) var(--rux-space-3);
+	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
+	font-size: var(--rux-text-copy-13-size);
+	color: var(--rux-text-secondary);
+}
+.doc-parts thead th { font-weight: var(--rux-weight-600); }
+.doc-parts td:first-child { font-family: var(--rux-font-mono); color: var(--rux-text-primary); }
+
+/* ==========================================================================
+   ANTIPATTERNS — block: antipattern
+   --------------------------------------------------------------------------
+   Deliberately wrong, quarantined on purpose. Every one is a defect this
+   repository actually shipped, kept so the wrong version is visible beside the
+   right one rather than described in prose.
+
+   tests/records-example.test.mjs asserts nothing wearing this block appears
+   outside a .doc-panel--dont. Wrong code that escapes its Don't panel is worse
+   than no example at all.
+   ========================================================================== */
+
+/* Don't 2 — unqualified, so .rux-table td (0,1,1) wins and this never paints. */
+.antipattern__due--overdue { color: var(--rux-danger); }
+
+/* Don't 5 — a stand-in frame the real shell does not have. */
+.antipattern__stage {
+	border: var(--rux-border-width) solid var(--rux-card-border);
+	border-radius: var(--rux-radius-container);
+}
 
 /* ==========================================================================
    THE COMPOSITION — block: records-example
@@ -254,205 +395,393 @@ body {
 </head>
 <body>
 
-<div class="example__head">
-	<h1>Records view — reference composition</h1>
-	<p>
-		The records archetype built to the published rules, against the real stylesheets, so
-		the rules can fail here rather than be asserted. Copy these proportions when building
-		or rebuilding a records view. Narrow the window past 720px to see the row treatment
-		<code>composition.md</code> §2.3.1 publishes. All data is synthetic.
-	</p>
-	<button class="rux-button rux-button--default" id="theme" type="button">Toggle theme</button>
+<div class="doc-layout">
+<main class="doc-content">
+
+	<header class="doc-head">
+		<p class="doc-head__eyebrow">Archetype · one of three</p>
+		<h1 class="doc-head__title">Records</h1>
+		<p class="doc-head__lead">
+			A table of many things, edited one at a time. The dominant archetype — five of the
+			nine views in this application — and the reference for the four still to be rebuilt.
+		</p>
+		<p class="doc-head__meta">
+			<a href="../docs/foundations/composition.md">composition.md §2.3</a>
+			<a href="../docs/foundations/layout.md">layout.md §9.4–9.5</a>
+			<a href="../docs/foundations/shell.md">shell.md § Workspace</a>
+			<a href="../docs/tables.md">tables.md</a>
+		</p>
+	</header>
+
+	<section class="doc-section">
+		<h2 id="usage">Usage</h2>
+		<div class="doc-split">
+			<div class="doc-panel">
+				<p class="doc-panel__title">Use records when</p>
+				<ul>
+					<li>The body holds many of one kind of thing, compared across columns</li>
+					<li>Opening one shows it in a floating window rather than navigating</li>
+					<li>The controls above change <em>what is shown</em>, not what a record is</li>
+				</ul>
+			</div>
+			<div class="doc-panel">
+				<p class="doc-panel__title">Use another archetype when</p>
+				<ul>
+					<li>The body is a column of settings or prose — <strong>document column</strong> (§2.4)</li>
+					<li>The body is one continuous surface you navigate within — <strong>canvas</strong> (§2.5)</li>
+					<li>Neither fits — that is a defect in <code>composition.md</code>, fixed by an amendment there, never by inventing anatomy (§2.1)</li>
+				</ul>
+			</div>
+		</div>
+	</section>
+
+	<section class="doc-section">
+		<h2 id="anatomy">Anatomy</h2>
+		<p>Four parts, two of them required. Stated in <code>composition.md</code> §2.3.</p>
+		<table class="doc-parts">
+			<thead>
+				<tr><th scope="col">Part</th><th scope="col">Required</th><th scope="col">Holds</th></tr>
+			</thead>
+			<tbody>
+				<tr><td>.rux-workspace__header--table</td><td>optional</td><td>Controls only, no title. A view with no controls may omit it.</td></tr>
+				<tr><td>.rux-workspace__body</td><td>required</td><td>One table. Below 720px it becomes a stack (§2.3.1).</td></tr>
+				<tr><td>.rux-panel--attached</td><td>optional</td><td>Secondary configuration only, and the exception (§2.3.2). This page has none.</td></tr>
+				<tr><td>.rux-panel--floating</td><td>required</td><td>The editor, titled with the record. May be shared.</td></tr>
+			</tbody>
+		</table>
+	</section>
+
+	<section class="doc-section">
+		<h2 id="composition">The composition</h2>
+		<p>
+			The band holds a “New …” action, search, and a scope with counts — everything that
+			decides what the table shows. The table takes the <code>lg</code> rung because its
+			identity cell is two lines, and its data columns size to content so the identity
+			column absorbs the slack.
+		</p>
+
+		<div class="doc-example" data-example>
+			<div class="doc-example__tabs" role="tablist" aria-label="Composition example">
+				<button class="rux-button rux-button--segment" role="tab" type="button" aria-selected="true" aria-pressed="true" data-tab="preview">Preview</button>
+				<button class="rux-button rux-button--segment" role="tab" type="button" aria-selected="false" aria-pressed="false" data-tab="code">Markup</button>
+			</div>
+
+			<div class="doc-example__preview" data-panel="preview">
+				<div class="doc-stage">
+					<section class="rux-workspace" aria-label="Records">
+						<header class="rux-workspace__header rux-workspace__header--table records-example__band">
+							<div class="rux-workspace__heading">
+								<button class="rux-button rux-button--ghost" type="button">
+									<span class="rux-icon" aria-hidden="true">add</span>
+									<span class="rux-button__label">New record</span>
+								</button>
+							</div>
+							<div class="rux-workspace__toolbar">
+								<input class="rux-input" type="search" placeholder="Search name, reference, phone…" aria-label="Search records" autocomplete="off" spellcheck="false" />
+								<div class="rux-segmented-track" role="group" aria-label="Scope">
+									<button class="rux-button rux-button--segment" type="button" aria-pressed="true">Active 24</button>
+									<button class="rux-button rux-button--segment" type="button" aria-pressed="false">Inactive 9</button>
+									<button class="rux-button rux-button--segment" type="button" aria-pressed="false">All 33</button>
+								</div>
+								<button class="rux-button rux-button--ghost" type="button" aria-haspopup="menu" aria-expanded="false">
+									<span class="rux-icon" aria-hidden="true">view_column</span>
+									<span class="rux-button__label">Columns</span>
+								</button>
+							</div>
+						</header>
+						<div class="rux-workspace__body">
+							<div class="rux-table-wrap">
+								<table class="rux-table records-example__table" role="table" aria-label="Records">
+									<thead>
+										<tr role="row">
+											<th scope="col" role="columnheader" data-col="driver">Name</th>
+											<th scope="col" role="columnheader" data-col="standing">Standing</th>
+											<th scope="col" role="columnheader" data-col="phone">Phone</th>
+											<th scope="col" role="columnheader" data-col="compliance">Renewal</th>
+											<th scope="col" role="columnheader" data-col="flag" aria-label="Notes"></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr role="row" tabindex="0" aria-label="Marisol Vega — open record">
+											<td role="cell" data-col="driver">
+												<span class="records-example__name">Marisol Vega</span>
+												<span class="records-example__secondary">Mari</span>
+											</td>
+											<td role="cell" data-col="standing"><span class="records-example__standing">Full-time<span class="records-example__qualifier"><span class="rux-priority-dot" data-priority="1" aria-hidden="true"></span>Priority 1</span></span></td>
+											<td role="cell" data-col="phone">555-0142</td>
+											<td role="cell" data-col="compliance">Licence 12 Mar 2028</td>
+											<td role="cell" data-col="flag"><span class="rux-icon records-example__flag" role="img" aria-label="Has notes">sticky_note_2</span></td>
+										</tr>
+										<tr role="row" tabindex="0" aria-label="Dee Okonkwo — open record">
+											<td role="cell" data-col="driver">
+												<span class="records-example__name">Dee Okonkwo</span>
+												<span class="records-example__secondary">Dee</span>
+											</td>
+											<td role="cell" data-col="standing"><span class="records-example__standing">Full-time<span class="records-example__qualifier"><span class="rux-priority-dot" data-priority="2" aria-hidden="true"></span>Priority 2</span></span></td>
+											<td role="cell" data-col="phone">555-0177</td>
+											<td role="cell" data-col="compliance" class="records-example__due--warn">Medical in 41 days</td>
+											<td role="cell" data-col="flag"></td>
+										</tr>
+										<tr role="row" tabindex="0" aria-label="Tomasz Brandt — open record">
+											<td role="cell" data-col="driver">
+												<span class="records-example__name">Tomasz Brandt</span>
+												<span class="records-example__secondary">Tom</span>
+											</td>
+											<td role="cell" data-col="standing"><span class="records-example__standing">Part-time<span class="records-example__qualifier"><span class="rux-priority-dot" data-priority="3" aria-hidden="true"></span>Priority 3</span></span></td>
+											<td role="cell" data-col="phone">555-0108</td>
+											<td role="cell" data-col="compliance" class="records-example__due--overdue">Licence expired 12 days ago</td>
+											<td role="cell" data-col="flag"><span class="rux-icon records-example__flag" role="img" aria-label="Has notes">sticky_note_2</span></td>
+										</tr>
+										<tr role="row" tabindex="0" aria-label="Glenda Pryor — open record">
+											<td role="cell" data-col="driver">
+												<span class="records-example__name">Glenda Pryor</span>
+												<span class="records-example__secondary records-example__absent">No short name</span>
+											</td>
+											<td role="cell" data-col="standing"><span class="records-example__standing">Full-time<span class="records-example__qualifier"><span class="rux-priority-dot" data-priority="3" aria-hidden="true"></span>Priority 3</span></span></td>
+											<td role="cell" data-col="phone"><span class="records-example__absent">—</span></td>
+											<td role="cell" data-col="compliance"><span class="records-example__absent">Not on file</span></td>
+											<td role="cell" data-col="flag"></td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</section>
+				</div>
+			</div>
+
+			<div data-panel="code" hidden>
+				<pre class="doc-example__code"><code>&lt;section class="rux-workspace" aria-label="Records"&gt;
+  &lt;header class="rux-workspace__header rux-workspace__header--table your-block__band"&gt;
+    &lt;div class="rux-workspace__heading"&gt;
+      &lt;button class="rux-button rux-button--ghost"&gt;… New record&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class="rux-workspace__toolbar"&gt;
+      &lt;input class="rux-input" type="search" aria-label="Search records" /&gt;
+      &lt;div class="rux-segmented-track" role="group" aria-label="Scope"&gt;…&lt;/div&gt;
+      &lt;button class="rux-button rux-button--ghost"&gt;… Columns&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/header&gt;
+  &lt;div class="rux-workspace__body"&gt;
+    &lt;div class="rux-table-wrap"&gt;
+      &lt;!-- roles declared, not inherited: display:block drops them below 720 --&gt;
+      &lt;table class="rux-table your-block__table" role="table" aria-label="Records"&gt;
+        &lt;thead&gt;&lt;tr role="row"&gt;
+          &lt;th scope="col" role="columnheader" data-col="driver"&gt;Name&lt;/th&gt;
+        &lt;/tr&gt;&lt;/thead&gt;
+        &lt;tbody&gt;&lt;tr role="row" tabindex="0" aria-label="… — open record"&gt;
+          &lt;td role="cell" data-col="driver"&gt;…&lt;/td&gt;
+        &lt;/tr&gt;&lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+/* the two rules that opt into the rung and the column model */
+.your-block__table { --rux-table-row-height: var(--rux-row-height-lg); }
+.your-block__table th[data-col="phone"] { width: 1%; white-space: nowrap; }</code></pre>
+			</div>
+		</div>
+	</section>
+
+	<section class="doc-section">
+		<h2 id="empty">Empty</h2>
+		<p>
+			A view with no rows still offers the action that creates one, and still says which
+			scope is empty. The message names the scope rather than claiming there is no data.
+		</p>
+		<div class="doc-example">
+			<div class="doc-example__preview">
+				<div class="doc-stage doc-stage--short">
+					<section class="rux-workspace" aria-label="Records, empty">
+						<header class="rux-workspace__header rux-workspace__header--table records-example__band">
+							<div class="rux-workspace__heading">
+								<button class="rux-button rux-button--ghost" type="button">
+									<span class="rux-icon" aria-hidden="true">add</span>
+									<span class="rux-button__label">New record</span>
+								</button>
+							</div>
+							<div class="rux-workspace__toolbar">
+								<input class="rux-input" type="search" value="okonkwo" aria-label="Search records" autocomplete="off" spellcheck="false" />
+								<div class="rux-segmented-track" role="group" aria-label="Scope">
+									<button class="rux-button rux-button--segment" type="button" aria-pressed="false">Active 24</button>
+									<button class="rux-button rux-button--segment" type="button" aria-pressed="true">Inactive 9</button>
+									<button class="rux-button rux-button--segment" type="button" aria-pressed="false">All 33</button>
+								</div>
+							</div>
+						</header>
+						<div class="rux-workspace__body">
+							<div class="rux-table-wrap">
+								<table class="rux-table records-example__table" role="table" aria-label="Records, empty">
+									<thead>
+										<tr role="row">
+											<th scope="col" role="columnheader" data-col="driver">Name</th>
+											<th scope="col" role="columnheader" data-col="standing">Standing</th>
+											<th scope="col" role="columnheader" data-col="phone">Phone</th>
+											<th scope="col" role="columnheader" data-col="compliance">Renewal</th>
+											<th scope="col" role="columnheader" data-col="flag" aria-label="Notes"></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr role="row">
+											<td role="cell" class="records-example__empty" colspan="5">No inactive records match “okonkwo”.</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</section>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section class="doc-section">
+		<h2 id="narrow">Below 720px</h2>
+		<p>
+			Narrow this window past 720px to see it. The row becomes a two-line grid, the header
+			row goes whole rather than column by column, and the four properties
+			<code>.rux-table td</code> publishes are given back. All four rules and their reasons
+			are <code>composition.md</code> §2.3.1 — this page demonstrates them, it does not
+			restate them.
+		</p>
+	</section>
+
+	<section class="doc-section">
+		<h2 id="pitfalls">Do and don't</h2>
+		<p>
+			Five, and every one is a defect this repository actually shipped rather than an
+			invented counter-example. Each carries its receipt.
+		</p>
+
+		<h3>Hiding a column at narrow widths</h3>
+		<div class="doc-split">
+			<div class="doc-panel doc-panel--do">
+				<p class="doc-panel__title">Do</p>
+				<p>Hide the header and the cell together, keyed off the same <code>[data-col]</code>.</p>
+				<span class="doc-receipt">[data-col="phone"] { display: none }</span>
+			</div>
+			<div class="doc-panel doc-panel--dont">
+				<p class="doc-panel__title">Don't</p>
+				<p>Hide the cell by a class the header does not carry. Every column to its right shifts one place left of its own header, silently.</p>
+				<span class="doc-receipt">B1 · at 375px: 6 headers, 5 cells — email under “Phone”</span>
+			</div>
+		</div>
+
+		<h3>Colouring a cell by severity</h3>
+		<div class="doc-split">
+			<div class="doc-panel doc-panel--do">
+				<p class="doc-panel__title">Do</p>
+				<p>Qualify with <code>td</code> so it out-specifies <code>.rux-table td</code>.</p>
+				<table class="rux-table records-example__table doc-swatch"><tbody><tr role="row">
+					<td role="cell" class="records-example__due--overdue">Licence expired 12 days ago</td>
+				</tr></tbody></table>
+			</div>
+			<div class="doc-panel doc-panel--dont">
+				<p class="doc-panel__title">Don't</p>
+				<p>Use a bare class. <code>.rux-table td</code> is (0,1,1) and a class is (0,1,0), so it loses and the colour never paints — with no error. The cell below is styled red and is not red.</p>
+				<table class="rux-table records-example__table doc-swatch"><tbody><tr role="row">
+					<td role="cell" class="antipattern__due--overdue">Licence expired 12 days ago</td>
+				</tr></tbody></table>
+			</div>
+		</div>
+
+		<h3>Choosing a density rung</h3>
+		<div class="doc-split">
+			<div class="doc-panel doc-panel--do">
+				<p class="doc-panel__title">Do</p>
+				<p>Take <code>lg</code> or higher when a cell holds two lines, and let the band pair itself to that rung.</p>
+				<span class="doc-receipt">layout.md §9.4</span>
+			</div>
+			<div class="doc-panel doc-panel--dont">
+				<p class="doc-panel__title">Don't</p>
+				<p>Stack a name over a secondary line inside the <code>md</code> default. The row runs short of its own content.</p>
+				<span class="doc-receipt">39px row holding a 20px + 16px stack</span>
+			</div>
+		</div>
+
+		<h3>Spacing the band</h3>
+		<div class="doc-split">
+			<div class="doc-panel doc-panel--do">
+				<p class="doc-panel__title">Do</p>
+				<p>Let the shared toolbar separate its groups, and nest a genuinely flush cluster in one child.</p>
+				<span class="doc-receipt">--rux-button-group-gap</span>
+			</div>
+			<div class="doc-panel doc-panel--dont">
+				<p class="doc-panel__title">Don't</p>
+				<p>Override the gap in a feature stylesheet. Three views did, under two token names, for the same reason.</p>
+				<span class="doc-receipt">shell.md step 6</span>
+			</div>
+		</div>
+
+		<h3>Framing the table</h3>
+		<div class="doc-split">
+			<div class="doc-panel doc-panel--do">
+				<p class="doc-panel__title">Do</p>
+				<p>Let <code>.rux-table-wrap</code> be the only frame. The shell draws none.</p>
+				<div class="doc-stage doc-stage--swatch"><div class="rux-table-wrap"></div></div>
+			</div>
+			<div class="doc-panel doc-panel--dont">
+				<p class="doc-panel__title">Don't</p>
+				<p>Give a container its own hairline. Two identical borders end up 1px apart.</p>
+				<div class="doc-stage doc-stage--swatch antipattern__stage"><div class="rux-table-wrap"></div></div>
+			</div>
+		</div>
+	</section>
+
+	<section class="doc-section">
+		<h2 id="accessibility">Accessibility</h2>
+		<ul>
+			<li><strong>Declare the roles.</strong> <code>display: block</code> at narrow widths drops the implicit <code>table</code>/<code>row</code>/<code>cell</code> roles in every engine, so they are written in the markup at every width.</li>
+			<li><strong>The row is a control.</strong> It opens the record, so it carries a role and an accessible name — not a bare <code>tabindex</code> — and a real view delegates one listener to <code>&lt;tbody&gt;</code> rather than binding a pair per row on every render.</li>
+			<li><strong>Never state by colour alone.</strong> The severity cells say “expired 12 days ago” in words; colour is the second channel, not the only one. Same for the priority indicator, which carries its label as text.</li>
+			<li><strong>Label an icon-only header.</strong> <code>aria-label</code> on the <code>&lt;th&gt;</code> — there is no visually-hidden utility in this system, and inventing one to fit a table is what “propose, do not add” exists to stop.</li>
+		</ul>
+	</section>
+
+	<section class="doc-section">
+		<h2 id="related">Related</h2>
+		<ul>
+			<li><a href="../docs/tables.md">tables.md</a> — which class and token each part consumes</li>
+			<li><a href="app-layout.html">app-layout.html</a> — the shell this view sits in</li>
+			<li><a href="../gallery.html">gallery.html</a> — one specimen per component role</li>
+			<li><a href="../docs/driver-roster-plan.md">driver-roster-plan.md</a> — the rebuild that produced these rules</li>
+		</ul>
+	</section>
+
+</main>
+
+<nav class="doc-toc" aria-label="On this page">
+	<p class="doc-toc__label">On this page</p>
+	<ul>
+		<li><a href="#usage">Usage</a></li>
+		<li><a href="#anatomy">Anatomy</a></li>
+		<li><a href="#composition">The composition</a></li>
+		<li><a href="#empty">Empty</a></li>
+		<li><a href="#narrow">Below 720px</a></li>
+		<li><a href="#pitfalls">Do and don't</a></li>
+		<li><a href="#accessibility">Accessibility</a></li>
+		<li><a href="#related">Related</a></li>
+	</ul>
+</nav>
+
 </div>
 
-<section class="example__section">
-	<h2>Populated</h2>
-	<p class="example__note">
-		Band holds controls and no title (§2.2) — a “New …” action, search, a scope with
-		counts, and nothing that belongs in a rail (§2.3.2). The table takes the
-		<code>lg</code> rung because the identity cell is two lines (§9.4), and its data
-		columns size to content so the identity column absorbs the slack (§9.5).
-	</p>
-
-	<div class="example__shell">
-		<section class="rux-workspace" aria-label="Records">
-			<header class="rux-workspace__header rux-workspace__header--table records-example__band">
-				<div class="rux-workspace__heading">
-					<button class="rux-button rux-button--ghost" type="button">
-						<span class="rux-icon" aria-hidden="true">add</span>
-						<span class="rux-button__label">New record</span>
-					</button>
-				</div>
-				<div class="rux-workspace__toolbar">
-					<input
-						class="rux-input"
-						type="search"
-						placeholder="Search name, reference, phone…"
-						aria-label="Search records"
-						autocomplete="off"
-						spellcheck="false"
-					/>
-					<div class="rux-segmented-track" role="group" aria-label="Scope">
-						<button class="rux-button rux-button--segment" type="button" aria-pressed="true">Active 24</button>
-						<button class="rux-button rux-button--segment" type="button" aria-pressed="false">Inactive 9</button>
-						<button class="rux-button rux-button--segment" type="button" aria-pressed="false">All 33</button>
-					</div>
-					<button class="rux-button rux-button--ghost" type="button" aria-haspopup="menu" aria-expanded="false">
-						<span class="rux-icon" aria-hidden="true">view_column</span>
-						<span class="rux-button__label">Columns</span>
-					</button>
-				</div>
-			</header>
-
-			<div class="rux-workspace__body">
-				<div class="rux-table-wrap">
-					<!-- Roles are declared, not inherited: display: block at narrow widths
-					     drops the implicit table/row/cell roles in every engine
-					     (composition.md §2.3.1). -->
-					<table class="rux-table records-example__table" role="table" aria-label="Records">
-						<thead>
-							<tr role="row">
-								<th scope="col" role="columnheader" data-col="driver">Name</th>
-								<th scope="col" role="columnheader" data-col="standing">Standing</th>
-								<th scope="col" role="columnheader" data-col="phone">Phone</th>
-								<th scope="col" role="columnheader" data-col="compliance">Renewal</th>
-								<!-- An icon-only column labels its header with aria-label.
-								     There is no visually-hidden utility in this system and
-								     inventing one to fit a table is what "propose, do not
-								     add" exists to stop (tables.md §2). -->
-								<th scope="col" role="columnheader" data-col="flag" aria-label="Notes"></th>
-							</tr>
-						</thead>
-						<tbody>
-							<!-- The row is the control that opens the record, so it carries a
-							     role and an accessible name rather than a bare tabindex, and
-							     a real view delegates one listener to <tbody> (tables.md §3). -->
-							<tr role="row" tabindex="0" aria-label="Marisol Vega — open record">
-								<td role="cell" data-col="driver">
-									<span class="records-example__name">Marisol Vega</span>
-									<span class="records-example__secondary">Mari</span>
-								</td>
-								<td role="cell" data-col="standing">
-									<span class="records-example__standing">Full-time<span class="records-example__qualifier"><span class="rux-priority-dot" data-priority="1" aria-hidden="true"></span>Priority 1</span></span>
-								</td>
-								<td role="cell" data-col="phone">555-0142</td>
-								<td role="cell" data-col="compliance">Licence 12 Mar 2028</td>
-								<td role="cell" data-col="flag">
-									<span class="rux-icon records-example__flag" role="img" aria-label="Has notes">sticky_note_2</span>
-								</td>
-							</tr>
-							<tr role="row" tabindex="0" aria-label="Dee Okonkwo — open record">
-								<td role="cell" data-col="driver">
-									<span class="records-example__name">Dee Okonkwo</span>
-									<span class="records-example__secondary">Dee</span>
-								</td>
-								<td role="cell" data-col="standing">
-									<span class="records-example__standing">Full-time<span class="records-example__qualifier"><span class="rux-priority-dot" data-priority="2" aria-hidden="true"></span>Priority 2</span></span>
-								</td>
-								<td role="cell" data-col="phone">555-0177</td>
-								<td role="cell" data-col="compliance" class="records-example__due--warn">Medical in 41 days</td>
-								<td role="cell" data-col="flag"></td>
-							</tr>
-							<tr role="row" tabindex="0" aria-label="Tomasz Brandt — open record">
-								<td role="cell" data-col="driver">
-									<span class="records-example__name">Tomasz Brandt</span>
-									<span class="records-example__secondary">Tom</span>
-								</td>
-								<td role="cell" data-col="standing">
-									<span class="records-example__standing">Part-time<span class="records-example__qualifier"><span class="rux-priority-dot" data-priority="3" aria-hidden="true"></span>Priority 3</span></span>
-								</td>
-								<td role="cell" data-col="phone">555-0108</td>
-								<td role="cell" data-col="compliance" class="records-example__due--overdue">Licence expired 12 days ago</td>
-								<td role="cell" data-col="flag">
-									<span class="rux-icon records-example__flag" role="img" aria-label="Has notes">sticky_note_2</span>
-								</td>
-							</tr>
-							<!-- A record carrying a name and a reference and nothing else. Every
-							     roster has them — legacy imports, placeholders — and the view has
-							     to render one without looking broken. -->
-							<tr role="row" tabindex="0" aria-label="Glenda Pryor — open record">
-								<td role="cell" data-col="driver">
-									<span class="records-example__name">Glenda Pryor</span>
-									<span class="records-example__secondary records-example__absent">No short name</span>
-								</td>
-								<td role="cell" data-col="standing">
-									<span class="records-example__standing">Full-time<span class="records-example__qualifier"><span class="rux-priority-dot" data-priority="3" aria-hidden="true"></span>Priority 3</span></span>
-								</td>
-								<td role="cell" data-col="phone"><span class="records-example__absent">—</span></td>
-								<td role="cell" data-col="compliance"><span class="records-example__absent">Not on file</span></td>
-								<td role="cell" data-col="flag"></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</section>
-	</div>
-</section>
-
-<section class="example__section">
-	<h2>Empty</h2>
-	<p class="example__note">
-		The same band — a view with no records still offers the action that creates one, and
-		still says which scope is empty. The message names the scope rather than claiming
-		there is no data at all.
-	</p>
-
-	<div class="example__shell example__shell--short">
-		<section class="rux-workspace" aria-label="Records, empty">
-			<header class="rux-workspace__header rux-workspace__header--table records-example__band">
-				<div class="rux-workspace__heading">
-					<button class="rux-button rux-button--ghost" type="button">
-						<span class="rux-icon" aria-hidden="true">add</span>
-						<span class="rux-button__label">New record</span>
-					</button>
-				</div>
-				<div class="rux-workspace__toolbar">
-					<input
-						class="rux-input"
-						type="search"
-						value="okonkwo"
-						aria-label="Search records"
-						autocomplete="off"
-						spellcheck="false"
-					/>
-					<div class="rux-segmented-track" role="group" aria-label="Scope">
-						<button class="rux-button rux-button--segment" type="button" aria-pressed="false">Active 24</button>
-						<button class="rux-button rux-button--segment" type="button" aria-pressed="true">Inactive 9</button>
-						<button class="rux-button rux-button--segment" type="button" aria-pressed="false">All 33</button>
-					</div>
-				</div>
-			</header>
-			<div class="rux-workspace__body">
-				<div class="rux-table-wrap">
-					<table class="rux-table records-example__table" role="table" aria-label="Records, empty">
-						<thead>
-							<tr role="row">
-								<th scope="col" role="columnheader" data-col="driver">Name</th>
-								<th scope="col" role="columnheader" data-col="standing">Standing</th>
-								<th scope="col" role="columnheader" data-col="phone">Phone</th>
-								<th scope="col" role="columnheader" data-col="compliance">Renewal</th>
-								<th scope="col" role="columnheader" data-col="flag" aria-label="Notes"></th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr role="row">
-								<td role="cell" class="records-example__empty" colspan="5">
-									No inactive records match “okonkwo”.
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</section>
-	</div>
-</section>
-
 <script>
-	document.getElementById("theme").addEventListener("click", () => {
-		const dark = document.documentElement.getAttribute("data-theme") !== "light";
-		document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
+	document.querySelectorAll("[data-example]").forEach((ex) => {
+		const tabs = ex.querySelectorAll("[data-tab]");
+		tabs.forEach((tab) => {
+			tab.addEventListener("click", () => {
+				tabs.forEach((t) => {
+					const on = t === tab;
+					t.setAttribute("aria-selected", String(on));
+					t.setAttribute("aria-pressed", String(on));
+				});
+				ex.querySelectorAll("[data-panel]").forEach((p) => {
+					p.hidden = p.dataset.panel !== tab.dataset.tab;
+				});
+			});
+		});
 	});
 </script>
 </body>
