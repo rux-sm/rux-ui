@@ -47,6 +47,33 @@
 	width: var(--rux-row-height-md);
 }
 
+/* — Columns popover —
+     composition.md §2.3.2. The rail this replaces kept column configuration
+     permanently on screen in 240px, which is what made it un-closable. — */
+
+.driver-roster__columns {
+	min-width: 12rem;
+	padding-bottom: var(--rux-space-2);
+}
+
+.driver-roster__col-row {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-control-content-gap);
+	min-height: var(--rux-row-height-md);
+	padding-inline: var(--rux-control-padding-inline);
+	font-size: var(--rux-text-copy-13-size);
+	cursor: pointer;
+}
+
+/* A fixed column still lists itself, checked and disabled, so the set is
+   legible as a whole — an absent row reads as a bug, a disabled one reads as
+   a decision. */
+.driver-roster__col-row:has(:disabled) {
+	color: var(--rux-text-disabled);
+	cursor: default;
+}
+
 /* — Detail window —
      Same window geometry as the trip, fleet and driver editors
      (.sched-driver-dialog, driver-app.css). Plan step 7 rebuilds what is
@@ -282,7 +309,14 @@
 	   Phone's area is dead at this width, so standing takes the whole second
 	   line — sharing it with a hidden column left ~150px for ~180px of label
 	   and broke "Full-time" across two lines. */
-	.driver-roster__table [data-col="phone"] {
+	/* §2.3.1 — every column outside the two-line grid hides as a header/cell
+	   PAIR, keyed off [data-col] so the <th> goes with its <td>. Without this
+	   an optional column switched on from the Columns popover would be
+	   auto-placed outside the named grid areas and break the row. */
+	.driver-roster__table [data-col="phone"],
+	.driver-roster__table [data-col="email"],
+	.driver-roster__table [data-col="license-number"],
+	.driver-roster__table [data-col="hire-date"] {
 		display: none;
 	}
 

@@ -34,12 +34,17 @@
 	const detailTitle = document.getElementById("droster-detail-title");
 	const detailBody = document.getElementById("droster-detail-body");
 	const detailClose = document.getElementById("droster-detail-close");
+	const columnsBtn = document.getElementById("droster-columns");
+	const columnsMenu = document.getElementById("droster-columns-menu");
+	const columnsList = document.getElementById("droster-columns-list");
 
 	let db = null;
 	let allDrivers = [];
 	let scope = "active";
 	let query = "";
 	let selectedId = null;
+	let settingsDb = null;
+	let columnState = null;
 
 	/* ── Formatting ──────────────────────────────────────────────────────── */
 
@@ -190,6 +195,94 @@
 		return td;
 	}
 
+	/* ── Columns ─────────────────────────────────────────────────────────── */
+	/* composition.md §2.3.2 — column configuration is the one thing a rail was
+	   still for, and one job is a popover. The old module kept this permanently
+	   open in a 240px rail, which is what made the rail un-closable.
+
+	   Three columns are fixed rather than configurable: identity, because a
+	   roster without it is not a roster; standing, because it is what the fixed
+	   sort orders by; and compliance, because it is the regulatory question the
+	   view exists to answer, and the old module let it be switched off while
+	   Licence # stayed on. */
+
+	const COLUMNS = [
+		{ key: "driver",         label: "Driver",     fixed: true,  cell: identityCell },
+		{ key: "standing",       label: "Standing",   fixed: true,  cell: standingCell },
+		{ key: "phone",          label: "Phone",      defaultOn: true,
+		  cell: (d) => textCell("phone", d.phone, "rux-u-mono") },
+		{ key: "compliance",     label: "Compliance", fixed: true,  cell: complianceCell },
+		{ key: "email",          label: "Email",      defaultOn: false,
+		  cell: (d) => textCell("email", d.email) },
+		{ key: "license-number", label: "Licence #",  defaultOn: false,
+		  cell: (d) => textCell("license-number", d.license_number, "rux-u-mono") },
+		{ key: "hire-date",      label: "Hire date",  defaultOn: false,
+		  cell: (d) => textCell("hire-date", fmtDate(d.hire_date)) },
+		{ key: "notes",          label: "Notes",      defaultOn: true, cell: notesCell },
+	];
+
+	const COLUMNS_KEY = "driver-roster-cols-v1";
+
+	function textCell(col, value, className) {
+		const td = cell(col, className);
+		td.textContent = value ? String(value) : "—";
+		if (!value) td.classList.add("driver-roster__empty");
+		return td;
+	}
+
+	function defaultColumnState() {
+		return Object.fromEntries(
+			COLUMNS.filter((c) => !c.fixed).map((c) => [c.key, Boolean(c.defaultOn)]),
+		);
+	}
+
+	/* Merged rather than replaced: a saved config from before a column existed
+	   must not hide the new one, and a saved key for a column since removed must
+	   not resurrect it. */
+	function mergeColumnState(saved) {
+		const base = defaultColumnState();
+		if (saved && typeof saved === "object") {
+			for (const key of Object.keys(base)) {
+				if (typeof saved[key] === "boolean") base[key] = saved[key];
+			}
+		}
+		return base;
+	}
+
+	function activeColumns() {
+		return COLUMNS.filter((c) => c.fixed || columnState?.[c.key]);
+	}
+
+	async function saveColumnState() {
+		if (!settingsDb) return;
+		try {
+			await settingsDb.setSetting(COLUMNS_KEY, columnState);
+		} catch (err) {
+			console.warn("driver-roster: could not save column config:", err);
+		}
+	}
+
+	function renderColumnsMenu() {
+		if (!columnsList) return;
+		columnsList.textContent = "";
+		for (const col of COLUMNS) {
+			const row = el("label", "driver-roster__col-row");
+			const box = document.createElement("input");
+			box.type = "checkbox";
+			box.className = "rux-checkbox";
+			box.checked = col.fixed || Boolean(columnState[col.key]);
+			box.disabled = Boolean(col.fixed);
+			if (col.fixed) box.title = "Always shown";
+			box.addEventListener("change", async () => {
+				columnState[col.key] = box.checked;
+				renderRows();
+				await saveColumnState();
+			});
+			row.append(box, el("span", null, col.label));
+			columnsList.appendChild(row);
+		}
+	}
+
 	/* ── Filtering ───────────────────────────────────────────────────────── */
 
 	function matchesScope(d) {
@@ -242,7 +335,24 @@
 		});
 	}
 
+	function renderHead(cols) {
+		const row = table.querySelector("thead tr");
+		row.textContent = "";
+		for (const col of cols) {
+			const th = el("th", null, col.key === "notes" ? "" : col.label);
+			th.scope = "col";
+			th.setAttribute("role", "columnheader");
+			th.dataset.col = col.key;
+			// An icon-only column labels its header with aria-label; there is no
+			// visually-hidden utility in this system (tables.md §2).
+			if (col.key === "notes") th.setAttribute("aria-label", col.label);
+			row.appendChild(th);
+		}
+	}
+
 	function renderRows() {
+		const cols = activeColumns();
+		renderHead(cols);
 		const list = sorted(visibleDrivers());
 		tbody.textContent = "";
 
@@ -251,7 +361,7 @@
 			tr.setAttribute("role", "row");
 			const td = el("td", "driver-roster__none",
 				query ? `No drivers match “${query}”.` : "No drivers in this view.");
-			td.colSpan = table.querySelectorAll("thead th").length;
+			td.colSpan = cols.length;
 			td.setAttribute("role", "cell");
 			tr.appendChild(td);
 			tbody.appendChild(tr);
@@ -270,13 +380,7 @@
 			tr.setAttribute("aria-label", `${d.name || "Driver"} — open details`);
 			if (String(d.id) === String(selectedId)) tr.setAttribute("aria-current", "true");
 
-			tr.append(
-				identityCell(d),
-				standingCell(d),
-				(() => { const td = cell("phone", "rux-u-mono"); td.textContent = d.phone || "—"; return td; })(),
-				complianceCell(d),
-				notesCell(d),
-			);
+			for (const col of cols) tr.appendChild(col.cell(d));
 			tbody.appendChild(tr);
 		}
 	}
@@ -387,6 +491,31 @@
 			} catch (err) {
 				console.warn("driver-roster: could not load driver-db:", err);
 				return;
+			}
+		}
+		if (!settingsDb) {
+			try {
+				settingsDb = await import("../data/settings-db.js");
+			} catch {
+				/* offline — columns fall back to their defaults for this session */
+			}
+		}
+		if (!columnState) {
+			let saved = null;
+			try {
+				saved = settingsDb ? await settingsDb.getSetting(COLUMNS_KEY) : null;
+			} catch (err) {
+				console.warn("driver-roster: could not read column config:", err);
+			}
+			columnState = mergeColumnState(saved);
+			renderColumnsMenu();
+			// A non-modal disclosure, not RuxMenu: the content is checkboxes that
+			// keep their native keyboard behaviour rather than menu-item roving
+			// focus. Escape and outside-press come from the overlay kernel.
+			if (columnsBtn && columnsMenu && window.RuxPopover) {
+				window.RuxPopover.createDisclosure(columnsBtn, columnsMenu, {
+					placement: "bottom-end",
+				});
 			}
 		}
 		await load();

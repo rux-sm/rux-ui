@@ -57,7 +57,7 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/driver-roster.css?v=5"
+			href="./scheduler/css/features/driver-roster.css?v=7"
 		/>
 		<link
 			rel="stylesheet"
@@ -4990,6 +4990,16 @@
 										All <span data-scope-count>0</span>
 									</button>
 								</div>
+								<button
+									class="rux-button rux-button--ghost"
+									type="button"
+									id="droster-columns"
+									aria-haspopup="dialog"
+									aria-expanded="false"
+								>
+									<span class="rux-icon" aria-hidden="true">view_column</span>
+									<span class="rux-button__label">Columns</span>
+								</button>
 							</div>
 						</header>
 						<div class="rux-workspace__body">
@@ -5009,6 +5019,19 @@
 							</div>
 						</div>
 					</section>
+
+					<!-- Column configuration. composition.md §2.3.2: this is the one
+					     job a rail was still for, and one job is a popover. -->
+					<div
+						class="rux-menu rux-popover rux-popover--surface driver-roster__columns"
+						id="droster-columns-menu"
+						role="dialog"
+						aria-label="Columns"
+						hidden
+					>
+						<div class="rux-menu__header">Columns</div>
+						<div id="droster-columns-list"></div>
+					</div>
 
 					<!-- Read-only detail. Plan step 7 rebuilds this as the editor;
 					     §2.3 requires a floating window and this is it meanwhile. -->
@@ -6505,7 +6528,7 @@
 		<script src="./js/panels/trip-panel.js?v=49"></script>
 		<script src="./js/components/itinerary.js?v=64"></script>
 		<script src="./js/panels/driver-panel.js?v=32" defer></script>
-		<script src="./js/panels/driver-roster-panel.js?v=2" defer></script>
+		<script src="./js/panels/driver-roster-panel.js?v=5" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=18" defer></script>
 		<script src="./js/panels/customers-panel.js?v=13" defer></script>
 		<script src="./js/panels/settings-panel.js?v=12" defer></script>

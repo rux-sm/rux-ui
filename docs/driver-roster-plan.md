@@ -1,7 +1,8 @@
 # Driver Roster — rebuild plan
 
-Status: **in progress**, written 2026-08-26. Steps 0, 1, 2 and 3(iii) are done; the rebuild proper
-(steps 4–9) has not started.
+Status: **in progress**, written 2026-08-26. **Done:** 0 (ID strip), 1 (B1), 2 (status fold),
+3 — all three amendments, 4 (the view), 5 (the table, including the Columns popover).
+**Not started:** 6 (Workload on its own table), 7 (the editor), 8 (the two tests), 9 (cut over).
 
 Rebuilds the Drivers module (`index.html`, `data-view="drivers"`) as a new view,
 `driver-roster`, beside the current one rather than in place of it. The current module keeps
