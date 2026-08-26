@@ -23,9 +23,7 @@ import { readFileSync } from "node:fs";
 const tokens = readFileSync("rux-ui/css/tokens.css", "utf8");
 const stripComments = (css) => css.replace(/\/\*[\s\S]*?\*\//g, "");
 
-const P3_AT = tokens.indexOf("@media (color-gamut: p3)");
-const SRGB = stripComments(P3_AT > 0 ? tokens.slice(0, P3_AT) : tokens);
-const P3 = stripComments(P3_AT > 0 ? tokens.slice(P3_AT) : "");
+const SRGB = stripComments(tokens);
 /* Index the STRIPPED string, not the raw file: stripComments changes the
    length, so an offset taken from `tokens` splits `SRGB` in the wrong place.
    That bug is why the first run of this suite reported gray-1000 on the dark
@@ -105,7 +103,6 @@ function scaleOf(block) {
 
 const DARK = scaleOf(SRGB_DARK);
 const LIGHT = { ...DARK, ...scaleOf(SRGB_LIGHT) };
-const P3_ALL = scaleOf(P3);
 
 const HUES = ["blue", "red", "amber", "green", "teal", "purple", "pink"];
 const STEPS = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
@@ -152,20 +149,6 @@ test("every sRGB-branch scale step resolves inside sRGB (rule 2.9)", () => {
 	assert.deepEqual(bad, []);
 });
 
-test("every P3-branch step resolves inside P3, and has an sRGB value behind it", () => {
-	/* Rule 2.9's second half: the wide branch raises a ceiling, it never
-	   introduces a colour. A P3 step with no sRGB counterpart would render on
-	   one class of display and vanish on another. */
-	const orphans = [];
-	const outside = [];
-	for (const [name, c] of Object.entries(P3_ALL)) {
-		if (!DARK[name] && !LIGHT[name]) orphans.push(name);
-		if (!inGamut(linearP3(cones(c)))) outside.push(name);
-	}
-	assert.deepEqual(outside, [], "P3 values must be inside P3");
-	assert.deepEqual(orphans, [], "every P3 step needs an sRGB fallback");
-});
-
 /* ── 2.11 · the AA floor, in the worse gamut ─────────────────────────────── */
 
 const AA = 4.5;
@@ -210,7 +193,11 @@ test("every published fill clears AA against its own label (rule 2.11)", () => {
 		["--rux-warning-fill", "--rux-warning-on-fill"],
 		["--rux-success-fill", "--rux-success-on-fill"],
 		["--rux-info-fill", "--rux-info-on-fill"],
-		["--rux-accent-800", "--rux-fg-on-accent"],
+		/* The accent's fill is the step --rux-button-accent-background reads.
+		   That was accent-800 from step 9 until step 34 moved it to the 400
+		   band with every other fill; 800 is now a published, unread mirror
+		   and testing it would grade a step nothing paints. */
+		["--rux-accent-400", "--rux-fg-on-accent"],
 	];
 	const fails = [];
 	for (const [block, theme] of [[DARK, "dark"], [LIGHT, "light"]]) {

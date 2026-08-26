@@ -35,11 +35,11 @@
 	   every list row and ghost control already uses — so step 4's paired
 	   `-hover` tokens are gone (step 18's Class C rider: born and removed
 	   the same day, never in a tagged release, zero consumers on the grep). */
-	--sched-trip-color-teal:   var(--rux-teal-500);
-	--sched-trip-color-green:  var(--rux-green-500);
-	--sched-trip-color-purple: var(--rux-purple-500);
-	--sched-trip-color-amber:  var(--rux-amber-500);
-	--sched-trip-color-pink:   var(--rux-pink-500);
+	--sched-trip-color-teal:   var(--rux-teal-400);
+	--sched-trip-color-green:  var(--rux-green-400);
+	--sched-trip-color-purple: var(--rux-purple-400);
+	--sched-trip-color-amber:  var(--rux-amber-400);
+	--sched-trip-color-pink:   var(--rux-pink-400);
 	/* Unconfirmed and confirmed are the sixth and seventh tones and take the
 	   same per-theme rest step — but they are NOT --sched-trip-color-*, and
 	   tests/trip-colors.test.mjs is why that matters: that family is exactly
@@ -53,8 +53,8 @@
 	   here. The cost, taken deliberately: a [data-rux-accent] retint no longer
 	   recolours the default bar, because the bar's blue is "confirmed", not
 	   "the brand". */
-	--sched-trip-bar-confirmed-tone:   var(--rux-blue-500);
-	--sched-trip-bar-unconfirmed-tone: var(--rux-red-500);
+	--sched-trip-bar-confirmed-tone:   var(--rux-blue-400);
+	--sched-trip-bar-unconfirmed-tone: var(--rux-red-400);
 	/* One label per theme, like every other surface in the system: white in
 	   dark, the catalog's own on-fill near-black in light. The second text
 	   tier is the same label at 87% — not 75%: the dark hover overlay

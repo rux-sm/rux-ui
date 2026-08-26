@@ -179,9 +179,10 @@ test("the bus reference is the faintest ink on the destination row", () => {
 });
 
 test("trip surfaces are catalog steps, and hover is the published overlay", () => {
-	// docs/trip-bar.md rule 2.12, step 18: rest is the hue's 500 in dark and
-	// 600 in light — the only rungs where one label per theme clears 4.5:1 on
-	// all seven tones — and hover/pressed composite the published
+	// docs/trip-bar.md rule 2.12, step 18: rest is the hue's fill step — 400
+	// in dark since color.md §5 step 34, 600 in light until its scales move —
+	// the rung where one label per theme clears 4.5:1 on all seven tones, and
+	// hover/pressed composite the published
 	// --rux-state-hover-overlay / -active-overlay over rest instead of
 	// stepping to a second rung. Selected is not a fill at all.
 	//
@@ -227,22 +228,24 @@ test("trip surfaces are catalog steps, and hover is the published overlay", () =
 		/\.sched-trip-bar--multi-day:hover:not\(\.is-active\) \.sched-trip-bar__tail\s*\{[^}]*--rux-state-hover-overlay/s,
 	);
 
-	// Every categorical tone rests on 500 in dark and 600 in light — one
-	// declaration per tone per theme, no paired hover step.
+	// Every categorical tone rests on 400 in dark and 600 in light — one
+	// declaration per tone per theme, no paired hover step. Dark moved 500 ->
+	// 400 with the three-step model: on the even ramp 500 carries no white
+	// label (4.44 worst) and 400 clears every tone at 7.36-10.15.
 	const lightAt = tokensCss.indexOf(':root[data-theme="light"]');
 	assert.ok(lightAt > 0, "scheduler tokens must keep a light-theme block");
 	const darkTokens = tokensCss.slice(0, lightAt);
 	const lightTokens = tokensCss.slice(lightAt);
 	for (const hue of ["teal", "green", "purple", "amber", "pink"]) {
 		assert.match(tripBarCss, new RegExp(`--_trip-bar-color:\\s*var\\(--sched-trip-color-${hue}\\)`));
-		assert.match(darkTokens, new RegExp(`--sched-trip-color-${hue}:\\s*var\\(--rux-${hue}-500\\)`));
+		assert.match(darkTokens, new RegExp(`--sched-trip-color-${hue}:\\s*var\\(--rux-${hue}-400\\)`));
 		assert.match(lightTokens, new RegExp(`--sched-trip-color-${hue}:\\s*var\\(--rux-${hue}-600\\)`));
 		assert.doesNotMatch(tokensCss, new RegExp(`--sched-trip-color-${hue}-hover:`));
 	}
 	// The two status tones take the same per-theme split.
-	assert.match(darkTokens, /--sched-trip-bar-confirmed-tone:\s*var\(--rux-blue-500\)/);
+	assert.match(darkTokens, /--sched-trip-bar-confirmed-tone:\s*var\(--rux-blue-400\)/);
 	assert.match(lightTokens, /--sched-trip-bar-confirmed-tone:\s*var\(--rux-blue-600\)/);
-	assert.match(darkTokens, /--sched-trip-bar-unconfirmed-tone:\s*var\(--rux-red-500\)/);
+	assert.match(darkTokens, /--sched-trip-bar-unconfirmed-tone:\s*var\(--rux-red-400\)/);
 	assert.match(lightTokens, /--sched-trip-bar-unconfirmed-tone:\s*var\(--rux-red-600\)/);
 
 	// Selected is a ring, not a third fill.

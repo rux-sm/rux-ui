@@ -4,8 +4,8 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Colour-carrying components — the rule 2.15 gallery</title>
-<link rel="stylesheet" href="./rux-ui/css/rux.css?v=18" />
-<link rel="stylesheet" href="./scheduler/css/components.css?v=27" />
+<link rel="stylesheet" href="./rux-ui/css/rux.css?v=19" />
+<link rel="stylesheet" href="./scheduler/css/components.css?v=28" />
 <style>
 	body { background: var(--rux-surface-0); color: var(--rux-text-primary);
 	       font-family: var(--rux-font-sans); margin: 0; padding: 0 var(--rux-space-5) 6rem; }
@@ -194,7 +194,6 @@ const ALL_MARKS = INKS.flatMap(([status, icons]) => icons.map((i) => [status, i]
    confirm what someone already believed. */
 const STEPS = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
 const FILL_OPTIONS = [
-	["fill",  "step-24 band (--rux-{hue}-fill)"],
 	["board", "shipped board (500 dark / 600 light)"],
 	...STEPS.map((n) => [String(n), `${n}`]),
 ];
@@ -207,7 +206,7 @@ const INK_OPTIONS = [
    `auto` is rule 2.11's own method — pick the one that measures better. */
 const LABEL_OPTIONS = [
 	["auto",      "auto — whichever measures better"],
-	["published", "the fill's published label (band only)"],
+	["published", "the fill's published label (none since step 35)"],
 	["white",     "--rux-fg-on-fill (white)"],
 	["black",     "--rux-fg-on-fill-inverse (near-black)"],
 	...STEPS.map((n) => [String(n), `the hue's own ${n}`]),
@@ -222,21 +221,20 @@ const STATUS_HUE = { danger: "red", warning: "amber", success: "green", info: "b
 /* One config per element. The bar at the top writes to all of them at once;
    each element's own strip overrides it. Defaults are what ships or what the
    open question proposes, so the page opens on the real state. */
-const mkCfg = (over) => ({ fill: "fill", label: "auto", ink: "role", mark: "A",
+const mkCfg = (over) => ({ fill: "400", label: "auto", ink: "role", mark: "A",
                            hues: new Set(HUES), ...over });
 const S = {
 	trip:  mkCfg(),
 	marks: mkCfg(),
 	solid: mkCfg(),
-	tint:  mkCfg({ fill: "100", ink: "900" }),
+	tint:  mkCfg({ fill: "200", ink: "900" }),
 	text:  mkCfg(),
 	count: mkCfg(),
 	matrix: mkCfg(),
 };
 
 const fillTok = (t, hue, c) =>
-	c.fill === "fill"  ? (hue === "gray" ? `rux-${hue}-800` : `rux-${hue}-fill`)
-	: c.fill === "board" ? `rux-${hue}-${t === "dark" ? 500 : 600}`
+	c.fill === "board" ? `rux-${hue}-${t === "dark" ? 400 : 600}`
 	: `rux-${hue}-${c.fill}`;
 
 const inkTok = (t, status, c) =>
@@ -248,13 +246,14 @@ const inkTok = (t, status, c) =>
 function labelFor(t, hue, c) {
 	if (c.label === "white")  return { tok: "rux-fg-on-fill", how: "chosen" };
 	if (c.label === "black")  return { tok: "rux-fg-on-fill-inverse", how: "chosen" };
+	/* No hue publishes its own label any more: the step-24 band and its seven
+	   -on-fill aliases were removed at color.md §5 step 35, because the even
+	   ramp makes one white label serve every hue at the 400 step. "published"
+	   therefore always falls back to white, and is kept only so an older
+	   bookmark of this page still resolves. */
 	if (c.label === "published")
-		return c.fill === "fill" && hue !== "gray"
-			? { tok: `rux-${hue}-on-fill`, how: "published" }
-			: { tok: "rux-fg-on-fill", how: "none published — fell back to white" };
+		return { tok: "rux-fg-on-fill", how: "none published — fell back to white" };
 	if (c.label !== "auto") return { tok: `rux-${hue}-${c.label}`, how: "chosen" };
-	if (c.fill === "fill" && hue !== "gray")
-		return { tok: `rux-${hue}-on-fill`, how: "published" };
 	const fill = TOK[t].get(fillTok(t, hue, c));
 	const w = TOK[t].get("rux-fg-on-fill"), k = TOK[t].get("rux-fg-on-fill-inverse");
 	const rw = ratio(w, fill), rk = ratio(k, fill);
@@ -263,8 +262,7 @@ function labelFor(t, hue, c) {
 }
 
 const rungLabel = (t, c) =>
-	c.fill === "fill"  ? "step-24 band"
-	: c.fill === "board" ? `shipped board — ${t === "dark" ? 500 : 600}`
+	c.fill === "board" ? `shipped board — ${t === "dark" ? 400 : 600}`
 	: `every hue at ${c.fill}`;
 
 /* ── colour plumbing ─────────────────────────────────────────────────────── */
@@ -640,17 +638,24 @@ function componentSections(t) {
 		{ key: "live", head: `your selection — ${rungLabel(t, tcfg)} as tint, ${inkStep} as text and line`,
 		  tint: (h) => ["tok", fillTok(t, h, tcfg)], ink: (h) => `rux-${h}-${inkStep}`,
 		  line: (h) => ["tok", `rux-${h}-${inkStep}`] },
-		{ key: "mix-fill", head: "reference — 16% mixed tint, the fill role as text (what a categorical badge gets today)",
-		  tint: (h) => ["mix", `rux-${h}-fill`, 0.16], ink: (h) => `rux-${h}-fill`,
-		  line: (h) => ["mix", `rux-${h}-fill`, 0.32] },
-		{ key: "step-900", head: "reference — the published pair: 100 tint, 900 text, 900 line",
-		  tint: (h) => ["tok", `rux-${h}-100`], ink: (h) => `rux-${h}-900`,
+		/* The "16% mixed tint off --rux-{hue}-fill" row is gone with the band
+		   itself (color.md §5 step 35). The published pair below is the whole
+		   comparison now, and step 34 moved its tint from 100 to 200. */
+		{ key: "step-900", head: "the published pair: 200 tint, 900 text, 900 line",
+		  tint: (h) => ["tok", `rux-${h}-200`], ink: (h) => `rux-${h}-900`,
 		  line: (h) => ["tok", `rux-${h}-900`] },
 	];
 	const mixOver = (a, b, p) => a.map((v, i) => Math.round(v * p + b[i] * (1 - p)));
-	const paint = (t, spec) => spec[0] === "tok"
-		? TOK[t].get(spec[1])
-		: mixOver(TOK[t].get(spec[1]), TOK[t].get("rux-surface-1"), spec[2]);
+	/* Fail soft: a spec naming a token that no longer resolves returns null and
+	   is skipped by the guard below, rather than throwing inside mixOver. That
+	   is how removing the band took this page down until §5 step 35 fixed it. */
+	const paint = (t, spec) => {
+		const base = TOK[t].get(spec[1]);
+		if (!base) return null;
+		if (spec[0] === "tok") return base;
+		const over = TOK[t].get("rux-surface-1");
+		return over ? mixOver(base, over, spec[2]) : null;
+	};
 
 	for (const tr of TINTS) {
 		const h3 = document.createElement("h3"); h3.textContent = tr.head;
@@ -808,13 +813,14 @@ function matrix(t) {
 	const cfg = S.matrix;
 	const wrap = document.createElement("details");
 	wrap.innerHTML = `<summary>The full matrix — 4 treatments × every selected hue × 4 status inks, ` +
-		`at its own rung and at the band for reference</summary>`;
+		`at its own rung and at the shipped board rung for reference</summary>`;
 	wrap.append(controlStrip("matrix", [
 		["fill",  "fill",  FILL_OPTIONS],
 		["label", "label", LABEL_OPTIONS],
 		["ink",   "mark",  INK_OPTIONS],
 	]));
-	const others = cfg.fill === "fill" ? ["board"] : ["fill"];
+	/* The band is gone (§5 step 35); the reference rung is what ships. */
+	const others = cfg.fill === "board" ? [] : ["board"];
 	for (const key of [cfg.fill, ...others]) {
 		const prev = cfg.fill; cfg.fill = key;
 		const hues = huesOf("matrix");
@@ -937,7 +943,7 @@ function sweep() {
 	rows.sort((a, b) => Math.min(b.d, b.l) - Math.min(a.d, a.l));
 	const panel = document.createElement("div"); panel.className = "note";
 	panel.style.maxWidth = "none";
-	const label = (v) => v === "fill" ? "step-24 band" : v === "board" ? "shipped 500/600" : v;
+	const label = (v) => v === "board" ? "shipped 400/600" : v;
 	panel.innerHTML = `<strong>${which} · ${tr.name} — combinations that clear in BOTH themes.</strong> ` +
 		`Every fill rung × every ink rung, ${FILL_OPTIONS.length * INK_OPTIONS.length} pairs, ` +
 		`${hues.length} hue${hues.length === 1 ? "" : "s"} × 4 status inks measured in each. ` +

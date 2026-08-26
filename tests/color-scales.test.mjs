@@ -39,12 +39,10 @@ const STEPS = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
    Splitting there is what lets "defined in both themes" be a real assertion
    rather than "defined at least once somewhere". */
 const LIGHT_AT = tokens.indexOf(':root[data-theme="light"]');
-/* The P3 branch (color.md §5 step 11) is a whole second set of hue values
-   under @supports, so every "is this step declared / achromatic / invariant"
-   check has to run on the sRGB branch alone or it sees each name twice. */
-const P3_AT = tokens.indexOf("@media (color-gamut: p3)");
-const SRGB = P3_AT > 0 ? tokens.slice(0, P3_AT) : tokens;
-const P3_BLOCK = P3_AT > 0 ? tokens.slice(P3_AT) : "";
+/* One branch only. The P3 branch was removed (color.md §5 step 33), so the
+   file declares each hue step exactly twice — once per theme — and these
+   checks read the whole file rather than a slice of it. */
+const SRGB = tokens;
 const DARK_BLOCK = stripComments(SRGB.slice(0, LIGHT_AT));
 const LIGHT_BLOCK = stripComments(SRGB.slice(LIGHT_AT));
 
@@ -188,22 +186,29 @@ const ON_A_STEP = {
 	"--rux-warning-base": "--rux-amber-900",
 	"--rux-success-base": "--rux-green-900",
 	"--rux-info-base": "--rux-blue-900",
-	"--rux-danger-subtle": "--rux-red-100",
-	"--rux-warning-subtle": "--rux-amber-100",
-	"--rux-success-subtle": "--rux-green-100",
-	"--rux-info-subtle": "--rux-blue-100",
-	// Fills are 800, not 700 — chosen by rule 2.11's contrast floor rather than
-	// by the step's name (color.md §5 step 9). White on a 700 fill measures
-	// 4.44 for blue and 3.91 for red; both fail, and 800 clears at 5.73/4.74.
-	"--rux-danger-fill": "--rux-red-800",
-	"--rux-warning-fill": "--rux-amber-800",
-	"--rux-success-fill": "--rux-green-800",
-	"--rux-info-fill": "--rux-blue-800",
+	// THE THREE-STEP MODEL (color.md §5 step 34). Every hue-derived role lands
+	// on 200 (tint), 400 (fill) or 900 (ink) — measured on the even ramp, where
+	// one lightness per step means contrast no longer depends on which hue.
+	// 200 · tint: a wash on the canvas, 1.11-1.23, with its own ink at 7.4-12.6.
+	"--rux-danger-subtle": "--rux-red-200",
+	"--rux-warning-subtle": "--rux-amber-200",
+	"--rux-success-subtle": "--rux-green-200",
+	"--rux-info-subtle": "--rux-blue-200",
+	// 400 · fill: white clears on all seven hues at 7.36-10.15. Was 800 until
+	// step 34; 800 on the even ramp is L80% and carries no label at all.
+	"--rux-danger-fill": "--rux-red-400",
+	"--rux-warning-fill": "--rux-amber-400",
+	"--rux-success-fill": "--rux-green-400",
+	"--rux-info-fill": "--rux-blue-400",
+	// The accent publishes a mirror per step it is read at; 100/700/800/1000
+	// stay published and unread, pending the Class C sweep.
+	"--rux-accent-100": "--rux-blue-100",
+	"--rux-accent-200": "--rux-blue-200",
+	"--rux-accent-400": "--rux-blue-400",
 	"--rux-accent-700": "--rux-blue-700",
 	"--rux-accent-800": "--rux-blue-800",
 	"--rux-accent-900": "--rux-blue-900",
 	"--rux-accent-1000": "--rux-blue-1000",
-	"--rux-accent-100": "--rux-blue-100",
 };
 
 test("every role with a catalog step reads that step (rule 1.1)", () => {
@@ -247,49 +252,18 @@ test("the accent is a scale selection, not a colour (rule 2.12)", () => {
 	}
 });
 
-test("the P3 branch covers every hue step in both themes, and only hues", () => {
-	/* color.md §5 step 11. Progressive enhancement: the sRGB branch above is
-	   what an ordinary display gets, and this raises the ceiling where there is
-	   one. Greys, the alpha scale and the two backgrounds are deliberately
-	   ABSENT — they are achromatic, and an achromatic colour gains nothing from
-	   a wider gamut. Geist publishes them as HSL in both branches; so does this,
-	   and a grey appearing here would mean someone widened something that has
-	   no width to gain. */
-	assert.ok(P3_BLOCK, "no @media (color-gamut: p3) block");
-	const dark = P3_BLOCK.slice(0, P3_BLOCK.indexOf(':root[data-theme="light"]'));
-	const light = P3_BLOCK.slice(P3_BLOCK.indexOf(':root[data-theme="light"]'));
-	const missing = [];
-	for (const hue of HUES) {
-		for (const step of STEPS) {
-			const re = new RegExp(`--rux-${hue}-${step}:\\s*oklch\\(`);
-			if (!re.test(dark)) missing.push(`--rux-${hue}-${step} (P3 dark)`);
-			if (!re.test(light)) missing.push(`--rux-${hue}-${step} (P3 light)`);
-		}
-	}
-	assert.deepEqual(missing, []);
-
-	const achromatic = stripComments(P3_BLOCK).match(
-		/--rux-(?:gray|gray-alpha|background)-\d+:/g,
-	);
-	assert.deepEqual(
-		achromatic,
-		null,
-		"an achromatic scale has no P3 variant to publish",
-	);
-});
-
-test("the P3 branch never lowers a fill below the AA floor (rule 2.11)", () => {
-	/* The floor is evaluated in the WORSE gamut, which is what stops a wide
-	   branch from being the reason a pairing looks acceptable. blue-700 with a
-	   white label measures 5.04 in P3 and 4.44 in sRGB; the fills sit at 800
-	   because of the second number, and adding P3 must not quietly relax that.
-	   Asserted structurally — the published fills read the 800 step, and this
-	   test fails if a P3-only re-tune ever moves one back down. */
+test("every published fill reads the 400 step (rule 2.11)", () => {
+	/* The fills sit at 400 since step 34. On the even ramp every step is one
+	   lightness across all seven hues, so the fill band is chosen once: 400 is
+	   the lightest step where a white label clears on every hue (7.36-10.15),
+	   and 500 is the first that does not (4.44 worst). Asserted structurally,
+	   so a re-tune that moves a fill off the band fails here. Pinned 800 from
+	   step 9 to step 34, when the scales stopped being Geist's. */
 	for (const [role, step] of [
-		["--rux-danger-fill", "--rux-red-800"],
-		["--rux-warning-fill", "--rux-amber-800"],
-		["--rux-success-fill", "--rux-green-800"],
-		["--rux-info-fill", "--rux-blue-800"],
+		["--rux-danger-fill", "--rux-red-400"],
+		["--rux-warning-fill", "--rux-amber-400"],
+		["--rux-success-fill", "--rux-green-400"],
+		["--rux-info-fill", "--rux-blue-400"],
 	]) {
 		assert.match(
 			stripComments(SRGB),
@@ -297,9 +271,4 @@ test("the P3 branch never lowers a fill below the AA floor (rule 2.11)", () => {
 			`${role} must read ${step} — the step chosen by the worse gamut`,
 		);
 	}
-	assert.doesNotMatch(
-		stripComments(P3_BLOCK),
-		/--rux-(?:danger|warning|success|info|accent)-(?:fill|700|800)/,
-		"the P3 branch must publish scale steps only, never re-point a role",
-	);
 });

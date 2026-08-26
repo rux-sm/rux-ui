@@ -197,8 +197,8 @@ characters copy uses while restating § Emoji, and the tabular-figures bullet re
 ### Backgrounds & Color
 
 **Canonical: [`docs/foundations/color.md`](docs/foundations/color.md).** That document owns
-the scales, the steps, the roles that read them, the two themes, the gamut branches, and the
-rules governing all of it. It carries a contract version and its own amendment log. **This
+the scales, the steps, the roles that read them, the two themes, and the rules governing all
+of it. It carries a contract version and its own amendment log. **This
 section is a pointer: it names what is ruled, never what the rules say.** Where the two
 disagree, the foundation document wins and this section is corrected in the same change.
 
@@ -211,8 +211,8 @@ disagree, the foundation document wins and this section is corrected in the same
 | rule 2.5 | high-contrast fills, and the focus ring |
 | rule 2.6 | two text levels; disabled is a state, not a level |
 | rule 2.7 | a status is a scale, not a colour |
-| rule 2.9 | the gamut a value is published for, and the sRGB fallback behind every P3 one |
-| rule 2.11 | the contrast floor, evaluated in the worse gamut |
+| rule 2.9 | the gamut every published value must resolve inside |
+| rule 2.11 | the contrast floor, and the fill step it chooses |
 | rule 2.12 | the accent is a scale selection |
 | rule 2.13 | a published band states one luminance |
 | rule 2.14 | a role names one function, and a role used as a fill publishes its label |
@@ -222,8 +222,8 @@ disagree, the foundation document wins and this section is corrected in the same
 Three things worth knowing before reading further: the system is **[Vercel
 Geist](https://vercel.com/geist/colors) adopted whole** rather than referenced — its scales
 are published under this system's prefix, measured off the rendered page because Vercel
-publishes no values; every colour is `oklch()`; and **the hue scales ship twice**, an sRGB
-branch and a wide-gamut one behind a media query.
+publishes no values; every colour is `oklch()`; and **the hue scales ship in one gamut** —
+the wide-gamut branch that shipped at step 11 was removed at step 33.
 
 *This section carried a token table, a ten-step reference table, an alignment list and an
 accent paragraph of its own until `color.md` step 8. Every one of them had already gone stale
