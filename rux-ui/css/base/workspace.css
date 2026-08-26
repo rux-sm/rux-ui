@@ -61,6 +61,28 @@
 	container-type: inline-size;
 }
 
+/* In a table band the heading holds one "New …" button and the toolbar holds
+   the view's whole control set, so they must not split the band evenly. Both
+   carried flex: 1 1 auto, which at 1440px gave the heading 761px to hold 122px
+   of content and left the toolbar 639px — fine while a toolbar stays small,
+   and silent when it does not: .rux-segmented-track is overflow: hidden, so a
+   track past its share loses its labels with no scrollbar and no overflow for
+   a layout test to catch. Measured on the Driver Roster specimen, whose
+   toolbar needs 801px: the two tracks clipped 103px and 66px.
+
+   Sizing the heading to its content gives the remainder to the toolbar.
+   Measured across all four shipped --table bands before and after: Fleet and
+   Customers have no __heading element and are untouched; Drivers (761→122)
+   and Requests (742→84) resize, and in both **no toolbar child moves or
+   changes width by a single pixel** — the toolbar is justify-content: flex-end
+   with margin-left: auto and the heading is align-items: flex-start, so both
+   were already pinned to their edges. Nothing shipped renders differently;
+   what changes is the headroom. Requests was the near miss: 600px of controls
+   in the 658px it used to get. shell.md § Workspace, step 5. */
+.rux-workspace__header--table .rux-workspace__heading {
+	flex: 0 0 auto;
+}
+
 .rux-workspace__header--table .rux-workspace__toolbar {
 	flex: 1 1 auto;
 	min-width: 0;

@@ -646,7 +646,7 @@
 			defaultOn: true,
 			head: `<th scope="col" data-col="phone">Phone</th>`,
 			cell: (d) =>
-				`<td class="driver-app__phone col-phone rux-u-mono" data-col="phone">${d.phone || "—"}</td>`,
+				`<td class="driver-app__phone rux-u-mono" data-col="phone">${d.phone || "—"}</td>`,
 		},
 		{
 			key: "cdl",
@@ -663,7 +663,7 @@
 			head: `<th scope="col" data-col="expiry">License Exp</th>`,
 			cell: (d) => {
 				const e = d.license_exp || "";
-				return `<td class="${licExpiryClass(e)} col-expiry" data-col="expiry">${fmtDate(e)}</td>`;
+				return `<td class="${licExpiryClass(e)}" data-col="expiry">${fmtDate(e)}</td>`;
 			},
 		},
 		{

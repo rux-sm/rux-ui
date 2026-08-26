@@ -1,6 +1,7 @@
 # Driver Roster — rebuild plan
 
-Status: **planning**, written 2026-08-26. No application code has moved.
+Status: **in progress**, written 2026-08-26. Steps 0, 1, 2 and 3(iii) are done; the rebuild proper
+(steps 4–9) has not started.
 
 Rebuilds the Drivers module (`index.html`, `data-view="drivers"`) as a new view,
 `driver-roster`, beside the current one rather than in place of it. The current module keeps
@@ -113,9 +114,9 @@ Amendment classes are `foundations/README.md` §2.1.
 | # | Step | Class |
 |---|---|---|
 | 0 | Run `supabase/drivers-notes-id-strip.sql`. Owner-run; it deletes data. **Done 2026-08-26.** Verified from the `anon` position: 0 notes match the ID pattern, 0 carry any nine-digit run, and the `private` backup is unreachable over REST (`PGRST205`). Section 5 — dropping that backup — is still pending and deliberate. | — |
-| 1 | Patch B1 in the current module — hide by `[data-col]` so header and cell go together. | A |
+| 1 | Patch B1 in the current module — hide by `[data-col]` so header and cell go together. **Done 2026-08-26.** `driver-app.css` now keys the ≤720px rule off `[data-col]`, and the dead `.col-phone` / `.col-expiry` classes are gone from `driver-panel.js` — they existed only for that selector and resolved to no rule once it changed. Verified at 375px against live data: five visible headers, five visible cells, same columns in the same order. | A |
 | 2 | Settle the status vocabulary. **Answered 2026-08-26 by the owner: `inactive_historical` folds into `inactive`** — two values, so the scope control is All / Active / Inactive. Patch written, owner-run: `supabase/drivers-status-historical-fold.sql`. | data |
-| 3 | Two amendments to `foundations/composition.md` §2.3, **before any code**: (i) what a records table does below 720px — `layout.md` §1.1 publishes the width but nothing states what changes there for a records body; (ii) the attached rail's status, since §2.3 currently calls it "Optional" and cites Drivers and Fleet as having one. | A |
+| 3 | **Three** amendments, **before any code**. (iii) landed first because the specimen forced it. **(i) pending** — what a records table does below 720px; `layout.md` §1.1 publishes the width but nothing states what changes there for a records body. **(ii) pending** — the attached rail's status, since `composition.md` §2.3 calls it "Optional" and cites Drivers and Fleet as having one. **(iii) done 2026-08-26** — the table band sizes its heading to content so the toolbar takes the rest: `shell.md` step 5, contract 1.2.1 → **1.3.0**, Class B. Found by building the specimen, not by reading the CSS. Both halves carried `flex: 1 1 auto`, so at 1440px the heading took 761px to hold 122px and the specimen's 801px toolbar lost 103px and 66px off its two tracks — silently, because `.rux-segmented-track` is `overflow: hidden`. Measured across all four shipped `--table` bands: Fleet and Customers have no `__heading` and are untouched; Drivers and Requests resize and **no toolbar child moves a pixel**. Requests was 58px from the same clip. | A + **B** |
 | 4 | Scaffold the view — `scheduler/css/features/driver-roster.css`, `js/panels/driver-roster-panel.js`, block `driver-roster`. Side-nav item, `data-archetype="records"`, router `allow`, lazy boot. | A |
 | 5 | **Phase 1 — the table.** Header band, narrow layout, Columns popover. Cells via `textContent` (closes S1 by construction), one delegated `<tbody>` listener, real row semantics (S4). Editor markup copied across as scaffolding only. | A |
 | 6 | Workload on its own table element; missing-data warning moves from the cells to the column header. | A |

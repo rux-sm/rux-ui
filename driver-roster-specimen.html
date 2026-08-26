@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Driver Roster — the proposed layout</title>
-<link rel="stylesheet" href="./rux-ui/css/rux.css?v=22" />
+<link rel="stylesheet" href="./rux-ui/css/rux.css?v=23" />
 <link rel="stylesheet" href="./scheduler/css/components.css?v=30" />
 <style>
 /* ==========================================================================
@@ -227,23 +227,26 @@ body {
 	<div class="rux-u-cluster">
 		<button class="rux-button rux-button--default" id="theme" type="button">Toggle Theme</button>
 		<button class="rux-button rux-button--default" id="bandfix" type="button" aria-pressed="false">
-			Candidate Fix: Heading <code>flex: 0 0 auto</code>
+			Show the pre-fix band (<code>flex: 1 1 auto</code>)
 		</button>
 	</div>
 
-	<div class="rux-alert rux-alert--warning" role="note">
-		<span class="rux-icon rux-alert__icon" aria-hidden="true">warning</span>
+	<div class="rux-alert rux-alert--success" role="note">
+		<span class="rux-icon rux-alert__icon" aria-hidden="true">check_circle</span>
 		<div>
-			<strong>The band as specified does not fit.</strong>
-			<code>.rux-workspace__header--table</code> gives <code>__heading</code> and
-			<code>__toolbar</code> <code>flex: 1 1 auto</code> each, so at 1440 the heading
-			takes 760px to hold one 122px button and the toolbar gets 638px for 801px of
-			controls. <code>.rux-segmented-track</code> is <code>overflow: hidden</code>, so
-			the two tracks lose 101px and 64px <em>silently</em> — no scrollbar, no overflow,
-			nothing a layout test would catch. The shipped Drivers view is unaffected: its
-			toolbar needs 210px of the same 639px. This is new to the proposal, and the fix
-			is shared-tier, so it is a step 3 amendment rather than an app-tier patch. The
-			toggle above applies the candidate live; it is not in any stylesheet.
+			<strong>Fixed 2026-08-26 — shell.md step 5, contract 1.3.0.</strong>
+			The band did not fit: <code>.rux-workspace__header--table</code> gave
+			<code>__heading</code> and <code>__toolbar</code> <code>flex: 1 1 auto</code> each,
+			so at 1440 the heading took 761px to hold one 122px button and the toolbar got 639px
+			for 801px of controls. <code>.rux-segmented-track</code> is
+			<code>overflow: hidden</code>, so the two tracks lost 103px and 66px
+			<em>silently</em> — no scrollbar, no overflow, nothing a layout test would catch.
+			<code>rux-ui/css/base/workspace.css</code> now sizes the heading to its content.
+			Measured across all four shipped <code>--table</code> bands: Fleet and Customers have
+			no <code>__heading</code> and are untouched; Drivers and Requests resize and
+			<strong>not one toolbar child moves by a pixel</strong>. Requests was the near miss —
+			600px of controls in the 658px it used to get. The toggle above restores the old
+			behaviour for comparison.
 		</div>
 	</div>
 </div>
@@ -406,14 +409,17 @@ body {
 		document.documentElement.setAttribute("data-theme", theme() === "dark" ? "light" : "dark");
 	});
 
-	/* The candidate fix, applied from here rather than from a stylesheet: it is a
-	   Class B change to workspace.css that reaches all eight views, and it is not
-	   authorized. This exists so both states can be compared, not to ship one. */
+	/* The fix shipped in workspace.css (shell.md step 5), so this toggle now
+	   restores the PRE-fix band rather than applying a candidate. Kept so the
+	   two states stay comparable and the defect stays demonstrable. */
 	const fixBtn = document.getElementById("bandfix");
 	fixBtn.addEventListener("click", () => {
 		const on = fixBtn.getAttribute("aria-pressed") === "true";
 		fixBtn.setAttribute("aria-pressed", String(!on));
-		document.querySelector(".rux-workspace__heading").style.flex = on ? "" : "0 0 auto";
+		/* Pressed restores the pre-fix even split. Clearing the inline value is
+		   what returns it to the shipped rule — the reverse of what this did
+		   before step 5 landed, when the stylesheet held the losing value. */
+		document.querySelector(".rux-workspace__heading").style.flex = on ? "" : "1 1 auto";
 	});
 </script>
 </body>

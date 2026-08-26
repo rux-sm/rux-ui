@@ -240,9 +240,16 @@
 /* — Mobile — */
 
 @media (max-width: 720px) {
-	/* Hide less-critical columns on small screens */
-	.driver-app__table .col-phone,
-	.driver-app__table .col-expiry {
+	/* Hide less-critical columns on small screens — header and cell together.
+	   The old selector keyed off .col-phone / .col-expiry, which renderRows
+	   writes on the <td> only; the matching <th> carries just [data-col], so
+	   it stayed while its cells vanished and every column to the right of
+	   Phone rendered one place left of its own header. Measured at 375px
+	   before the fix: six headers, five cells — email under "Phone", licence
+	   under "Email", notes under "Licence #". Keying both halves off
+	   [data-col] is what makes the pair inseparable. */
+	.driver-app__table [data-col="phone"],
+	.driver-app__table [data-col="expiry"] {
 		display: none;
 	}
 }
