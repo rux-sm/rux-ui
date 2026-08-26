@@ -12,6 +12,12 @@ Documents are rebuilt after it, so "what Fleet does today" is not an argument he
 thing that changes later. That is why steps 3's amendments come before any code: four more
 record views inherit whatever this one decides.
 
+The specimen this plan was probed against, `driver-roster-specimen.html`, **graduated on
+2026-08-26** into [`examples/records-view.html`](../examples/records-view.html) — the
+reference composition for the records archetype, checked by
+`tests/records-example.test.mjs` against the sections it demonstrates. A probe and a
+reference are different jobs, and keeping both would have been two artifacts drifting.
+
 Working document with the full review, the mockup and the rejected alternatives:
 the *Driver Roster Rebuild* artifact (private). This file is the operative summary.
 

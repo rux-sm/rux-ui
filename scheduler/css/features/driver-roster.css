@@ -10,8 +10,9 @@
    search, scope and the view switch are workspace-header controls, and
    column configuration is a popover. See composition.md §2.3.2.
 
-   Every rule here was rendered and measured in driver-roster-specimen.html
-   before it was written into a stylesheet.
+   Every rule here was rendered and measured before it was written into a
+   stylesheet, in the specimen that has since graduated into
+   examples/records-view.html — the reference composition for this archetype.
 
    No new --rux-* primitive or semantic token, and no new .rux-* class. What
    is not a published .rux-* component is a driver-roster__* app-tier class,
@@ -157,11 +158,14 @@
 
 /* — Compliance cell: the nearest of CDL and medical expiry — */
 
-.driver-roster__compliance--warn {
+/* Qualified with td because .rux-table td sets `color` at specificity (0,1,1)
+   and a bare class is (0,1,0) — an unqualified severity class loses silently,
+   which is exactly what shipped in 68b58a9 and rendered no colour at all. */
+.driver-roster__table td.driver-roster__compliance--warn {
 	color: var(--rux-warning);
 }
 
-.driver-roster__compliance--expired {
+.driver-roster__table td.driver-roster__compliance--expired {
 	color: var(--rux-danger);
 }
 
