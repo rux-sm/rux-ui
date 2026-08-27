@@ -1069,7 +1069,7 @@
 				: `<div class="rux-field">
 				 <label class="rux-field__label" for="${addrFieldId}">${escHtml(addressLabel)}</label>
 				 <div class="sched-trip-itinerary__address-wrap${showAddrIcon ? " is-verified" : ""}">
-			   <input id="${addrFieldId}" class="rux-input" type="text" data-field="address" autocomplete="street-address"
+			   <input id="${addrFieldId}" class="rux-input" type="text" data-field="address" autocomplete="off"
 					  value="${escHtml(visibleAddress)}" />
                ${isStale
 				? '<span class="rux-icon sched-trip-itinerary__addr-check sched-trip-itinerary__addr-check--stale">priority_high</span>'
