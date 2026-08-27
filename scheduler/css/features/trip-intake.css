@@ -1,0 +1,469 @@
+/* ==========================================================================
+   TRIP INTAKE PAGE  ·  intake.html
+   --------------------------------------------------------------------------
+   Internal paste-in workbench for trip JSON validation and preview. Uses the
+   shared rux tokens and form primitives — this file only lays out the page
+   shell, the two-panel input area, the drop zone, and the draft preview.
+   ========================================================================== */
+
+.trip-intake-page {
+	min-height: 100dvh;
+	background: var(--rux-surface-0);
+	color: var(--rux-text-primary);
+}
+
+.trip-intake {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-6);
+	width: 100%;
+	max-width: 960px;
+	margin: 0 auto;
+	padding: var(--rux-space-6);
+}
+
+.trip-intake__page-title {
+	font-size: var(--rux-text-heading-24-size);
+	font-weight: var(--rux-text-heading-24-weight);
+	line-height: var(--rux-text-heading-24-line-height);
+	letter-spacing: var(--rux-text-heading-24-tracking);
+	color: var(--rux-text-heading-24-color);
+}
+
+.trip-intake__intro {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+}
+
+.trip-intake__intro-text {
+	color: var(--rux-text-secondary);
+}
+
+.trip-intake [hidden] {
+	display: none;
+}
+
+@media (max-width: 580px) {
+	.trip-intake {
+		padding: var(--rux-space-4);
+	}
+}
+
+/* ── Two-panel input area ────────────────────────────────────────────────── */
+
+.trip-intake__panels {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--rux-space-4);
+}
+
+@media (max-width: 720px) {
+	.trip-intake__panels {
+		grid-template-columns: 1fr;
+	}
+}
+
+.trip-intake .rux-card__body {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-card-content-gap);
+}
+
+.trip-intake .rux-card__header {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-3);
+}
+
+.trip-intake .rux-card__header .rux-card__title {
+	flex: 1;
+}
+
+/* ── Source textarea ─────────────────────────────────────────────────────── */
+
+.trip-intake__source-text {
+	resize: vertical;
+	min-height: 10rem;
+}
+
+/* ── JSON textarea ───────────────────────────────────────────────────────── */
+
+.trip-intake__json-text {
+	resize: vertical;
+	min-height: 10rem;
+	font-family: var(--rux-font-mono);
+	font-size: var(--rux-size-13);
+}
+
+.trip-intake__parse-error {
+	color: var(--rux-danger);
+	font-size: var(--rux-size-14);
+}
+
+/* ── Drop zone ───────────────────────────────────────────────────────────── */
+
+.trip-intake__drop-zone {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-6) var(--rux-space-4);
+	border: 2px dashed var(--rux-card-border);
+	border-radius: var(--rux-radius-container);
+	cursor: pointer;
+	transition: border-color 120ms ease;
+}
+
+.trip-intake__drop-zone:hover,
+.trip-intake__drop-zone:focus-visible,
+.trip-intake__drop-zone.is-drag-over {
+	border-color: var(--rux-accent);
+}
+
+.trip-intake__drop-zone:focus-visible {
+	outline: 2px solid var(--rux-accent);
+	outline-offset: 2px;
+}
+
+.trip-intake__drop-icon {
+	font-size: var(--rux-icon-lg);
+	color: var(--rux-text-disabled);
+}
+
+.trip-intake__drop-text {
+	font-size: var(--rux-size-14);
+	color: var(--rux-text-secondary);
+	text-align: center;
+}
+
+.trip-intake__file-input {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+}
+
+/* ── File list ───────────────────────────────────────────────────────────── */
+
+.trip-intake__file-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--rux-space-2);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.trip-intake__file-list:empty {
+	display: none;
+}
+
+.trip-intake__file-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--rux-space-1);
+	padding: var(--rux-space-1) var(--rux-space-2);
+	background: var(--rux-surface-1);
+	border: var(--rux-border-width) solid var(--rux-card-border);
+	border-radius: var(--rux-radius-control);
+	font-size: var(--rux-size-13);
+	color: var(--rux-text-secondary);
+}
+
+.trip-intake__file-chip .rux-icon {
+	font-size: var(--rux-icon-sm);
+}
+
+.trip-intake__file-remove {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	background: none;
+	border: none;
+	color: var(--rux-text-disabled);
+	cursor: pointer;
+	font-size: var(--rux-icon-sm);
+}
+
+.trip-intake__file-remove:hover {
+	color: var(--rux-danger);
+}
+
+/* ── Actions row ─────────────────────────────────────────────────────────── */
+
+.trip-intake__actions {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-3);
+}
+
+/* ── Draft preview ───────────────────────────────────────────────────────── */
+
+.trip-intake__preview {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-4);
+}
+
+/* ── Preview header ──────────────────────────────────────────────────────── */
+
+.trip-intake__preview-header {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--rux-space-3);
+}
+
+@media (max-width: 580px) {
+	.trip-intake__preview-header {
+		grid-template-columns: 1fr;
+	}
+}
+
+.trip-intake__preview-field {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.trip-intake__preview-label {
+	font-size: var(--rux-size-12);
+	font-weight: var(--rux-weight-500);
+	color: var(--rux-text-disabled);
+	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-wide);
+}
+
+.trip-intake__preview-value {
+	font-size: var(--rux-size-14);
+	color: var(--rux-text-primary);
+}
+
+.trip-intake__preview-value:empty::after {
+	content: "—";
+	color: var(--rux-text-disabled);
+}
+
+.trip-intake__preview-badges {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--rux-space-1);
+	grid-column: 1 / -1;
+}
+
+/* ── Timeline ────────────────────────────────────────────────────────────── */
+
+.trip-intake__timeline {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.trip-intake__stop {
+	display: grid;
+	grid-template-columns: 2rem 1fr;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-3) 0;
+	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
+}
+
+.trip-intake__stop:last-child {
+	border-bottom: none;
+}
+
+.trip-intake__stop-icon {
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	padding-top: 2px;
+}
+
+.trip-intake__stop-icon .rux-icon {
+	font-size: var(--rux-icon-md);
+}
+
+.trip-intake__stop--pickup .trip-intake__stop-icon .rux-icon {
+	color: var(--rux-success);
+}
+
+.trip-intake__stop--stop .trip-intake__stop-icon .rux-icon {
+	color: var(--rux-accent);
+}
+
+.trip-intake__stop--return .trip-intake__stop-icon .rux-icon {
+	color: var(--rux-text-secondary);
+}
+
+.trip-intake__stop--day .trip-intake__stop-icon .rux-icon {
+	color: var(--rux-text-disabled);
+}
+
+.trip-intake__stop--sleeper .trip-intake__stop-icon .rux-icon {
+	color: var(--rux-text-disabled);
+}
+
+.trip-intake__stop-body {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	min-width: 0;
+}
+
+.trip-intake__stop-name {
+	font-size: var(--rux-size-14);
+	font-weight: var(--rux-weight-500);
+	color: var(--rux-text-primary);
+}
+
+.trip-intake__stop-address {
+	font-size: var(--rux-size-13);
+	color: var(--rux-text-secondary);
+	overflow-wrap: anywhere;
+}
+
+.trip-intake__stop-address--missing {
+	color: var(--rux-danger);
+}
+
+.trip-intake__stop-times {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--rux-space-2);
+	font-size: var(--rux-size-13);
+	color: var(--rux-text-secondary);
+}
+
+.trip-intake__stop--day {
+	padding: var(--rux-space-2) 0;
+}
+
+.trip-intake__stop--day .trip-intake__stop-name {
+	font-size: var(--rux-size-13);
+	font-weight: var(--rux-weight-400);
+	color: var(--rux-text-disabled);
+	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-wide);
+}
+
+/* ── Warnings card ───────────────────────────────────────────────────────── */
+
+.trip-intake__warnings-card .rux-card__header .rux-icon {
+	font-size: var(--rux-icon-md);
+	color: var(--rux-warning);
+}
+
+.trip-intake__warnings {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.trip-intake__warnings li {
+	font-size: var(--rux-size-14);
+	color: var(--rux-text-secondary);
+	padding-left: var(--rux-space-4);
+	position: relative;
+}
+
+.trip-intake__warnings li::before {
+	content: "\2022";
+	position: absolute;
+	left: 0;
+	color: var(--rux-warning);
+}
+
+/* ── Sign-in ───────────────────────────────────────────────────────────────
+   Only the extraction route is gated, so this sits above the panels as a
+   condition on one button rather than a gate on the page. */
+
+.trip-intake__auth-form {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-4);
+}
+
+.trip-intake__auth-lede {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--rux-space-2);
+	margin: 0;
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-size-14);
+}
+
+.trip-intake__auth-lede .rux-icon {
+	color: var(--rux-text-secondary);
+	flex: none;
+}
+
+.trip-intake__auth-fields {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: var(--rux-space-3);
+}
+
+.trip-intake__auth-fields .rux-field {
+	flex: 1 1 14rem;
+	min-width: 0;
+}
+
+.trip-intake__auth-error {
+	margin: 0;
+}
+
+.trip-intake__auth-status {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-size-14);
+}
+
+.trip-intake__auth-status .rux-icon {
+	color: var(--rux-success);
+	flex: none;
+}
+
+.trip-intake__auth-who {
+	flex: 1;
+	min-width: 0;
+}
+
+/* ── Process action ────────────────────────────────────────────────────── */
+
+.trip-intake__source-actions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--rux-space-3);
+	margin-top: var(--rux-space-4);
+}
+
+.trip-intake__process-status {
+	margin: 0;
+	flex: 1 1 12rem;
+	min-width: 0;
+	font-size: var(--rux-size-14);
+	color: var(--rux-text-secondary);
+}
+
+.trip-intake__process-status[data-tone="error"] {
+	color: var(--rux-danger);
+}
+
+.trip-intake__process-status[data-tone="ok"] {
+	color: var(--rux-success);
+}
+
+/* No rule for the busy tone: the status text is already secondary, the button
+   goes disabled, and a third busy signal would just be noise.
+   .trip-intake__process-status[data-tone="busy"] inherits. */

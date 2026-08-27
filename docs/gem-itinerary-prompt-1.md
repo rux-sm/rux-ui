@@ -89,6 +89,11 @@ against what the customer was told.
    unresolved in `data_flags`, one plain-language sentence each. An empty array
    is a valid and meaningful answer.
 
+   Also record a stated passenger count or bus count here, verbatim. Neither
+   belongs on the driver's sheet, but a dispatcher reviewing the draft uses them
+   to confirm the right number of buses is assigned, and there is nowhere else
+   for them to survive.
+
 ## Output
 
 Return the JSON object and nothing else — no commentary before or after. A

@@ -143,6 +143,101 @@ clause true rather than amending it away).
 `panel.css`'s `__header`, `__title`, `__footer`, `__tabs` and four modifiers, which stay
 unshown because the ratchet is block-level by design and one instance credits a whole file.
 
+### T4 — The extraction route exists in the repository but has never run
+
+[`worker/index.js`](../worker/index.js) adds `POST /ai/extract`, and
+[`intake.html`](../intake.html) calls it. Neither has been exercised end to end: the route
+needs an `ANTHROPIC_API_KEY` secret, an `ALLOWED_USER_ID`, and a single Supabase auth user,
+none of which existed when it was written.
+
+How it is known: the signed-out path was verified in a browser (Process correctly disabled,
+no console errors, the paste-and-preview path unchanged) and the schema conversion is
+covered by [`tests/worker-schema.test.mjs`](../tests/worker-schema.test.mjs). The signed-in
+path was not, because it cannot be from a checkout.
+
+Why it was not finished on the spot: creating the auth user and holding the API key are the
+owner's to do, not an agent's.
+
+The specific risk is the schema. Structured outputs accepts a subset of JSON Schema, and
+the Worker reshapes `trip-import-schema-v2.json` to fit — inlining `$ref`s, flattening
+`allOf`, dropping rejected keywords. The tests assert the *shape* of that conversion; no
+test can assert the API *accepts* it. The first real call is the first proof. The Worker
+logs the upstream error body, so a rejection names the offending construct.
+
+Cost to close: create the user, set the secret and the three vars, set a spend limit in the
+Anthropic Console, deploy, and run one real document through it.
+
+### T5 — The Worker has no `wrangler.toml`, and its deployed copy is not this one
+
+`worker/index.js` was reconstructed from the source pasted out of the Cloudflare dashboard.
+Until it is deployed from here, the live Worker and this file are two independent copies,
+and nothing detects them diverging.
+
+There is also no `wrangler.toml`, so `wrangler deploy` will not work from a clean clone —
+the Worker predates the directory.
+
+Why it was not fixed on the spot: writing a deploy config for an account whose settings
+(name, routes, compatibility date, existing vars) cannot be read from here would be
+guessing at values that must match what is already live.
+
+Cost to close: one `wrangler.toml` written against the account's actual settings, then a
+deploy from the repository so this copy becomes the deployed one.
+
+### T6 — The Supabase proxy answers every origin with `Access-Control-Allow-Origin: *`
+
+[`worker/index.js`](../worker/index.js) sets a wildcard CORS header on the proxy branch, so
+any website can reach the Supabase project through it using the anon key that ships in page
+source. This predates the extraction work and is unchanged by it; `/ai/extract` scopes its
+own CORS to `APP_ORIGIN`.
+
+How it is known: read while adding the new route.
+
+Why it was not fixed on the spot: tightening it is a behavioural change to every existing
+page, including the public `request.html` and the share pages, and it wants its own
+verification pass rather than riding along with an unrelated feature.
+
+Cost to close: decide the allowed origins, scope the header, then check the scheduler, the
+driver and maintenance share pages, and the public request form still load.
+
+### T7 — The v2 prompt has no `data_flags`, so the model's uncertainty is thrown away
+
+[`gem-itinerary-prompt.md`](gem-itinerary-prompt.md) forbids guessing — correctly — but
+gives the model nowhere to say what it could not resolve. The driver-sheet chain has
+`data_flags` for exactly this and it carries the most useful output of an extraction: the
+questions to put back to the customer before quoting.
+
+How it is known: a real inbound quote request (a camp trip, 2026-08-27) produced five
+things worth asking about — an unresolved pickup address, an ambiguous return time, and a
+split-versus-held-bus decision that changes the price more than any other field. None had
+anywhere to go in a v2 draft.
+
+Why it was not fixed on the spot: the field is only half the change. The other half is the
+intake preview rendering the flags as an "Ask the customer" card with a copy-as-email
+action, which is unbuilt.
+
+Cost to close: one array in the prompt, one schema property, one card in the preview.
+
+### T8 — Intake has no lane gate, and the prompt is still copied by hand
+
+Two documents arrive at [`intake.html`](../intake.html) — an inbound quote request, which
+is a Trip Draft v2, and a confirmed itinerary, which is the driver-sheet chain's schema.
+The page has one JSON box and no way to say which is which, so the wrong paste produces a
+parse error that says nothing about which prompt should have been run.
+
+Separately, the manual route — the one that still works when the extraction service is
+down — requires finding the prompt in `docs/`, copying several hundred lines, and pasting
+it into an AI tool. Nothing in the page helps with the step that costs the most time and is
+easiest to get wrong.
+
+How it is known: reviewing the page against two real documents of different kinds.
+
+Why it was not fixed on the spot: only the server-side extraction was approved; these were
+proposed alongside it and not green-lit.
+
+Cost to close: `.rux-tabs--attached` above the panels choosing prompt, schema, and
+destination; and a "Copy prompt + source" button that assembles the active lane's prompt
+with whatever is pasted, so the prompt ships with the app instead of being hand-copied.
+
 ---
 
 *A third entry — fourteen `trip_ref` values each shared by two active trips — was drafted

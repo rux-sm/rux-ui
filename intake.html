@@ -1,0 +1,292 @@
+<!doctype html>
+<!-- Pinned to the light palette: this is an internal tool page with no theme
+     toggle, so it presents one consistent face. data-theme is read by
+     rux-ui/css/tokens.css, and its light block also sets color-scheme: light. -->
+<html lang="en" data-theme="light">
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, viewport-fit=cover"
+		/>
+		<!-- Forced-light page (data-theme on <html>); chrome matches light
+		     --rux-surface-0 (tests/theme-color-meta.test.mjs). -->
+		<meta name="theme-color" content="#fafafa" />
+		<title>Trip Intake · Escamilla Tour Buses</title>
+		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=134" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=256" />
+		<link rel="stylesheet" href="./scheduler/css/features/trip-intake.css?v=2" />
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap"
+		/>
+	</head>
+	<body class="trip-intake-page">
+		<header class="rux-ui-header" aria-label="Application Header">
+			<div class="rux-ui-header__brand">
+				<img
+					class="rux-ui-header__logo"
+					src="./assets/logo.png"
+					alt="Escamilla Tour Buses"
+				/>
+			</div>
+			<span class="rux-ui-header__title">Trip Intake</span>
+		</header>
+
+		<main class="trip-intake" id="trip-intake-root">
+			<div class="trip-intake__intro">
+				<h1 class="trip-intake__page-title">
+					Trip intake workbench
+				</h1>
+				<p class="trip-intake__intro-text">
+					Paste the raw trip context or drop the customer's document, then
+					process it. The draft lands on the right, where you can check it
+					before it goes anywhere.
+				</p>
+			</div>
+
+			<!-- ── Sign-in ─────────────────────────────────────────── -->
+			<section class="rux-card trip-intake__auth" id="intake-auth" hidden>
+				<div class="rux-card__body">
+					<form class="trip-intake__auth-form" id="intake-signin-form" hidden>
+						<p class="trip-intake__auth-lede">
+							<span class="rux-icon" aria-hidden="true">lock</span>
+							Processing runs against a paid service, so it needs a sign-in.
+							Everything else on this page works without one.
+						</p>
+						<div class="trip-intake__auth-fields">
+							<label class="rux-field">
+								<span class="rux-field__label">Email</span>
+								<input
+									class="rux-input"
+									type="email"
+									id="intake-email"
+									autocomplete="username"
+									required
+								/>
+							</label>
+							<label class="rux-field">
+								<span class="rux-field__label">Password</span>
+								<input
+									class="rux-input"
+									type="password"
+									id="intake-password"
+									autocomplete="current-password"
+									required
+								/>
+							</label>
+							<button
+								class="rux-button rux-button--default"
+								type="submit"
+								id="intake-signin-btn"
+							>
+								<span class="rux-button__label">Sign in</span>
+							</button>
+						</div>
+						<p
+							class="rux-alert rux-alert--danger trip-intake__auth-error"
+							id="intake-auth-error"
+							role="alert"
+							hidden
+						></p>
+					</form>
+
+					<div class="trip-intake__auth-status" id="intake-signed-in" hidden>
+						<span class="rux-icon" aria-hidden="true">check_circle</span>
+						<span class="trip-intake__auth-who">
+							Signed in as <strong id="intake-user-email"></strong>
+						</span>
+						<button
+							class="rux-button rux-button--ghost rux-button--sm"
+							type="button"
+							id="intake-signout-btn"
+						>
+							<span class="rux-button__label">Sign out</span>
+						</button>
+					</div>
+				</div>
+			</section>
+
+			<div class="trip-intake__panels">
+				<!-- ── Raw context (reference) ─────────────────────── -->
+				<section class="rux-card" id="intake-source">
+					<header class="rux-card__header">
+						<h2 class="rux-card__title">Source material</h2>
+					</header>
+					<div class="rux-card__body">
+						<label class="rux-field">
+							<span class="rux-field__label">Paste email or notes</span>
+							<textarea
+								class="rux-textarea trip-intake__source-text"
+								id="intake-source-text"
+								rows="8"
+								placeholder="Paste the customer's email, itinerary text, or notes here…"
+							></textarea>
+						</label>
+
+						<div class="rux-field">
+							<span class="rux-field__label">Or attach files</span>
+							<div
+								class="trip-intake__drop-zone"
+								id="intake-drop-zone"
+								role="button"
+								tabindex="0"
+								aria-label="Drop files here or click to browse"
+							>
+								<span class="rux-icon trip-intake__drop-icon" aria-hidden="true">upload_file</span>
+								<span class="trip-intake__drop-text">
+									Drop a PDF or image here, or click to browse
+								</span>
+								<input
+									class="trip-intake__file-input"
+									type="file"
+									id="intake-file-input"
+									multiple
+									accept=".pdf,.png,.jpg,.jpeg,.webp,.gif,.txt"
+									tabindex="-1"
+									aria-hidden="true"
+								/>
+							</div>
+							<ul
+								class="trip-intake__file-list"
+								id="intake-file-list"
+								aria-live="polite"
+							></ul>
+						</div>
+
+						<div class="trip-intake__source-actions">
+							<button
+								class="rux-button rux-button--accent"
+								type="button"
+								id="intake-process-btn"
+							>
+								<span class="rux-icon" aria-hidden="true">auto_awesome</span>
+								<span class="rux-button__label">Process</span>
+							</button>
+							<p
+								class="trip-intake__process-status"
+								id="intake-process-status"
+								role="status"
+								aria-live="polite"
+							></p>
+						</div>
+					</div>
+				</section>
+
+				<!-- ── Trip JSON (output) ──────────────────────────── -->
+				<section class="rux-card" id="intake-output">
+					<header class="rux-card__header">
+						<h2 class="rux-card__title">Trip JSON</h2>
+						<button
+							class="rux-button rux-button--ghost rux-button--sm"
+							type="button"
+							id="intake-upload-json-btn"
+						>
+							<span class="rux-icon" aria-hidden="true">upload</span>
+							<span class="rux-button__label">Upload .json</span>
+						</button>
+						<input
+							type="file"
+							id="intake-json-file-input"
+							accept=".json"
+							hidden
+						/>
+					</header>
+					<div class="rux-card__body">
+						<label class="rux-field">
+							<span class="rux-field__label">Trip draft JSON</span>
+							<textarea
+								class="rux-textarea trip-intake__json-text"
+								id="intake-json-text"
+								rows="8"
+								placeholder='{"schema_version": 2, "trip": { ... }}'
+								spellcheck="false"
+							></textarea>
+						</label>
+						<p
+							class="trip-intake__parse-error"
+							id="intake-parse-error"
+							hidden
+						></p>
+					</div>
+				</section>
+			</div>
+
+			<!-- ── Actions ─────────────────────────────────────────── -->
+			<div class="trip-intake__actions">
+				<button
+					class="rux-button rux-button--accent"
+					type="button"
+					id="intake-preview-btn"
+				>
+					<span class="rux-icon" aria-hidden="true">visibility</span>
+					<span class="rux-button__label">Preview</span>
+				</button>
+				<button
+					class="rux-button rux-button--default"
+					type="button"
+					id="intake-copy-btn"
+					hidden
+				>
+					<span class="rux-icon" aria-hidden="true">content_copy</span>
+					<span class="rux-button__label">Copy JSON</span>
+				</button>
+				<button
+					class="rux-button rux-button--ghost"
+					type="button"
+					id="intake-clear-btn"
+					hidden
+				>
+					<span class="rux-icon" aria-hidden="true">delete</span>
+					<span class="rux-button__label">Clear</span>
+				</button>
+			</div>
+
+			<!-- ── Draft preview ───────────────────────────────────── -->
+			<section
+				class="trip-intake__preview"
+				id="intake-preview"
+				hidden
+			>
+				<!-- Trip header -->
+				<div class="rux-card" id="intake-preview-header">
+					<div class="rux-card__body">
+						<div class="trip-intake__preview-header" id="intake-preview-header-content"></div>
+					</div>
+				</div>
+
+				<!-- Itinerary timeline -->
+				<div class="rux-card" id="intake-preview-itinerary">
+					<header class="rux-card__header">
+						<h2 class="rux-card__title">Itinerary</h2>
+						<span class="rux-badge" id="intake-stop-count"></span>
+					</header>
+					<div class="rux-card__body">
+						<ol
+							class="trip-intake__timeline"
+							id="intake-timeline"
+						></ol>
+					</div>
+				</div>
+
+				<!-- Warnings -->
+				<div
+					class="rux-card rux-card--solid trip-intake__warnings-card"
+					id="intake-warnings-card"
+					hidden
+				>
+					<header class="rux-card__header">
+						<span class="rux-icon" aria-hidden="true">warning</span>
+						<h2 class="rux-card__title">Warnings</h2>
+					</header>
+					<div class="rux-card__body">
+						<ul class="trip-intake__warnings" id="intake-warnings"></ul>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<script type="module" src="./js/pages/trip-intake.js?v=2"></script>
+	</body>
+</html>
