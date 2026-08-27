@@ -1128,8 +1128,8 @@
 		  </header>
 		  <div class="sched-trip-itinerary__stop-body">
 		  <div class="sched-trip-itinerary__fields">
-			${nameEl}
 			${addrEl}
+			${nameEl}
           </div>
 		  <div class="sched-trip-itinerary__time-row${isPickup ? " sched-trip-itinerary__time-row--single" : ""}">
 			${isPickup ? "" : `<div class="sched-trip-itinerary__datetime">
