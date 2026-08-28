@@ -15,7 +15,7 @@
 		<title>Trip Intake · Escamilla Tour Buses</title>
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=134" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=262" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=264" />
 		<link rel="stylesheet" href="./scheduler/css/features/trip-intake.css?v=2" />
 		<link
 			rel="stylesheet"
@@ -224,6 +224,15 @@
 					<span class="rux-button__label">Preview</span>
 				</button>
 				<button
+					class="rux-button rux-button--accent"
+					type="button"
+					id="intake-open-btn"
+					hidden
+				>
+					<span class="rux-icon" aria-hidden="true">open_in_new</span>
+					<span class="rux-button__label">Open in trip editor</span>
+				</button>
+				<button
 					class="rux-button rux-button--default"
 					type="button"
 					id="intake-copy-btn"
@@ -287,6 +296,6 @@
 			</section>
 		</main>
 
-		<script type="module" src="./js/pages/trip-intake.js?v=2"></script>
+		<script type="module" src="./js/pages/trip-intake.js?v=4"></script>
 	</body>
 </html>

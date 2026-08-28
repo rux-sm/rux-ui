@@ -2462,6 +2462,48 @@ export function getCurrentTripId() {
 	return currentTripId;
 }
 
+/* Apply ONLY the itinerary from an imported draft to the trip already open.
+
+   loadTrip() replaces everything, which is right for a new trip and wrong for
+   the common case: a trip booked weeks ago whose customer has now sent the
+   detailed schedule. Replacing there would discard the quoted price, the
+   contacts, the bus and driver assignments and the billing state — all
+   entered by hand, none of it in the customer's document.
+
+   So this writes the stops, and the dates the stops imply, and nothing else.
+   The trip's identity is untouched: no customer, no destination, no contacts,
+   no requirements, no payments, no assignments.
+
+   Dates are included because they are not really trip fields here — a
+   multi-day itinerary that ends on the 30th cannot sit on a trip that ends on
+   the 27th, and the editor scaffolds its day boundaries from that range. They
+   are only written when the draft actually states them. */
+export function applyItinerary(root, itinerary, trip) {
+	const rows = trip?.allTripStops ?? trip?.trip_stops ?? trip?.stops ?? [];
+	if (!Array.isArray(rows) || !rows.length) {
+		throw new Error("That draft has no itinerary to apply.");
+	}
+	// The OPEN trip's type decides how its stops are partitioned, not the
+	// draft's: applying an itinerary must not silently turn a split trip into
+	// a round trip, and the trip type is one of the fields this deliberately
+	// does not write.
+	const splitTrip = (window.TripPanel?.getTripType?.(root) || "round_trip") === "dropoff_pickup";
+
+	populateStops(itinerary, rows, { splitTrip });
+
+	const dates = [
+		["tp-start", trip.start_date],
+		["tp-end", trip.end_date],
+		["tp-return-start", trip.return_start_date],
+		["tp-return-end", trip.return_end_date],
+	];
+	for (const [field, value] of dates) {
+		if (value) setVal(root, field, value);
+	}
+	window.Rux?.syncDateInputs?.(root);
+	return rows.length;
+}
+
 /* ── Contacts ────────────────────────────────────────────────────────── */
 // Backs both the Customers module (full roster CRUD) and the trip panel's
 // booking/trip-contact autofill (search + the match-or-create path below).

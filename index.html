@@ -46,7 +46,7 @@
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=151" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=379" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=381" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=17"
@@ -7222,6 +7222,8 @@
 				"scheduler-context-add-trip",
 			);
 			let loadTrip = null;
+			let applyItinerary = null;
+			let getCurrentTripId = null;
 			let newTrip = null;
 			let fetchTrips = null;
 			let isSaveInFlight = null;
@@ -7801,7 +7803,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=50");
+					const db = await import("./js/data/trip-db.js?v=52");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -10980,7 +10982,7 @@
 			// the calendar without a reload. renderBusRows ends in
 			// renderScheduler(), which repaints the bars and the stripes.
 			async function loadFleet() {
-				const db = await import("./js/data/trip-db.js?v=50");
+				const db = await import("./js/data/trip-db.js?v=52");
 				try {
 					schedulerBuses = await db.fetchBuses();
 				} catch (err) {
@@ -11013,12 +11015,48 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=50");
+					const db = await import("./js/data/trip-db.js?v=52");
 					loadTrip = db.loadTrip;
+					applyItinerary = db.applyItinerary;
+					getCurrentTripId = db.getCurrentTripId;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;
 					isSaveInFlight = db.isSaveInFlight;
 					tripDBHandle = db.initTripDB(tripPanel, itinerary);
+
+					/* A draft handed over from the Intake workbench.
+
+					   That page is a separate document, so window.TripEditor is
+					   not reachable from it — it parks the draft in
+					   sessionStorage and navigates here. Read once and removed,
+					   so a reload does not reopen it and a draft never outlives
+					   the tab it was made in.
+
+					   window.TripEditor is defined by the time this runs (it is
+					   assigned in the same module, above initSchedulerData), but
+					   it is optional-chained anyway: a handoff failing to open
+					   must not take the scheduler's own boot down with it. */
+					try {
+						const handoff = sessionStorage.getItem("rux-trip-draft-handoff");
+						if (handoff) {
+							sessionStorage.removeItem("rux-trip-draft-handoff");
+							const result = window.TripEditor?.openFromDraft?.(
+								JSON.parse(handoff),
+								"Draft from Intake",
+							);
+							if (result?.ok) {
+								window.Rux?.toast?.(
+									result.warnings?.length
+										? `Draft opened. ${result.warnings.slice(0, 2).join(" ")}`
+										: "Draft opened from Intake",
+								);
+							} else if (result) {
+								window.Rux?.toast?.("That draft could not be opened.");
+							}
+						}
+					} catch (error) {
+						console.warn("The Intake handoff could not be opened:", error);
+					}
 					// Bars dispatch this on every select/deselect, regardless of
 					// whether the editor is open — lets Contact Info work from just
 					// clicking a bar active. bar.tripData is the scheduler's own
@@ -11288,12 +11326,24 @@
 					document.getElementById("tp-import-textarea");
 				const importError = document.getElementById("tp-import-error");
 				const importFile = document.getElementById("tp-import-file");
+				const importMode = document.getElementById("tp-import-mode");
+
+				// A saved trip is one that already carries the fields a draft
+				// cannot know about. A brand-new editor has nothing to protect,
+				// so the choice would be noise there.
+				const openTripId = () => getCurrentTripId?.() ?? null;
+				const chosenMode = () =>
+					(importMode.hidden
+						? "replace"
+						: importMode.querySelector('input[name="tp-import-mode"]:checked')?.value)
+					|| "replace";
 
 				document
 					.getElementById("tp-import-btn")
 					.addEventListener("click", () => {
 						importTextarea.value = "";
 						importError.textContent = "";
+						importMode.hidden = !openTripId();
 						importModal.hidden = false;
 						importTextarea.focus();
 					});
@@ -11348,12 +11398,28 @@
 								"This trip JSON is not supported.";
 							return;
 						}
-						// Always hydrate the complete sanitized draft. The old branch only
-						// called setStops() when an itinerary existed, silently dropping all
-						// top-level trip fields and the second leg of split trips.
-						loadTrip(tripPanel, itinerary, imported.trip);
+						// Two ways in. Replace hydrates the complete sanitized
+						// draft — the old branch only called setStops() when an
+						// itinerary existed, silently dropping every top-level
+						// trip field and the second leg of split trips. Itinerary
+						// only writes the stops and the dates they imply, for the
+						// common case of a trip booked weeks ago whose customer
+						// has now sent the schedule.
+						const itineraryOnly = chosenMode() === "itinerary";
+						if (itineraryOnly) {
+							try {
+								applyItinerary(tripPanel, itinerary, imported.trip);
+							} catch (error) {
+								importError.textContent =
+									error?.message ||
+									"That draft has no itinerary to apply.";
+								return;
+							}
+						} else {
+							loadTrip(tripPanel, itinerary, imported.trip);
+							setTripDialogTitle("Imported Trip");
+						}
 						setActiveTripPane("pane-itinerary");
-						setTripDialogTitle("Imported Trip");
 						openTripDialog();
 						importModal.hidden = true;
 						if (imported.warnings.length) {
@@ -11369,10 +11435,14 @@
 									? ` (+${imported.warnings.length - 2} more)`
 									: "";
 							window.Rux?.toast?.(
-								`Trip imported. ${warningSummary}${moreWarnings}`,
+								`${itineraryOnly ? "Itinerary applied" : "Trip imported"}. ${warningSummary}${moreWarnings}`,
 							);
 						} else {
-							window.Rux?.toast?.("Trip draft imported");
+							window.Rux?.toast?.(
+								itineraryOnly
+									? "Itinerary applied — nothing else on this trip was changed"
+									: "Trip draft imported",
+							);
 						}
 					});
 			}
@@ -11451,6 +11521,29 @@
 								>Paste the JSON, or upload a file below.</span
 							>
 						</div>
+						<!-- Shown only when a saved trip is open. A draft imported
+						     over an existing trip would otherwise discard its
+						     price, contacts, assignments and billing — none of
+						     which is in the customer's document. -->
+						<fieldset class="rux-field" id="tp-import-mode" hidden>
+							<legend class="rux-field__label">Apply to this trip</legend>
+							<div class="sched-import-mode">
+								<label class="sched-import-mode__choice">
+									<input type="radio" name="tp-import-mode" value="itinerary" checked />
+									<span>
+										<strong>Itinerary only</strong>
+										<span class="rux-field__help">Stops and dates. Leaves the customer, price, contacts and assignments alone.</span>
+									</span>
+								</label>
+								<label class="sched-import-mode__choice">
+									<input type="radio" name="tp-import-mode" value="replace" />
+									<span>
+										<strong>Replace the whole trip</strong>
+										<span class="rux-field__help">Everything the draft states, overwriting what is here now.</span>
+									</span>
+								</label>
+							</div>
+						</fieldset>
 						<div
 							style="
 								display: flex;

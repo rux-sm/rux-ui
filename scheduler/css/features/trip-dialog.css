@@ -34,3 +34,57 @@
 		min-height: 0;
 	}
 }
+
+/* ==========================================================================
+   IMPORT MODE  ·  .sched-import-mode — the two ways a draft lands
+   --------------------------------------------------------------------------
+   Shown in the Import trip from JSON modal only when a saved trip is open,
+   because only then is there anything to protect: a draft applied over an
+   existing trip would otherwise discard its price, contacts, assignments and
+   billing state, none of which is in the customer's document.
+
+   Two stacked choices rather than a segmented control — each needs a line of
+   consequence under it, and a segment has room for a label and nothing else.
+   ========================================================================== */
+
+.sched-import-mode {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+}
+
+.sched-import-mode__choice {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-2) var(--rux-space-3);
+	border: var(--rux-border-width) solid var(--rux-card-border);
+	border-radius: var(--rux-radius-control);
+	cursor: pointer;
+	touch-action: manipulation;
+}
+
+/* The whole row is the hit target, so the selected state has to be painted on
+   it — the radio alone leaves the band it sits in reading as unselected. */
+.sched-import-mode__choice:has(input:checked) {
+	border-color: var(--rux-accent);
+	background: var(--rux-surface-1);
+}
+
+.sched-import-mode__choice:focus-within {
+	box-shadow: var(--rux-button-focus-ring);
+}
+
+.sched-import-mode__choice > span {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-1);
+	min-width: 0;
+}
+
+.sched-import-mode__choice strong {
+	font-size: var(--rux-text-label-14-size);
+	line-height: var(--rux-text-label-14-line-height);
+	font-weight: var(--rux-weight-500);
+	color: var(--rux-text-primary);
+}

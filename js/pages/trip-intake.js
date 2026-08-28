@@ -30,6 +30,7 @@ const uploadJsonBtn = document.getElementById("intake-upload-json-btn");
 const parseError = document.getElementById("intake-parse-error");
 const previewBtn = document.getElementById("intake-preview-btn");
 const copyBtn = document.getElementById("intake-copy-btn");
+const openBtn = document.getElementById("intake-open-btn");
 const clearBtn = document.getElementById("intake-clear-btn");
 const previewSection = document.getElementById("intake-preview");
 const previewHeaderContent = document.getElementById("intake-preview-header-content");
@@ -349,8 +350,41 @@ previewBtn.addEventListener("click", () => {
 	renderPreview(result.trip, result.warnings, payload);
 	previewSection.hidden = false;
 	copyBtn.hidden = false;
+	openBtn.hidden = false;
 	clearBtn.hidden = false;
 	previewSection.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+
+/* ── Open in the trip editor ──────────────────────────────────────────────
+
+   This page produced a valid draft and had nowhere to send it: the only way
+   across was to copy the JSON by hand and paste it into the editor's own
+   import box, on a page that already knows how to read it.
+
+   The handoff is sessionStorage rather than a query string. A draft is a
+   customer's schedule with their contact details in it, and CLAUDE.md's
+   privacy rule is explicit that personal data does not go in a URL — where it
+   would land in history, in any logging proxy, and in the referrer of
+   whatever the page loads next. sessionStorage is same-origin, never leaves
+   the tab, and is read once and removed. */
+
+const HANDOFF_KEY = "rux-trip-draft-handoff";
+
+openBtn.addEventListener("click", () => {
+	if (!lastValidJson) return;
+	try {
+		sessionStorage.setItem(HANDOFF_KEY, JSON.stringify(lastValidJson));
+	} catch (error) {
+		// A private window, or storage the browser refuses. Say so rather than
+		// navigating to an editor that will open empty.
+		showError(
+			"This browser would not hand the draft over. Copy the JSON and use "
+			+ "Upload JSON in the trip editor instead.",
+		);
+		console.warn("Draft handoff could not be stored:", error);
+		return;
+	}
+	window.location.href = "./index.html";
 });
 
 // ── Copy JSON ────────────────────────────────────────────────────────────
@@ -379,6 +413,7 @@ clearBtn.addEventListener("click", () => {
 	lastValidJson = null;
 	previewSection.hidden = true;
 	copyBtn.hidden = true;
+	openBtn.hidden = true;
 	clearBtn.hidden = true;
 	hideError();
 });
