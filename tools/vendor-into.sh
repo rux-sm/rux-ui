@@ -91,7 +91,7 @@ fi
 # Shipped: describes the portable system itself.
 DOCS_SHIP=(buttons.md cards.md design-system-distribution.md layout-composition.md motion.md popovers.md portability-audit.md ui-header.md utilities.md)
 # App-tier: describes the reference application. Never leaves.
-DOCS_APP=(billing-workflow.md driver-assignment-card.md gem-itinerary-prompt.md gem-itinerary-prompt-1.md gem-itinerary-prompt-2.md gem-itinerary-prompt-3.md itinerary-prompt.md project-brief.md trip-bar.md trip-import-schema-v2.json trip-import-schema-v3.json trip-request-inbox.md)
+DOCS_APP=(billing-workflow.md driver-assignment-card.md gem-itinerary-prompt.md gem-itinerary-prompt-1.md gem-itinerary-prompt-2.md gem-itinerary-prompt-3.md itinerary-prompt.md itinerary-workflow.md project-brief.md trip-bar.md trip-import-schema-v2.json trip-import-schema-v3.json trip-request-inbox.md)
 # Repo-internal: working material for this repository, useful to no consumer.
 DOCS_INTERNAL_DIRS=(ai audit)
 # Shipped wholesale: the design-rule documents a consumer's own specs must defer to.

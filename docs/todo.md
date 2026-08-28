@@ -167,6 +167,10 @@ logs the upstream error body, so a rejection names the offending construct.
 Cost to close: create the user, set the secret and the three vars, set a spend limit in the
 Anthropic Console, deploy, and run one real document through it.
 
+Note that nothing depends on it. The itinerary workflow was built to work without it — see
+[`itinerary-workflow.md`](itinerary-workflow.md) — so this buys convenience on the quote
+lane rather than unblocking anything.
+
 ### T5 — The Worker has no `wrangler.toml`, and its deployed copy is not this one
 
 `worker/index.js` was reconstructed from the source pasted out of the Cloudflare dashboard.
@@ -228,26 +232,29 @@ Cost to close: one array in the quote prompt, one root property in v2 — or rep
 quote lane at v3 and delete the divergence. Plus the intake preview rendering the flags as
 an "Ask the customer" card with a copy-as-email action, which is still unbuilt.
 
-### T8 — Intake has no lane gate, and the prompt is still copied by hand
+### T8 — The quote lane still has no lane gate
 
-Two documents arrive at [`intake.html`](../intake.html) — an inbound quote request, which
-is a Trip Draft v2, and a confirmed itinerary, which is the driver-sheet chain's schema.
-The page has one JSON box and no way to say which is which, so the wrong paste produces a
-parse error that says nothing about which prompt should have been run.
+**Half of this is closed.** The Grid tab has a "Copy prompt + document" button that
+assembles [`itinerary-prompt.md`](itinerary-prompt.md) with whatever is pasted, so the
+prompt ships with the app instead of being hand-copied — for the *confirmed itinerary*
+lane. [`intake.html`](../intake.html) still has no equivalent for the quote lane.
 
-Separately, the manual route — the one that still works when the extraction service is
-down — requires finding the prompt in `docs/`, copying several hundred lines, and pasting
-it into an AI tool. Nothing in the page helps with the step that costs the most time and is
-easiest to get wrong.
+The lane confusion is also smaller than when this was written. It said two documents
+arrive at intake.html and the page cannot tell them apart; a confirmed itinerary now goes
+to the Grid tab instead, so intake.html is unambiguously the quote lane. What remains is
+that nothing on the page says so, and a confirmed itinerary pasted there still produces a
+parse error that names neither lane.
 
-How it is known: reviewing the page against two real documents of different kinds.
+See [`itinerary-workflow.md`](itinerary-workflow.md) § Two lanes for which document goes
+where.
 
-Why it was not fixed on the spot: only the server-side extraction was approved; these were
-proposed alongside it and not green-lit.
+How it is known: reviewing the page against two real documents of different kinds, and
+then building the other lane around it.
 
-Cost to close: `.rux-tabs--attached` above the panels choosing prompt, schema, and
-destination; and a "Copy prompt + source" button that assembles the active lane's prompt
-with whatever is pasted, so the prompt ships with the app instead of being hand-copied.
+Cost to close: a line of copy on intake.html saying what it is for, or the same
+"Copy prompt + document" button pointed at `gem-itinerary-prompt.md`. The
+`.rux-tabs--attached` lane picker originally proposed is probably now over-built for one
+remaining lane.
 
 ---
 
