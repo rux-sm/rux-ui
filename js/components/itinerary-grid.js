@@ -104,9 +104,18 @@
 	function sameAddress(typed, matched) {
 		const parts = (value) => {
 			const text = String(value ?? "");
+			/* The LAST five-digit run, not the first. A US address ends with
+			   its ZIP, and a house number is also five digits often enough to
+			   matter: asked for "Whataburger, Falfurrias, TX 78355", Mapbox
+			   read the ZIP as a house number and answered "78355 Texas Highway
+			   82, Sherman, Texas 75092" — 592 miles away. Taking the first run
+			   found 78355 on both sides and called it a match, so the one
+			   check that exists to catch a substitution passed on the worst
+			   one it will ever see. */
+			const zips = text.match(/\b\d{5}\b(?!\d)/g);
 			return {
 				number: /^\s*(\d+)/.exec(text)?.[1] || null,
-				zip: /\b(\d{5})(?:-\d{4})?\b/.exec(text)?.[1] || null,
+				zip: zips ? zips[zips.length - 1] : null,
 			};
 		};
 		const a = parts(typed);
@@ -183,6 +192,10 @@
 			// was typed. Recorded rather than applied — substituting it would
 			// hide the substitution.
 			matchedAddress: stop.matchedAddress || null,
+			// Set when the coordinates are the TOWN's rather than this stop's,
+			// because the address could not be resolved. The mileage measured
+			// from them is good to about a mile; the address is still missing.
+			approxFrom: stop.approxFrom || null,
 			activity: String(stop.activity ?? ""),
 			arrive: String(stop.arrive ?? ""),
 			depart: String(stop.depart ?? ""),
@@ -397,7 +410,16 @@
 				address: stop.address,
 				addressConfidence: stop.address_confidence,
 				activity: stop.activity,
-				arrive: stop.type === "sleeper" ? stop.rest_start_time : stop.arrival_time,
+				/* A pickup's arrival is its SPOT time — when the bus is staged
+				   with the doors open, which is the time the passengers were
+				   actually given. Reading only arrival_time dropped it: a real
+				   school trip lost its 5:00 AM meet and kept only the 5:30
+				   departure, and the meet is the time the parents were told. */
+				arrive: stop.type === "sleeper"
+					? stop.rest_start_time
+					: stop.type === "pickup"
+						? (stop.spot_time ?? stop.arrival_time)
+						: stop.arrival_time,
 				depart: stop.type === "sleeper" ? stop.rest_end_time : stop.departure_time,
 				miles: stop.distance_miles,
 				drive: stop.drive_time,
@@ -447,6 +469,7 @@
 				if (entry.lng != null) stop.lng = entry.lng;
 				if (entry.mapbox_id) stop.mapboxId = entry.mapbox_id;
 				if (entry.matched_address) stop.matchedAddress = entry.matched_address;
+				if (entry.approx_from) stop.approxFrom = entry.approx_from;
 			});
 		}
 
@@ -473,6 +496,11 @@
 			if (stop.type === "sleeper") {
 				if (stop.arrive) out.rest_start_time = stop.arrive;
 				if (stop.depart) out.rest_end_time = stop.depart;
+			} else if (stop.type === "pickup") {
+				// Emitted as spot_time, which is what it means and what the
+				// Itinerary tab's importer reads first.
+				if (stop.arrive) out.spot_time = stop.arrive;
+				if (stop.depart) out.departure_time = stop.depart;
 			} else {
 				if (stop.arrive && stop.type !== "yard_origin") out.arrival_time = stop.arrive;
 				if (stop.depart && stop.type !== "return") out.departure_time = stop.depart;
@@ -524,6 +552,7 @@
 			if (stop.lng != null) entry.lng = stop.lng;
 			if (stop.mapboxId) entry.mapbox_id = stop.mapboxId;
 			if (stop.matchedAddress) entry.matched_address = stop.matchedAddress;
+			if (stop.approxFrom) entry.approx_from = stop.approxFrom;
 			return entry;
 		});
 		if (annex.some((entry) => Object.keys(entry).length)) doc.rux_route = annex;
@@ -731,12 +760,23 @@
 		}
 	}
 
-	async function geocode(address, token) {
+	/* The town an address sits in, for the fallback below.
+
+	   A US address ends "…, City, ST ZIP", so the last two comma-separated
+	   parts are the locality however much venue and street precedes them.
+	   "Whataburger, Falfurrias, TX" gives "Falfurrias, TX". */
+	function localityOf(address) {
+		const parts = String(address ?? "").split(",").map((part) => part.trim()).filter(Boolean);
+		if (parts.length < 2) return null;
+		return parts.slice(-2).join(", ");
+	}
+
+	async function geocode(address, token, types = "address,poi") {
 		const url = new URL("https://api.mapbox.com/search/searchbox/v1/forward");
 		url.searchParams.set("q", address);
 		url.searchParams.set("access_token", token);
 		url.searchParams.set("country", "US");
-		url.searchParams.set("types", "address,poi");
+		url.searchParams.set("types", types);
 		url.searchParams.set("limit", "1");
 		url.searchParams.set("proximity", "ip");
 		const response = await fetch(url);
@@ -748,7 +788,10 @@
 			lng: coordinates[0],
 			lat: coordinates[1],
 			mapboxId: feature.properties?.mapbox_id || null,
-			address: feature.properties?.full_address || feature.properties?.address || null,
+			address: feature.properties?.full_address
+				|| feature.properties?.address
+				|| feature.properties?.name
+				|| null,
 		};
 	}
 
@@ -822,6 +865,7 @@
 					</div>`}
 				${note ? `<p class="sched-itinerary-grid__note"><span class="rux-icon" aria-hidden="true">error</span>${escHtml(note)}</p>` : ""}
 				${stop.matchedAddress ? `<p class="sched-itinerary-grid__note"><span class="rux-icon" aria-hidden="true">wrong_location</span>Routed to ${escHtml(stop.matchedAddress)} — check this is the right place.</p>` : ""}
+				${stop.approxFrom ? `<p class="sched-itinerary-grid__note"><span class="rux-icon" aria-hidden="true">my_location</span>Measured to ${escHtml(stop.approxFrom)}, not to this stop — get the street address.</p>` : ""}
 				${extras.plan ? `<p class="sched-itinerary-grid__plan">
 					<span class="rux-icon" aria-hidden="true">route</span>
 					<span>${escHtml(extras.plan.text)}</span>
@@ -854,7 +898,7 @@
 		</li>`;
 	}
 
-	function renderLeg(stop, index, risk) {
+	function renderLeg(stop, index, risk, approx) {
 		const miles = Number.parseFloat(stop.miles);
 		const mins = driveMins(stop.drive);
 		const known = Number.isFinite(miles) || mins !== null;
@@ -862,7 +906,7 @@
 		return `<li class="sched-itinerary-grid__leg${known ? "" : " sched-itinerary-grid__leg--unknown"}${risk ? " sched-itinerary-grid__leg--tight" : ""}" data-leg="${index}">
 			<span class="rux-icon" aria-hidden="true">${risk ? "warning" : "arrow_downward"}</span>
 			${known
-				? `<span>${Number.isFinite(miles) ? `${miles.toFixed(1)} mi` : "— mi"}${mins !== null ? ` · ${escHtml(formatSpan(mins))}` : ""}${manual ? " · entered" : ""}</span>`
+				? `<span>${approx ? "≈ " : ""}${Number.isFinite(miles) ? `${miles.toFixed(1)} mi` : "— mi"}${mins !== null ? ` · ${escHtml(formatSpan(mins))}` : ""}${manual ? " · entered" : ""}${approx ? " · to the town" : ""}</span>`
 				: "<span>Not routed yet</span>"}
 			${risk ? `<span class="sched-itinerary-grid__risk">Tight — ${escHtml(formatSpan(risk.needed))} of driving in a ${escHtml(formatSpan(risk.gap))} gap. Leave by ${escHtml(risk.leaveBy)}.</span>` : ""}
 		</li>`;
@@ -897,7 +941,12 @@
 			// stand in for it hid the drive home on every overnight trip — the
 			// mileage still counted in the totals, so the row simply looked
 			// unrouted while the footer said otherwise.
-			if (index > 0) parts.push(renderLeg(stop, index, risks[index]));
+			if (index > 0) {
+				// Either end being town-level makes the leg approximate, not
+				// just the stop that could not be resolved.
+				const approx = !!(stop.approxFrom || state.stops[index - 1]?.approxFrom);
+				parts.push(renderLeg(stop, index, risks[index], approx));
+			}
 			parts.push(renderRow(stop, index, days[index], state.stops.length, {
 				plan: rowPlan(stop, plan),
 			}));
@@ -1092,6 +1141,7 @@
 				// while a manually typed mileage still stands.
 				stop.addressConfidence = null;
 				stop.matchedAddress = null;
+				stop.approxFrom = null;
 				stop.lat = null;
 				stop.lng = null;
 				stop.mapboxId = null;
@@ -1233,6 +1283,7 @@
 			routeBtn.disabled = true;
 			let resolved = 0;
 			let routed = 0;
+			let approximated = 0;
 			let failed = 0;
 
 			try {
@@ -1253,6 +1304,7 @@
 						stop.mapboxId = saved.mapboxId || null;
 						stop.addressConfidence = null;
 						stop.matchedAddress = null;
+						stop.approxFrom = null;
 						resolved += 1;
 						continue;
 					}
@@ -1277,10 +1329,43 @@
 							stop.matchedAddress = found.address && !sameAddress(address, found.address)
 								? found.address
 								: null;
+							stop.approxFrom = null;
 							resolved += 1;
-						} else {
-							failed += 1;
+							continue;
 						}
+
+						/* Nothing matched. Fall back to the TOWN.
+
+						   A leg that cannot be measured is worse than one
+						   measured approximately, because the miles it drops
+						   come off the whole trip's total: a real Six Flags
+						   itinerary quoted 150 miles short because one
+						   breakfast stop had no street address. In a town the
+						   size of Falfurrias every address is within a mile of
+						   every other, so measuring to the town is accurate to
+						   about the mile — which is a quoting error nobody can
+						   see, against one that loses a leg entirely.
+
+						   It is never silently exact, though. approxFrom
+						   records what was actually measured to, the row and
+						   the driver sheet both say so, and the stop's typed
+						   address is left exactly as it was — a driver must
+						   never be sent to a town centre believing it is the
+						   Whataburger. */
+						const town = localityOf(address);
+						if (town && town.toLowerCase() !== address.toLowerCase()) {
+							const place = await geocode(town, token, "place,locality,postcode");
+							if (place) {
+								stop.lat = place.lat;
+								stop.lng = place.lng;
+								stop.mapboxId = null;
+								stop.matchedAddress = null;
+								stop.approxFrom = place.address || town;
+								approximated += 1;
+								continue;
+							}
+						}
+						failed += 1;
 					} catch (error) {
 						console.warn("Grid geocode failed:", error);
 						failed += 1;
@@ -1322,9 +1407,15 @@
 
 			const parts = [];
 			if (resolved) parts.push(`${resolved} address${resolved === 1 ? "" : "es"} resolved`);
+			if (approximated) {
+				parts.push(`${approximated} measured to the town only — ${approximated === 1 ? "its address is" : "their addresses are"} still needed`);
+			}
 			if (routed) parts.push(`${routed} leg${routed === 1 ? "" : "s"} measured`);
 			if (failed) parts.push(`${failed} could not be worked out`);
-			sayRoute(parts.length ? `${parts.join(", ")}.` : "Everything was already resolved and routed.", failed > 0);
+			sayRoute(
+				parts.length ? `${parts.join(", ")}.` : "Everything was already resolved and routed.",
+				failed > 0 || approximated > 0,
+			);
 		}
 
 		/* Hand the driver sheet everything already worked out here.
@@ -1471,6 +1562,6 @@
 
 	window.ItineraryGrid = {
 		init, fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
-		legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops, toCleanV3,
+		legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops, toCleanV3, localityOf,
 	};
 })();

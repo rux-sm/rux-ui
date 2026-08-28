@@ -26,7 +26,7 @@ new Function("window", source)(host);
 
 const {
 	fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
-	legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops, toCleanV3,
+	legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops, toCleanV3, localityOf,
 } = host.ItineraryGrid;
 
 // legRisks and dutyByDay both take the derived days alongside the stops, so
@@ -158,6 +158,34 @@ test("a sleeper's rest window becomes its arrive and depart", () => {
 	]));
 	assert.equal(state.stops[1].arrive, "22:00");
 	assert.equal(state.stops[1].depart, "07:00");
+});
+
+test("a pickup's spot time is its arrival, and round-trips as one", () => {
+	/* Found on a real school trip: the draft gave spot_time 05:00 and
+	   departure_time 05:30, and only the 05:30 survived. The spot time is when
+	   the bus is staged with the doors open — the time the parents were
+	   actually told — so losing it loses the one time on the page anyone
+	   outside the company knows. */
+	const state = fromV3(v3([
+		{ type: "pickup", name: "School", spot_time: "05:00", departure_time: "05:30" },
+		{ type: "return", arrival_time: "23:10" },
+	]));
+	assert.equal(state.stops[0].arrive, "05:00");
+	assert.equal(state.stops[0].depart, "05:30");
+
+	const emitted = toV3(state).trip.legs.outbound.stops[0];
+	assert.equal(emitted.spot_time, "05:00", "and it goes back out as spot_time, not arrival_time");
+	assert.equal(emitted.arrival_time, undefined);
+	assert.equal(emitted.departure_time, "05:30");
+});
+
+test("a pickup with only an arrival_time still loads", () => {
+	// Some drafts state it the other way; neither should be dropped.
+	const state = fromV3(v3([
+		{ type: "pickup", arrival_time: "04:40", departure_time: "05:00" },
+		{ type: "return", arrival_time: "20:00" },
+	]));
+	assert.equal(state.stops[0].arrive, "04:40");
 });
 
 test("day markers in a draft are dropped — this tab derives them", () => {
@@ -636,6 +664,44 @@ test("a day with a single time has no duty span", () => {
 	assert.equal(dutyByDay(stops, days)[0].duty, 0);
 });
 
+/* ── Town fallback ───────────────────────────────────────────────────── */
+
+test("the town is taken from the tail of an address, whatever precedes it", () => {
+	assert.equal(localityOf("Whataburger, Falfurrias, TX"), "Falfurrias, TX");
+	assert.equal(localityOf("Tex Best, George West, TX"), "George West, TX");
+	assert.equal(localityOf("17000 W Interstate 10, San Antonio, TX 78257"), "San Antonio, TX 78257");
+	assert.equal(localityOf("101 E Hackberry Ave, McAllen, TX 78501"), "McAllen, TX 78501");
+});
+
+test("an address with nothing to fall back to gives no town", () => {
+	assert.equal(localityOf("Six Flags"), null);
+	assert.equal(localityOf(""), null);
+	assert.equal(localityOf(null), null);
+});
+
+test("a town-level fix survives being saved and reloaded", () => {
+	/* The point of the fallback is a usable quote, so it has to persist: a
+	   trip reopened tomorrow must still show its mileage AND still say that
+	   one leg was measured to the town rather than to the stop. */
+	const state = {
+		startDate: "2027-05-20", client: "", destination: "", dataFlags: [],
+		stops: [
+			{ type: "pickup", address: "Audie Murphy Middle School, Weslaco, TX", depart: "05:30" },
+			{ type: "stop", name: "Whataburger", address: "Whataburger, Falfurrias, TX",
+				arrive: "07:30", miles: "88.4", drive: "1:22", approxFrom: "Falfurrias, Texas, United States" },
+			{ type: "return", arrive: "23:10" },
+		].map(normalizeStop),
+	};
+	const back = fromV3(toV3(state));
+	assert.equal(back.stops[1].approxFrom, "Falfurrias, Texas, United States");
+	assert.equal(back.stops[1].miles, "88.4");
+	assert.equal(
+		back.stops[1].address,
+		"Whataburger, Falfurrias, TX",
+		"and the typed address is untouched — a driver is never sent to the town centre",
+	);
+});
+
 /* ── Geocoder substitution ───────────────────────────────────────────── */
 
 test("an expanded spelling of the same address is not a substitution", () => {
@@ -661,6 +727,20 @@ test("a different place is a substitution, however plausible it looks", () => {
 		sameAddress("101 E Hackberry Ave, McAllen, TX 78501", "508 TX-107, Elsa, Texas 78543"),
 		false,
 		"both the house number and the ZIP moved",
+	);
+});
+
+test("a ZIP the geocoder read as a house number is caught", () => {
+	/* The real one, from a Six Flags trip. Asked for a Whataburger in
+	   Falfurrias, Mapbox parsed the ZIP as a street number and answered an
+	   address 592 miles away in Sherman. Reading the FIRST five-digit run
+	   found 78355 on both sides and passed it. */
+	assert.equal(
+		sameAddress(
+			"Whataburger, Falfurrias, TX 78355",
+			"78355 Texas Highway 82, Sherman, Texas 75092, United States",
+		),
+		false,
 	);
 });
 

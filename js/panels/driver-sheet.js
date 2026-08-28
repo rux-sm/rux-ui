@@ -122,7 +122,7 @@
 			.join("");
 	}
 
-	function legLine(stop) {
+	function legLine(stop, previous) {
 		const miles = Number.parseFloat(stop.miles);
 		const parts = [];
 		if (Number.isFinite(miles) && miles > 0) parts.push(`${miles.toFixed(1)} mi`);
@@ -132,12 +132,25 @@
 			if (mins > 0) parts.push(span(mins));
 		}
 		if (!parts.length) return "";
-		// An unverified address is the one thing a driver should distrust on
-		// this page: the mileage beside it is measured from a guess.
-		const caveat = stop.addressConfidence && stop.addressConfidence !== "exact"
-			? " · est. from unverified address"
-			: "";
-		return `<span class="sched-driver-sheet__leg">${escHtml(parts.join(" · "))}${escHtml(caveat)}</span>`;
+		/* Two different caveats, and the stronger one wins.
+
+		   Town-level is the bigger caveat: the leg was measured to a place in
+		   the town rather than to this stop, because the address is missing.
+		   Unverified is the softer one: there IS an address, it just came from
+		   the model's general knowledge rather than the source. */
+		// "to" when this stop is the approximate end, "from" when the leg
+		// merely starts at one. The leg into George West is approximate
+		// because it LEAVES the Falfurrias town point, and reading "measured
+		// to Falfurrias" on a row headed George West is a double-take.
+		const caveat = stop.approxFrom
+			? ` · approx, measured to ${stop.approxFrom}`
+			: previous?.approxFrom
+				? ` · approx, measured from ${previous.approxFrom}`
+				: stop.addressConfidence && stop.addressConfidence !== "exact"
+					? " · est. from unverified address"
+					: "";
+		const approxTown = stop.approxFrom || previous?.approxFrom;
+		return `<span class="sched-driver-sheet__leg">${approxTown ? "≈ " : ""}${escHtml(parts.join(" · "))}${escHtml(caveat)}</span>`;
 	}
 
 	function buildRows(payload) {
@@ -146,6 +159,7 @@
 		let shownDay = -1;
 
 		stops.forEach((stop, index) => {
+			const previous = stops[index - 1];
 			if (days[index].arriveDay !== shownDay) {
 				shownDay = days[index].arriveDay;
 				const iso = addDays(startDate, shownDay);
@@ -156,16 +170,18 @@
 			const risk = risks[index];
 			const address = stop.address
 				? escHtml(stop.address)
-					+ (stop.addressConfidence && stop.addressConfidence !== "exact"
-						? ' <span class="sched-driver-sheet__unverified">unverified</span>'
-						: "")
+					+ (stop.approxFrom
+						? ' <span class="sched-driver-sheet__unverified">street address needed</span>'
+						: stop.addressConfidence && stop.addressConfidence !== "exact"
+							? ' <span class="sched-driver-sheet__unverified">unverified</span>'
+							: "")
 				: "";
 
 			rows.push(`<tr>
 				<td class="sched-driver-sheet__time-cell">${timeCell(stop, plan)}</td>
 				<td class="sched-driver-sheet__loc">
 					${escHtml(stop.name || TYPE_TITLE[stop.type] || "")}
-					${legLine(stop)}
+					${index > 0 ? legLine(stop, previous) : ""}
 					${risk ? `<span class="sched-driver-sheet__alert"><strong>TIGHT:</strong> ${escHtml(span(risk.needed))} of driving in a ${escHtml(span(risk.gap))} gap. <strong>Leave by ${escHtml(clock12(risk.leaveBy))}</strong></span>` : ""}
 				</td>
 				<td class="sched-driver-sheet__addr">${address}</td>
@@ -178,7 +194,10 @@
 	function buildFooter(payload) {
 		const { totals, duty, startDate } = payload;
 		const lines = [];
-		if (totals.miles > 0) lines.push(`Total distance: <strong>${totals.miles.toFixed(1)} mi</strong>`);
+		const anyApprox = (payload.stops || []).some((stop) => stop.approxFrom);
+		if (totals.miles > 0) {
+			lines.push(`Total distance: <strong>${anyApprox ? "≈ " : ""}${totals.miles.toFixed(1)} mi</strong>`);
+		}
 		if (totals.drive > 0) lines.push(`Total driving: <strong>${escHtml(span(totals.drive))}</strong>`);
 
 		// One line per day, never a trip-wide total. Hours of service is a
@@ -205,7 +224,10 @@
 		const substitutions = payload.stops
 			.filter((stop) => stop.matchedAddress)
 			.map((stop) => `${stop.name || stop.address}: routed to ${stop.matchedAddress}`);
-		const all = [...flags, ...substitutions];
+		const approximate = payload.stops
+			.filter((stop) => stop.approxFrom)
+			.map((stop) => `${stop.name || stop.address}: no street address — mileage measured to ${stop.approxFrom}, so it is good to about a mile. Get the address before quoting.`);
+		const all = [...flags, ...substitutions, ...approximate];
 		if (!all.length) return "";
 		return `<div class="sched-driver-sheet__notes">
 			<h2>Check before rolling</h2>
