@@ -26,7 +26,7 @@ new Function("window", source)(host);
 
 const {
 	fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
-	legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops,
+	legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops, toCleanV3,
 } = host.ItineraryGrid;
 
 // legRisks and dutyByDay both take the derived days alongside the stops, so
@@ -226,6 +226,104 @@ test("the emitted draft states the day offsets it derived", () => {
 	assert.equal(stops[1].day_offset, undefined, "day zero is left implicit");
 	assert.equal(stops[1].departure_day_offset, 1, "the overnight is stated");
 	assert.equal(stops[2].day_offset, 1);
+});
+
+test("a saved itinerary keeps its measured route, and keeps it measured", () => {
+	/* The defect this pins: toV3 emitted no mileage at all, so persisting an
+	   itinerary threw away every leg a Resolve pass had measured and it came
+	   back needing routing again. Found by the driver sheet, which tried to
+	   print numbers that were not in the document.
+
+	   Emitting them as distance_miles is not the fix on its own. In v3 that
+	   property means "the source stated it", so the importer marks it manual —
+	   and a manual value is one a later Resolve refuses to refresh. Measured
+	   mileage therefore travels in the annex, which carries its source with
+	   it. */
+	const routed = {
+		startDate: "2026-07-27", client: "", destination: "", dataFlags: [],
+		stops: [
+			{ type: "pickup", name: "School", address: "101 E Hackberry", arrive: "04:45", depart: "05:00" },
+			{ type: "stop", name: "Field", address: "1300 E MLK", arrive: "10:00", depart: "14:30",
+				miles: "312.4", drive: "4:48", lat: 30.2, lng: -97.7, mapboxId: "abc" },
+			{ type: "stop", name: "Detour", address: "Somewhere", arrive: "16:00",
+				miles: "40.0", drive: "1:05", milesSource: "manual", driveSource: "manual" },
+			{ type: "return", arrive: "20:00", miles: "315.0", drive: "4:55" },
+		].map(normalizeStop),
+	};
+
+	const doc = toV3(routed);
+	assert.ok(Array.isArray(doc.rux_route), "the annex is emitted");
+	assert.equal(
+		doc.trip.legs.outbound.stops[1].distance_miles,
+		undefined,
+		"a MEASURED leg is not laundered into a customer-stated distance_miles",
+	);
+	assert.equal(
+		doc.trip.legs.outbound.stops[2].distance_miles,
+		40,
+		"a TYPED override is a stated value and does belong in the draft",
+	);
+
+	const back = fromV3(doc);
+	assert.deepEqual(
+		back.stops.map((stop) => [stop.miles, stop.drive, stop.milesSource]),
+		[
+			["", "", "estimated"],
+			["312.4", "4:48", "estimated"],
+			["40.0", "1:05", "manual"],
+			["315.0", "4:55", "estimated"],
+		],
+		"every measured number survives, and stays refreshable by the next Resolve",
+	);
+	assert.equal(back.stops[1].lat, 30.2, "and so do the coordinates it was measured between");
+	assert.equal(back.stops[1].mapboxId, "abc");
+});
+
+test("the annex is ignored when it cannot be trusted to line up", () => {
+	// A draft edited by hand since it was saved would otherwise put one stop's
+	// mileage on another's leg, which is worse than having none.
+	const doc = toV3({
+		startDate: "2026-07-27", client: "", destination: "", dataFlags: [],
+		stops: [{ type: "pickup", depart: "05:00", miles: "5.2", drive: "0:16" }].map(normalizeStop),
+	});
+	doc.trip.legs.outbound.stops.push({ type: "return", arrival_time: "20:00" });
+
+	const back = fromV3(doc);
+	assert.equal(back.stops.length, 2);
+	assert.equal(back.stops[0].miles, "", "a mismatched annex is dropped whole, not applied partly");
+});
+
+test("a document with no annex still loads, as a model's own draft does", () => {
+	const plain = v3([
+		{ type: "pickup", departure_time: "05:00" },
+		{ type: "stop", name: "Field", arrival_time: "10:00", distance_miles: 37.7, drive_time: "0:44" },
+		{ type: "return", arrival_time: "20:00" },
+	]);
+	assert.equal(plain.rux_route, undefined);
+	const back = fromV3(plain);
+	assert.equal(back.stops[1].miles, "37.7");
+	assert.equal(back.stops[1].milesSource, "manual", "a model stating mileage means the source did");
+});
+
+test("what a person copies is schema-clean; what is persisted carries the annex", () => {
+	/* The stored document and the exported one are not the same thing. v3's
+	   root is additionalProperties: false, so the annex would fail validation
+	   for anyone who checked a copied draft against the published schema — and
+	   it means nothing outside this tab anyway. */
+	const state = {
+		startDate: "2026-07-27", client: "", destination: "", dataFlags: [],
+		stops: [
+			{ type: "pickup", depart: "05:00" },
+			{ type: "stop", name: "Field", arrive: "10:00", miles: "312.4", drive: "4:48" },
+		].map(normalizeStop),
+	};
+	assert.ok(toV3(state).rux_route, "persisted");
+	assert.equal(toCleanV3(state).rux_route, undefined, "copied");
+	assert.deepEqual(
+		Object.keys(toCleanV3(state)).sort(),
+		["schema_version", "trip"],
+		"nothing else leaks into the public draft either",
+	);
 });
 
 test("a draft with no stops yields no stops rather than throwing", () => {
@@ -464,25 +562,42 @@ test("an unrouted leg is not flagged, because nothing is known about it", () => 
 /* ── Yard plan ───────────────────────────────────────────────────────── */
 
 test("the yard plan works backwards from the pickup's departure", () => {
-	// Depart 05:00, 15 minutes of spot padding, 45 minutes from the yard,
-	// 15 minutes of pre-trip before that.
+	// Depart 05:00, 15 minutes of spot padding, then 45 minutes of driving
+	// backed off by the same 15% and 5-minute margin legRisks judges against
+	// (ceil(45 * 1.15) + 5 = 57), then 15 minutes of pre-trip.
 	const plan = yardPlan([
 		normalizeStop({ type: "yard_origin" }),
 		normalizeStop({ type: "pickup", depart: "05:00", drive: "0:45" }),
 	]);
 	assert.equal(plan.spot, "04:45");
-	assert.equal(plan.roll, "04:00");
-	assert.equal(plan.report, "03:45");
+	assert.equal(plan.roll, "03:48");
+	assert.equal(plan.report, "03:33");
+});
+
+test("following the yard plan does not produce the warning it was meant to avoid", () => {
+	/* The plan used to subtract the bare drive time, leaving a gap exactly
+	   equal to it — which legRisks then failed. The tab suggested a departure
+	   and immediately flagged the leg it had just created, and a tool that
+	   warns about its own advice teaches people to ignore the warning. */
+	const stops = [
+		normalizeStop({ type: "yard_origin" }),
+		normalizeStop({ type: "pickup", arrive: "04:45", depart: "05:00", drive: "0:16" }),
+	];
+	const plan = yardPlan(stops);
+	stops[0].depart = plan.roll;
+
+	assert.equal(legRisks(stops, deriveDays(stops))[1], null, `rolling at ${plan.roll} is not tight`);
 });
 
 test("the yard plan wraps backwards past midnight", () => {
+	// 00:15 spot, minus ceil(60 * 1.15) + 5 = 74 minutes, minus 15 pre-trip.
 	const plan = yardPlan([
 		normalizeStop({ type: "yard_origin" }),
 		normalizeStop({ type: "pickup", depart: "00:30", drive: "1:00" }),
 	]);
 	assert.equal(plan.spot, "00:15");
-	assert.equal(plan.roll, "23:15");
-	assert.equal(plan.report, "23:00");
+	assert.equal(plan.roll, "23:01", "the previous evening, not a negative time");
+	assert.equal(plan.report, "22:46");
 });
 
 test("without a routed first leg the plan stops at the spot time", () => {

@@ -39,6 +39,7 @@ const EXEMPT_ALL = new Map([
 const PRINT = new Map([
 	["scheduler/css/features/print-schedule.css", "print surface — typography.md §7.3 S2"],
 	["scheduler/css/features/trip-envelope.css", "print surface — typography.md §7.3 S2"],
+	["scheduler/css/features/driver-sheet.css", "print surface — typography.md §7.3 S2"],
 ]);
 const PRINT_STILL_LITERAL = new Set(["font-size", "line-height"]);
 

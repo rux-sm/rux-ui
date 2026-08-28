@@ -1,0 +1,228 @@
+/* ==========================================================================
+   DRIVER SHEET  ·  .sched-driver-sheet — the printable itinerary
+
+   Built by js/panels/driver-sheet.js onto a .sched-print-root, so it inherits
+   that block's off-screen positioning and its light-on-paper --print-* palette
+   (print-schedule.css). Reusing the root is also what keeps it visible when
+   printing: @media print there hides every body child except .sched-print-root
+   and the envelope window, and a third exemption would have to be added by
+   hand for any root that is not one of those.
+
+   Compact on purpose. This is the page a driver folds into a pocket, and the
+   old prompt it replaces was explicit that paper is the constraint — one trip
+   should be one sheet wherever the stop count allows.
+
+   Sizes are in pt rather than rem, and tests/no-literals.test.mjs records this
+   file as a print surface for exactly that reason: rule 2.1 asks for rem so a
+   reader can raise their browser's default, and paper has no such control, so
+   pt is arguably more correct here rather than less. Weight and tracking are
+   NOT exempt and are tokenised below — step 61 tokenised every weight on
+   paper, and this file was written after it.
+   ========================================================================== */
+
+.sched-driver-sheet {
+	font-family: var(--rux-font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
+	font-size: 9pt;
+	line-height: 1.3;
+	color: var(--print-ink);
+	background: var(--print-paper);
+}
+
+/* Take back the elements the application's global rules colour.
+
+   colors_and_type.css sets `color: var(--rux-text-primary)` on <strong>/<b>
+   and on every heading. In dark mode that resolves to near-white, and a rule
+   on the element beats inheritance from this block — so on paper they came
+   out white on white. Measured live: the TIGHT label, the required departure
+   time, every total value and the notes heading were all invisible.
+
+   The two print surfaces that came before this one use neither element, which
+   is why the trap was never hit and is not documented anywhere else. Any
+   future one that does use them needs this rule too.
+
+   `inherit` rather than a named token on purpose: each of these sits inside a
+   parent that has already chosen the right ink for its context — muted in the
+   duty block, full strength in the alert — and naming one colour here would
+   flatten that. */
+.sched-driver-sheet :is(h1, h2, strong, b) {
+	color: inherit;
+}
+
+.sched-driver-sheet strong {
+	font-weight: var(--rux-weight-700);
+}
+
+.sched-driver-sheet__page {
+	/* Margins live here, not in @page — the print driver does not reliably
+	   honour that one (measured; see trip-envelope.css). The box model it
+	   cannot ignore. */
+	box-sizing: border-box;
+	width: 8.5in;
+	padding: 0;
+}
+
+/* — Header — */
+
+.sched-driver-sheet__header {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 12pt;
+	padding-bottom: 4pt;
+	margin-bottom: 8pt;
+	border-bottom: 1.5pt solid var(--print-frame);
+}
+
+.sched-driver-sheet__header h1 {
+	margin: 0;
+	font-size: 14pt;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.sched-driver-sheet__meta {
+	text-align: right;
+	font-size: 9pt;
+	color: var(--print-ink-muted);
+}
+
+.sched-driver-sheet__meta strong {
+	color: var(--print-ink);
+	font-size: 10pt;
+}
+
+/* — Table — */
+
+.sched-driver-sheet__table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 8pt;
+}
+
+.sched-driver-sheet__table th,
+.sched-driver-sheet__table td {
+	border-bottom: 0.5pt solid var(--print-rule);
+	padding: 5pt 4pt;
+	vertical-align: top;
+	text-align: left;
+	/* A stop split across a page break is a stop a driver can miss. */
+	break-inside: avoid;
+}
+
+.sched-driver-sheet__table th {
+	background: var(--print-fill);
+	border-bottom: 1pt solid var(--print-frame);
+	font-size: 8pt;
+	font-weight: var(--rux-weight-700);
+	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-wide);
+	color: var(--print-ink-muted);
+}
+
+.sched-driver-sheet__time-cell {
+	width: 17%;
+	white-space: nowrap;
+	font-variant-numeric: tabular-nums;
+}
+
+.sched-driver-sheet__loc { width: 32%; }
+.sched-driver-sheet__addr { width: 28%; font-size: 8pt; color: var(--print-ink-muted); }
+.sched-driver-sheet__act { width: 23%; font-size: 8pt; }
+
+/* Each time on its own line with its label ahead of it, so Report/Roll and
+   Arr/Dep read as a pair rather than as one run-on string. */
+.sched-driver-sheet__time {
+	display: block;
+	font-weight: var(--rux-weight-700);
+	font-size: 9.5pt;
+}
+
+.sched-driver-sheet__time-label {
+	display: inline-block;
+	width: 3.2em;
+	font-weight: var(--rux-weight-400);
+	font-size: 7.5pt;
+	color: var(--print-ink-faint);
+	text-transform: uppercase;
+}
+
+.sched-driver-sheet__loc {
+	font-weight: var(--rux-weight-700);
+	font-size: 10pt;
+}
+
+/* The inbound leg, under the stop it ends at — the drive a driver is about to
+   make is the one worth reading next to where they are going. */
+.sched-driver-sheet__leg {
+	display: block;
+	margin-top: 1pt;
+	font-weight: var(--rux-weight-400);
+	font-size: 8pt;
+	color: var(--print-ink-muted);
+}
+
+.sched-driver-sheet__unverified {
+	font-style: italic;
+	color: var(--print-warning);
+}
+
+.sched-driver-sheet__alert {
+	display: block;
+	margin-top: 3pt;
+	padding: 3pt 4pt;
+	border-left: 2pt solid var(--print-warning);
+	background: var(--print-yellow-tint);
+	font-weight: var(--rux-weight-400);
+	font-size: 8pt;
+	color: var(--print-ink);
+}
+
+/* — Day divider — */
+
+.sched-driver-sheet__dayrow td {
+	background: var(--print-fill);
+	border-bottom: 1pt solid var(--print-frame);
+	font-size: 8.5pt;
+	font-weight: var(--rux-weight-700);
+	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-wide);
+}
+
+/* — Footer — */
+
+.sched-driver-sheet__totals {
+	padding-top: 4pt;
+	border-top: 1.5pt solid var(--print-frame);
+	text-align: right;
+	font-size: 10pt;
+	break-inside: avoid;
+}
+
+.sched-driver-sheet__duty {
+	margin-top: 3pt;
+	padding-top: 3pt;
+	border-top: 0.5pt solid var(--print-rule);
+	font-size: 9pt;
+	color: var(--print-ink-muted);
+}
+
+.sched-driver-sheet__notes {
+	margin-top: 8pt;
+	padding: 5pt 6pt;
+	border: 0.5pt solid var(--print-rule);
+	background: var(--print-yellow-tint);
+	font-size: 8pt;
+	break-inside: avoid;
+}
+
+.sched-driver-sheet__notes h2 {
+	margin: 0 0 3pt;
+	font-size: 8.5pt;
+	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-wide);
+}
+
+.sched-driver-sheet__notes ul {
+	margin: 0;
+	padding-inline-start: 12pt;
+}

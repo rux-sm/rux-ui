@@ -307,7 +307,14 @@
 		const plan = { spot: toClock(spot) };
 		if (drive === null || drive <= 0) return plan;
 
-		const roll = ((spot - drive) % 1440 + 1440) % 1440;
+		/* Backed off by the same buffer and margin legRisks judges against, not
+		   by the bare drive time. Subtracting only the drive leaves a gap
+		   exactly equal to it, which the risk check then fails — so the tab
+		   suggested a departure and immediately flagged the leg it created.
+		   A tool that warns about its own advice teaches people to ignore the
+		   warning. */
+		const needed = Math.ceil(drive * (1 + TRAFFIC_BUFFER)) + RISK_MARGIN_MINS;
+		const roll = ((spot - needed) % 1440 + 1440) % 1440;
 		plan.roll = toClock(roll);
 		plan.report = toClock(((roll - PRE_TRIP_MINS) % 1440 + 1440) % 1440);
 		return plan;
@@ -424,6 +431,25 @@
 			}
 		});
 
+		/* The routing annex, when this document came from here rather than
+		   from a model. Applied only when its length matches: a draft that
+		   has been edited by hand since it was saved would otherwise put one
+		   stop's mileage on another's leg, which is worse than none. */
+		const annex = Array.isArray(doc.rux_route) ? doc.rux_route : null;
+		if (annex && annex.length === stops.length) {
+			stops.forEach((stop, index) => {
+				const entry = annex[index] && typeof annex[index] === "object" ? annex[index] : {};
+				if (entry.miles) stop.miles = String(entry.miles);
+				if (entry.drive) stop.drive = String(entry.drive);
+				stop.milesSource = entry.miles_source === "manual" ? "manual" : "estimated";
+				stop.driveSource = entry.drive_source === "manual" ? "manual" : "estimated";
+				if (entry.lat != null) stop.lat = entry.lat;
+				if (entry.lng != null) stop.lng = entry.lng;
+				if (entry.mapbox_id) stop.mapboxId = entry.mapbox_id;
+				if (entry.matched_address) stop.matchedAddress = entry.matched_address;
+			});
+		}
+
 		return {
 			startDate: String(outbound.start_date ?? ""),
 			client: String(trip.client ?? ""),
@@ -451,6 +477,17 @@
 				if (stop.arrive && stop.type !== "yard_origin") out.arrival_time = stop.arrive;
 				if (stop.depart && stop.type !== "return") out.departure_time = stop.depart;
 			}
+			/* v3's distance_miles means "the source stated it" — that is why
+			   the importer marks a stated value manual. So only a typed
+			   override belongs here. Measured mileage is the app's own, and
+			   goes in the annex below rather than being laundered into a
+			   customer-stated number that no later Resolve would refresh. */
+			if (stop.milesSource === "manual" && stop.miles) {
+				const miles = Number.parseFloat(stop.miles);
+				if (Number.isFinite(miles)) out.distance_miles = miles;
+			}
+			if (stop.driveSource === "manual" && stop.drive) out.drive_time = stop.drive;
+
 			if (arriveDay) out.day_offset = arriveDay;
 			if (departDay !== arriveDay) out.departure_day_offset = departDay;
 			return out;
@@ -462,6 +499,46 @@
 		if (state.startDate) trip.legs.outbound.start_date = state.startDate;
 		const doc = { schema_version: 3, trip };
 		if (state.dataFlags.length) doc.data_flags = state.dataFlags;
+
+		/* The routing annex.
+
+		   Everything a Resolve pass worked out and v3 has no room for:
+		   measured mileage and drive time, which of the two were typed, the
+		   coordinates they were measured between, and what the geocoder
+		   actually matched. Without it a saved itinerary comes back unrouted
+		   and every leg has to be measured again — which is what the driver
+		   sheet found by trying to print numbers that were not there.
+
+		   It sits beside `trip` rather than inside it so the v3 document stays
+		   exactly what docs/trip-import-schema-v3.json describes: Copy as JSON
+		   and the importer both see a clean, schema-valid draft, and only this
+		   tab's own storage carries the annex. One index per emitted stop —
+		   toV3 maps one-to-one over state.stops, so the positions line up. */
+		const annex = state.stops.map((stop) => {
+			const entry = {};
+			if (stop.miles) entry.miles = stop.miles;
+			if (stop.drive) entry.drive = stop.drive;
+			if (stop.milesSource === "manual") entry.miles_source = "manual";
+			if (stop.driveSource === "manual") entry.drive_source = "manual";
+			if (stop.lat != null) entry.lat = stop.lat;
+			if (stop.lng != null) entry.lng = stop.lng;
+			if (stop.mapboxId) entry.mapbox_id = stop.mapboxId;
+			if (stop.matchedAddress) entry.matched_address = stop.matchedAddress;
+			return entry;
+		});
+		if (annex.some((entry) => Object.keys(entry).length)) doc.rux_route = annex;
+		return doc;
+	}
+
+	/* The clean draft: exactly what docs/trip-import-schema-v3.json describes.
+
+	   Copy as JSON hands this to a person, who may paste it into the Itinerary
+	   tab's importer, send it on, or validate it. The annex would fail that
+	   schema — its root is additionalProperties: false — and it means nothing
+	   outside this tab anyway, so it is stripped here and kept only in what
+	   gets persisted. */
+	function toCleanV3(state) {
+		const { rux_route: _annex, ...doc } = toV3(state);
 		return doc;
 	}
 
@@ -936,6 +1013,10 @@
 					<span class="rux-icon" aria-hidden="true">add</span>
 					<span class="rux-button__label">Add stop</span>
 				</button>
+				<button type="button" class="rux-button rux-button--default" data-print>
+					<span class="rux-icon" aria-hidden="true">print</span>
+					<span class="rux-button__label">Driver sheet</span>
+				</button>
 				<button type="button" class="rux-button rux-button--ghost" data-copy-json>
 					<span class="rux-icon" aria-hidden="true">data_object</span>
 					<span class="rux-button__label">Copy as JSON</span>
@@ -1069,6 +1150,7 @@
 			if (event.target.closest("[data-copy-json]")) return copyJson();
 			if (event.target.closest("[data-pull]")) return pullFromItinerary();
 			if (event.target.closest("[data-route]")) return resolveAndRoute();
+			if (event.target.closest("[data-print]")) return printDriverSheet();
 		});
 
 		function loadPasted() {
@@ -1121,7 +1203,7 @@
 		async function copyJson() {
 			if (!state.stops.length) return say("Nothing to copy yet.", true);
 			try {
-				await navigator.clipboard.writeText(JSON.stringify(toV3(state), null, 2));
+				await navigator.clipboard.writeText(JSON.stringify(toCleanV3(state), null, 2));
 				say("Copied this itinerary as Trip Draft v3.");
 			} catch {
 				say("Clipboard was refused.", true);
@@ -1245,6 +1327,38 @@
 			sayRoute(parts.length ? `${parts.join(", ")}.` : "Everything was already resolved and routed.", failed > 0);
 		}
 
+		/* Hand the driver sheet everything already worked out here.
+
+		   It computes nothing of its own on purpose: a second implementation
+		   of the day offsets, the tight-leg test or the duty arithmetic is a
+		   second answer waiting to disagree with what is on screen, and the
+		   one on paper is the one nobody can check against anything. */
+		function printDriverSheet() {
+			if (!state.stops.length) {
+				return sayRoute("Nothing to print yet — load a draft or pull the itinerary in.", true);
+			}
+			const days = deriveDays(state.stops);
+			const printed = window.DriverSheet?.print?.({
+				meta: {
+					client: state.client || document.getElementById("tp-customer")?.value || "",
+					destination: state.destination || document.getElementById("tp-destination")?.value || "",
+					contactName: document.getElementById("tp-contact-1-name")?.value || "",
+					contactPhone: document.getElementById("tp-contact-1-phone")?.value || "",
+				},
+				startDate: state.startDate || document.getElementById("tp-start")?.value || "",
+				stops: state.stops,
+				days,
+				risks: legRisks(state.stops, days),
+				plan: yardPlan(state.stops),
+				duty: dutyByDay(state.stops, days),
+				totals: totals(state.stops),
+				dataFlags: state.dataFlags,
+			});
+			if (printed === false || printed === undefined) {
+				sayRoute("The driver sheet could not be built.", true);
+			}
+		}
+
 		function pullFromItinerary() {
 			const source = window.Itinerary?.getStops?.();
 			if (!Array.isArray(source) || !source.length) {
@@ -1274,7 +1388,7 @@
 		}
 
 		const api = {
-			getDocument: () => toV3(state),
+			getDocument: () => toCleanV3(state),
 			setDocument(payload) {
 				Object.assign(state, fromV3(payload));
 				render();
@@ -1357,6 +1471,6 @@
 
 	window.ItineraryGrid = {
 		init, fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
-		legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops,
+		legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops, toCleanV3,
 	};
 })();
