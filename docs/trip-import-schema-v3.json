@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rux-sm.github.io/rux-ui/docs/trip-import-schema-v3.json",
+  "title": "RUX UI Trip Draft Import v3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "trip"],
+  "properties": {
+    "schema_version": { "const": 3 },
+    "trip": { "$ref": "#/$defs/trip" },
+    "data_flags": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  },
+  "$defs": {
+    "time": {
+      "type": "string",
+      "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$"
+    },
+    "duration": {
+      "type": "string",
+      "pattern": "^[0-9]+:[0-5][0-9]$"
+    },
+    "dayOffset": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 30
+    },
+    "addressConfidence": {
+      "enum": ["exact", "partial", "source_text"]
+    },
+    "contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" }
+      }
+    },
+    "tripContact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "phone": { "type": "string" }
+      }
+    },
+    "ticketOption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "price"],
+      "properties": {
+        "label": { "type": "string", "minLength": 1 },
+        "price": { "type": "number", "minimum": 0 }
+      }
+    },
+    "leg": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start_date", "stops"],
+      "properties": {
+        "start_date": { "type": "string", "format": "date" },
+        "end_date": { "type": "string", "format": "date" },
+        "bus_count": { "type": "integer", "minimum": 1, "maximum": 20 },
+        "stops": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/stop" }
+        }
+      }
+    },
+    "stop": {
+      "oneOf": [
+        { "$ref": "#/$defs/yardOrigin" },
+        { "$ref": "#/$defs/pickup" },
+        { "$ref": "#/$defs/routeStop" },
+        { "$ref": "#/$defs/sleeper" },
+        { "$ref": "#/$defs/day" },
+        { "$ref": "#/$defs/return" }
+      ]
+    },
+    "locationFields": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "address": { "type": "string" },
+        "address_confidence": { "$ref": "#/$defs/addressConfidence" },
+        "activity": { "type": "string" },
+        "day_offset": { "$ref": "#/$defs/dayOffset" },
+        "departure_day_offset": { "$ref": "#/$defs/dayOffset" },
+        "distance_miles": { "type": "number", "minimum": 0 },
+        "drive_time": { "$ref": "#/$defs/duration" }
+      }
+    },
+    "yardOrigin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "yard_origin" },
+        "departure_time": { "$ref": "#/$defs/time" },
+        "day_offset": { "$ref": "#/$defs/dayOffset" }
+      }
+    },
+    "pickup": {
+      "allOf": [
+        { "$ref": "#/$defs/locationFields" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "pickup" },
+            "name": { "type": "string" },
+            "address": { "type": "string" },
+            "address_confidence": { "$ref": "#/$defs/addressConfidence" },
+            "activity": { "type": "string" },
+            "day_offset": { "$ref": "#/$defs/dayOffset" },
+            "departure_day_offset": { "$ref": "#/$defs/dayOffset" },
+            "yard_departure_time": { "$ref": "#/$defs/time" },
+            "spot_time": { "$ref": "#/$defs/time" },
+            "arrival_time": { "$ref": "#/$defs/time" },
+            "departure_time": { "$ref": "#/$defs/time" },
+            "distance_miles": { "type": "number", "minimum": 0 },
+            "drive_time": { "$ref": "#/$defs/duration" }
+          }
+        }
+      ]
+    },
+    "routeStop": {
+      "allOf": [
+        { "$ref": "#/$defs/locationFields" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "stop" },
+            "name": { "type": "string" },
+            "address": { "type": "string" },
+            "address_confidence": { "$ref": "#/$defs/addressConfidence" },
+            "activity": { "type": "string" },
+            "day_offset": { "$ref": "#/$defs/dayOffset" },
+            "departure_day_offset": { "$ref": "#/$defs/dayOffset" },
+            "arrival_time": { "$ref": "#/$defs/time" },
+            "departure_time": { "$ref": "#/$defs/time" },
+            "distance_miles": { "type": "number", "minimum": 0 },
+            "drive_time": { "$ref": "#/$defs/duration" }
+          }
+        }
+      ]
+    },
+    "sleeper": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "sleeper" },
+        "name": { "type": "string" },
+        "address": { "type": "string" },
+        "address_confidence": { "$ref": "#/$defs/addressConfidence" },
+        "day_offset": { "$ref": "#/$defs/dayOffset" },
+        "departure_day_offset": { "$ref": "#/$defs/dayOffset" },
+        "rest_start_time": { "$ref": "#/$defs/time" },
+        "rest_end_time": { "$ref": "#/$defs/time" }
+      }
+    },
+    "day": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "day" },
+        "date": { "type": "string", "format": "date" },
+        "day_offset": { "$ref": "#/$defs/dayOffset" },
+        "label": { "type": "string" }
+      }
+    },
+    "return": {
+      "allOf": [
+        { "$ref": "#/$defs/locationFields" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "return" },
+            "name": { "type": "string" },
+            "address": { "type": "string" },
+            "address_confidence": { "$ref": "#/$defs/addressConfidence" },
+            "activity": { "type": "string" },
+            "day_offset": { "$ref": "#/$defs/dayOffset" },
+            "arrival_time": { "$ref": "#/$defs/time" },
+            "distance_miles": { "type": "number", "minimum": 0 },
+            "drive_time": { "$ref": "#/$defs/duration" }
+          }
+        }
+      ]
+    },
+    "trip": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["legs"],
+      "properties": {
+        "type": {
+          "enum": ["round_trip", "one_way", "dropoff_pickup"]
+        },
+        "service_type": {
+          "enum": ["charter", "ticketed"]
+        },
+        "client": { "type": "string" },
+        "destination": { "type": "string", "minLength": 1 },
+        "booking_contact": { "$ref": "#/$defs/contact" },
+        "trip_contacts": {
+          "type": "array",
+          "maxItems": 2,
+          "items": { "$ref": "#/$defs/tripContact" }
+        },
+        "contact_not_needed": { "type": "boolean" },
+        "itinerary_not_needed": { "type": "boolean" },
+        "notes": { "type": "string" },
+        "requirements": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "quoted_price": { "type": "number", "minimum": 0 },
+        "estimated_miles_override": { "type": "number", "minimum": 0 },
+        "ticket_options": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ticketOption" }
+        },
+        "legs": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["outbound"],
+          "properties": {
+            "outbound": { "$ref": "#/$defs/leg" },
+            "return": { "$ref": "#/$defs/leg" }
+          }
+        }
+      }
+    }
+  }
+}

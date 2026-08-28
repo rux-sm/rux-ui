@@ -46,7 +46,7 @@
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=151" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=373" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=377" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=17"
@@ -974,6 +974,19 @@
 									><span class="rux-tab__label"
 										>Itinerary</span
 									>
+								</button>
+								<button
+									class="rux-tab"
+									type="button"
+									role="tab"
+									aria-selected="false"
+									aria-controls="pane-itinerary-grid"
+									aria-label="Itinerary grid"
+									title="Itinerary grid"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>table_rows</span
+									><span class="rux-tab__label">Grid</span>
 								</button>
 								<button
 									class="rux-tab"
@@ -2089,6 +2102,16 @@
 										id="tp-itin-stops"
 									></div>
 								</div>
+							</div>
+							<!-- Itinerary grid -->
+							<div
+								id="pane-itinerary-grid"
+								class="rux-panel__pane sched-scope-trip__pane"
+								role="tabpanel"
+								aria-label="Itinerary grid"
+								hidden
+							>
+								<div id="tp-grid"></div>
 							</div>
 							<!-- Dispatch -->
 							<div
@@ -6527,6 +6550,7 @@
 		<script src="./rux-ui/js/boot.js?v=1"></script>
 		<script src="./js/panels/trip-panel.js?v=49"></script>
 		<script src="./js/components/itinerary.js?v=66"></script>
+		<script src="./js/components/itinerary-grid.js?v=1"></script>
 		<script src="./js/panels/driver-panel.js?v=32" defer></script>
 		<script src="./js/panels/driver-roster-panel.js?v=5" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=20" defer></script>
@@ -6587,7 +6611,7 @@
 				outOfServiceOverlap,
 			} from "./js/core/bus-status.js";
 			import { loadRequirements } from "./js/data/requirements-db.js";
-			import { normalizeTripImport } from "./js/data/trip-import.js?v=5";
+			import { normalizeTripImport } from "./js/data/trip-import.js?v=11";
 			import { supabase } from "./js/data/supabase.js";
 			import {
 				fetchProfiles,
@@ -7608,6 +7632,7 @@
 
 			TripPanel.init(tripPanel);
 			const itinerary = Itinerary.init(tripPanel);
+			ItineraryGrid.init(tripPanel);
 
 			// ── Right-side resizable drawer ─────────────────────────────────────
 			// Open/close/drag-resize behavior lives in RuxDrawer (rux-ui/js/drawer.js),
@@ -7776,7 +7801,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=44");
+					const db = await import("./js/data/trip-db.js?v=48");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -10955,7 +10980,7 @@
 			// the calendar without a reload. renderBusRows ends in
 			// renderScheduler(), which repaints the bars and the stripes.
 			async function loadFleet() {
-				const db = await import("./js/data/trip-db.js?v=44");
+				const db = await import("./js/data/trip-db.js?v=48");
 				try {
 					schedulerBuses = await db.fetchBuses();
 				} catch (err) {
@@ -10988,7 +11013,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=44");
+					const db = await import("./js/data/trip-db.js?v=48");
 					loadTrip = db.loadTrip;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;

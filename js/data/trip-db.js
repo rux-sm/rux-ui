@@ -1177,6 +1177,10 @@ import {
 			restoreDriverStatus(button, "off");
 		});
 		itinerary.clearStops();
+		// The Grid tab owns its own state, so blanking its inputs through the
+		// selector above would only desynchronise them from its model — the
+		// next render writes the old values straight back. It clears itself.
+		window.ItineraryGrid?.clear?.();
 		currentTripId  = null;
 		currentTripRef = null;
 		currentTripSnapshot = null;

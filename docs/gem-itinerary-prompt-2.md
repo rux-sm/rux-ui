@@ -1,5 +1,11 @@
 # Itinerary Prompt 2 — Route the Legs, Time the Yard, Flag the Risk
 
+> **Superseded.** The itinerary workflow is now one prompt,
+> [`itinerary-prompt.md`](./itinerary-prompt.md), emitting Trip Draft v3
+> ([`trip-import-schema-v3.json`](./trip-import-schema-v3.json)) — the format the app
+> actually imports. This step is gone: the app measures every leg through the Mapbox Directions API and derives the yard times from real route data.
+> Kept for reference; do not run this chain.
+
 Model-agnostic. Step 2 of 3 — see [`gem-itinerary-prompt-1.md`](./gem-itinerary-prompt-1.md).
 
 **This step requires a real routing tool.** It exists to attach measured mileage

@@ -1,5 +1,11 @@
 # Itinerary Prompt 1 — Extract Structured Itinerary
 
+> **Superseded.** The itinerary workflow is now one prompt,
+> [`itinerary-prompt.md`](./itinerary-prompt.md), emitting Trip Draft v3
+> ([`trip-import-schema-v3.json`](./trip-import-schema-v3.json)) — the format the app
+> actually imports. This step's job moved there unchanged in substance, but its `seq`/`role` output shape could never be imported.
+> Kept for reference; do not run this chain.
+
 Model-agnostic. Runs in Gemini, Claude, or any assistant that reads documents.
 
 Step 1 of 3. Turns a customer's emailed schedule into one ordered stop list.

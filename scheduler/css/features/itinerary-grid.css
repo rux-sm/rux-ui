@@ -1,0 +1,427 @@
+/* ==========================================================================
+   ITINERARY GRID  ·  .sched-itinerary-grid — the Grid tab's stop editor
+   --------------------------------------------------------------------------
+   A second editor for the same stops the Itinerary tab holds, laid out as
+   rows rather than cards. Its whole reason to exist is entry speed, so the
+   layout is answerable to one question: how many keystrokes and how much
+   vertical travel does one stop cost?
+
+   Anatomy
+   -------
+   .sched-itinerary-grid__intake      collapsible paste/copy strip at the top;
+                                      open only while there are no stops
+   .sched-itinerary-grid__summary     stops / days / miles / drive
+   .sched-itinerary-grid__flags       "Ask the customer" — the draft's data_flags
+   .sched-itinerary-grid__list        the ordered run of days, legs and rows
+   .sched-itinerary-grid__day         a derived day divider
+   .sched-itinerary-grid__leg         the drive BETWEEN two rows
+   .sched-itinerary-grid__row         one stop
+
+   A leg is a list item and not a border on a row on purpose: it is a fact
+   about the pair, and giving it its own line is what lets a stop stop
+   carrying "how I got here".
+
+   Width. The trip editor is a resizable floating window (600px by default,
+   480px floor, up to 64rem) and .sched-scope-trip is already a container
+   query root, so this file asks the container rather than the viewport. Under
+   the breakpoint a row is two lines — times above, place below. Over it, one.
+   ========================================================================== */
+
+.sched-itinerary-grid {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-card-content-gap);
+}
+
+/* — Intake strip — */
+
+.sched-itinerary-grid__intake {
+	border: var(--rux-border-width) solid var(--rux-card-border);
+	border-radius: var(--rux-radius-container);
+	background: var(--rux-surface-1);
+}
+
+.sched-itinerary-grid__intake-summary {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-control-content-gap);
+	padding: var(--rux-space-3) var(--rux-card-padding-inline);
+	font-size: var(--rux-text-label-14-size);
+	line-height: var(--rux-text-label-14-line-height);
+	color: var(--rux-text-primary);
+	cursor: pointer;
+	touch-action: manipulation;
+	list-style: none;
+}
+
+.sched-itinerary-grid__intake-summary::-webkit-details-marker {
+	display: none;
+}
+
+.sched-itinerary-grid__intake-summary:focus-visible {
+	outline: none;
+	box-shadow: var(--rux-button-focus-ring);
+	border-radius: var(--rux-radius-container);
+}
+
+.sched-itinerary-grid__intake-body {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-3);
+	padding: 0 var(--rux-card-padding-inline) var(--rux-space-4);
+}
+
+.sched-itinerary-grid__intake-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--rux-space-2);
+}
+
+.sched-itinerary-grid__paste {
+	width: 100%;
+	resize: vertical;
+}
+
+.sched-itinerary-grid__status {
+	margin: 0;
+	min-height: var(--rux-text-label-12-line-height);
+	font-size: var(--rux-text-label-12-size);
+	line-height: var(--rux-text-label-12-line-height);
+	color: var(--rux-text-secondary);
+}
+
+.sched-itinerary-grid__status.is-error {
+	color: var(--rux-danger);
+}
+
+/* — Summary — */
+
+.sched-itinerary-grid__summary {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--rux-space-6);
+	padding: var(--rux-space-3) var(--rux-card-padding-inline);
+	border: var(--rux-border-width) solid var(--rux-card-border);
+	border-radius: var(--rux-radius-container);
+}
+
+.sched-itinerary-grid__stat {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-1);
+}
+
+.sched-itinerary-grid__stat-label {
+	font-size: var(--rux-text-label-12-size);
+	line-height: var(--rux-text-label-12-line-height);
+	color: var(--rux-text-secondary);
+}
+
+.sched-itinerary-grid__stat-value {
+	font-size: var(--rux-text-label-14-size);
+	line-height: var(--rux-text-label-14-line-height);
+	color: var(--rux-text-primary);
+	font-variant-numeric: tabular-nums;
+}
+
+/* — Flags — */
+
+.sched-itinerary-grid__flag-list {
+	margin: 0;
+	padding-inline-start: var(--rux-space-4);
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-1);
+	font-size: var(--rux-text-copy-14-size);
+	line-height: var(--rux-text-copy-14-line-height);
+	color: var(--rux-text-secondary);
+}
+
+/* — The run — */
+
+.sched-itinerary-grid__list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	border: var(--rux-border-width) solid var(--rux-card-border);
+	border-radius: var(--rux-radius-container);
+	overflow: hidden;
+}
+
+.sched-itinerary-grid__empty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-8) var(--rux-space-4);
+	text-align: center;
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-text-copy-14-size);
+	line-height: var(--rux-text-copy-14-line-height);
+}
+
+.sched-itinerary-grid__empty p {
+	margin: 0;
+	max-width: 40ch;
+}
+
+.sched-itinerary-grid__empty .rux-icon {
+	font-size: var(--rux-space-8);
+	color: var(--rux-text-disabled);
+}
+
+/* Day divider. Reads as a band rather than a row so the eye can find the
+   calendar break without counting rows. */
+.sched-itinerary-grid__day {
+	display: flex;
+	align-items: baseline;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-2) var(--rux-card-padding-inline);
+	background: var(--rux-surface-1);
+	border-block: var(--rux-border-width) solid var(--rux-card-border);
+	font-size: var(--rux-text-label-12-size);
+	line-height: var(--rux-text-label-12-line-height);
+}
+
+.sched-itinerary-grid__list > .sched-itinerary-grid__day:first-child {
+	border-block-start: 0;
+}
+
+.sched-itinerary-grid__day-number {
+	color: var(--rux-text-primary);
+	font-weight: var(--rux-weight-500);
+}
+
+.sched-itinerary-grid__day-date {
+	color: var(--rux-text-secondary);
+}
+
+/* Leg. Indented to sit under the marker column, so the run reads as one line
+   travelling down the page through the stops. */
+.sched-itinerary-grid__leg {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-1-5);
+	padding: var(--rux-space-1) var(--rux-card-padding-inline);
+	padding-inline-start: var(--rux-space-6);
+	font-size: var(--rux-text-label-12-size);
+	line-height: var(--rux-text-label-12-line-height);
+	color: var(--rux-text-secondary);
+	font-variant-numeric: tabular-nums;
+}
+
+.sched-itinerary-grid__leg .rux-icon {
+	font-size: var(--rux-icon-sm);
+	color: var(--rux-text-disabled);
+}
+
+.sched-itinerary-grid__leg--unknown {
+	color: var(--rux-text-disabled);
+}
+
+/* — Row — */
+
+.sched-itinerary-grid__row {
+	display: grid;
+	grid-template-columns: auto 1fr auto;
+	grid-template-areas:
+		"marker times   actions"
+		"marker place   place"
+		"marker meta    meta";
+	gap: var(--rux-space-2) var(--rux-space-3);
+	padding: var(--rux-space-3) var(--rux-card-padding-inline);
+}
+
+.sched-itinerary-grid__row + .sched-itinerary-grid__row {
+	border-block-start: var(--rux-border-width) solid var(--rux-card-border);
+}
+
+.sched-itinerary-grid__row:focus-within {
+	background: var(--rux-surface-1);
+}
+
+.sched-itinerary-grid__marker {
+	grid-area: marker;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--rux-space-1);
+	color: var(--rux-text-secondary);
+}
+
+.sched-itinerary-grid__marker .rux-icon {
+	font-size: var(--rux-icon-md);
+}
+
+.sched-itinerary-grid__row[data-type="pickup"] .sched-itinerary-grid__marker .rux-icon,
+.sched-itinerary-grid__row[data-type="yard_origin"] .sched-itinerary-grid__marker .rux-icon {
+	color: var(--rux-accent);
+}
+
+.sched-itinerary-grid__seq {
+	font-size: var(--rux-text-label-12-size);
+	line-height: var(--rux-text-label-12-line-height);
+	color: var(--rux-text-disabled);
+	font-variant-numeric: tabular-nums;
+}
+
+/* Two equal columns rather than a flex row, so Arrive stays under Arrive and
+   Depart under Depart the whole way down — including on the yard bookends,
+   where one of the two is a blank. A flex row let the blank take the slack and
+   pushed the surviving time to the far edge. */
+.sched-itinerary-grid__times {
+	grid-area: times;
+	display: grid;
+	grid-template-columns: 1fr 1fr auto;
+	align-items: end;
+	gap: var(--rux-space-2);
+}
+
+.sched-itinerary-grid__time,
+.sched-itinerary-grid__field {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-1);
+	min-width: 0;
+}
+
+.sched-itinerary-grid__time-label,
+.sched-itinerary-grid__field .rux-field__label {
+	font-size: var(--rux-text-label-12-size);
+	line-height: var(--rux-text-label-12-line-height);
+	color: var(--rux-text-secondary);
+}
+
+.sched-itinerary-grid__time-input {
+	font-variant-numeric: tabular-nums;
+}
+
+/* Occupies the grid cell when a bookend has no time on that side. It needs no
+   size of its own — the track does that. */
+.sched-itinerary-grid__time-blank {
+	min-width: 0;
+}
+
+/* Height comes from padding, not a scaled line-height: a type axis may not
+   state a literal outside Tier 0 (typography rules 2.1, 2.2). */
+.sched-itinerary-grid__nextday {
+	align-self: center;
+	padding: var(--rux-space-1) var(--rux-space-1-5);
+	border-radius: var(--rux-radius-control);
+	background: var(--rux-warning-subtle);
+	color: var(--rux-warning);
+	font-size: var(--rux-text-label-12-size);
+	line-height: var(--rux-text-label-12-line-height);
+	white-space: nowrap;
+}
+
+.sched-itinerary-grid__place {
+	grid-area: place;
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+	min-width: 0;
+}
+
+.sched-itinerary-grid__pair {
+	display: flex;
+	gap: var(--rux-space-2);
+}
+
+.sched-itinerary-grid__pair > * {
+	flex: 1;
+	min-width: 0;
+}
+
+.sched-itinerary-grid__fixed {
+	margin: 0;
+	font-size: var(--rux-text-copy-14-size);
+	line-height: var(--rux-text-copy-14-line-height);
+	color: var(--rux-text-secondary);
+	overflow-wrap: anywhere;
+}
+
+.sched-itinerary-grid__note {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-1);
+	margin: 0;
+	font-size: var(--rux-text-label-12-size);
+	line-height: var(--rux-text-label-12-line-height);
+	color: var(--rux-warning);
+}
+
+.sched-itinerary-grid__note .rux-icon {
+	font-size: var(--rux-icon-sm);
+	flex: none;
+}
+
+.sched-itinerary-grid__meta {
+	grid-area: meta;
+	display: flex;
+	gap: var(--rux-space-3);
+	font-size: var(--rux-text-label-12-size);
+	line-height: var(--rux-text-label-12-line-height);
+	color: var(--rux-text-secondary);
+	font-variant-numeric: tabular-nums;
+}
+
+.sched-itinerary-grid__meta:empty {
+	display: none;
+}
+
+.sched-itinerary-grid__actions {
+	grid-area: actions;
+	display: flex;
+	align-items: flex-start;
+	gap: var(--rux-space-1);
+}
+
+/* — Footer — */
+
+.sched-itinerary-grid__footer {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--rux-space-2);
+	align-items: center;
+}
+
+.sched-itinerary-grid__footer > .rux-button--block {
+	flex: 1;
+	min-width: 12rem;
+}
+
+/* — Wide: one line per stop —
+   The container is .sched-scope-trip (trip-panel.css). 720px is where the
+   three columns stop competing: times need ~200px, the place fields read
+   badly under ~260px, and the actions and marker take the rest. */
+
+@container (min-width: 720px) {
+	.sched-itinerary-grid__row {
+		grid-template-columns: auto auto 1fr auto auto;
+		grid-template-areas: "marker times place meta actions";
+		align-items: start;
+	}
+
+	.sched-itinerary-grid__marker {
+		flex-direction: row;
+		align-items: center;
+		padding-block-start: var(--rux-space-5);
+	}
+
+	.sched-itinerary-grid__meta {
+		flex-direction: column;
+		padding-block-start: var(--rux-space-5);
+		white-space: nowrap;
+	}
+
+	.sched-itinerary-grid__actions {
+		padding-block-start: var(--rux-space-5);
+	}
+
+	.sched-itinerary-grid__times {
+		width: 15rem;
+	}
+}

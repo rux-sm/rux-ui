@@ -1,15 +1,24 @@
-/* The Worker sends the published Trip Draft v2 schema to the Anthropic
+/* The Worker sends a published Trip Draft schema to the Anthropic
    structured-outputs API, which accepts only a subset of JSON Schema. The
    SDKs strip the rest client-side; the Worker speaks raw HTTP and has to do
-   it itself, so this checks the real schema survives the trip. */
+   it itself, so this checks the real schemas survive the trip.
+
+   Both published versions run through the same conversion, so both are
+   checked here. v3 leans on $ref far harder than v2 did — every time,
+   duration and day-offset field is one — which is exactly the pass most
+   likely to break. */
 
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { forStructuredOutput } from "../worker/index.js";
 
-const schema = JSON.parse(readFileSync(new URL("../docs/trip-import-schema-v2.json", import.meta.url)));
-const converted = forStructuredOutput(schema);
+const read = (name) => JSON.parse(readFileSync(new URL(`../docs/${name}`, import.meta.url)));
+
+const SCHEMAS = [
+	["v2", read("trip-import-schema-v2.json")],
+	["v3", read("trip-import-schema-v3.json")],
+];
 
 const REJECTED = [
 	"minimum",
@@ -45,7 +54,10 @@ function walk(node, path, visit) {
 	}
 }
 
-test("no keyword the structured-outputs API rejects survives", () => {
+for (const [version, schema] of SCHEMAS) {
+const converted = forStructuredOutput(schema);
+
+test(`${version}: no keyword the structured-outputs API rejects survives`, () => {
 	walk(converted, "$", (node, path) => {
 		for (const keyword of REJECTED) {
 			assert.ok(
@@ -56,7 +68,7 @@ test("no keyword the structured-outputs API rejects survives", () => {
 	});
 });
 
-test("every object with properties forbids additional ones", () => {
+test(`${version}: every object with properties forbids additional ones`, () => {
 	walk(converted, "$", (node, path) => {
 		if (Object.hasOwn(node, "properties")) {
 			assert.equal(
@@ -68,7 +80,7 @@ test("every object with properties forbids additional ones", () => {
 	});
 });
 
-test("author-chosen property names that collide with keywords survive", () => {
+test(`${version}: author-chosen property names that collide with keywords survive`, () => {
 	// A stop's own "type" field is a value, not a schema keyword. It lives on the
 	// branches of the union, which allOf flattening has merged into one object.
 	const branches = converted.$defs?.stop?.anyOf ?? findStopBranches(converted);
@@ -81,7 +93,7 @@ test("author-chosen property names that collide with keywords survive", () => {
 	}
 });
 
-test("the mixin was merged in rather than left as a separate allOf branch", () => {
+test(`${version}: the mixin was merged in rather than left as a separate allOf branch`, () => {
 	// locationFields has no additionalProperties of its own by design. Left as a
 	// sibling allOf branch with one forced onto it, it would reject every field
 	// the other branch declares and nothing could validate.
@@ -115,9 +127,10 @@ function findStopBranches(root) {
 	return found ?? [];
 }
 
-test("the shape the app depends on is intact", () => {
+test(`${version}: the shape the app depends on is intact`, () => {
 	assert.equal(converted.type, "object");
 	assert.equal(converted.additionalProperties, false);
 	assert.deepEqual(converted.required, ["schema_version", "trip"]);
 	assert.ok(converted.properties.trip, "the trip branch should survive");
 });
+}

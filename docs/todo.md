@@ -199,23 +199,34 @@ verification pass rather than riding along with an unrelated feature.
 Cost to close: decide the allowed origins, scope the header, then check the scheduler, the
 driver and maintenance share pages, and the public request form still load.
 
-### T7 — The v2 prompt has no `data_flags`, so the model's uncertainty is thrown away
+### T7 — The quote-request prompt still has no `data_flags`
 
-[`gem-itinerary-prompt.md`](gem-itinerary-prompt.md) forbids guessing — correctly — but
-gives the model nowhere to say what it could not resolve. The driver-sheet chain has
-`data_flags` for exactly this and it carries the most useful output of an extraction: the
-questions to put back to the customer before quoting.
+The itinerary lane has this now: [`itinerary-prompt.md`](itinerary-prompt.md) asks for
+`data_flags`, [`trip-import-schema-v3.json`](trip-import-schema-v3.json) declares it, and
+`normalizeTripImport` surfaces each one as an "Ask the customer:" warning. The reading is
+version-agnostic — it fires on any payload carrying the array.
 
-How it is known: a real inbound quote request (a camp trip, 2026-08-27) produced five
-things worth asking about — an unresolved pickup address, an ambiguous return time, and a
+[`gem-itinerary-prompt.md`](gem-itinerary-prompt.md), the **quote-request** lane the intake
+workbench and the Worker use, still does not ask for it, and
+[`trip-import-schema-v2.json`](trip-import-schema-v2.json) sets `additionalProperties: false`
+at its root, so a v2 draft that volunteered the array would fail structured-output validation
+before it ever reached the importer. The lane that produces the most uncertainty — an inbound
+quote from a stranger — is the one still throwing it away.
+
+How it is known: a real inbound quote request (a camp trip, 2026-08-27) produced five things
+worth asking about — an unresolved pickup address, an ambiguous return time, and a
 split-versus-held-bus decision that changes the price more than any other field. None had
-anywhere to go in a v2 draft.
+anywhere to go in a v2 draft. That is still true.
 
-Why it was not fixed on the spot: the field is only half the change. The other half is the
-intake preview rendering the flags as an "Ask the customer" card with a copy-as-email
-action, which is unbuilt.
+Why it was not fixed alongside v3: the quote lane is a different document type with a
+different prompt (T8), and repointing it is a behavioural change to the intake page rather
+than a field addition. The cheap version is to move that lane onto v3 as well, since v3 is a
+superset of v2 — but that is the Worker's `PROMPT_URL`/`SCHEMA_URL` pair
+([`worker/index.js:42`](../worker/index.js:42)), and the Worker has never run at all (T4).
 
-Cost to close: one array in the prompt, one schema property, one card in the preview.
+Cost to close: one array in the quote prompt, one root property in v2 — or repoint the
+quote lane at v3 and delete the divergence. Plus the intake preview rendering the flags as
+an "Ask the customer" card with a copy-as-email action, which is still unbuilt.
 
 ### T8 — Intake has no lane gate, and the prompt is still copied by hand
 

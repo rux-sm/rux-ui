@@ -1,5 +1,11 @@
 # Itinerary Prompt 3 — Generate the Print-Ready Driver Sheet
 
+> **Superseded.** The itinerary workflow is now one prompt,
+> [`itinerary-prompt.md`](./itinerary-prompt.md), emitting Trip Draft v3
+> ([`trip-import-schema-v3.json`](./trip-import-schema-v3.json)) — the format the app
+> actually imports. This step becomes an in-app print view built on `--rux-*` tokens, as its own note below anticipated.
+> Kept for reference; do not run this chain.
+
 Model-agnostic. Step 3 of 3 — see [`gem-itinerary-prompt-2.md`](./gem-itinerary-prompt-2.md).
 
 Turns the enriched JSON into one standalone HTML file, compact enough to stay on

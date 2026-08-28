@@ -32,6 +32,7 @@
    trip-bar.css     .sched-trip-bar — Gantt bar for trip display
    trip-panel.css   .sched-scope-trip — side-panel form editor for trip details
    itinerary.css    .sched-trip-itinerary — timeline stop editor for the Itinerary tab
+   itinerary-grid.css .sched-itinerary-grid — row stop editor for the Grid tab
    scheduler.css    .sched-scheduler — week-grid component
    scheduler-app.css  .sched-app shell and app-header coordination
    ========================================================================== */
@@ -42,5 +43,6 @@
 @import "./features/trip-history.css?v=4";
 @import "./features/trip-dialog.css?v=3";
 @import "./features/itinerary.css?v=19";
+@import "./features/itinerary-grid.css?v=1";
 @import "./layout/scheduler.css?v=25";
 @import "./layout/scheduler-app.css?v=102";
