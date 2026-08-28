@@ -478,7 +478,16 @@
 
 		rows.forEach((stop, index) => {
 			const next = rows[index + 1];
-			const arrive = stop.type === "pickup" ? stop.spot || "" : stop.arrive || "";
+			// A sleeper is stored inverted in the editor: its rest START is
+			// departPrev and its rest END is arrive (trip-import.js writes it
+			// that way, and the editor labels the pair Start/End rather than
+			// Arrive/Depart). Reading it like an ordinary stop puts the end of
+			// the rest in the arrival column and loses the start entirely.
+			const arrive = stop.type === "pickup"
+				? stop.spot || ""
+				: stop.type === "sleeper"
+					? stop.departPrev || ""
+					: stop.arrive || "";
 			const arriveDate = (stop.type === "pickup" ? stop.spotDate : stop.arriveDate) || null;
 			const departDate = next?.departPrevDate || null;
 
@@ -499,7 +508,7 @@
 				address: stop.address,
 				activity: stop.type === "pickup" ? "" : stop.label || "",
 				arrive,
-				depart: next?.departPrev || "",
+				depart: stop.type === "sleeper" ? stop.arrive || "" : next?.departPrev || "",
 				miles: stop.miles,
 				drive: stop.drive,
 				milesSource: stop.milesSource,
@@ -525,6 +534,91 @@
 			}));
 		}
 		return stops;
+	}
+
+	/* Write this model back into the Itinerary tab's, so the ordinary save
+	   path persists it.
+
+	   This is the mirror, and it is deliberately not a second write. Pushing
+	   the stops into Itinerary.setStops() means collectStops() picks them up
+	   and trip-db.js's existing save writes trip_stops exactly as it always
+	   did — one code path, no divergence, and every downstream reader (print
+	   schedules, the trip envelope, driver share, trip-bar mileage) keeps
+	   working without knowing this tab exists.
+
+	   The inverse of fromEditorStops: a stop's departure is pushed FORWARD
+	   onto the next card as its departPrev, and the yard row folds into the
+	   pickup. Dates are stamped from the derived day offsets, which is the one
+	   thing the editor cannot work out for itself. */
+	function toEditorStops(state) {
+		const days = deriveDays(state.stops);
+		const dated = (offset) => addDays(state.startDate, offset) || "";
+		const rows = [];
+		let yard = null;
+		// The previous stop's departure, already resolved to a date. Carried
+		// rather than looked up: it is the only thing a row needs from the one
+		// before it, and searching back for it invites an off-by-one.
+		let previous = null;
+
+		state.stops.forEach((stop, index) => {
+			if (stop.type === "yard_origin") {
+				yard = { time: stop.depart || "", date: dated(days[index].departDay) };
+				return;
+			}
+
+			const row = {
+				id: stop.id,
+				type: stop.type,
+				name: stop.name,
+				address: stop.address,
+				miles: stop.miles,
+				drive: stop.drive,
+				milesSource: stop.milesSource,
+				driveSource: stop.driveSource,
+				routeStatus: stop.lat != null && stop.drive ? "current" : "stale",
+				lat: stop.lat,
+				lng: stop.lng,
+				mapboxId: stop.mapboxId,
+				dwellStatus: "on",
+				departPrev: "",
+				departPrevDate: "",
+				arrive: "",
+				arriveDate: "",
+				spot: "",
+				spotDate: "",
+			};
+
+			// activity rides in `label`, except on a pickup where "origin:yard"
+			// owns it. Nothing here ever writes that sentinel: it means the
+			// passengers board AT the depot, which is not what a yard row says.
+			if (stop.type !== "pickup" && stop.activity) row.label = stop.activity;
+
+			if (stop.type === "sleeper") {
+				// Inverted on purpose — see fromEditorStops.
+				row.departPrev = stop.arrive || "";
+				row.departPrevDate = dated(days[index].arriveDay);
+				row.arrive = stop.depart || "";
+				row.arriveDate = dated(days[index].departDay);
+			} else if (stop.type === "pickup") {
+				row.departPrev = yard?.time || "";
+				row.departPrevDate = yard?.time ? yard.date : "";
+				row.spot = stop.arrive || "";
+				row.spotDate = stop.arrive ? dated(days[index].arriveDay) : "";
+			} else {
+				row.departPrev = previous?.time || "";
+				row.departPrevDate = previous?.time ? previous.date : "";
+				row.arrive = stop.arrive || "";
+				row.arriveDate = stop.arrive ? dated(days[index].arriveDay) : "";
+			}
+
+			// A sleeper resumes the journey at its rest end, so that is what the
+			// next stop departed at — not the last travelling stop's departure.
+			previous = stop.depart
+				? { time: stop.depart, date: dated(days[index].departDay) }
+				: previous;
+			rows.push(row);
+		});
+		return rows;
 	}
 
 	/* ── Resolving and routing ───────────────────────────────────────────
@@ -1168,11 +1262,85 @@
 
 		render();
 
+		let gridDb = null;
+		function getGridDb() {
+			if (!gridDb) {
+				gridDb = import("../data/itinerary-grid-db.js?v=1").catch((error) => {
+					gridDb = null;
+					throw error;
+				});
+			}
+			return gridDb;
+		}
+
 		const api = {
 			getDocument: () => toV3(state),
 			setDocument(payload) {
 				Object.assign(state, fromV3(payload));
 				render();
+			},
+
+			/* ── The three hooks trip-db.js calls ──────────────────────────
+			   All three are optional-chained at their call sites, so the Grid
+			   tab failing to load can never break a trip save. */
+
+			// Called before collectStops(). Pushes this tab's stops into the
+			// Itinerary tab so the ordinary save path writes trip_stops.
+			//
+			// The empty guard is the whole safety of this design: an untouched
+			// Grid tab must never wipe an itinerary the dispatcher entered in
+			// the other tab. No stops here means this tab has nothing to say.
+			//
+			// The projection is not always identical, and that is expected.
+			// setStops() runs the editor's own derivation cascade, so a return
+			// whose stated arrival contradicts the measured route comes out as
+			// departure-plus-drive instead — 20:00 became 11:55 on a trip whose
+			// route says 11:55. The document keeps what the customer said; the
+			// projection carries what the road says. Both are true, and the one
+			// that survives is the one this tab owns.
+			mirrorToItinerary() {
+				if (!state.stops.length) return false;
+				const rows = toEditorStops(state);
+				if (!rows.length) return false;
+				window.Itinerary?.setStops?.(rows, "outbound");
+				return true;
+			},
+
+			// Called after a successful save, with the id the trip was saved
+			// under. Never throws: the stops are already safely in trip_stops
+			// by this point, so losing the document must not lose the trip.
+			async persist(tripId) {
+				if (!tripId || !state.stops.length) return false;
+				try {
+					const db = await getGridDb();
+					const stored = await db.saveItineraryDocument(tripId, toV3(state));
+					if (stored) sayRoute("Itinerary saved.");
+					return stored;
+				} catch (error) {
+					console.warn("The Grid itinerary could not be persisted:", error);
+					return false;
+				}
+			},
+
+			// Called when a trip opens. A stored document wins over whatever
+			// was on screen; no document leaves the tab empty rather than
+			// guessing from trip_stops, because Pull from Itinerary tab is the
+			// explicit way to do that and a silent one would hide which of the
+			// two tabs a trip is actually being edited in.
+			async hydrate(tripId) {
+				if (!tripId) return false;
+				try {
+					const db = await getGridDb();
+					const document = await db.loadItineraryDocument(tripId);
+					if (!document) return false;
+					Object.assign(state, fromV3(document));
+					render();
+					say(`Loaded this trip's saved itinerary — ${state.stops.length} stops.`);
+					return true;
+				} catch (error) {
+					console.warn("The Grid itinerary could not be loaded:", error);
+					return false;
+				}
 			},
 			clear() {
 				Object.assign(state, {
@@ -1189,6 +1357,6 @@
 
 	window.ItineraryGrid = {
 		init, fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
-		legRisks, yardPlan, dutyByDay, sameAddress,
+		legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops,
 	};
 })();

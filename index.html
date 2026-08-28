@@ -6550,7 +6550,7 @@
 		<script src="./rux-ui/js/boot.js?v=1"></script>
 		<script src="./js/panels/trip-panel.js?v=49"></script>
 		<script src="./js/components/itinerary.js?v=66"></script>
-		<script src="./js/components/itinerary-grid.js?v=3"></script>
+		<script src="./js/components/itinerary-grid.js?v=5"></script>
 		<script src="./js/panels/driver-panel.js?v=32" defer></script>
 		<script src="./js/panels/driver-roster-panel.js?v=5" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=20" defer></script>
@@ -7801,7 +7801,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=48");
+					const db = await import("./js/data/trip-db.js?v=50");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -10980,7 +10980,7 @@
 			// the calendar without a reload. renderBusRows ends in
 			// renderScheduler(), which repaints the bars and the stripes.
 			async function loadFleet() {
-				const db = await import("./js/data/trip-db.js?v=48");
+				const db = await import("./js/data/trip-db.js?v=50");
 				try {
 					schedulerBuses = await db.fetchBuses();
 				} catch (err) {
@@ -11013,7 +11013,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=48");
+					const db = await import("./js/data/trip-db.js?v=50");
 					loadTrip = db.loadTrip;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;

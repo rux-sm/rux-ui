@@ -26,7 +26,7 @@ new Function("window", source)(host);
 
 const {
 	fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
-	legRisks, yardPlan, dutyByDay, sameAddress,
+	legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops,
 } = host.ItineraryGrid;
 
 // legRisks and dutyByDay both take the derived days alongside the stops, so
@@ -274,6 +274,130 @@ test("day rows are dropped and their gap becomes a held day", () => {
 
 	assert.deepEqual(stops.map((stop) => stop.type), ["pickup", "stop", "return"]);
 	assert.equal(stops[1].extraDays, 1, "26th to 28th is one day more than the clock implies");
+});
+
+/* ── The mirror back into the Itinerary tab ──────────────────────────── */
+
+// This is what trip-db.js's save path actually collects, so a bug here writes
+// a wrong trip_stops for every reader downstream — print schedules, the trip
+// envelope, driver share, trip-bar mileage.
+
+const gridState = (stops, startDate = "2026-07-27") => ({
+	startDate, client: "", destination: "", dataFlags: [], stops: stops.map(normalizeStop),
+});
+
+test("the mirror pushes each departure forward onto the next card", () => {
+	const rows = toEditorStops(gridState([
+		{ type: "yard_origin", depart: "04:15" },
+		{ type: "pickup", name: "School", address: "101 E Hackberry", arrive: "04:45", depart: "05:00" },
+		{ type: "stop", name: "Field", address: "1300 E MLK", arrive: "10:00", depart: "14:30" },
+		{ type: "return", name: "Yard", address: YARD, arrive: "20:00" },
+	]));
+
+	assert.deepEqual(rows.map((row) => row.type), ["pickup", "stop", "return"], "the yard row folds in");
+	assert.equal(rows[0].departPrev, "04:15", "the yard's departure lands on the pickup");
+	assert.equal(rows[0].spot, "04:45", "a pickup's arrival is its spot time");
+	assert.equal(rows[1].departPrev, "05:00", "the pickup's departure moves to the next card");
+	assert.equal(rows[1].arrive, "10:00");
+	assert.equal(rows[2].departPrev, "14:30");
+	assert.equal(rows[2].arrive, "20:00");
+});
+
+test("the mirror stamps dates from the derived day offsets", () => {
+	const rows = toEditorStops(gridState([
+		{ type: "yard_origin", depart: "04:15" },
+		{ type: "pickup", arrive: "04:45", depart: "05:00" },
+		{ type: "stop", name: "Hotel", arrive: "15:30", depart: "07:00" },
+		{ type: "return", arrive: "20:00" },
+	]));
+
+	assert.equal(rows[1].arriveDate, "2026-07-27");
+	assert.equal(rows[2].departPrevDate, "2026-07-28", "the hotel departs the morning after");
+	assert.equal(rows[2].arriveDate, "2026-07-28");
+});
+
+test("the mirror never writes the origin:yard sentinel", () => {
+	// It means the passengers board AT the depot, which is not what a
+	// yard_origin row says, and it is what autoPopulatePickupDepart uses to
+	// decide it may overwrite the stated yard departure.
+	const rows = toEditorStops(gridState([
+		{ type: "yard_origin", depart: "04:15" },
+		{ type: "pickup", activity: "load passengers", depart: "05:00" },
+		{ type: "return", arrive: "20:00" },
+	]));
+	assert.notEqual(rows[0].label, "origin:yard");
+	assert.equal(rows[0].label, undefined, "and a pickup carries no activity either");
+});
+
+test("the mirror carries activity across in the label column", () => {
+	const rows = toEditorStops(gridState([
+		{ type: "pickup", depart: "05:00" },
+		{ type: "stop", name: "Choctaw", activity: "casino", arrive: "16:00", depart: "17:00" },
+		{ type: "return", arrive: "20:00" },
+	]));
+	assert.equal(rows[1].label, "casino");
+});
+
+test("the mirror carries the measured route and its coordinates", () => {
+	const rows = toEditorStops(gridState([
+		{ type: "pickup", depart: "05:00", lat: 26.2, lng: -98.2 },
+		{ type: "stop", name: "Field", arrive: "10:00", miles: "312.4", drive: "4:48", lat: 30.2, lng: -97.7 },
+		{ type: "return", arrive: "20:00" },
+	]));
+	assert.equal(rows[1].miles, "312.4");
+	assert.equal(rows[1].drive, "4:48");
+	assert.equal(rows[1].lat, 30.2);
+	assert.equal(rows[1].routeStatus, "current", "a located, measured leg is not stale");
+	assert.equal(rows[2].routeStatus, "stale", "an unmeasured one is");
+});
+
+test("a sleeper survives the round trip through the editor's inverted shape", () => {
+	// The editor stores a sleeper's rest START in departPrev and its END in
+	// arrive, opposite to every other type. Reading it like an ordinary stop
+	// put the end of the rest in the arrival column and lost the start.
+	const original = gridState([
+		{ type: "pickup", depart: "05:00" },
+		{ type: "stop", name: "Lot", arrive: "20:00", depart: "22:00" },
+		{ type: "sleeper", arrive: "22:00", depart: "07:00" },
+		{ type: "return", arrive: "12:00" },
+	]);
+	const rows = toEditorStops(original);
+
+	assert.equal(rows[1].type, "stop");
+	assert.equal(rows[2].type, "sleeper");
+	assert.equal(rows[2].departPrev, "22:00", "rest start lives in departPrev");
+	assert.equal(rows[2].arrive, "07:00", "rest end lives in arrive");
+	assert.equal(rows[3].departPrev, "07:00", "the trip resumes at the rest end");
+
+	const back = fromEditorStops(rows, "2026-07-27");
+	const sleeper = back.find((stop) => stop.type === "sleeper");
+	assert.equal(sleeper.arrive, "22:00", "and reading it back restores the rest start");
+	assert.equal(sleeper.depart, "07:00");
+});
+
+test("mirror and pull are inverses for an ordinary trip", () => {
+	// The yard rows carry the depot's name here because fromV3 fills them in
+	// from Settings — a document never states the yard, so a state that has
+	// been through a real load always has it.
+	const original = gridState([
+		{ type: "yard_origin", name: "Yard", address: YARD, depart: "04:15" },
+		{ type: "pickup", name: "School", address: "101 E Hackberry", arrive: "04:45", depart: "05:00" },
+		{ type: "stop", name: "Field", address: "1300 E MLK", activity: "game", arrive: "10:00", depart: "14:30" },
+		{ type: "return", name: "Yard", address: YARD, arrive: "20:00" },
+	]);
+	const shape = (stops) => stops.map((stop) =>
+		[stop.type, stop.name, stop.activity, stop.arrive, stop.depart]);
+
+	assert.deepEqual(
+		shape(fromEditorStops(toEditorStops(original), "2026-07-27")),
+		shape(original.stops),
+	);
+});
+
+test("the mirror produces nothing from an empty tab", () => {
+	// The guard that stops an untouched Grid tab wiping an itinerary entered
+	// in the other one.
+	assert.deepEqual(toEditorStops(gridState([])), []);
 });
 
 /* ── Schedule risk ───────────────────────────────────────────────────── */
