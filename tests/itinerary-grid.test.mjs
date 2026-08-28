@@ -223,6 +223,35 @@ test("a held day is not invented when the clock already explains the gap", () =>
 	assert.equal(deriveDays(state.stops)[2].arriveDay, 1);
 });
 
+test("a draft's trip-level fields survive the round trip", () => {
+	/* Save refuses a trip with no dates, so a draft that carried only stops
+	   could never become a trip on the calendar without someone retyping what
+	   the document already said. These are what fillTripDetails writes. */
+	const payload = v3([{ type: "pickup", departure_time: "05:00" }]);
+	payload.trip.client = "Audie Murphy Middle School";
+	payload.trip.notes = "Lunch is at the park.";
+	payload.trip.booking_contact = { name: "Coach Reyes", phone: "956-555-0148" };
+
+	const state = fromV3(payload);
+	assert.equal(state.client, "Audie Murphy Middle School");
+	assert.equal(state.destination, "Austin, TX");
+	assert.equal(state.startDate, "2026-07-27");
+	assert.equal(state.notes, "Lunch is at the park.");
+	assert.equal(state.bookingName, "Coach Reyes");
+	assert.equal(state.bookingPhone, "956-555-0148");
+
+	const back = toCleanV3(state).trip;
+	assert.equal(back.client, "Audie Murphy Middle School");
+	assert.equal(back.notes, "Lunch is at the park.");
+	assert.deepEqual(back.booking_contact, { name: "Coach Reyes", phone: "956-555-0148" });
+	assert.equal(back.booking_contact.email, undefined, "an absent field stays absent");
+});
+
+test("a draft with no booking contact emits none", () => {
+	const state = fromV3(v3([{ type: "pickup", departure_time: "05:00" }]));
+	assert.equal(toCleanV3(state).trip.booking_contact, undefined);
+});
+
 test("data_flags survive the load", () => {
 	const payload = v3([{ type: "pickup", departure_time: "05:00" }]);
 	payload.data_flags = ["Confirm the return time.", ""];

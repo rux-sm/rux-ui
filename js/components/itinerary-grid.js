@@ -473,10 +473,17 @@
 			});
 		}
 
+		const booking = trip.booking_contact && typeof trip.booking_contact === "object"
+			? trip.booking_contact
+			: {};
 		return {
 			startDate: String(outbound.start_date ?? ""),
 			client: String(trip.client ?? ""),
 			destination: String(trip.destination ?? ""),
+			notes: String(trip.notes ?? ""),
+			bookingName: String(booking.name ?? ""),
+			bookingPhone: String(booking.phone ?? ""),
+			bookingEmail: String(booking.email ?? ""),
 			dataFlags: Array.isArray(doc.data_flags) ? doc.data_flags.filter(Boolean).map(String) : [],
 			stops,
 		};
@@ -524,6 +531,13 @@
 		const trip = { type: "round_trip", service_type: "charter", legs: { outbound: { stops } } };
 		if (state.client) trip.client = state.client;
 		if (state.destination) trip.destination = state.destination;
+		if (state.notes) trip.notes = state.notes;
+		if (state.bookingName || state.bookingPhone || state.bookingEmail) {
+			trip.booking_contact = {};
+			if (state.bookingName) trip.booking_contact.name = state.bookingName;
+			if (state.bookingPhone) trip.booking_contact.phone = state.bookingPhone;
+			if (state.bookingEmail) trip.booking_contact.email = state.bookingEmail;
+		}
 		if (state.startDate) trip.legs.outbound.start_date = state.startDate;
 		const doc = { schema_version: 3, trip };
 		if (state.dataFlags.length) doc.data_flags = state.dataFlags;
@@ -1013,7 +1027,7 @@
 		const host = root?.querySelector?.("#tp-grid") || document.getElementById("tp-grid");
 		if (!host) return null;
 
-		const state = { startDate: "", client: "", destination: "", dataFlags: [], stops: [] };
+		const state = { startDate: "", client: "", destination: "", notes: "", bookingName: "", bookingPhone: "", bookingEmail: "", dataFlags: [], stops: [] };
 
 		host.innerHTML = `
 		<section class="sched-itinerary-grid">
@@ -1222,7 +1236,13 @@
 			Object.assign(state, loaded);
 			pasteEl.value = "";
 			render();
-			say(`Loaded ${loaded.stops.length} stops${loaded.dataFlags.length ? `, ${loaded.dataFlags.length} to ask about` : ""}.`);
+			// The stops are only half a trip. Without dates Save refuses it, so
+			// the draft's own trip fields go in too — see fillTripDetails.
+			const filled = fillTripDetails();
+			const parts = [`Loaded ${loaded.stops.length} stops`];
+			if (filled.length) parts.push(`filled the ${filled.join(", ")}`);
+			if (loaded.dataFlags.length) parts.push(`${loaded.dataFlags.length} to ask about`);
+			say(`${parts.join(", ")}.`);
 		}
 
 		async function copyPrompt() {
@@ -1450,6 +1470,46 @@
 			}
 		}
 
+		/* Write the trip's own fields from the draft — but only where the form
+		   is BLANK.
+
+		   Save refuses a trip with no start and end date, so a draft that fills
+		   only the stops cannot become a trip on the calendar without someone
+		   retyping what the document already said. This closes that.
+
+		   Blank-only is what makes it safe to press on a trip that already
+		   exists. A draft applied over a booked trip must not rewrite its
+		   customer or move its dates — those were agreed with a person, and the
+		   document is just the schedule. Same principle as the import modal's
+		   Itinerary-only mode: the itinerary is the draft's to state, the trip's
+		   identity is not. */
+		function fillTripDetails() {
+			const written = [];
+			const setIfBlank = (id, value, label) => {
+				const el = document.getElementById(id);
+				if (!el || !value) return;
+				if (String(el.value ?? "").trim()) return;
+				el.value = value;
+				el.dispatchEvent(new Event("input", { bubbles: true }));
+				el.dispatchEvent(new Event("change", { bubbles: true }));
+				written.push(label);
+			};
+
+			const days = deriveDays(state.stops);
+			const lastDay = days.length ? days[days.length - 1].departDay : 0;
+			setIfBlank("tp-customer", state.client, "customer");
+			setIfBlank("tp-destination", state.destination, "destination");
+			setIfBlank("tp-start", state.startDate, "dates");
+			setIfBlank("tp-end", addDays(state.startDate, lastDay), null);
+			setIfBlank("tp-notes", state.notes, "notes");
+			setIfBlank("tp-book-name", state.bookingName, "booking contact");
+			setIfBlank("tp-book-phone", state.bookingPhone, null);
+			setIfBlank("tp-book-email", state.bookingEmail, null);
+
+			if (written.length) window.Rux?.syncDateInputs?.(document);
+			return written.filter(Boolean);
+		}
+
 		function pullFromItinerary() {
 			const source = window.Itinerary?.getStops?.();
 			if (!Array.isArray(source) || !source.length) {
@@ -1549,7 +1609,7 @@
 			},
 			clear() {
 				Object.assign(state, {
-					startDate: "", client: "", destination: "", dataFlags: [], stops: [],
+					startDate: "", client: "", destination: "", notes: "", bookingName: "", bookingPhone: "", bookingEmail: "", dataFlags: [], stops: [],
 				});
 				pasteEl.value = "";
 				say("");

@@ -6,6 +6,9 @@
 - Do not scan the repository broadly for a narrow change.
 - UI or CSS: the `rux-design` skill covers this and triggers on its own; inspect `rux-ui/css/tokens.css` when styling or tokens are involved. Vendoring the design system into a separate app is the `vendor-rux-ui` skill.
 - Design-system rules: `docs/foundations/` is canonical for typography, spacing, color, and motion. Start at `docs/foundations/README.md` — it indexes the documents, carries the shared amendment contract, and rolls up each one's status. Read the relevant document before changing a scale, a token value, or a design rule.
+- A customer's itinerary document — PDF, email, photo, pasted notes — is the
+  `process-itinerary` skill: document to Trip Draft v3 to the Grid tab to a driver
+  sheet. It carries the rule that a trip is never saved without a per-trip go-ahead.
 - Application behavior: start with the relevant file under `js/` or `index.html` and follow only directly connected dependencies.
 - Reference-application data layer: start with the relevant module under `js/data/`, then inspect related SQL under `supabase/`.
 - Hard debugging: trace the failing path and expand through callers/callees only as needed.
