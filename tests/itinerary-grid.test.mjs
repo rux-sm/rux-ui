@@ -27,6 +27,7 @@ new Function("window", source)(host);
 const {
 	fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
 	legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops, toCleanV3, localityOf,
+	needsReview,
 } = host.ItineraryGrid;
 
 // legRisks and dutyByDay both take the derived days alongside the stops, so
@@ -691,6 +692,29 @@ test("duty and drive are counted per day, not across the trip", () => {
 test("a day with a single time has no duty span", () => {
 	const [stops, days] = withDays({ type: "pickup", depart: "05:00" });
 	assert.equal(dutyByDay(stops, days)[0].duty, 0);
+});
+
+/* ── Which addresses need a look ─────────────────────────────────────── */
+
+test("only real doubt counts as needing review", () => {
+	const flag = (over) => needsReview(normalizeStop({ type: "stop", address: "somewhere", ...over }));
+
+	assert.equal(flag({ addressConfidence: "partial" }), true);
+	assert.equal(flag({ addressConfidence: "source_text" }), true);
+	assert.equal(flag({ matchedAddress: "somewhere else" }), true);
+	assert.equal(flag({ approxFrom: "Falfurrias, TX" }), true);
+
+	// "exact" is the extraction saying the source gave a full address. Counting
+	// it promised three addresses to check while only two rows had anything to
+	// show, which teaches people the number is decorative.
+	assert.equal(flag({ addressConfidence: "exact" }), false);
+	assert.equal(flag({}), false);
+});
+
+test("the yard bookends are never up for review", () => {
+	// Their address comes from Settings, not from the document.
+	assert.equal(needsReview(normalizeStop({ type: "return", addressConfidence: "partial" })), false);
+	assert.equal(needsReview(normalizeStop({ type: "yard_origin", approxFrom: "somewhere" })), false);
 });
 
 /* ── Town fallback ───────────────────────────────────────────────────── */

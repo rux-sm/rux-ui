@@ -97,7 +97,34 @@ Read what comes back rather than assuming:
 | `Tight — … Leave by …` | The schedule does not fit the drive. This is a finding, not a formatting detail. |
 | A leg reading "Not routed yet" | Nothing resolved at all, and the trip total is short by that leg. |
 
-## 4. Driver sheet
+## 4. Confirm the addresses
+
+Resolve leaves a count in the toolbar — **"N addresses to check"** — and a
+review block on each row that still carries doubt. Work through it before
+printing anything, and hand the decisions to the user rather than making them:
+they know which campus, you do not.
+
+The three kinds are not the same question:
+
+- **"Address is right"** — an address that resolved but came from general
+  knowledge or the source's wording. Confirming writes it to the
+  saved-locations directory, so the next trip resolves it from there with no
+  doubt attached and never asks again. This is the compounding part; it is
+  worth pointing out to the user the first time.
+- **"Use that address" / "Mine is right"** — the geocoder matched something
+  else. Show them both and let them pick.
+- **No button, just "type the street address"** — the stop has no address at
+  all and was measured to the town. There is nothing to confirm; confirming
+  would be claiming an address nobody has.
+
+**The saved directory beats everything.** It is checked before Mapbox, matches
+on the place NAME as well as the address, and a hit replaces the draft's
+wording with the verified address. On a real trip this corrected an extraction
+that had guessed the wrong town — the school was in Pharr, not Weslaco — with
+no geocoding call at all. When the status says "N from your saved addresses",
+that is the operator's own past corrections doing the work.
+
+## 5. Driver sheet
 
 **Driver sheet** in the Grid footer. Check the totals and the *Check before
 rolling* block before showing it.
@@ -107,7 +134,7 @@ is 15 hours. A school trip that leaves at 5am and returns at 11pm is over it,
 and that is a fact about the trip rather than a bug in the sheet — say so
 plainly, because it changes whether the trip needs a second driver.
 
-## 5. Report, then wait
+## 6. Report, then wait
 
 Lead with what would change the user's decision: hours over the limit, legs
 that cannot be made, mileage that rests on a guess. Then the numbers. Then the

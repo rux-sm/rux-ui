@@ -404,6 +404,41 @@
 	flex: none;
 }
 
+/* An address still carrying doubt, and the answer to it.
+
+   Boxed rather than loose, because the buttons belong to THIS note and not to
+   the row — a bare button under a paragraph reads as a row action, and
+   "Address is right" applied to the wrong stop is the one mistake this whole
+   step exists to prevent. */
+.sched-itinerary-grid__review {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-2);
+	border-inline-start: 2px solid var(--rux-warning);
+	border-radius: var(--rux-radius-control);
+	/* The app's own raised surface, NOT --rux-warning-subtle.
+
+	   The tint was tried first and it swallowed its own buttons: a
+	   .rux-button--default is a near-black fill with no border, which reads
+	   fine on the ordinary background and disappears entirely on an amber
+	   one — measured at oklch(0.2156 0 0) on oklch(0.2 0.14 70). The left
+	   border and the note's own amber already say "warning" loudly enough,
+	   and a control has to stay legible to be pressed.
+
+	   The confirm itself is --accent for the same reason. Against this
+	   surface a --default fill is within a hair of the background, so the one
+	   button the whole step exists for read as plain text. Accent is also
+	   honest about what it is: an affirmative action, not a neutral one. */
+	background: var(--rux-surface-1);
+}
+
+.sched-itinerary-grid__review-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--rux-space-2);
+}
+
 /* What the route worked out for a yard or spot time. Offered, never applied:
    the stated time is the customer's and only the dispatcher overwrites it. */
 .sched-itinerary-grid__plan {

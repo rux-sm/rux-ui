@@ -760,14 +760,49 @@
 		return locationsDbPromise;
 	}
 
-	async function fromSavedLocations(address) {
+	// Case, whitespace and punctuation only — enough to tell "the same thing
+	// written differently" from "a different thing".
+	function loosely(value) {
+		return String(value ?? "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+	}
+
+	/* The operator's own directory, tried before Mapbox.
+
+	   This used to demand a byte-identical ADDRESS, which almost never
+	   happened: a draft names the place ("Audie Murphy Middle School, Weslaco,
+	   TX") while the directory holds the street address someone verified once.
+	   So a school saved by hand after the last trip was looked up, missed, and
+	   sent to the geocoder anyway — the correction did not stick.
+
+	   It also passed the raw address to searchLocations, which splits on
+	   whitespace only. Every comma stayed glued to its word, so "School," could
+	   not match "school" and the search returned nothing before the comparison
+	   even ran.
+
+	   Now it searches loosely and accepts a NAME match as well as an address
+	   one. A saved entry is a place this operator has actually been, with
+	   coordinates checked against a real trip, so matching one is the strongest
+	   answer available — stronger than anything a geocoder returns. */
+	async function fromSavedLocations(stop) {
+		const address = String(stop?.address ?? "").trim();
+		const name = String(stop?.name ?? "").trim();
+		if (!address && !name) return null;
 		try {
 			const db = await getLocationsDb();
-			const wanted = address.toLowerCase().replace(/\s+/g, " ").trim();
-			const matches = await db.searchLocations(address, 5);
+			const wantedAddress = loosely(address);
+			const wantedName = loosely(name);
+			// The leading segment of "Venue, Town, ST" is the venue.
+			const leadingSegment = loosely(address.split(",")[0]);
+
+			const query = loosely(name || address);
+			const matches = await db.searchLocations(query, 8);
 			return matches.find((location) => {
 				if (location.lat == null || location.lng == null) return false;
-				return String(location.address || "").toLowerCase().replace(/\s+/g, " ").trim() === wanted;
+				const savedAddress = loosely(location.address);
+				const savedName = loosely(location.name);
+				if (savedAddress && savedAddress === wantedAddress) return true;
+				if (!savedName) return false;
+				return savedName === wantedName || savedName === leadingSegment;
 			}) || null;
 		} catch {
 			return null;
@@ -877,9 +912,7 @@
 								value="${escHtml(stop.activity)}" autocomplete="off"/>
 						</label>
 					</div>`}
-				${note ? `<p class="sched-itinerary-grid__note"><span class="rux-icon" aria-hidden="true">error</span>${escHtml(note)}</p>` : ""}
-				${stop.matchedAddress ? `<p class="sched-itinerary-grid__note"><span class="rux-icon" aria-hidden="true">wrong_location</span>Routed to ${escHtml(stop.matchedAddress)} — check this is the right place.</p>` : ""}
-				${stop.approxFrom ? `<p class="sched-itinerary-grid__note"><span class="rux-icon" aria-hidden="true">my_location</span>Measured to ${escHtml(stop.approxFrom)}, not to this stop — get the street address.</p>` : ""}
+				${fixed ? "" : renderReview(stop, index)}
 				${extras.plan ? `<p class="sched-itinerary-grid__plan">
 					<span class="rux-icon" aria-hidden="true">route</span>
 					<span>${escHtml(extras.plan.text)}</span>
@@ -910,6 +943,75 @@
 					data-remove data-idx="${index}" aria-label="Delete stop ${index + 1}"><span class="rux-icon" aria-hidden="true">close</span></button>`}
 			</div>
 		</li>`;
+	}
+
+	/* The doubt on one stop, and what can be done about it.
+
+	   Three kinds, and they do NOT take the same action:
+
+	     approxFrom      there is no street address at all — the leg was
+	                     measured to the town. Nothing to confirm: confirming
+	                     would be claiming an address nobody has. The only fix
+	                     is typing one, so no button is offered.
+	     matchedAddress  the geocoder went somewhere else. Two real answers —
+	                     take its version, or say the typed one is right.
+	     addressConfidence  there IS an address, it just came from general
+	                     knowledge or the source's own wording. One button.
+
+	   Confirming writes the address to the saved-locations directory, so the
+	   next trip resolves it instantly and never asks again. That is the point
+	   of asking once. */
+	function renderReview(stop, index) {
+		if (stop.approxFrom) {
+			return `<p class="sched-itinerary-grid__note">
+				<span class="rux-icon" aria-hidden="true">my_location</span>
+				Measured to ${escHtml(stop.approxFrom)}, not to this stop. Type the street address to fix it.
+			</p>`;
+		}
+		if (stop.matchedAddress) {
+			return `<div class="sched-itinerary-grid__review">
+				<p class="sched-itinerary-grid__note">
+					<span class="rux-icon" aria-hidden="true">wrong_location</span>
+					Routed to ${escHtml(stop.matchedAddress)} — is that the right place?
+				</p>
+				<div class="sched-itinerary-grid__review-actions">
+					<button type="button" class="rux-button rux-button--accent rux-button--sm"
+						data-use-matched data-idx="${index}">
+						<span class="rux-button__label">Use that address</span>
+					</button>
+					<button type="button" class="rux-button rux-button--ghost rux-button--sm"
+						data-confirm-address data-idx="${index}">
+						<span class="rux-button__label">Mine is right</span>
+					</button>
+				</div>
+			</div>`;
+		}
+		const note = CONFIDENCE_NOTE[stop.addressConfidence];
+		if (!note) return "";
+		const located = stop.lat != null && stop.lng != null;
+		return `<div class="sched-itinerary-grid__review">
+			<p class="sched-itinerary-grid__note">
+				<span class="rux-icon" aria-hidden="true">error</span>${escHtml(note)}
+			</p>
+			${located ? `<div class="sched-itinerary-grid__review-actions">
+				<button type="button" class="rux-button rux-button--accent rux-button--sm"
+					data-confirm-address data-idx="${index}">
+					<span class="rux-button__label">Address is right</span>
+				</button>
+			</div>` : ""}
+		</div>`;
+	}
+
+	/* Anything still carrying doubt. Drives the toolbar's count and the jump.
+
+	   "exact" is not doubt — it is the extraction saying the source gave a
+	   full address. Counting it made the toolbar promise three addresses to
+	   check while only two rows had anything to show, which is the sort of
+	   miscount that teaches people the number is decorative. */
+	function needsReview(stop) {
+		if (FIXED_TYPES.has(stop.type)) return false;
+		if (stop.approxFrom || stop.matchedAddress) return true;
+		return !!CONFIDENCE_NOTE[stop.addressConfidence];
 	}
 
 	function renderLeg(stop, index, risk, approx) {
@@ -1066,6 +1168,10 @@
 					<span class="rux-icon" aria-hidden="true">explore</span>
 					<span class="rux-button__label">Resolve &amp; route</span>
 				</button>
+				<button type="button" class="rux-button rux-button--default" data-review hidden>
+					<span class="rux-icon" aria-hidden="true">fact_check</span>
+					<span class="rux-button__label" data-review-label>Check addresses</span>
+				</button>
 				<p class="sched-itinerary-grid__status" data-route-status role="status" aria-live="polite"></p>
 			</div>
 			<div data-flags></div>
@@ -1109,9 +1215,64 @@
 
 		function render() {
 			listEl.innerHTML = renderList(state);
+			syncReviewButton();
 			summaryEl.innerHTML = renderSummary(state);
 			flagsEl.innerHTML = renderFlags(state);
 			intakeEl.open = state.stops.length === 0;
+		}
+
+		/* The review step, such as it is: a count and a jump.
+
+		   Not a separate screen. The doubt is already shown on the row it
+		   belongs to, and lifting it into a modal would separate the address
+		   from its times and its leg — the three things you read together to
+		   decide whether an address is plausible. This just says how many are
+		   left and takes you to the next one. */
+		const reviewBtn = host.querySelector("[data-review]");
+		const reviewLabel = host.querySelector("[data-review-label]");
+
+		function syncReviewButton() {
+			const count = state.stops.filter(needsReview).length;
+			reviewBtn.hidden = count === 0;
+			reviewLabel.textContent = count === 1
+				? "1 address to check"
+				: `${count} addresses to check`;
+		}
+
+		function jumpToNextReview() {
+			const index = state.stops.findIndex(needsReview);
+			if (index < 0) return;
+			const row = host.querySelector(`.sched-itinerary-grid__row[data-idx="${index}"]`);
+			row?.scrollIntoView({ block: "center", behavior: "smooth" });
+			row?.querySelector("[data-confirm-address], [data-field='address']")?.focus();
+		}
+
+		/* Confirming is what makes asking worth it: the address goes into the
+		   saved-locations directory, so the next trip resolves it from there
+		   with no doubt attached and never asks again. Failing to save must
+		   not fail the confirmation — the dispatcher's answer is the point,
+		   the directory entry is the bonus. */
+		async function confirmAddress(index) {
+			const stop = state.stops[index];
+			if (!stop) return;
+			stop.addressConfidence = null;
+			stop.matchedAddress = null;
+			render();
+
+			if (stop.lat == null || stop.lng == null || !stop.address.trim()) return;
+			try {
+				const db = await getLocationsDb();
+				await db.saveLocation({
+					name: stop.name || stop.address,
+					address: stop.address,
+					lat: stop.lat,
+					lng: stop.lng,
+					mapboxId: stop.mapboxId,
+				});
+				sayRoute(`Saved ${stop.name || stop.address} — it will resolve straight away next time.`);
+			} catch (error) {
+				console.warn("The confirmed address could not be saved:", error);
+			}
 		}
 
 		function scaffold() {
@@ -1214,6 +1375,21 @@
 			if (event.target.closest("[data-copy-json]")) return copyJson();
 			if (event.target.closest("[data-pull]")) return pullFromItinerary();
 			if (event.target.closest("[data-route]")) return resolveAndRoute();
+			const confirmBtn = event.target.closest("[data-confirm-address]");
+			if (confirmBtn) return confirmAddress(Number(confirmBtn.dataset.idx));
+
+			const useMatched = event.target.closest("[data-use-matched]");
+			if (useMatched) {
+				const stop = state.stops[Number(useMatched.dataset.idx)];
+				if (!stop) return;
+				// The coordinates already point at the matched place, so taking
+				// its address is agreeing with where the route was measured —
+				// no re-resolve, and nothing moves.
+				stop.address = stop.matchedAddress;
+				return confirmAddress(Number(useMatched.dataset.idx));
+			}
+
+			if (event.target.closest("[data-review]")) return jumpToNextReview();
 			if (event.target.closest("[data-print]")) return printDriverSheet();
 		});
 
@@ -1303,6 +1479,7 @@
 			routeBtn.disabled = true;
 			let resolved = 0;
 			let routed = 0;
+			let fromDirectory = 0;
 			let approximated = 0;
 			let failed = 0;
 
@@ -1317,15 +1494,21 @@
 					// with coordinates already verified against a real trip. That
 					// is the one match strong enough to retire the model's doubt
 					// about the address.
-					const saved = await fromSavedLocations(address);
+					const saved = await fromSavedLocations(stop);
 					if (saved) {
 						stop.lat = saved.lat;
 						stop.lng = saved.lng;
 						stop.mapboxId = saved.mapboxId || null;
+						// Take the saved address too. It is the one somebody
+						// already corrected by hand, so a draft's vaguer wording
+						// should give way to it rather than persist and be
+						// corrected again next time.
+						if (saved.address) stop.address = saved.address;
+						if (!stop.name && saved.name) stop.name = saved.name;
 						stop.addressConfidence = null;
 						stop.matchedAddress = null;
 						stop.approxFrom = null;
-						resolved += 1;
+						fromDirectory += 1;
 						continue;
 					}
 					try {
@@ -1426,6 +1609,9 @@
 			}
 
 			const parts = [];
+			if (fromDirectory) {
+				parts.push(`${fromDirectory} from your saved addresses`);
+			}
 			if (resolved) parts.push(`${resolved} address${resolved === 1 ? "" : "es"} resolved`);
 			if (approximated) {
 				parts.push(`${approximated} measured to the town only — ${approximated === 1 ? "its address is" : "their addresses are"} still needed`);
@@ -1623,5 +1809,6 @@
 	window.ItineraryGrid = {
 		init, fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
 		legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops, toCleanV3, localityOf,
+		needsReview,
 	};
 })();
