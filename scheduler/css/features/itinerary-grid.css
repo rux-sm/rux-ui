@@ -124,6 +124,20 @@
 	font-variant-numeric: tabular-nums;
 }
 
+/* — Routing toolbar — */
+
+.sched-itinerary-grid__toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--rux-space-3);
+}
+
+.sched-itinerary-grid__toolbar > .sched-itinerary-grid__status {
+	flex: 1;
+	min-width: 12rem;
+}
+
 /* — Flags — */
 
 .sched-itinerary-grid__flag-list {
@@ -221,6 +235,23 @@
 	color: var(--rux-text-disabled);
 }
 
+/* A leg the schedule does not leave room for. Wraps rather than truncates —
+   the required departure time is the whole point of the message. */
+.sched-itinerary-grid__leg--tight {
+	flex-wrap: wrap;
+	color: var(--rux-warning);
+}
+
+.sched-itinerary-grid__leg--tight .rux-icon {
+	color: var(--rux-warning);
+}
+
+.sched-itinerary-grid__risk {
+	flex-basis: 100%;
+	padding-inline-start: var(--rux-space-6);
+	overflow-wrap: anywhere;
+}
+
 /* — Row — */
 
 .sched-itinerary-grid__row {
@@ -258,6 +289,21 @@
 .sched-itinerary-grid__row[data-type="pickup"] .sched-itinerary-grid__marker .rux-icon,
 .sched-itinerary-grid__row[data-type="yard_origin"] .sched-itinerary-grid__marker .rux-icon {
 	color: var(--rux-accent);
+}
+
+/* NOT resolved to coordinates — drained rather than coloured.
+
+   Marking the resolved ones instead was the first attempt and it collided:
+   the pickup and yard pins carry the accent above at equal specificity, so a
+   "resolved" colour won on plain stops and lost on those two, leaving the same
+   pin meaning two different things down one list. Flagging the exception keeps
+   the type colours doing their own job, and after a Resolve pass an
+   unresolved address is exactly the row worth finding — it is why a leg still
+   reads "not routed yet".
+
+   Equal specificity to the type rules above, so this must stay after them. */
+.sched-itinerary-grid__row .sched-itinerary-grid__marker .rux-icon.is-unlocated {
+	color: var(--rux-text-disabled);
 }
 
 .sched-itinerary-grid__seq {
@@ -358,14 +404,48 @@
 	flex: none;
 }
 
+/* What the route worked out for a yard or spot time. Offered, never applied:
+   the stated time is the customer's and only the dispatcher overwrites it. */
+.sched-itinerary-grid__plan {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--rux-space-1) var(--rux-space-2);
+	margin: 0;
+	font-size: var(--rux-text-label-12-size);
+	line-height: var(--rux-text-label-12-line-height);
+	color: var(--rux-text-secondary);
+	font-variant-numeric: tabular-nums;
+}
+
+.sched-itinerary-grid__plan .rux-icon {
+	font-size: var(--rux-icon-sm);
+	flex: none;
+	color: var(--rux-accent);
+}
+
 .sched-itinerary-grid__meta {
 	grid-area: meta;
 	display: flex;
+	align-items: flex-end;
 	gap: var(--rux-space-3);
 	font-size: var(--rux-text-label-12-size);
 	line-height: var(--rux-text-label-12-line-height);
 	color: var(--rux-text-secondary);
 	font-variant-numeric: tabular-nums;
+}
+
+/* The measured mileage, editable. A dispatcher overriding it is usually
+   routing a coach around something the router is happy to send a car through,
+   so the typed number wins and Resolve leaves it alone. */
+.sched-itinerary-grid__field--num {
+	width: 5rem;
+	flex: none;
+}
+
+.sched-itinerary-grid__num {
+	font-variant-numeric: tabular-nums;
+	text-align: end;
 }
 
 .sched-itinerary-grid__meta:empty {

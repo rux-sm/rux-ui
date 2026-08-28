@@ -63,6 +63,22 @@
 
 	const PROMPT_URL = "./docs/itinerary-prompt.md";
 
+	/* Routing constants.
+
+	   TRAFFIC_BUFFER is used ONLY to judge whether a leg is tight. It is
+	   deliberately not folded into the stored drive time: that number is what
+	   Mapbox measured, the Itinerary tab stores the same measurement, and a
+	   silently padded copy here would make the two tabs disagree about the
+	   same road. The warning gets to be conservative; the record does not.
+
+	   PRE_TRIP is the driver's inspection before wheels roll. Spot padding and
+	   the return buffer come from Settings when configured. */
+	const TRAFFIC_BUFFER = 0.15;
+	const RISK_MARGIN_MINS = 5;
+	const PRE_TRIP_MINS = 15;
+
+	const spotPadding = () => window.RuxSettings?.getSpotPadding?.() ?? 15;
+
 	/* ── Formatting ──────────────────────────────────────────────────────
 	   Intl for the day dividers, per the interaction-a11y contract. Times are
 	   native <input type="time">, so the browser localises those itself. The
@@ -72,6 +88,34 @@
 	const dayFormat = new Intl.DateTimeFormat(undefined, {
 		weekday: "short", month: "short", day: "numeric",
 	});
+
+	/* Is the geocoder's answer the same place that was asked for?
+
+	   Comparing the strings does not work. Mapbox expands everything — "101 E
+	   Hackberry Ave, McAllen, TX 78501" comes back as "101 East Hackberry
+	   Avenue, McAllen, Texas 78501, United States" — so a plain comparison
+	   flags every single address as a substitution, and a warning that fires
+	   on all of them is one nobody reads.
+
+	   The house number and the ZIP settle it. Both matching means the same
+	   address however it is spelled; either one differing means the geocoder
+	   went somewhere else. When the typed address has neither there is nothing
+	   to compare, and no claim is made. */
+	function sameAddress(typed, matched) {
+		const parts = (value) => {
+			const text = String(value ?? "");
+			return {
+				number: /^\s*(\d+)/.exec(text)?.[1] || null,
+				zip: /\b(\d{5})(?:-\d{4})?\b/.exec(text)?.[1] || null,
+			};
+		};
+		const a = parts(typed);
+		const b = parts(matched);
+		if (a.number && a.zip) return a.number === b.number && a.zip === b.zip;
+		if (a.zip) return a.zip === b.zip;
+		if (a.number) return a.number === b.number;
+		return true; // nothing identifying was typed, so nothing to contradict
+	}
 
 	function escHtml(value) {
 		return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
@@ -135,6 +179,10 @@
 			name: String(stop.name ?? ""),
 			address: String(stop.address ?? ""),
 			addressConfidence: stop.addressConfidence || null,
+			// What the geocoder actually matched, when that differs from what
+			// was typed. Recorded rather than applied — substituting it would
+			// hide the substitution.
+			matchedAddress: stop.matchedAddress || null,
 			activity: String(stop.activity ?? ""),
 			arrive: String(stop.arrive ?? ""),
 			depart: String(stop.depart ?? ""),
@@ -196,6 +244,115 @@
 			}
 			return { arriveDay, departDay };
 		});
+	}
+
+	/* Schedule risk, per leg.
+
+	   The comparison is made on absolute minutes — day offset times 1440 plus
+	   the clock — never on two HH:MM strings. Subtracting those directly makes
+	   an overnight leg come out negative and every flag after it wrong, which
+	   is the failure the old step-2 prompt called out and is easier to
+	   reintroduce here, where the offsets are derived rather than typed.
+
+	   A leg is tight when the traffic-adjusted drive does not fit in the gap
+	   the schedule leaves for it. `leaveBy` is then the real answer: the time
+	   the driver has to be rolling to arrive as promised. */
+	function legRisks(stops, days) {
+		const risks = new Array(stops.length).fill(null);
+		for (let index = 1; index < stops.length; index += 1) {
+			const stop = stops[index];
+			const previous = stops[index - 1];
+			if (stop.type === "sleeper") continue;
+
+			const drive = driveMins(stop.drive);
+			if (drive === null || drive <= 0) continue;
+
+			const departMins = clockMins(previous.depart);
+			const arriveMins = clockMins(stop.arrive);
+			if (departMins === null || arriveMins === null) continue;
+
+			const from = days[index - 1].departDay * 1440 + departMins;
+			const to = days[index].arriveDay * 1440 + arriveMins;
+			const gap = to - from;
+			if (gap < 0) continue; // the times themselves are out of order
+
+			const needed = Math.ceil(drive * (1 + TRAFFIC_BUFFER));
+			if (gap >= needed + RISK_MARGIN_MINS) continue;
+
+			const leaveBy = ((to - needed) % 1440 + 1440) % 1440;
+			risks[index] = {
+				gap,
+				needed,
+				leaveBy: `${String(Math.floor(leaveBy / 60)).padStart(2, "0")}:${String(leaveBy % 60).padStart(2, "0")}`,
+			};
+		}
+		return risks;
+	}
+
+	/* What the route says about the yard, working backwards from the pickup.
+
+	   Advisory only. The dispatcher's stated times are never overwritten —
+	   that is exactly the bug the v3 importer had to avoid, where the editor
+	   silently replaced a stated 04:15 yard departure with the pickup's 05:00.
+	   Here the computed answer is shown beside the row and applied on request. */
+	function yardPlan(stops) {
+		const pickupIndex = stops.findIndex((stop) => stop.type === "pickup");
+		if (pickupIndex < 1) return null;
+		const pickup = stops[pickupIndex];
+		const anchor = clockMins(pickup.depart);
+		if (anchor === null) return null;
+
+		const drive = driveMins(pickup.drive);
+		const spot = ((anchor - spotPadding()) % 1440 + 1440) % 1440;
+		const plan = { spot: toClock(spot) };
+		if (drive === null || drive <= 0) return plan;
+
+		const roll = ((spot - drive) % 1440 + 1440) % 1440;
+		plan.roll = toClock(roll);
+		plan.report = toClock(((roll - PRE_TRIP_MINS) % 1440 + 1440) % 1440);
+		return plan;
+	}
+
+	function toClock(mins) {
+		return `${String(Math.floor(mins / 60)).padStart(2, "0")}:${String(mins % 60).padStart(2, "0")}`;
+	}
+
+	/* Duty and drive, counted per day.
+
+	   Hours of service are a per-day limit, so one trip-wide figure is the
+	   wrong shape — a four-day trip with 40 driving hours is fine or illegal
+	   depending entirely on how those hours fall across the days. */
+	function dutyByDay(stops, days) {
+		const perDay = new Map();
+		const touch = (day) => {
+			if (!perDay.has(day)) perDay.set(day, { drive: 0, first: null, last: null });
+			return perDay.get(day);
+		};
+		stops.forEach((stop, index) => {
+			const { arriveDay, departDay } = days[index];
+			const drive = driveMins(stop.drive);
+			if (drive) touch(arriveDay).drive += drive;
+
+			const arrive = clockMins(stop.arrive);
+			const depart = clockMins(stop.depart);
+			if (arrive !== null) {
+				const day = touch(arriveDay);
+				day.first = day.first === null ? arrive : Math.min(day.first, arrive);
+				day.last = day.last === null ? arrive : Math.max(day.last, arrive);
+			}
+			if (depart !== null) {
+				const day = touch(departDay);
+				day.first = day.first === null ? depart : Math.min(day.first, depart);
+				day.last = day.last === null ? depart : Math.max(day.last, depart);
+			}
+		});
+		return [...perDay.entries()]
+			.sort((a, b) => a[0] - b[0])
+			.map(([day, value]) => ({
+				day,
+				drive: value.drive,
+				duty: value.first === null || value.last === null ? 0 : value.last - value.first,
+			}));
 	}
 
 	function totals(stops) {
@@ -370,6 +527,75 @@
 		return stops;
 	}
 
+	/* ── Resolving and routing ───────────────────────────────────────────
+	   Same two Mapbox endpoints the Itinerary tab uses, so both tabs get the
+	   same numbers for the same road: Search Box forward for coordinates,
+	   Directions v5 for the leg. Saved locations are tried first — they are
+	   already-verified coordinates for places this operator actually goes, and
+	   they cost nothing. */
+
+	let locationsDbPromise = null;
+
+	function getLocationsDb() {
+		if (!locationsDbPromise) {
+			locationsDbPromise = import("../data/locations-db.js?v=3").catch((error) => {
+				locationsDbPromise = null;
+				throw error;
+			});
+		}
+		return locationsDbPromise;
+	}
+
+	async function fromSavedLocations(address) {
+		try {
+			const db = await getLocationsDb();
+			const wanted = address.toLowerCase().replace(/\s+/g, " ").trim();
+			const matches = await db.searchLocations(address, 5);
+			return matches.find((location) => {
+				if (location.lat == null || location.lng == null) return false;
+				return String(location.address || "").toLowerCase().replace(/\s+/g, " ").trim() === wanted;
+			}) || null;
+		} catch {
+			return null;
+		}
+	}
+
+	async function geocode(address, token) {
+		const url = new URL("https://api.mapbox.com/search/searchbox/v1/forward");
+		url.searchParams.set("q", address);
+		url.searchParams.set("access_token", token);
+		url.searchParams.set("country", "US");
+		url.searchParams.set("types", "address,poi");
+		url.searchParams.set("limit", "1");
+		url.searchParams.set("proximity", "ip");
+		const response = await fetch(url);
+		if (!response.ok) throw new Error(`Mapbox forward failed: ${response.status}`);
+		const feature = (await response.json()).features?.[0];
+		const coordinates = feature?.geometry?.coordinates;
+		if (!Array.isArray(coordinates) || coordinates.length < 2) return null;
+		return {
+			lng: coordinates[0],
+			lat: coordinates[1],
+			mapboxId: feature.properties?.mapbox_id || null,
+			address: feature.properties?.full_address || feature.properties?.address || null,
+		};
+	}
+
+	async function directions(from, to, token) {
+		const coords = `${from.lng},${from.lat};${to.lng},${to.lat}`;
+		const url = new URL(`https://api.mapbox.com/directions/v5/mapbox/driving/${coords}`);
+		url.searchParams.set("overview", "false");
+		url.searchParams.set("access_token", token);
+		const response = await fetch(url);
+		if (!response.ok) throw new Error(`Mapbox directions failed: ${response.status}`);
+		const route = (await response.json()).routes?.[0];
+		if (!route) return null;
+		return {
+			miles: (route.distance || 0) / 1609.344,
+			mins: Math.round((route.duration || 0) / 60),
+		};
+	}
+
 	/* ── Render ──────────────────────────────────────────────────────────── */
 
 	function timeCell(stop, index, field, label) {
@@ -383,17 +609,19 @@
 		</label>`;
 	}
 
-	function renderRow(stop, index, days, count) {
+	function renderRow(stop, index, days, count, extras = {}) {
 		const fixed = FIXED_TYPES.has(stop.type);
 		const dwell = clockMins(stop.arrive) !== null && clockMins(stop.depart) !== null
 			? (clockMins(stop.depart) - clockMins(stop.arrive) + 1440) % 1440
 			: null;
 		const note = CONFIDENCE_NOTE[stop.addressConfidence];
 		const crossesMidnight = days.departDay !== days.arriveDay;
+		const located = stop.lat != null && stop.lng != null;
 
 		return `<li class="sched-itinerary-grid__row" data-idx="${index}" data-type="${stop.type}">
 			<div class="sched-itinerary-grid__marker">
-				<span class="rux-icon" aria-hidden="true">${TYPE_ICON[stop.type]}</span>
+				<span class="rux-icon${located ? "" : " is-unlocated"}" aria-hidden="true"
+					title="${located ? escHtml(TYPE_LABEL[stop.type]) : "Address not resolved yet"}">${TYPE_ICON[stop.type]}</span>
 				<span class="sched-itinerary-grid__seq">${index + 1}</span>
 			</div>
 			<div class="sched-itinerary-grid__times">
@@ -422,9 +650,24 @@
 						</label>
 					</div>`}
 				${note ? `<p class="sched-itinerary-grid__note"><span class="rux-icon" aria-hidden="true">error</span>${escHtml(note)}</p>` : ""}
+				${stop.matchedAddress ? `<p class="sched-itinerary-grid__note"><span class="rux-icon" aria-hidden="true">wrong_location</span>Routed to ${escHtml(stop.matchedAddress)} — check this is the right place.</p>` : ""}
+				${extras.plan ? `<p class="sched-itinerary-grid__plan">
+					<span class="rux-icon" aria-hidden="true">route</span>
+					<span>${escHtml(extras.plan.text)}</span>
+					<button type="button" class="rux-button rux-button--ghost rux-button--sm"
+						data-apply-plan="${escHtml(extras.plan.time)}" data-idx="${index}">
+						<span class="rux-button__label">Use it</span>
+					</button>
+				</p>` : ""}
 			</div>
 			<div class="sched-itinerary-grid__meta">
 				${dwell ? `<span class="sched-itinerary-grid__dwell">${escHtml(formatSpan(dwell))} here</span>` : ""}
+				${fixed ? "" : `<label class="sched-itinerary-grid__field sched-itinerary-grid__field--num">
+					<span class="rux-field__label">Miles</span>
+					<input class="rux-input sched-itinerary-grid__num" type="text" inputmode="decimal"
+						data-field="miles" data-idx="${index}" value="${escHtml(stop.miles)}"
+						autocomplete="off" placeholder="—"/>
+				</label>`}
 			</div>
 			<div class="sched-itinerary-grid__actions">
 				${fixed ? "" : `
@@ -440,15 +683,17 @@
 		</li>`;
 	}
 
-	function renderLeg(stop, index) {
+	function renderLeg(stop, index, risk) {
 		const miles = Number.parseFloat(stop.miles);
 		const mins = driveMins(stop.drive);
 		const known = Number.isFinite(miles) || mins !== null;
-		return `<li class="sched-itinerary-grid__leg${known ? "" : " sched-itinerary-grid__leg--unknown"}" data-leg="${index}">
-			<span class="rux-icon" aria-hidden="true">arrow_downward</span>
+		const manual = stop.milesSource === "manual" || stop.driveSource === "manual";
+		return `<li class="sched-itinerary-grid__leg${known ? "" : " sched-itinerary-grid__leg--unknown"}${risk ? " sched-itinerary-grid__leg--tight" : ""}" data-leg="${index}">
+			<span class="rux-icon" aria-hidden="true">${risk ? "warning" : "arrow_downward"}</span>
 			${known
-				? `<span>${Number.isFinite(miles) ? `${miles.toFixed(1)} mi` : "— mi"}${mins !== null ? ` · ${escHtml(formatSpan(mins))}` : ""}</span>`
+				? `<span>${Number.isFinite(miles) ? `${miles.toFixed(1)} mi` : "— mi"}${mins !== null ? ` · ${escHtml(formatSpan(mins))}` : ""}${manual ? " · entered" : ""}</span>`
 				: "<span>Not routed yet</span>"}
+			${risk ? `<span class="sched-itinerary-grid__risk">Tight — ${escHtml(formatSpan(risk.needed))} of driving in a ${escHtml(formatSpan(risk.gap))} gap. Leave by ${escHtml(risk.leaveBy)}.</span>` : ""}
 		</li>`;
 	}
 
@@ -468,6 +713,8 @@
 			</li>`;
 		}
 		const days = deriveDays(state.stops);
+		const risks = legRisks(state.stops, days);
+		const plan = yardPlan(state.stops);
 		const parts = [];
 		let shownDay = -1;
 		state.stops.forEach((stop, index) => {
@@ -479,21 +726,45 @@
 			// stand in for it hid the drive home on every overnight trip — the
 			// mileage still counted in the totals, so the row simply looked
 			// unrouted while the footer said otherwise.
-			if (index > 0) parts.push(renderLeg(stop, index));
-			parts.push(renderRow(stop, index, days[index], state.stops.length));
+			if (index > 0) parts.push(renderLeg(stop, index, risks[index]));
+			parts.push(renderRow(stop, index, days[index], state.stops.length, {
+				plan: rowPlan(stop, plan),
+			}));
 		});
 		return parts.join("");
+	}
+
+	// The route's answer for a row, offered rather than applied. Only shown
+	// when it disagrees with what is already there — an advisory that repeats
+	// the value beside it is noise.
+	function rowPlan(stop, plan) {
+		if (!plan) return null;
+		if (stop.type === "yard_origin" && plan.roll && stop.depart !== plan.roll) {
+			return {
+				time: plan.roll,
+				text: `Route says roll at ${plan.roll}${plan.report ? ` — report ${plan.report}` : ""}`,
+			};
+		}
+		if (stop.type === "pickup" && plan.spot && stop.arrive !== plan.spot) {
+			return { time: plan.spot, text: `Spot ${plan.spot} to depart on time` };
+		}
+		return null;
 	}
 
 	function renderSummary(state) {
 		const { miles, drive } = totals(state.stops);
 		const days = deriveDays(state.stops);
 		const dayCount = state.stops.length ? days[days.length - 1].departDay + 1 : 0;
+		const duty = dutyByDay(state.stops, days);
+		const worstDuty = duty.reduce((worst, day) => Math.max(worst, day.duty), 0);
 		const stats = [
 			["Stops", String(state.stops.length)],
 			["Days", dayCount ? String(dayCount) : "—"],
 			["Miles", miles ? miles.toFixed(1) : "—"],
 			["Drive", drive ? formatSpan(drive) : "—"],
+			// Per day, not per trip: hours of service is a daily limit, so the
+			// worst day is the number that decides whether this trip is legal.
+			["Longest day", worstDuty ? formatSpan(worstDuty) : "—"],
 		];
 		return stats.map(([label, value]) => `<div class="sched-itinerary-grid__stat">
 			<span class="sched-itinerary-grid__stat-label">${escHtml(label)}</span>
@@ -556,6 +827,13 @@
 			</details>
 
 			<div class="sched-itinerary-grid__summary" data-summary></div>
+			<div class="sched-itinerary-grid__toolbar">
+				<button type="button" class="rux-button rux-button--accent" data-route>
+					<span class="rux-icon" aria-hidden="true">explore</span>
+					<span class="rux-button__label">Resolve &amp; route</span>
+				</button>
+				<p class="sched-itinerary-grid__status" data-route-status role="status" aria-live="polite"></p>
+			</div>
 			<div data-flags></div>
 			<ol class="sched-itinerary-grid__list" data-list></ol>
 
@@ -577,10 +855,18 @@
 		const pasteEl = host.querySelector("[data-paste]");
 		const statusEl = host.querySelector("[data-status]");
 		const intakeEl = host.querySelector("[data-intake]");
+		const routeStatusEl = host.querySelector("[data-route-status]");
+		const routeBtn = host.querySelector("[data-route]");
+		let routing = false;
 
 		function say(message, isError = false) {
 			statusEl.textContent = message;
 			statusEl.classList.toggle("is-error", !!isError);
+		}
+
+		function sayRoute(message, isError = false) {
+			routeStatusEl.textContent = message;
+			routeStatusEl.classList.toggle("is-error", !!isError);
 		}
 
 		function render() {
@@ -609,9 +895,28 @@
 			if (!field) return;
 			const stop = state.stops[Number(field.dataset.idx)];
 			if (!stop) return;
-			stop[field.dataset.field] = field.value;
-			if (field.dataset.field === "address") {
+			const name = field.dataset.field;
+
+			if (name === "miles") {
+				// Typing a mileage is an override, and it has to survive the
+				// next Resolve — the Itinerary tab has this handler too but
+				// renders no input for it, so the path is dead there.
+				const typed = field.value.trim();
+				const number = Number.parseFloat(typed);
+				stop.miles = typed && Number.isFinite(number) ? number.toFixed(1) : "";
+				stop.milesSource = stop.miles ? "manual" : "estimated";
+				render();
+				return;
+			}
+
+			stop[name] = field.value;
+			if (name === "address") {
+				// A changed address invalidates the coordinates it was resolved
+				// to, and the leg measured from them. Clearing the source lets
+				// the next Resolve replace numbers it had previously measured,
+				// while a manually typed mileage still stands.
 				stop.addressConfidence = null;
+				stop.matchedAddress = null;
 				stop.lat = null;
 				stop.lng = null;
 				stop.mapboxId = null;
@@ -653,10 +958,23 @@
 				return;
 			}
 
+			const apply = event.target.closest("[data-apply-plan]");
+			if (apply) {
+				const stop = state.stops[Number(apply.dataset.idx)];
+				if (!stop) return;
+				// yard_origin has no arrival, so the route's answer for it is
+				// its departure; the pickup's is when it must be staged.
+				if (stop.type === "yard_origin") stop.depart = apply.dataset.applyPlan;
+				else stop.arrive = apply.dataset.applyPlan;
+				render();
+				return;
+			}
+
 			if (event.target.closest("[data-load]")) return loadPasted();
 			if (event.target.closest("[data-copy-prompt]")) return copyPrompt();
 			if (event.target.closest("[data-copy-json]")) return copyJson();
 			if (event.target.closest("[data-pull]")) return pullFromItinerary();
+			if (event.target.closest("[data-route]")) return resolveAndRoute();
 		});
 
 		function loadPasted() {
@@ -716,6 +1034,123 @@
 			}
 		}
 
+		/* Resolve every address, then measure every leg.
+
+		   Sequential on purpose. A ten-stop trip is twenty Mapbox calls, and
+		   firing those in parallel buys a second of wall clock in exchange for
+		   rate-limit risk on a token the operator pays for. Progress is
+		   reported as it goes so the wait is legible.
+
+		   A manual mileage or drive time is never overwritten. Typing a number
+		   is the dispatcher overriding the route on purpose — usually because
+		   the coach cannot take the road the router chose — and a Resolve that
+		   silently reverted it would make the button unusable. */
+		async function resolveAndRoute() {
+			if (routing) return;
+			if (!state.stops.length) return sayRoute("Nothing to route yet.", true);
+			const token = window.RuxSettings?.getMapboxToken?.();
+			if (!token) {
+				return sayRoute("No Mapbox token — add one in Settings to resolve and route.", true);
+			}
+
+			routing = true;
+			routeBtn.disabled = true;
+			let resolved = 0;
+			let routed = 0;
+			let failed = 0;
+
+			try {
+				for (const [index, stop] of state.stops.entries()) {
+					const address = stop.address.trim();
+					if (stop.lat != null && stop.lng != null) continue;
+					if (address.length < 3) continue;
+					sayRoute(`Resolving stop ${index + 1} of ${state.stops.length}…`);
+
+					// A saved location is a place this operator has actually been,
+					// with coordinates already verified against a real trip. That
+					// is the one match strong enough to retire the model's doubt
+					// about the address.
+					const saved = await fromSavedLocations(address);
+					if (saved) {
+						stop.lat = saved.lat;
+						stop.lng = saved.lng;
+						stop.mapboxId = saved.mapboxId || null;
+						stop.addressConfidence = null;
+						stop.matchedAddress = null;
+						resolved += 1;
+						continue;
+					}
+					try {
+						const found = await geocode(address, token);
+						if (found) {
+							stop.lat = found.lat;
+							stop.lng = found.lng;
+							stop.mapboxId = found.mapboxId;
+							/* address_confidence deliberately survives this.
+
+							   Geocoding does not verify an address, it picks the
+							   nearest thing it can find — asked for "zzz not a
+							   real place zzz" it returned a real address twenty
+							   miles away, and routed to it. Clearing the model's
+							   own doubt on a hit would erase the warning exactly
+							   where it is most needed, and leave a confidently
+							   wrong mileage behind it.
+
+							   What is recorded instead is WHAT it matched, so a
+							   substitution is visible rather than silent. */
+							stop.matchedAddress = found.address && !sameAddress(address, found.address)
+								? found.address
+								: null;
+							resolved += 1;
+						} else {
+							failed += 1;
+						}
+					} catch (error) {
+						console.warn("Grid geocode failed:", error);
+						failed += 1;
+					}
+				}
+
+				for (let index = 1; index < state.stops.length; index += 1) {
+					const stop = state.stops[index];
+					// A sleeper rests where the bus already is, so its leg is
+					// zero by definition rather than something to measure.
+					if (stop.type === "sleeper") {
+						stop.miles = "0.0";
+						stop.drive = "0:00";
+						continue;
+					}
+					if (stop.milesSource === "manual" && stop.driveSource === "manual") continue;
+					const previous = state.stops[index - 1];
+					if (previous.lat == null || stop.lat == null) continue;
+
+					sayRoute(`Routing leg ${index} of ${state.stops.length - 1}…`);
+					try {
+						const leg = await directions(previous, stop, token);
+						if (!leg) { failed += 1; continue; }
+						if (stop.milesSource !== "manual") stop.miles = leg.miles.toFixed(1);
+						if (stop.driveSource !== "manual") {
+							stop.drive = `${Math.floor(leg.mins / 60)}:${String(leg.mins % 60).padStart(2, "0")}`;
+						}
+						routed += 1;
+					} catch (error) {
+						console.warn("Grid directions failed:", error);
+						failed += 1;
+					}
+				}
+			} finally {
+				routing = false;
+				routeBtn.disabled = false;
+				render();
+			}
+
+			const parts = [];
+			if (resolved) parts.push(`${resolved} address${resolved === 1 ? "" : "es"} resolved`);
+			if (routed) parts.push(`${routed} leg${routed === 1 ? "" : "s"} measured`);
+			if (failed) parts.push(`${failed} could not be worked out`);
+			sayRoute(parts.length ? `${parts.join(", ")}.` : "Everything was already resolved and routed.", failed > 0);
+		}
+
 		function pullFromItinerary() {
 			const source = window.Itinerary?.getStops?.();
 			if (!Array.isArray(source) || !source.length) {
@@ -752,5 +1187,8 @@
 		return api;
 	}
 
-	window.ItineraryGrid = { init, fromV3, toV3, deriveDays, fromEditorStops, normalizeStop };
+	window.ItineraryGrid = {
+		init, fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
+		legRisks, yardPlan, dutyByDay, sameAddress,
+	};
 })();

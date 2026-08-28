@@ -24,7 +24,17 @@ const source = readFileSync(
 const host = {};
 new Function("window", source)(host);
 
-const { fromV3, toV3, deriveDays, fromEditorStops, normalizeStop } = host.ItineraryGrid;
+const {
+	fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
+	legRisks, yardPlan, dutyByDay, sameAddress,
+} = host.ItineraryGrid;
+
+// legRisks and dutyByDay both take the derived days alongside the stops, so
+// every case here builds both from one list.
+function withDays(...raw) {
+	const stops = raw.map(normalizeStop);
+	return [stops, deriveDays(stops)];
+}
 
 const YARD = "2801 Zinnia Ave, McAllen, TX 78504";
 const days = (...stops) => deriveDays(stops.map(normalizeStop));
@@ -264,6 +274,164 @@ test("day rows are dropped and their gap becomes a held day", () => {
 
 	assert.deepEqual(stops.map((stop) => stop.type), ["pickup", "stop", "return"]);
 	assert.equal(stops[1].extraDays, 1, "26th to 28th is one day more than the clock implies");
+});
+
+/* ── Schedule risk ───────────────────────────────────────────────────── */
+
+test("a leg with room to spare is not flagged", () => {
+	// 60 minutes of driving into a 4h30m gap.
+	const [stops, days] = withDays(
+		{ type: "pickup", depart: "05:00" },
+		{ type: "stop", arrive: "09:30", drive: "1:00" },
+	);
+	assert.deepEqual(legRisks(stops, days), [null, null]);
+});
+
+test("a leg the schedule cannot fit is flagged with the time to leave by", () => {
+	// 60 minutes of driving, plus the 15% buffer, into a 65-minute gap.
+	const [stops, days] = withDays(
+		{ type: "pickup", depart: "05:00" },
+		{ type: "stop", arrive: "06:05", drive: "1:00" },
+	);
+	const risk = legRisks(stops, days)[1];
+	assert.ok(risk, "69 minutes of traffic-adjusted driving does not fit in 65");
+	assert.equal(risk.gap, 65);
+	assert.equal(risk.needed, 69);
+	assert.equal(risk.leaveBy, "04:56", "to arrive at 06:05 the bus has to be rolling by 04:56");
+});
+
+test("the traffic buffer is what makes a marginal leg tight", () => {
+	// 60 minutes of driving into a 66-minute gap: fine on the raw measurement,
+	// tight once the buffer and the 5-minute margin are applied.
+	const [stops, days] = withDays(
+		{ type: "pickup", depart: "05:00" },
+		{ type: "stop", arrive: "06:06", drive: "1:00" },
+	);
+	assert.ok(legRisks(stops, days)[1], "69 + 5 minutes needed, 66 available");
+});
+
+test("an overnight leg is measured across the day boundary, not around the clock", () => {
+	// Leaves 22:00, arrives 06:00 next day. Subtracting the clock strings
+	// gives minus sixteen hours and flags a leg that has eight hours of room.
+	const [stops, days] = withDays(
+		{ type: "pickup", depart: "22:00" },
+		{ type: "stop", arrive: "06:00", drive: "2:00" },
+	);
+	assert.equal(days[1].arriveDay, 1, "the arrival is on the next day");
+	assert.equal(legRisks(stops, days)[1], null, "eight hours of room is not tight");
+});
+
+test("a sleeper is never flagged — it does not travel", () => {
+	const [stops, days] = withDays(
+		{ type: "stop", arrive: "20:00", depart: "22:00" },
+		{ type: "sleeper", arrive: "22:00", depart: "06:00", drive: "0:00" },
+	);
+	assert.equal(legRisks(stops, days)[1], null);
+});
+
+test("an unrouted leg is not flagged, because nothing is known about it", () => {
+	const [stops, days] = withDays(
+		{ type: "pickup", depart: "05:00" },
+		{ type: "stop", arrive: "05:05" },
+	);
+	assert.equal(legRisks(stops, days)[1], null);
+});
+
+/* ── Yard plan ───────────────────────────────────────────────────────── */
+
+test("the yard plan works backwards from the pickup's departure", () => {
+	// Depart 05:00, 15 minutes of spot padding, 45 minutes from the yard,
+	// 15 minutes of pre-trip before that.
+	const plan = yardPlan([
+		normalizeStop({ type: "yard_origin" }),
+		normalizeStop({ type: "pickup", depart: "05:00", drive: "0:45" }),
+	]);
+	assert.equal(plan.spot, "04:45");
+	assert.equal(plan.roll, "04:00");
+	assert.equal(plan.report, "03:45");
+});
+
+test("the yard plan wraps backwards past midnight", () => {
+	const plan = yardPlan([
+		normalizeStop({ type: "yard_origin" }),
+		normalizeStop({ type: "pickup", depart: "00:30", drive: "1:00" }),
+	]);
+	assert.equal(plan.spot, "00:15");
+	assert.equal(plan.roll, "23:15");
+	assert.equal(plan.report, "23:00");
+});
+
+test("without a routed first leg the plan stops at the spot time", () => {
+	const plan = yardPlan([
+		normalizeStop({ type: "yard_origin" }),
+		normalizeStop({ type: "pickup", depart: "05:00" }),
+	]);
+	assert.equal(plan.spot, "04:45");
+	assert.equal(plan.roll, undefined, "nothing is invented without a measured drive");
+});
+
+test("there is no plan without a pickup after the yard", () => {
+	assert.equal(yardPlan([normalizeStop({ type: "pickup", depart: "05:00" })]), null);
+	assert.equal(yardPlan([]), null);
+});
+
+/* ── Duty by day ─────────────────────────────────────────────────────── */
+
+test("duty and drive are counted per day, not across the trip", () => {
+	const [stops, days] = withDays(
+		{ type: "pickup", depart: "05:00" },
+		{ type: "stop", arrive: "10:00", depart: "07:00", drive: "5:00" },
+		{ type: "return", arrive: "12:00", drive: "5:00" },
+	);
+	const duty = dutyByDay(stops, days);
+
+	assert.deepEqual(duty.map((day) => day.day), [0, 1]);
+	assert.equal(duty[0].drive, 300, "day one carries the first leg");
+	assert.equal(duty[0].duty, 300, "05:00 to 10:00");
+	assert.equal(duty[1].drive, 300);
+	assert.equal(duty[1].duty, 300, "07:00 to 12:00 on the second day");
+});
+
+test("a day with a single time has no duty span", () => {
+	const [stops, days] = withDays({ type: "pickup", depart: "05:00" });
+	assert.equal(dutyByDay(stops, days)[0].duty, 0);
+});
+
+/* ── Geocoder substitution ───────────────────────────────────────────── */
+
+test("an expanded spelling of the same address is not a substitution", () => {
+	// The real pair, from a live Mapbox call. Comparing the strings flags this,
+	// which would put a warning on every address in the list.
+	assert.equal(
+		sameAddress(
+			"101 E Hackberry Ave, McAllen, TX 78501",
+			"101 East Hackberry Avenue, McAllen, Texas 78501, United States",
+		),
+		true,
+	);
+});
+
+test("a different place is a substitution, however plausible it looks", () => {
+	// Also real: Mapbox answered nonsense with a real address 20 miles away.
+	assert.equal(
+		sameAddress("zzz not a real place zzz", "508 TX-107, Elsa, Texas 78543, United States"),
+		true,
+		"nothing identifying was typed, so nothing can be contradicted",
+	);
+	assert.equal(
+		sameAddress("101 E Hackberry Ave, McAllen, TX 78501", "508 TX-107, Elsa, Texas 78543"),
+		false,
+		"both the house number and the ZIP moved",
+	);
+});
+
+test("a matching number in the wrong ZIP is still a substitution", () => {
+	assert.equal(sameAddress("500 Main St, Austin, TX 78701", "500 Main St, Dallas, TX 75201"), false);
+});
+
+test("with only one identifier, that one decides", () => {
+	assert.equal(sameAddress("Choctaw Casino, Durant, OK 74701", "4216 S Hwy 69, Durant, OK 74701"), true);
+	assert.equal(sameAddress("Choctaw Casino, Durant, OK 74701", "1 Main St, Ada, OK 74820"), false);
 });
 
 /* ── normalizeStop ───────────────────────────────────────────────────── */
