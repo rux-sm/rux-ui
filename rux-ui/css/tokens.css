@@ -80,6 +80,10 @@
 	--rux-gray-alpha-900:  oklch(100% 0 0 / 61.18%); /* white 156/255 */
 	--rux-gray-alpha-1000: oklch(100% 0 0 / 92.16%); /* white 235/255 */
 
+	/* COMPUTED, not measured — color.md rule 2.10.
+	   L 10,20,30,40,50,60,70,80,90,95 at C 0.18, H 260. Off-ramp: 500 C 0.20, 900 C 0.24, 1000 C 0.04.
+	   These are chosen values, not a conversion of a catalog colour, so there
+	   is no source measurement to cite; the ramp above is the provenance. */
 	--rux-blue-100:  oklch(10% 0.18 260);
 	--rux-blue-200:  oklch(20% 0.18 260);
 	--rux-blue-300:  oklch(30% 0.18 260);
@@ -91,6 +95,10 @@
 	--rux-blue-900:  oklch(90% 0.24 260);
 	--rux-blue-1000: oklch(95% 0.04 260);
 
+	/* COMPUTED, not measured — color.md rule 2.10.
+	   L 10,20,30,40,50,60,70,80,90,95 at C 0.18, H 24. Off-ramp: 500 C 0.20, 900 C 0.24, 1000 C 0.04.
+	   These are chosen values, not a conversion of a catalog colour, so there
+	   is no source measurement to cite; the ramp above is the provenance. */
 	--rux-red-100:  oklch(10% 0.18 24);
 	--rux-red-200:  oklch(20% 0.18 24);
 	--rux-red-300:  oklch(30% 0.18 24);
@@ -102,6 +110,10 @@
 	--rux-red-900:  oklch(90% 0.24 24);
 	--rux-red-1000: oklch(95% 0.04 24);
 
+	/* COMPUTED, not measured — color.md rule 2.10.
+	   L 10,20,30,40,50,60,70,80,90,95 at C 0.14, H 70. Off-ramp: 900 C 0.24, 1000 C 0.04.
+	   These are chosen values, not a conversion of a catalog colour, so there
+	   is no source measurement to cite; the ramp above is the provenance. */
 	--rux-amber-100:  oklch(10% 0.14 70);
 	--rux-amber-200:  oklch(20% 0.14 70);
 	--rux-amber-300:  oklch(30% 0.14 70);
@@ -113,6 +125,10 @@
 	--rux-amber-900:  oklch(90% 0.24 70);
 	--rux-amber-1000: oklch(95% 0.04 70);
 
+	/* COMPUTED, not measured — color.md rule 2.10.
+	   L 10,20,30,40,50,60,70,80,90,95 at C 0.18, H 147. Off-ramp: 900 C 0.24, 1000 C 0.04.
+	   These are chosen values, not a conversion of a catalog colour, so there
+	   is no source measurement to cite; the ramp above is the provenance. */
 	--rux-green-100:  oklch(10% 0.18 147);
 	--rux-green-200:  oklch(20% 0.18 147);
 	--rux-green-300:  oklch(30% 0.18 147);
@@ -124,6 +140,10 @@
 	--rux-green-900:  oklch(90% 0.24 147);
 	--rux-green-1000: oklch(95% 0.04 147);
 
+	/* COMPUTED, not measured — color.md rule 2.10.
+	   L 10,20,30,40,50,60,70,80,90,95 at C 0.18, H 181. Off-ramp: 900 C 0.24, 1000 C 0.04.
+	   These are chosen values, not a conversion of a catalog colour, so there
+	   is no source measurement to cite; the ramp above is the provenance. */
 	--rux-teal-100:  oklch(10% 0.18 181);
 	--rux-teal-200:  oklch(20% 0.18 181);
 	--rux-teal-300:  oklch(30% 0.18 181);
@@ -135,6 +155,10 @@
 	--rux-teal-900:  oklch(90% 0.24 181);
 	--rux-teal-1000: oklch(95% 0.04 181);
 
+	/* COMPUTED, not measured — color.md rule 2.10.
+	   L 10,20,30,40,50,60,70,80,90,95 at C 0.18, H 306. Off-ramp: 900 C 0.24, 1000 C 0.04.
+	   These are chosen values, not a conversion of a catalog colour, so there
+	   is no source measurement to cite; the ramp above is the provenance. */
 	--rux-purple-100:  oklch(10% 0.18 306);
 	--rux-purple-200:  oklch(20% 0.18 306);
 	--rux-purple-300:  oklch(30% 0.18 306);
@@ -146,6 +170,10 @@
 	--rux-purple-900:  oklch(90% 0.24 306);
 	--rux-purple-1000: oklch(95% 0.04 306);
 
+	/* COMPUTED, not measured — color.md rule 2.10.
+	   L 10,20,30,40,50,60,70,80,90,95 at C 0.18, H 358. Off-ramp: 900 C 0.24, 1000 C 0.04.
+	   These are chosen values, not a conversion of a catalog colour, so there
+	   is no source measurement to cite; the ramp above is the provenance. */
 	--rux-pink-100:  oklch(10% 0.18 358);
 	--rux-pink-200:  oklch(20% 0.18 358);
 	--rux-pink-300:  oklch(30% 0.18 358);
@@ -2444,50 +2472,70 @@
 	--rux-gray-alpha-900:  oklch(0% 0 0 / 70.2%);  /* black 179/255 */
 	--rux-gray-alpha-1000: oklch(0% 0 0 / 90.98%); /* black 232/255 */
 
+	/* COMPUTED, not measured — color.md rule 2.10.
+	   L 95,90,65,40,36,32,28,24,20,12 at C 0.18, H 260.
+	   These are chosen values, not a conversion of a catalog colour, so there
+	   is no source measurement to cite; the ramp above is the provenance. */
 	--rux-blue-100:  oklch(95% 0.18 260);
 	--rux-blue-200:  oklch(90% 0.18 260);
-	--rux-blue-300:  oklch(80% 0.18 260);
-	--rux-blue-400:  oklch(70% 0.18 260);
-	--rux-blue-500:  oklch(60% 0.18 260);
-	--rux-blue-600:  oklch(50% 0.18 260);
-	--rux-blue-700:  oklch(40% 0.18 260);
-	--rux-blue-800:  oklch(30% 0.18 260);
+	--rux-blue-300:  oklch(65% 0.18 260);
+	--rux-blue-400:  oklch(40% 0.18 260);
+	--rux-blue-500:  oklch(36% 0.18 260);
+	--rux-blue-600:  oklch(32% 0.18 260);
+	--rux-blue-700:  oklch(28% 0.18 260);
+	--rux-blue-800:  oklch(24% 0.18 260);
 	--rux-blue-900:  oklch(20% 0.18 260);
-	--rux-blue-1000: oklch(10% 0.18 260);
+	--rux-blue-1000: oklch(12% 0.18 260);
 
+	/* COMPUTED, not measured — color.md rule 2.10.
+	   L 95,90,65,40,36,32,28,24,20,12 at C 0.18, H 24.
+	   These are chosen values, not a conversion of a catalog colour, so there
+	   is no source measurement to cite; the ramp above is the provenance. */
 	--rux-red-100:  oklch(95% 0.18 24);
 	--rux-red-200:  oklch(90% 0.18 24);
-	--rux-red-300:  oklch(80% 0.18 24);
-	--rux-red-400:  oklch(70% 0.18 24);
-	--rux-red-500:  oklch(60% 0.18 24);
-	--rux-red-600:  oklch(50% 0.18 24);
-	--rux-red-700:  oklch(40% 0.18 24);
-	--rux-red-800:  oklch(30% 0.18 24);
+	--rux-red-300:  oklch(65% 0.18 24);
+	--rux-red-400:  oklch(40% 0.18 24);
+	--rux-red-500:  oklch(36% 0.18 24);
+	--rux-red-600:  oklch(32% 0.18 24);
+	--rux-red-700:  oklch(28% 0.18 24);
+	--rux-red-800:  oklch(24% 0.18 24);
 	--rux-red-900:  oklch(20% 0.18 24);
-	--rux-red-1000: oklch(10% 0.18 24);
+	--rux-red-1000: oklch(12% 0.18 24);
 
+	/* COMPUTED, not measured — color.md rule 2.10.
+	   L 95,90,65,40,36,32,28,24,20,12 at C 0.14, H 70.
+	   These are chosen values, not a conversion of a catalog colour, so there
+	   is no source measurement to cite; the ramp above is the provenance. */
 	--rux-amber-100:  oklch(95% 0.14 70);
 	--rux-amber-200:  oklch(90% 0.14 70);
-	--rux-amber-300:  oklch(80% 0.14 70);
-	--rux-amber-400:  oklch(70% 0.14 70);
-	--rux-amber-500:  oklch(60% 0.14 70);
-	--rux-amber-600:  oklch(50% 0.14 70);
-	--rux-amber-700:  oklch(40% 0.14 70);
-	--rux-amber-800:  oklch(30% 0.14 70);
+	--rux-amber-300:  oklch(65% 0.14 70);
+	--rux-amber-400:  oklch(40% 0.14 70);
+	--rux-amber-500:  oklch(36% 0.14 70);
+	--rux-amber-600:  oklch(32% 0.14 70);
+	--rux-amber-700:  oklch(28% 0.14 70);
+	--rux-amber-800:  oklch(24% 0.14 70);
 	--rux-amber-900:  oklch(20% 0.14 70);
-	--rux-amber-1000: oklch(10% 0.14 70);
+	--rux-amber-1000: oklch(12% 0.14 70);
 
+	/* COMPUTED, not measured — color.md rule 2.10.
+	   L 95,90,65,40,36,32,28,24,20,12 at C 0.18, H 147.
+	   These are chosen values, not a conversion of a catalog colour, so there
+	   is no source measurement to cite; the ramp above is the provenance. */
 	--rux-green-100:  oklch(95% 0.18 147);
 	--rux-green-200:  oklch(90% 0.18 147);
-	--rux-green-300:  oklch(80% 0.18 147);
-	--rux-green-400:  oklch(70% 0.18 147);
-	--rux-green-500:  oklch(60% 0.18 147);
-	--rux-green-600:  oklch(50% 0.18 147);
-	--rux-green-700:  oklch(40% 0.18 147);
-	--rux-green-800:  oklch(30% 0.18 147);
+	--rux-green-300:  oklch(65% 0.18 147);
+	--rux-green-400:  oklch(40% 0.18 147);
+	--rux-green-500:  oklch(36% 0.18 147);
+	--rux-green-600:  oklch(32% 0.18 147);
+	--rux-green-700:  oklch(28% 0.18 147);
+	--rux-green-800:  oklch(24% 0.18 147);
 	--rux-green-900:  oklch(20% 0.18 147);
-	--rux-green-1000: oklch(10% 0.18 147);
+	--rux-green-1000: oklch(12% 0.18 147);
 
+	/* COMPUTED, not measured — color.md rule 2.10.
+	   L 95,90,65,40,36,32,28,24,20,12 at C 0.18, H 181.
+	   These are chosen values, not a conversion of a catalog colour, so there
+	   is no source measurement to cite; the ramp above is the provenance. */
 	--rux-teal-100:  oklch(95% 0.18 181);
 	--rux-teal-200:  oklch(90% 0.18 181);
 	--rux-teal-300:  oklch(65% 0.18 181);
@@ -2499,6 +2547,10 @@
 	--rux-teal-900:  oklch(20% 0.18 181);
 	--rux-teal-1000: oklch(12% 0.18 181);
 
+	/* COMPUTED, not measured — color.md rule 2.10.
+	   L 95,90,65,40,36,32,28,24,20,12 at C 0.18, H 306.
+	   These are chosen values, not a conversion of a catalog colour, so there
+	   is no source measurement to cite; the ramp above is the provenance. */
 	--rux-purple-100:  oklch(95% 0.18 306);
 	--rux-purple-200:  oklch(90% 0.18 306);
 	--rux-purple-300:  oklch(65% 0.18 306);
@@ -2510,6 +2562,10 @@
 	--rux-purple-900:  oklch(20% 0.18 306);
 	--rux-purple-1000: oklch(12% 0.18 306);
 
+	/* COMPUTED, not measured — color.md rule 2.10.
+	   L 95,90,65,40,36,32,28,24,20,12 at C 0.18, H 358.
+	   These are chosen values, not a conversion of a catalog colour, so there
+	   is no source measurement to cite; the ramp above is the provenance. */
 	--rux-pink-100:  oklch(95% 0.18 358);
 	--rux-pink-200:  oklch(90% 0.18 358);
 	--rux-pink-300:  oklch(65% 0.18 358);

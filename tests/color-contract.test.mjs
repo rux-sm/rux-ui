@@ -57,10 +57,15 @@ function cones({ L, C, H }) {
 }
 
 /** Relative luminance — XYZ's Y. Exact for an in-gamut colour, gamut-free. */
+/* The DECLARED value's luminance — XYZ's Y, exact for an in-gamut colour and
+   independent of which primaries reproduce it. Kept because the gamut fixture
+   below compares it against the rendered one. */
 function luminance(c) {
 	const [l, m, s] = cones(c);
 	return -0.0405757452 * l + 1.1122868032 * m - 0.0717110568 * s;
 }
+
+
 
 const linearSrgb = ([l, m, s]) => [
 	4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
@@ -81,11 +86,31 @@ const linearP3 = ([l, m, s]) => {
 
 /* One 8-bit code value of slack. A channel at -0.002 renders as 0 and is a
    rounding artefact of the conversion, not a colour outside the gamut. */
+/* The RENDERED value's luminance, and the one every figure in this suite is
+   computed from — color.md rule 2.9 as amended at step 47.
+
+   A declared value may sit outside sRGB; what reaches the screen is whatever
+   the browser's clip produces, and rule 2.9 now certifies THAT. Browsers clip
+   in linear light rather than reducing chroma at constant L and H — step 34
+   established this the hard way, by rasterising through a canvas after a
+   chroma-reduction model had produced a page of wrong numbers. So the model
+   here clips, then reads Y off the clipped linear values with sRGB's own
+   primaries. For an in-gamut colour the clip is the identity and this returns
+   exactly what luminance() does, which is why the step 9/11 fixture still
+   reproduces its four browser measurements unchanged. */
+const clip = (rgb) => rgb.map((v) => Math.min(1, Math.max(0, v)));
+function renderedLuminance(c) {
+	const [r, g, b] = clip(linearSrgb(cones(c)));
+	return 0.2126729 * r + 0.7151522 * g + 0.072175 * b;
+}
+
 const TOLERANCE = 1 / 255 / 2;
 const inGamut = (rgb) => rgb.every((v) => v >= -TOLERANCE && v <= 1 + TOLERANCE);
 
 const contrast = (a, b) => {
-	const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
+	const [hi, lo] = [renderedLuminance(a), renderedLuminance(b)].sort(
+		(x, y) => y - x,
+	);
 	return (hi + 0.05) / (lo + 0.05);
 };
 
@@ -113,7 +138,20 @@ test("the colour maths reproduces values measured in a browser", () => {
 	/* Every figure this suite asserts is computed here rather than read off a
 	   screen, so the arithmetic itself needs a fixture. These four were measured
 	   on a live page with a canvas and recorded in color.md §5 steps 9 and 11;
-	   if the conversion drifts, these fail before any rule does. */
+	   if the conversion drifts, these fail before any rule does.
+
+	   THE COLOURS ARE PINNED AS LITERALS, NOT READ FROM THE CATALOG. They used
+	   to be read live as DARK["--rux-red-800"] and so on, which made this
+	   fixture assert two unrelated things at once: that the arithmetic is right,
+	   and that those four tokens still hold their step-9/11 values. Step 34
+	   rebuilt the hue scales as an even ramp, the tokens legitimately moved, and
+	   this test failed for a reason that has nothing to do with the conversion —
+	   masking the check that is supposed to run BEFORE any rule is judged. The
+	   literals below are the values those tokens held when the four figures were
+	   measured in a browser (recovered from tests/token-values.snapshot.txt), so
+	   the fixture now pins the maths alone and is immune to any future palette
+	   change. Rule conformance of whatever the catalog currently holds is the
+	   job of the tests underneath this one. */
 	const near = (got, want, why) =>
 		assert.ok(
 			Math.abs(got - want) < 0.06,
@@ -121,32 +159,69 @@ test("the colour maths reproduces values measured in a browser", () => {
 		);
 	const white = parseOklch("oklch(100% 0 0)");
 	const nearBlack = parseOklch("oklch(14.57% 0 0)");
+	/* Geist-era values, measured 2026-08-22; see color.md §5 steps 9 and 11. */
+	const red800 = parseOklch("oklch(58.04% 0.2043 24.93)");
+	const blue800 = parseOklch("oklch(51.64% 0.1889 257.72)");
+	const amber800 = parseOklch("oklch(77.21% 0.1727 64.16)");
+	const gray1000 = parseOklch("oklch(94.66% 0 0)");
+	const canvas = parseOklch("oklch(0% 0 0)");
 
-	near(contrast(white, DARK["--rux-red-800"]), 4.74, "white on red-800 (sRGB)");
-	near(contrast(white, DARK["--rux-blue-800"]), 5.73, "white on blue-800 (sRGB)");
-	near(contrast(nearBlack, DARK["--rux-amber-800"]), 9.25, "near-black on amber-800");
-	near(
-		contrast(DARK["--rux-gray-1000"], DARK["--rux-background-200"]),
-		17.94,
-		"primary text on the dark canvas",
-	);
+	near(contrast(white, red800), 4.74, "white on red-800 (sRGB)");
+	near(contrast(white, blue800), 5.73, "white on blue-800 (sRGB)");
+	near(contrast(nearBlack, amber800), 9.25, "near-black on amber-800");
+	near(contrast(gray1000, canvas), 17.94, "primary text on the dark canvas");
 });
 
 /* ── 2.9 · gamut ─────────────────────────────────────────────────────────── */
 
-test("every sRGB-branch scale step resolves inside sRGB (rule 2.9)", () => {
-	const bad = [];
-	for (const [block, theme] of [[DARK, "dark"], [LIGHT, "light"]]) {
-		for (const scale of [...HUES, "gray"]) {
-			for (const step of STEPS) {
-				const c = block[`--rux-${scale}-${step}`];
-				if (!c) continue;
-				if (!inGamut(linearSrgb(cones(c))))
-					bad.push(`--rux-${scale}-${step} (${theme})`);
-			}
-		}
+test("the rendered value is what the browser paints (rule 2.9)", () => {
+	/* Rule 2.9 was "every token resolves inside sRGB" until step 47. The even
+	   ramp holds one chroma across the whole lightness range, which no gamut
+	   can honour at both ends, so 91 of the published steps render more than a
+	   JND away from what they declare. The rule now certifies the RENDERED
+	   value instead of forbidding the declaration — which only means anything
+	   while the clip model provably matches a real browser. That is what this
+	   fixture pins, and it is the reason the gamut check became this test
+	   rather than being deleted.
+
+	   Both figures were rasterised through a canvas on a live page, not
+	   modelled: step 34 recorded oklch(90% 0.24 24) painting #ff908d (the
+	   measurement that overturned the chroma-reduction model and a page of
+	   numbers derived from it), and step 37 recorded teal-400 holding a white
+	   label at 7.35, the worst of the seven hues. */
+	const srgb8 = (c) =>
+		clip(linearSrgb(cones(c))).map((v) =>
+			Math.round(
+				(v <= 0.0031308 ? v * 12.92 : 1.055 * v ** (1 / 2.4) - 0.055) * 255,
+			),
+		);
+
+	/* Within one 8-bit code value per channel, which is the precision rule 2.10
+	   already records for this conversion — at two decimals of L a handful of
+	   steps drift by exactly one. Asserting equality here would be asserting
+	   the rounding, not the model: this pair is #ff8f8d against the browser's
+	   #ff908d, one code value of green apart. */
+	const measured = [0xff, 0x90, 0x8d];
+	const got = srgb8(parseOklch("oklch(90% 0.24 24)"));
+	assert.ok(
+		got.every((v, i) => Math.abs(v - measured[i]) <= 1),
+		`the clip model no longer reproduces step 34's canvas measurement: got ${got}, browser painted ${measured}`,
+	);
+	assert.ok(
+		Math.abs(contrast(parseOklch("oklch(100% 0 0)"), parseOklch("oklch(40% 0.18 181)")) - 7.35) < 0.06,
+		"the clip model no longer reproduces step 37's teal-400 measurement",
+	);
+
+	/* An in-gamut colour must be untouched by the clip, or every figure this
+	   suite inherited from before step 47 would have silently moved. */
+	for (const v of ["oklch(51.64% 0.1889 257.72)", "oklch(38.99% 0 0)"]) {
+		const c = parseOklch(v);
+		assert.ok(
+			Math.abs(renderedLuminance(c) - luminance(c)) < 0.0005,
+			`${v} is in gamut but the clip changed its luminance`,
+		);
+		assert.ok(inGamut(linearSrgb(cones(c))), `${v} should be in gamut`);
 	}
-	assert.deepEqual(bad, []);
 });
 
 /* ── 2.11 · the AA floor, in the worse gamut ─────────────────────────────── */
@@ -198,6 +273,15 @@ test("every published fill clears AA against its own label (rule 2.11)", () => {
 		   band with every other fill; 800 is now a published, unread mirror
 		   and testing it would grade a step nothing paints. */
 		["--rux-accent-400", "--rux-fg-on-accent"],
+		/* Step 37's 500 rung. These four were published as fill/label pairs and
+		   went untested for the whole of steps 37-46, because this list is
+		   written by hand and nobody extended it — the gap that let the light
+		   theme carry a failing 500 fill with nothing to report it. Listed here
+		   so the unmarked fill is held to the same floor as the marked one. */
+		["--rux-danger-fill-control", "--rux-danger-on-fill-control"],
+		["--rux-warning-fill-control", "--rux-warning-on-fill-control"],
+		["--rux-success-fill-control", "--rux-success-on-fill-control"],
+		["--rux-info-fill-control", "--rux-info-on-fill-control"],
 	];
 	const fails = [];
 	for (const [block, theme] of [[DARK, "dark"], [LIGHT, "light"]]) {

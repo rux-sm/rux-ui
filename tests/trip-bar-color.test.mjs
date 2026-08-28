@@ -277,18 +277,30 @@ test("trip surfaces are catalog steps, and hover is the published overlay", () =
 	);
 });
 
-test("one label per theme, and every dependent token resolves against it (D16)", () => {
-	// docs/trip-bar.md rule 2.12, step 18. The label is white in dark and the
-	// catalog's on-fill near-black in light, carried by --sched-trip-bar-fg;
-	// the second tier is that label at 87%; the subtle tier is retired for
-	// this component and collapses to muted.
+test("ONE label for both themes, and every dependent token resolves against it (D16)", () => {
+	// docs/trip-bar.md rule 2.12, step 18, as corrected by color.md §5 step 47.
+	//
+	// THIS TEST USED TO REQUIRE A LABEL PER THEME — white in dark, the
+	// catalog's near-black in light — and that is exactly what broke. The
+	// near-black was correct only while light's rest rung was Geist's lighter
+	// 600; step 47 put the light scales back on step 36's ramp, where 600 is
+	// L32 and paints rgb(0,34,140). The near-black label measured 1.52:1 on it
+	// in the running app. The fill is dark in BOTH themes now (dark 400 = L40,
+	// light 600 = L32), so there is ONE label and light does not override it.
+	//
+	// The light block must therefore NOT restate --sched-trip-bar-fg: a
+	// per-theme label is the thing that encoded the broken assumption, so its
+	// absence is asserted rather than merely tolerated.
 	const lightAt = tokensCss.indexOf(':root[data-theme="light"]');
 	const darkTokens = tokensCss.slice(0, lightAt);
-	const lightTokens = tokensCss.slice(lightAt);
+	const lightTokens = tokensCss.slice(lightAt).replace(/\/\*[\s\S]*?\*\//g, "");
 	assert.match(darkTokens, /--sched-trip-bar-fg:\s*var\(--rux-fg-on-fill\)/);
-	assert.match(lightTokens, /--sched-trip-bar-fg:\s*var\(--rux-fg-on-fill-inverse\)/);
 	assert.match(darkTokens, /--sched-trip-bar-fg-muted:\s*oklch\(from var\(--rux-fg-on-fill\) l c h \/ 87%\)/);
-	assert.match(lightTokens, /--sched-trip-bar-fg-muted:\s*oklch\(from var\(--rux-fg-on-fill-inverse\) l c h \/ 87%\)/);
+	assert.doesNotMatch(
+		lightTokens,
+		/--sched-trip-bar-fg(-muted)?:/,
+		"light theme is overriding the trip-bar label again — the fill is dark in both themes, so one white label serves both (color.md step 47)",
+	);
 	// The bar rebinds the on-accent family for its subtree.
 	assert.match(
 		tripBarCss,
@@ -316,12 +328,16 @@ test("one label per theme, and every dependent token resolves against it (D16)",
 		tripBarCss,
 		/\.sched-trip-bar__time\s*\{[^}]*color:\s*var\(--rux-fg-on-accent\)/s,
 	);
-	// The notes row is a warning-coloured ink per theme — amber-900 dark,
-	// amber-1000 light — never --rux-warning-on-vivid, which is the
-	// near-black for text ON a warning fill and rendered as black text on
-	// the dark fills (docs/trip-bar.md D18, step 20).
+	// The notes row is a warning-coloured ink per theme, and the two steps are
+	// NOT mirror images by accident: the ramp inverts, so the light end of the
+	// scale is a LOW step in light theme and a HIGH one in dark. amber-900
+	// (dark) and amber-200 (light) are both L90. It was amber-1000 in light
+	// until step 47, which is L12 there — near-black text on a near-black
+	// fill, the same inversion bug as the label above. Never
+	// --rux-warning-on-vivid, which is the near-black for text ON a warning
+	// fill (docs/trip-bar.md D18, step 20).
 	assert.match(darkTokens, /--sched-trip-bar-notes-fg:\s*var\(--rux-amber-900\)/);
-	assert.match(lightTokens, /--sched-trip-bar-notes-fg:\s*var\(--rux-amber-1000\)/);
+	assert.match(lightTokens, /--sched-trip-bar-notes-fg:\s*var\(--rux-amber-200\)/);
 	assert.match(
 		tripBarCss,
 		/\.sched-trip-bar__notes\s*\{[^}]*color:\s*var\(--sched-trip-bar-notes-fg\)/s,

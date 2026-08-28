@@ -214,7 +214,7 @@ disagree, the foundation document wins and this section is corrected in the same
 | rule 2.5 | high-contrast fills, and the focus ring |
 | rule 2.6 | two text levels; disabled is a state, not a level |
 | rule 2.7 | a status is a scale, not a colour |
-| rule 2.9 | the gamut every published value must resolve inside |
+| rule 2.9 | which value is certified — what renders after clipping, not what is declared |
 | rule 2.11 | the contrast floor, and the fill step it chooses |
 | rule 2.12 | the accent is a scale selection |
 | rule 2.13 | a published band states one luminance |

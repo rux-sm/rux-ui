@@ -269,9 +269,7 @@
 /* Light theme deepens the bar beneath dark metadata text; dark mode is the
    :root default above. */
 :root[data-theme="light"] {
-	/* The light half of rule 2.12 (step 18): rest moves up one rung to 600 —
-	   the most vivid light rung where near-black clears 4.5:1 on all seven
-	   tones — and the label flips to the catalog's own on-fill near-black.
+	/* The light half of rule 2.12 (step 18): rest moves up one rung to 600.
 	   Taking 600 rather than mirroring dark's 500 is what keeps the light
 	   board's closest hue pair (red/pink) separable; at light-500 it
 	   collapses to roughly half. Measured on trip-bar-specimen.html. */
@@ -282,9 +280,22 @@
 	--sched-trip-color-pink:   var(--rux-pink-600);
 	--sched-trip-bar-confirmed-tone:   var(--rux-blue-600);
 	--sched-trip-bar-unconfirmed-tone: var(--rux-red-600);
-	--sched-trip-bar-fg:       var(--rux-fg-on-fill-inverse);
-	--sched-trip-bar-fg-muted: oklch(from var(--rux-fg-on-fill-inverse) l c h / 87%);
-	--sched-trip-bar-notes-fg: var(--rux-amber-1000); /* 5.01–8.18 on every 600 fill */
+	/* THE LABEL NO LONGER FLIPS, AND THE LIGHT OVERRIDES ARE GONE ON PURPOSE.
+	   This block used to set the label to the catalog's near-black, because
+	   light-600 was Geist's value and light enough to carry one — the measured
+	   claim was "600 is the most vivid light rung where near-black clears 4.5:1
+	   on all seven tones", true on 2026-08-24. color.md step 47 put the light
+	   scales back on step 36's ramp, where 600 is L32: it paints rgb(0,34,140),
+	   and near-black on it measured 1.52:1 in the running app. The fill is now
+	   dark in BOTH themes — dark's 400 is L40, light's 600 is L32 — so one
+	   white label serves both, and `--sched-trip-bar-fg` / `-fg-muted` inherit
+	   it from :root rather than being restated here. Deleting the pair is the
+	   point: a per-theme label is what encoded the assumption that broke. */
+	/* The notes ink follows the same inversion. It was amber-1000, which is the
+	   LIGHT end of the ramp in dark theme but the DARK end in light (L12) — so
+	   it read as near-black on a near-black fill. amber-200 is light theme's
+	   L90, the same lightness dark theme reaches at amber-900. */
+	--sched-trip-bar-notes-fg: var(--rux-amber-200);
 
 	--sched-trip-bar-bg-opacity:             68%;
 	--sched-trip-bar-hover-bg-opacity:       76%;

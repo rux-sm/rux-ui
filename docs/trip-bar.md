@@ -1,6 +1,6 @@
 # Trip Bar — Design Specification
 
-**Contract version 1.5.0** · rewritten 2026-08-24 · step 18 (rule 2.12 executed) same day
+**Contract version 1.6.0** · rewritten 2026-08-24 · step 18 (rule 2.12 executed) same day
 
 ```
 Conforms to: Rux UI Foundations — Typography 5.0.0
@@ -11,7 +11,7 @@ Conforms to: Rux UI Foundations — Typography 5.0.0
              Rux UI Foundations — Motion     1.6.0
 ```
 
-**Status:** 17 done · 1 declined (step 15) · 0 ready · 0 open · 2 superseded · 4 open questions (Q3 answered) · 19 known defects (16 resolved: D1–D8, D10–D14, D16–D18; open: D9 — `state.md`'s, D15 — `color.md`'s, and D19 — **accepted by the owner**).
+**Status:** 18 done · 1 declined (step 15) · 0 ready · 0 open · 2 superseded · 4 open questions (Q3 answered) · 19 known defects (16 resolved: D1–D8, D10–D14, D16–D18; open: D9 — `state.md`'s, D15 — `color.md`'s, and D19 — **accepted by the owner**).
 
 **The log is closed.** Every step has executed, been superseded, or been declined by the
 owner with its reasoning recorded. What remains open lives in other documents: the
@@ -147,7 +147,9 @@ against it: the size scale separates levels without spending contrast, which is 
 2.11's evidence says colour cannot do at those opacities.
 
 **Status colour is a fourth channel, not a fourth tier.** Notes take
-`--sched-trip-bar-notes-fg`, a per-theme warning ink (amber-900 dark / amber-1000 light —
+`--sched-trip-bar-notes-fg`, a per-theme warning ink (amber-900 dark / amber-200 light, both
+L90 — the ramp inverts, so the light end of the scale is a low step in light theme and a high
+one in dark; it was amber-1000 in light until step 21, which is L12 there —
 step 20; they read `--rux-warning-on-vivid` before that, which is the near-black for text
 *on* a warning fill, not a warning-coloured ink — D18). Pending icons take
 `--sched-trip-bar-{danger,warning,success}-icon`. A status colour says *this needs action*;
@@ -344,20 +346,33 @@ digit-for-digit."*
 
 Notes and client are prose and take no such setting.
 
-### 2.12 The surface is one step per theme, and the label is one colour per theme.
+### 2.12 The surface is one step per theme, and the label is one colour.
 
-**Rest is the tone's `500` step in dark and its `600` step in light. The label is white in
-dark and near-black (`--rux-fg-on-fill-inverse`) in light, on every tone, in every state.**
-Not per hue — per theme, which is how every other surface in this system already behaves.
+**Rest is the tone's `400` step in dark and its `600` step in light. The label is
+`--rux-fg-on-fill` — white — in both themes, on every tone, in every state.** Not per hue
+and no longer per theme: both rungs are dark now, so both carry the same label.
 
-Neither rung is a preference. **500 is the only rung above the background tints where white
-clears 4.5:1 on all seven tones in dark** (600 fails five, 700 fails six, 800 fails amber,
-green and teal — `color.md` D19). **600 is the most vivid light rung where near-black clears
-on all seven** (700 fails blue at 4.46 and purple at 3.81). Measured 2026-08-24 in the
-**sRGB branch**, per `color.md` rule 2.11's worse-gamut clause, on the specimen's own meter:
-across every tone, state and tier, dark lands **4.51–11.09** and light **5.17–11.79** — with
-the honest caveat that the dark minimum is the 87% tier on a pressed green bar and it sits
-**on** the floor, not above it.
+The rungs are not a preference. Dark took 500 when this rule was written and **400 since
+`color.md` §5 step 34** put every hue-derived role on the three-step model. **600 is light's
+rung** for the separation it buys — at light-500 the closest hue pair (red/pink) collapses
+to roughly half the ΔE that 600 gives.
+
+*Revision, step 21 — the label stopped being per-theme, and the reason is worth keeping.*
+This rule read "**white in dark and near-black (`--rux-fg-on-fill-inverse`) in light**" from
+step 18 until 2026-08-28, and the near-black was measured and correct **for as long as
+light-600 was the catalog's value**: 600 was then "the most vivid light rung where near-black
+clears on all seven", at 5.17–11.79. `color.md` step 47 restored light's scales to step 36's
+ramp, where **600 is L32 and paints `rgb(0,34,140)`** — and near-black on it measured
+**1.52:1 on the running board**, which is what the owner saw. The fill had become dark in
+both themes while the label still flipped as though it had not.
+
+**The lesson is about the shape of the rule, not the value.** A label that flips with the
+theme is only safe while the fill flips with it too; the moment `color.md` made the fill
+band theme-invariant, a per-theme label was a latent defect waiting on the next scale change.
+One white label is now **13.06:1** on light's rest fill, measured on the board. `color.md`
+rule 2.11's own reasoning for `--rux-fg-on-fill` being a theme-invariant literal — "a
+theme-dependent label would flip to near-black on a dark blue button" — is exactly this
+failure, and this document had been carrying the inverse of it for four days.
 
 *Revision, step 18.* This rule originally put light at 500 as well, for the symmetry of one
 rung number — while its own text conceded near-black clears through 600 in light. Taking
@@ -470,6 +485,7 @@ px and name the states needing an eyeball (§2.3 there).
 | 18 | Execute rule 2.12: rest 500 dark / 600 light, one label per theme, overlay states (D13, D16; supersedes steps 12 and 14) | **done · Class B, with a scoped Class C rider** | **Executed 2026-08-24, owner's decision ("going with option 1").** **Before → after, resolved, sRGB branch.** Rest fill: every tone's `700` (theme-invariant) → its **`500` in dark / `600` in light** — blue oklch(.515…) → .576 dark / .486-ish 600 light per catalog; label: white both themes → **white dark / `--rux-fg-on-fill-inverse` (near-black) light**; hover/pressed: the tone's 800 → **rest + `--rux-state-hover-overlay` / `-active-overlay`**; muted tier 75% → **87%**; subtle → **collapses to muted**; selected ring: root-frozen white → **the per-theme label**. Contrast, specimen meter, every tone/state/tier: **dark 4.51–11.09, light 5.17–11.79**, zero failures (the 700 model failed five of seven at rest). **Names removed (the Class C rider):** `--sched-trip-color-{teal,green,purple,amber,pink}-hover` and `--sched-trip-bar-unconfirmed-tone-hover` — born in step 4 **the same day**, never in a tagged release, zero consumers on the grep outside the trip-bar files and their test. Rider accepted without a stop-and-propose cycle on that evidence plus the owner's execute order. **Names added:** `--sched-trip-bar-confirmed-tone` (the default bar stops falling back to `--rux-accent`, which rests at 800; cost taken deliberately — a `[data-rux-accent]` retint no longer recolours the default bar), `--sched-trip-bar-fg`, `--sched-trip-bar-fg-muted`. **D16 closed** by pointing `-meta-fg` and `-selected-ring-color` at `--sched-trip-bar-fg`. **Found in passing, fixed by scoping:** the article-level `:active` rule outranked the multi-day transparent override on specificity and painted the pressed fill across a multi-day bar's seam gap; the state rules now exclude `--multi-day` explicitly (observed by reading, not rendered). **Ghost action hover wash** moved from a hand-set white 18% to the shared hover overlay, matching the direction the token block's own comment already claimed. **Also unread now:** `-tail-hover-opacity`/`-tail-pressed-opacity`, left declared in step 4's kept-not-removed bucket for step 8. **Tests:** state-model and D16 assertions rewritten/added in `tests/trip-bar-color.test.mjs`; `tests/trip-colors.test.mjs` dedupes per-theme declarations; `tests/ghost-button-hover.test.mjs` follows the wash; **423/423 pass**. **Deliberately did not** touch the categorical palette membership (step 15 stays open on semantic grounds), the status icon tokens (D15/`color.md` D18), or `color.md` itself — its D19 clause "lands on 500" stays as the dated observation it was; the 500/600 mapping is recorded here, where the mapping lives (§0's precedence: the foundation owns the vocabulary, this document owns the mapping). **Eyeball still owed (Q5):** the live board at both themes — red vs pink at card size, amber's identity at 500's chroma, and the 87% tier on a pressed green bar, which rests ON the 4.5 floor. |
 | 19 | Selection ring on multi-day bars: overlay pseudo (D17) | **done · patch** | **Executed 2026-08-24.** `.sched-trip-bar--multi-day.is-active::after` draws the ring — same two tokens, same −2px inset, `border-radius: inherit` so it follows the article's corners, which already zero on `--from-prev`/`--to-next`; `z-index: 3` clears the head's 2; `pointer-events: none`. The article's own occluded outline is unset in the same rule rather than left painting invisibly. **Verified live on the board:** computed styles show the pseudo's 2px solid ring spanning the full 880px article (head 208px) with the article outline `none`; a **screenshot could not be taken** because the app's profile gate was up and answering it is the owner's state to set, not this session's. **One ring around the whole span, not one per half** — ringing head and tail separately would double the line at their seam. **Deliberately did not** move the single-day ring onto a pseudo for symmetry: the article outline works there because rows paint no backgrounds over it, and churning a working rule for uniformity is how regressions get in. Test: two assertions added to the ring section of `tests/trip-bar-color.test.mjs`. |
 | 20 | Notes onto a per-theme warning ink (D18) | **done · Class B** | **Executed 2026-08-24, owner's decision.** **Before → after, resolved, sRGB branch:** `__notes` colour `--rux-warning-on-vivid` (near-black both themes; **1.78–2.70** on the dark 500 fills, 7.2–11.8 light) → **`--sched-trip-bar-notes-fg`**, a new domain token: `--rux-amber-900` in dark (**4.50–5.26** on blue/red/purple/pink — the same bright amber the warning icon uses), `--rux-amber-1000` in light (**5.01–8.18 on all seven** 600 fills; light's amber-900 is a mid-dark ink that clears nowhere there). **Known residue, accepted:** no warning ink clears on the amber, green or teal *fills* (3.47–4.19 dark) — amber-on-amber is invisible by construction, which is `color.md` D18's semantic collision; those hues render zero bars on the live board and step 15 proposes dropping two of them. **Deliberately did not** touch the pending-icon tokens, though they fail 3:1 on every light fill: colouring status marks on a category fill needs a published rule, that is `color.md` Q12's, and improvising it per component is how D17-there happened. **Deliberately did not** repoint the dead `__driver-dot` rules off the same role — step 7 deletes them. **Verified live, both themes**, computed styles on the board; test assertions added to `tests/trip-bar-color.test.mjs`; 423/423 pass. **Eyeball owed:** a bar with a note beside one without, both themes — amber text is louder than the near-black was, and whether it outranks the destination is rule 2.1's hierarchy question. |
+| 21 | One white label, both themes — the per-theme label was a latent defect (rule 2.12) | **done · Class B** | **Executed 2026-08-28, from the owner's observation: "trip bars need white text now that bg is darker?"** Yes, and the measurement is unambiguous. **Root cause is upstream and this document was its blast radius.** `color.md` §5 step 47 restored light's hue scales to step 36's measured ramp, moving light-600 from Geist's value to **L32**, which paints `rgb(0,34,140)`. This document's label still flipped to near-black in light — correct under step 18, when 600 was "the most vivid light rung where near-black clears on all seven" at 5.17–11.79. **Measured on the running board, light theme: 1.52:1.** **Before → after, resolved:** `--sched-trip-bar-fg` white dark / near-black light → **white, both themes**, and the light overrides for `-fg` and `-fg-muted` are **deleted** rather than restated, so they inherit `:root`. **1.52 → 13.06**, measured by canvas rasterisation on the board. `-selected-ring-color` follows by construction. **The notes ink had the same inversion, and it is the more instructive one:** `--sched-trip-bar-notes-fg` was `--rux-amber-1000` in light — the *light* end of the ramp in dark theme but the **dark** end in light (**L12**) — so it rendered near-black on a near-black fill, the same bug as the label wearing a different number. Now **`--rux-amber-200`**, which is light theme's L90 and the same lightness dark reaches at amber-900. A mirrored ramp means a step number is not a brightness; only its position relative to the theme is. **THE LESSON IS THE SHAPE OF THE RULE, NOT THE VALUE.** A label that flips with the theme is safe only while the fill flips with it. `color.md` step 34 made the fill band theme-invariant and step 36 derived it as a consequence of there being one white label — from that moment this document's per-theme label was a defect waiting for the next scale change, and step 47 was it. `color.md` rule 2.11's own justification for `--rux-fg-on-fill` being a theme-invariant literal ("a theme-dependent label would flip to near-black on a dark blue button") is precisely this failure, stated upstream four days before it happened here. **Enforcement corrected, not relaxed.** `tests/trip-bar-color.test.mjs`'s D16 test *required* the per-theme label, so it was green while the board was unreadable — a test asserting the defect. It now asserts one label AND that light does **not** restate it, so re-introducing the override fails. Renamed to say so. **Verified:** 544/544; light and dark eyeballed on the live board; ratios read by canvas rasterisation, not modelled. **Deliberately NOT done:** light's rest rung stays **600**. Moving it to a lighter step would restore the old look and let the near-black label back, but 600 is what rule 2.12 chose for red/pink separation and that argument is untouched by step 47 — the fill being dark is the *intended* outcome of the three-step model, not a side effect to undo. Also not done: the pending-icon tokens, still failing 3:1 on light fills (step 20's open residue, `color.md` Q12's to rule). **Eyeball owed:** a bar with a note, both themes — the amber notes ink moved and has been measured but not seen. |
 | 9 | **Consolidate** — make the CSS header comment rationale, not specification | **done · patch** | **Executed 2026-08-24, last as designed — every rule it stripped now lives in §2 of this document.** The 90-line header became a ~40-line orientation block: class inventory and row index stay (an index is not a rule), the row-typography rule statements and the values table went (rules 2.6/2.7 own them), and the header now states the ownership contract in as many words — rules live here, body comments are rationale beside the values they explain, and §0's role-reversal failure is named so the next person recognises it starting again. **README:** the one trip-bar sentence now points here — and it was still advertising **the withdrawn optical-radius system** (rule 2.2), which is §0's drift caught in a third home; corrected to a pointer with the withdrawal noted. **The body needed almost nothing:** every comment written by steps 2–20 already cites the step it explains, and the one remaining "must not" is a pointer to `portability-audit` §4.4. **Deliberately did not** touch the trip bar's `--rux-font-sans-condensed` read: the token aliases to the regular family (typography.md owns that no-condensed-cut fact), so the read is a stale name, not a stale value — the alias's retirement is typography.md's call. 424/424; no rendered change, and none was possible — comments and prose only. |
 
 ---
