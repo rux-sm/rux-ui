@@ -823,3 +823,78 @@ test("every stop gets an id, and a supplied one is kept", () => {
 	assert.match(normalizeStop({}).id, /^s\d+$/);
 	assert.equal(normalizeStop({ id: "keep-me" }).id, "keep-me");
 });
+
+/* ── what the Grid does not model, it must not delete ─────────────────── */
+
+/* The Grid is a single-leg editor: fromV3 reads legs.outbound and nothing
+   else. That is a scope decision and it is fine. What was NOT fine is that
+   toV3 hard-coded `type: "round_trip"` and wrote only legs.outbound, so
+   loading a Drop-off / Pick-up draft and saving it returned a DIFFERENT trip
+   — one leg gone, type silently rewritten — with nothing reported. These
+   cases pin the carry-through. See docs/itinerary-workflow.md § Not built. */
+
+function splitV3() {
+	return {
+		schema_version: 3,
+		trip: {
+			type: "dropoff_pickup",
+			service_type: "ticketed",
+			destination: "Austin, TX",
+			legs: {
+				outbound: {
+					start_date: "2026-07-27",
+					stops: [{ type: "pickup", name: "School", address: "1 Main St", arrival_time: "7:00 am" }],
+				},
+				return: {
+					start_date: "2026-07-31",
+					stops: [
+						{ type: "pickup", name: "Hotel", address: "9 River Rd", arrival_time: "9:00 am" },
+						{ type: "stop", name: "Campus", address: "4 Oak Ave", arrival_time: "1:00 pm" },
+					],
+				},
+			},
+		},
+	};
+}
+
+test("a split trip's return leg survives a load-and-save round trip", () => {
+	const out = toCleanV3(fromV3(splitV3()));
+	assert.ok(out.trip.legs.return, "the return leg was dropped on save");
+	assert.equal(out.trip.legs.return.start_date, "2026-07-31");
+	assert.equal(out.trip.legs.return.stops.length, 2);
+	assert.equal(out.trip.legs.return.stops[1].name, "Campus");
+});
+
+test("the return leg is carried byte-for-byte, not reshaped", () => {
+	// The Grid cannot render it, so it must not normalize it either — a
+	// courier that repacks the parcel is how a field goes missing.
+	const source = splitV3();
+	const out = toCleanV3(fromV3(source));
+	assert.deepEqual(out.trip.legs.return, source.trip.legs.return);
+});
+
+test("trip type and service type survive instead of resetting to the defaults", () => {
+	const out = toCleanV3(fromV3(splitV3()));
+	assert.equal(out.trip.type, "dropoff_pickup", "type was rewritten to round_trip");
+	assert.equal(out.trip.service_type, "ticketed");
+});
+
+test("a hand-entered grid still defaults to a charter round trip", () => {
+	// The defaults only apply when the document did not state one, so an
+	// empty grid is unchanged by the carry-through.
+	const out = toCleanV3(fromV3(v3([
+		{ type: "pickup", name: "School", address: "1 Main St", arrival_time: "7:00 am" },
+	])));
+	assert.equal(out.trip.type, "round_trip");
+	assert.equal(out.trip.service_type, "charter");
+	assert.equal(out.trip.legs.return, undefined, "a one-leg trip grew a return leg");
+});
+
+test("an unrecognised trip type falls back rather than being echoed", () => {
+	const bad = splitV3();
+	bad.trip.type = "teleport";
+	bad.trip.service_type = "barter";
+	const out = toCleanV3(fromV3(bad));
+	assert.equal(out.trip.type, "round_trip");
+	assert.equal(out.trip.service_type, "charter");
+});

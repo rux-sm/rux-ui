@@ -68,7 +68,20 @@ step 1's day-offset and address-confidence rules were the source for
 ## Not built
 
 - **Split trips.** The Grid reads `legs.outbound` only. A `dropoff_pickup`
-  needs the classic Itinerary tab, which handles both legs.
+  needs the classic Itinerary tab, which handles both legs. **The gap is one
+  component, not the stack:** `trip_stops.leg` exists, `js/core/bus-slots.js`
+  publishes `legOf` / `legsForTrip` / `assignmentsOnLeg`, the classic tab has
+  `setActiveLeg`, and v3 already carries `legs.return`. Only
+  `js/components/itinerary-grid.js` assumes one leg.
+
+  **Loading a split trip is no longer lossy** (2026-08-28). `toV3` used to
+  hard-code `type: "round_trip"` and write only `legs.outbound`, so a
+  Drop-off / Pick-up draft came out of the Grid as a *different trip* — return
+  leg deleted, type rewritten — with nothing reported. The Grid now carries
+  `trip.type`, `trip.service_type` and `legs.return` through unchanged and
+  shows a warning saying it is not editing the return leg. It still cannot
+  edit or route that leg; it no longer destroys it. Pinned by five cases in
+  `tests/itinerary-grid.test.mjs`, each verified to fail without the guard.
 - **In-app extraction.** `POST /ai/extract` exists and has never run — no API
   key, no auth user, no `wrangler.toml`, never deployed (todo T4, T5). The
   workflow is built to not need it.
@@ -88,4 +101,7 @@ Against the live project on 2026-08-28, with a real customer PDF:
   and overruling an extraction that had guessed the wrong town.
 - The driver sheet in both themes, at 480px, 600px and 860px.
 
-Six colour-scale tests fail on `main` and are unrelated to any of this.
+Six colour-scale tests failed on `main` when this was written, unrelated to any of
+this. They were fixed on 2026-08-28 by `color.md` steps 47-48 and `trip-bar.md` step
+21; the suite is 544/544. Left here rather than deleted because the original
+sentence was the reason nobody chased them.

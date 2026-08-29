@@ -389,11 +389,28 @@
 
 	/* ── v3 in and out ───────────────────────────────────────────────────── */
 
+	/* v3 fields this editor does not model. They are carried through load and
+	   save UNCHANGED rather than dropped, because the Grid is a single-leg
+	   editor and a document can describe more than one leg.
+
+	   Before this existed, loading a Drop-off / Pick-up draft and saving it
+	   silently discarded `legs.return` AND reset `trip.type` to round_trip,
+	   because toV3 hard-coded both. A split trip therefore came out of the
+	   Grid as a different trip than went in, with nothing said. Editing the
+	   outbound leg is still the only thing the Grid can do — but not editing
+	   something is different from deleting it. */
+	const CARRIED = ["type", "service_type"];
+	const TRIP_TYPES = ["round_trip", "one_way", "dropoff_pickup"];
+	const SERVICE_TYPES = ["charter", "ticketed"];
+
 	function fromV3(payload) {
 		const doc = payload && typeof payload === "object" ? payload : {};
 		const trip = doc.trip && typeof doc.trip === "object" ? doc.trip : {};
 		const legs = trip.legs && typeof trip.legs === "object" ? trip.legs : {};
 		const outbound = legs.outbound && typeof legs.outbound === "object" ? legs.outbound : {};
+		/* Verbatim, not normalized: this editor is a courier for it, and
+		   reshaping a leg it cannot render is how a courier loses a parcel. */
+		const returnLeg = legs.return && typeof legs.return === "object" ? legs.return : null;
 		const source = Array.isArray(outbound.stops) ? outbound.stops : [];
 
 		const stops = [];
@@ -485,6 +502,9 @@
 			bookingPhone: String(booking.phone ?? ""),
 			bookingEmail: String(booking.email ?? ""),
 			dataFlags: Array.isArray(doc.data_flags) ? doc.data_flags.filter(Boolean).map(String) : [],
+			tripType: TRIP_TYPES.includes(trip.type) ? trip.type : "",
+			serviceType: SERVICE_TYPES.includes(trip.service_type) ? trip.service_type : "",
+			returnLeg,
 			stops,
 		};
 	}
@@ -528,7 +548,13 @@
 			return out;
 		});
 
-		const trip = { type: "round_trip", service_type: "charter", legs: { outbound: { stops } } };
+		/* The defaults are what a hand-entered grid is; a loaded document's own
+		   values win, so a Drop-off / Pick-up survives the round trip. */
+		const trip = {
+			type: state.tripType || "round_trip",
+			service_type: state.serviceType || "charter",
+			legs: { outbound: { stops } },
+		};
 		if (state.client) trip.client = state.client;
 		if (state.destination) trip.destination = state.destination;
 		if (state.notes) trip.notes = state.notes;
@@ -539,6 +565,8 @@
 			if (state.bookingEmail) trip.booking_contact.email = state.bookingEmail;
 		}
 		if (state.startDate) trip.legs.outbound.start_date = state.startDate;
+		/* Unmodified, and last, so it is obvious nothing here touched it. */
+		if (state.returnLeg) trip.legs.return = state.returnLeg;
 		const doc = { schema_version: 3, trip };
 		if (state.dataFlags.length) doc.data_flags = state.dataFlags;
 
@@ -1108,6 +1136,26 @@
 		</div>`).join("");
 	}
 
+	/* Says what the Grid is NOT editing. The carried return leg is safe on save
+	   — that is what fromV3/toV3 above guarantee — but "safe" is not "visible",
+	   and a dispatcher who cannot see the second leg will assume the trip has
+	   one. Deliberately NOT a data flag: that card is questions for the
+	   customer, and this is a limitation of this editor. */
+	function renderCarried(state) {
+		if (!state.returnLeg) return "";
+		const stops = Array.isArray(state.returnLeg.stops) ? state.returnLeg.stops.length : 0;
+		const when = state.returnLeg.start_date ? ` starting ${escHtml(String(state.returnLeg.start_date))}` : "";
+		return `<div class="rux-alert rux-alert--warning">
+			<span class="rux-icon rux-alert__icon" aria-hidden="true">call_split</span>
+			<div class="rux-alert__body">
+				<p class="rux-alert__title">This trip has a return leg the Grid does not show</p>
+				<p>${stops} stop${stops === 1 ? "" : "s"}${when}. It is kept exactly as imported and
+				saved back unchanged, but it cannot be edited or routed here — use the Itinerary tab
+				for the return leg.</p>
+			</div>
+		</div>`;
+	}
+
 	function renderFlags(state) {
 		if (!state.dataFlags.length) return "";
 		return `<section class="rux-card sched-itinerary-grid__flags">
@@ -1129,7 +1177,7 @@
 		const host = root?.querySelector?.("#tp-grid") || document.getElementById("tp-grid");
 		if (!host) return null;
 
-		const state = { startDate: "", client: "", destination: "", notes: "", bookingName: "", bookingPhone: "", bookingEmail: "", dataFlags: [], stops: [] };
+		const state = { startDate: "", client: "", destination: "", notes: "", bookingName: "", bookingPhone: "", bookingEmail: "", dataFlags: [], tripType: "", serviceType: "", returnLeg: null, stops: [] };
 
 		host.innerHTML = `
 		<section class="sched-itinerary-grid">
@@ -1217,7 +1265,7 @@
 			listEl.innerHTML = renderList(state);
 			syncReviewButton();
 			summaryEl.innerHTML = renderSummary(state);
-			flagsEl.innerHTML = renderFlags(state);
+			flagsEl.innerHTML = renderCarried(state) + renderFlags(state);
 			intakeEl.open = state.stops.length === 0;
 		}
 
@@ -1795,7 +1843,7 @@
 			},
 			clear() {
 				Object.assign(state, {
-					startDate: "", client: "", destination: "", notes: "", bookingName: "", bookingPhone: "", bookingEmail: "", dataFlags: [], stops: [],
+					startDate: "", client: "", destination: "", notes: "", bookingName: "", bookingPhone: "", bookingEmail: "", dataFlags: [], tripType: "", serviceType: "", returnLeg: null, stops: [],
 				});
 				pasteEl.value = "";
 				say("");
