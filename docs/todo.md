@@ -289,6 +289,43 @@ module naming `RuxOverlay`, and that the directory counts in the same block
 match a `find`. The counts are the cheap half and would have caught four of
 the five.
 
+
+### T10 — the yard leg goes unmeasured, and the prompt promises the app will work it out
+
+`docs/itinerary-prompt.md` says to emit `yard_origin` **only** when the source
+states a depot departure, "otherwise omit it; the app calculates it backwards
+from the pickup once the route is measured."
+
+The app does not. `yardPlan()` in `js/components/itinerary-grid.js` opens with
+`const pickupIndex = stops.findIndex(s => s.type === "pickup"); if (pickupIndex
+< 1) return null;` — it needs a row BEFORE the pickup to exist, and it needs
+that row's measured `drive` to back off from. A draft that followed the prompt
+has neither, so the plan is null, no report/roll/spot time is offered, and the
+deadhead to the first pickup is in no total: not the mileage, not the drive
+time, not the duty hours.
+
+That is invisible rather than noisy. The trip simply reads as though it starts
+at the pickup.
+
+How it is known: a Laredo quote processed on 2026-08-31 (Cigarroa HS GEAR UP)
+came back as 467.5 miles and a 12h 30m duty day. Inserting a `yard_origin` row
+by hand and re-routing gave 616.1 miles and 19h 32m — 148.6 miles and about
+three hours of deadhead each way, from a McAllen yard to a trip that begins and
+ends in Laredo. The second number is the one a quote and an hours-of-service
+check need. Nothing on screen said the first was incomplete.
+
+It matters most for exactly the trips where it is easiest to miss: a local run
+hides a few miles, a Laredo or Houston run hides a driver's whole legal day.
+
+Cost to close: decide which half is right and make the other match. Either
+`fromV3` inserts a `yard_origin` when a draft has none — the Grid's own
+`scaffold()` already puts one in every blank grid, so a loaded draft is the
+only path that ends up without one — or the prompt stops promising a
+calculation that cannot run and emits the row always. The first is the smaller
+change and keeps the prompt honest about only reporting what the source said.
+A test would assert that a v3 draft with no `yard_origin` still produces a
+non-null `yardPlan` after routing.
+
 ---
 
 *A third entry — fourteen `trip_ref` values each shared by two active trips — was drafted
