@@ -319,7 +319,14 @@
 			return;
 		}
 
-		const label = summary.client || openDraft.label || "";
+		/* The row's own label wins over the client name.
+		   
+		   This was the other way round, so saving overwrote whatever the row
+		   was called with `trip.client` — and one school sending two different
+		   tours ended up as two rows reading "PSJA Memorial Early College High
+		   School", distinguishable only by date. The label is the name a person
+		   gave this itinerary; the client is the fallback for when nobody has. */
+		const label = openDraft.label || summary.client || "";
 		const saved = await (await db()).updateItineraryDraft(openDraft.id, {
 			document: document_,
 			label,
