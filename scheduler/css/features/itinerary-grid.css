@@ -96,6 +96,29 @@
 
 /* — Summary — */
 
+
+/* The inbox picker — "which of the waiting itineraries goes on this trip?".
+   A stack of full-width buttons rather than a <select>: each line carries the
+   date and the stop count as well as the name, and picking the wrong
+   itinerary for a trip is the mistake this control exists to prevent. */
+.sched-itinerary-grid__inbox {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-1);
+	padding: var(--rux-space-2);
+	border: var(--rux-card-section-border);
+	border-radius: var(--rux-radius-container);
+}
+
+.sched-itinerary-grid__inbox[hidden] {
+	display: none;
+}
+
+.sched-itinerary-grid__inbox .rux-button {
+	justify-content: flex-start;
+	text-align: left;
+}
+
 .sched-itinerary-grid__summary {
 	display: flex;
 	flex-wrap: wrap;

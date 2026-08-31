@@ -1393,7 +1393,12 @@
 							<span class="rux-icon" aria-hidden="true">move_down</span>
 							<span class="rux-button__label">Pull from Itinerary tab</span>
 						</button>
+						<button type="button" class="rux-button rux-button--ghost" data-inbox${standalone ? " hidden" : ""}>
+							<span class="rux-icon" aria-hidden="true">inbox</span>
+							<span class="rux-button__label">Load from inbox</span>
+						</button>
 					</div>
+					<div class="sched-itinerary-grid__inbox" data-inbox-list hidden></div>
 					<p class="sched-itinerary-grid__status" data-status role="status" aria-live="polite"></p>
 				</div>
 			</details>
@@ -1437,6 +1442,7 @@
 		const pasteEl = host.querySelector("[data-paste]");
 		const statusEl = host.querySelector("[data-status]");
 		const intakeEl = host.querySelector("[data-intake]");
+		const inboxListEl = host.querySelector("[data-inbox-list]");
 		const routeStatusEl = host.querySelector("[data-route-status]");
 		const routeBtn = host.querySelector("[data-route]");
 		let routing = false;
@@ -1613,6 +1619,9 @@
 			if (event.target.closest("[data-copy-prompt]")) return copyPrompt();
 			if (event.target.closest("[data-copy-json]")) return copyJson();
 			if (event.target.closest("[data-pull]")) return pullFromItinerary();
+			if (event.target.closest("[data-inbox]")) return void loadFromInbox();
+			const pick = event.target.closest("[data-inbox-pick]");
+			if (pick) return pickFromInbox(pick.dataset.inboxPick);
 			if (event.target.closest("[data-route]")) return resolveAndRoute();
 			const confirmBtn = event.target.closest("[data-confirm-address]");
 			if (confirmBtn) return confirmAddress(Number(confirmBtn.dataset.idx));
@@ -1661,6 +1670,7 @@
 				return say("That draft has no stops in its outbound leg.", true);
 			}
 			Object.assign(state, loaded);
+			fromInboxId = null;
 			pasteEl.value = "";
 			render();
 			// The stops are only half a trip. Without dates Save refuses it, so
@@ -1673,6 +1683,89 @@
 				: `Loaded ${outboundCount} stops`];
 			if (filled.length) parts.push(`filled the ${filled.join(", ")}`);
 			if (loaded.dataFlags.length) parts.push(`${loaded.dataFlags.length} to ask about`);
+			say(`${parts.join(", ")}.`);
+		}
+
+		/* ── Updating a trip that already exists ──────────────────────────
+
+		   The other half of the inbox. "Add as new trip" over there covers the
+		   itinerary nobody has booked yet; this covers the one that arrives for
+		   a trip already on the calendar — the customer moved a pickup, added a
+		   stop, or sent the real schedule after the quote.
+
+		   The picker lives HERE rather than in the inbox, and that is the whole
+		   reliability argument: the target trip is the one already open on
+		   screen, with its date and customer in front of the dispatcher. A
+		   picker on the inbox side would have to ask "which trip?" and be
+		   answered from memory, which is how an itinerary lands on the wrong
+		   trip. Here the question is only "which itinerary?", and the answer is
+		   in the list.
+
+		   Nothing is written by picking. The document loads into this tab and
+		   the trip's own Save writes it, which is the same rule everything else
+		   in this workflow follows. */
+		let fromInboxId = null;
+
+		async function loadFromInbox() {
+			if (standalone) return;
+			if (!inboxListEl.hidden) {
+				inboxListEl.hidden = true;
+				return;
+			}
+			inboxListEl.hidden = false;
+			inboxListEl.innerHTML = `<p class="sched-itinerary-grid__status">Looking…</p>`;
+
+			let drafts = [];
+			let db = null;
+			try {
+				db = await getGridDb();
+				drafts = await db.listItineraryDrafts();
+			} catch (error) {
+				console.warn("The itinerary inbox could not be read:", error);
+			}
+			if (!drafts.length) {
+				// "Empty" and "not set up" are not the same answer, and telling
+				// someone their inbox is empty when the table does not exist
+				// sends them looking for the itinerary they know they added.
+				const message = db?.isInboxAvailable?.() === false
+					? "The inbox is not set up yet — run supabase/trip_itineraries_inbox.sql."
+					: "The inbox is empty.";
+				inboxListEl.innerHTML =
+					`<p class="sched-itinerary-grid__status">${escHtml(message)}</p>`;
+				return;
+			}
+
+			inboxListEl.innerHTML = drafts.map((draft) => {
+				const loaded = fromV3(draft.document);
+				const stops = loaded.legs.outbound.stops.length
+					+ (loaded.legs.return?.stops.length ?? 0);
+				const when = loaded.legs.outbound.startDate;
+				const name = draft.label || loaded.client || loaded.destination || "Untitled itinerary";
+				const detail = [when, `${stops} stop${stops === 1 ? "" : "s"}`]
+					.filter(Boolean).join(" · ");
+				return `<button type="button" class="rux-button rux-button--ghost rux-button--block"
+						data-inbox-pick="${escHtml(String(draft.id))}">
+					<span class="rux-button__label">${escHtml(name)} — ${escHtml(detail)}</span>
+				</button>`;
+			}).join("");
+			inboxListEl._drafts = drafts;
+		}
+
+		function pickFromInbox(id) {
+			const draft = (inboxListEl._drafts || []).find((d) => String(d.id) === String(id));
+			if (!draft) return;
+			const loaded = fromV3(draft.document);
+			if (!loaded.legs.outbound.stops.length) {
+				return say("That itinerary has no stops in its outbound leg.", true);
+			}
+			Object.assign(state, loaded);
+			fromInboxId = draft.id;
+			inboxListEl.hidden = true;
+			render();
+			const filled = fillTripDetails();
+			const parts = [`Loaded ${loaded.legs.outbound.stops.length} stops from the inbox`];
+			if (filled.length) parts.push(`filled the ${filled.join(", ")}`);
+			parts.push("nothing is saved until you save the trip");
 			say(`${parts.join(", ")}.`);
 		}
 
@@ -2005,6 +2098,7 @@
 			state.destination = tripField("tp-destination");
 			state.dataFlags = [];
 			L().stops = fromEditorStops(source, startDate);
+			fromInboxId = null;
 			render();
 			say(`Pulled ${L().stops.length} stops from the Itinerary tab. Nothing is written back.`);
 		}
@@ -2014,7 +2108,13 @@
 		let gridDb = null;
 		function getGridDb() {
 			if (!gridDb) {
-				gridDb = import("../data/itinerary-grid-db.js?v=1").catch((error) => {
+				/* Same specifier as js/panels/itinerary-inbox.js, deliberately.
+				   A different query string is a different module instance, and
+				   this module latches `available` / `inboxAvailable` after the
+				   first failure so a missing table produces one console line
+				   rather than one per keystroke. Two instances is two latches
+				   and two of every warning. Bump both together. */
+				gridDb = import("../data/itinerary-grid-db.js?v=3").catch((error) => {
 					gridDb = null;
 					throw error;
 				});
@@ -2026,6 +2126,7 @@
 			getDocument: () => toCleanV3(state),
 			setDocument(payload) {
 				Object.assign(state, fromV3(payload));
+				fromInboxId = null;
 				render();
 			},
 
@@ -2062,7 +2163,37 @@
 				if (!tripId || !L().stops.length) return false;
 				try {
 					const db = await getGridDb();
-					const stored = await db.saveItineraryDocument(tripId, toV3(state));
+					const document_ = toV3(state);
+
+					/* Came from the inbox: MOVE that row onto the trip rather
+					   than writing a second one. Same row, same id, trip_id set
+					   — so the document never exists twice and there is nothing
+					   for the two copies to drift apart over.
+
+					   A trip already holding an itinerary refuses the move (the
+					   partial unique index would reject it anyway). Then the
+					   ordinary save wins — the open trip's own itinerary is the
+					   one being edited — and the inbox copy is closed rather
+					   than deleted, so a wrong guess here is recoverable by
+					   putting its status back. */
+					if (fromInboxId) {
+						const attached = await db.attachDraftToTrip(fromInboxId, tripId);
+						if (attached?.ok) {
+							await db.updateItineraryDraft(fromInboxId, { document: document_ });
+							fromInboxId = null;
+							sayRoute("Itinerary saved and taken out of the inbox.");
+							return true;
+						}
+						const stored = await db.saveItineraryDocument(tripId, document_);
+						if (stored) {
+							await db.updateItineraryDraft(fromInboxId, { status: "closed" });
+							fromInboxId = null;
+							sayRoute("Itinerary saved over this trip's own. The inbox copy is closed.");
+						}
+						return stored;
+					}
+
+					const stored = await db.saveItineraryDocument(tripId, document_);
 					if (stored) sayRoute("Itinerary saved.");
 					return stored;
 				} catch (error) {
@@ -2083,6 +2214,7 @@
 					const document = await db.loadItineraryDocument(tripId);
 					if (!document) return false;
 					Object.assign(state, fromV3(document));
+					fromInboxId = null;
 					render();
 					say(`Loaded this trip's saved itinerary — ${L().stops.length} stops.`);
 					return true;
@@ -2108,7 +2240,9 @@
 					activeLeg: "outbound",
 					legs: { outbound: emptyLeg(), return: null },
 				});
+				fromInboxId = null;
 				pasteEl.value = "";
+				inboxListEl.hidden = true;
 				say("");
 				render();
 			},
