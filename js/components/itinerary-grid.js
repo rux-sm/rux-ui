@@ -1836,6 +1836,11 @@
 			let fromDirectory = 0;
 			let approximated = 0;
 			let failed = 0;
+			/* Legs skipped because an END of them never resolved. Counted
+			   separately from `failed`, which is a lookup that errored: this
+			   one is a leg that was never attempted, and it is the dangerous
+			   kind because the trip total is quietly short by it. */
+			let unmeasured = 0;
 
 			try {
 				/* The anchor for the next lookup: the last point we are confident
@@ -1953,7 +1958,10 @@
 					}
 					if (stop.milesSource === "manual" && stop.driveSource === "manual") continue;
 					const previous = L().stops[index - 1];
-					if (previous.lat == null || stop.lat == null) continue;
+					if (previous.lat == null || stop.lat == null) {
+						unmeasured += 1;
+						continue;
+					}
 
 					sayRoute(`Routing leg ${index} of ${L().stops.length - 1}…`);
 					try {
@@ -1984,13 +1992,24 @@
 				parts.push(`${approximated} measured to the town only — ${approximated === 1 ? "its address is" : "their addresses are"} still needed`);
 			}
 			if (routed) parts.push(`${routed} leg${routed === 1 ? "" : "s"} measured`);
-			if (failed) parts.push(`${failed} could not be worked out`);
+			if (failed) parts.push(`${failed} address${failed === 1 ? "" : "es"} could not be worked out`);
+			/* Said last and said plainly, because this is the one that changes
+			   the number someone quotes from. An address that fails to resolve
+			   takes BOTH legs touching it out of the total — the one in and the
+			   one out — so a single bad address can leave the trip hundreds of
+			   miles short while the summary shows a confident figure. */
+			if (unmeasured) {
+				parts.push(
+					`${unmeasured} leg${unmeasured === 1 ? "" : "s"} not measured, `
+					+ `so the trip total is short by ${unmeasured === 1 ? "it" : "them"}`,
+				);
+			}
 			const summary = parts.length
 				? `${parts.join(", ")}.`
 				: "Everything was already resolved and routed.";
 			sayRoute(
 				legName ? `${summary.replace(/\.$/, "")} on ${legName}.` : summary,
-				failed > 0 || approximated > 0,
+				failed > 0 || approximated > 0 || unmeasured > 0,
 			);
 		}
 
@@ -2123,7 +2142,21 @@
 		}
 
 		const api = {
+			/* Two exports, and picking the wrong one loses the routing.
+
+			   getDocument is the CLEAN v3 — exactly what
+			   docs/trip-import-schema-v3.json describes, annex stripped. It is
+			   for handing out: Copy as JSON, the importer, anything that is not
+			   this tab's own storage.
+
+			   getStoredDocument keeps the `rux_route` annex, which is where
+			   every measured mile, drive time, coordinate and geocoder match
+			   lives. Anything that SAVES an itinerary must use this one, or the
+			   document comes back unrouted and the whole Resolve pass has to be
+			   paid for again. The itinerary inbox's Save used getDocument and
+			   did exactly that. */
 			getDocument: () => toCleanV3(state),
+			getStoredDocument: () => toV3(state),
 			setDocument(payload) {
 				Object.assign(state, fromV3(payload));
 				fromInboxId = null;

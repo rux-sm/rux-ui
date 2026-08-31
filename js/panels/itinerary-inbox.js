@@ -264,14 +264,21 @@
 
 	/* What is on screen, which is not always what is in the row: the point of
 	   opening the window is to change it. Falls back to the stored document so
-	   an action taken without the editor open still has something to act on. */
+	   an action taken without the editor open still has something to act on.
+
+	   getStoredDocument, never getDocument: the clean export strips the
+	   `rux_route` annex, and the annex is where every measured mile and drive
+	   time lives. Printing a sheet from it would print a trip with no
+	   mileage. */
 	function currentDocument(row) {
-		return (openDraft === row && grid?.getDocument()) || row.document;
+		return (openDraft === row && grid?.getStoredDocument()) || row.document;
 	}
 
 	async function saveToInbox() {
 		if (!openDraft) return;
-		const document_ = grid?.getDocument();
+		// The annex-carrying export — see currentDocument above. Saving the
+		// clean one silently discarded the entire routing pass.
+		const document_ = grid?.getStoredDocument();
 		if (!document_) return;
 		const label = summarise(document_)?.client || openDraft.label || "";
 		const saved = await (await db()).updateItineraryDraft(openDraft.id, {
