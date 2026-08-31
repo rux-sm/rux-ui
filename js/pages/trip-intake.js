@@ -2,21 +2,30 @@
    RUX UI — TRIP INTAKE WORKBENCH
    --------------------------------------------------------------------------
    Workbench (intake.html) for turning a customer's email or trip document
-   into a reviewable Trip Draft v2.
+   into a reviewable Trip Draft v3.
 
    Source material goes in on the left and Process sends it to the Worker's
    /ai/extract route, which holds the API key and does the extraction
    server-side. The draft comes back into the output area, where
    normalizeTripImport validates it and the preview renders it.
 
-   Processing costs money per call, so that one route requires a signed-in
-   session; nothing else on the page does. Pasting a draft in by hand still
-   works exactly as before, which is also the fallback when the service is
-   down.
+   Three ways out, and the page had only the middle one for a while: Send to
+   inbox files it as an itinerary with no trip yet, Open in trip editor hands
+   it across for review, Copy JSON is the escape hatch.
+
+   Processing costs money per call, so it needs the extraction passphrase —
+   the same one Settings holds in the app, on the same origin, so it is set
+   once and both pages see it. Everything else here works without it, and
+   pasting a draft in by hand is still the fallback when the service is down.
+
+   v3 rather than v2 now. That is what the inbox and the Grid tab read, and
+   the Worker's `itinerary` lane is the contract for it; the `quote` lane
+   still speaks v2 for a public enquiry form that does not exist yet.
    ========================================================================== */
 
 import { normalizeTripImport } from "../data/trip-import.js";
-import { supabase, SUPABASE_URL } from "../data/supabase.js";
+import { extractDraft, hasPassphrase, mediaTypeOf } from "../data/extract.js";
+import { saveItineraryDraft } from "../data/itinerary-grid-db.js";
 
 // ── DOM refs ─────────────────────────────────────────────────────────────
 
@@ -40,14 +49,10 @@ const warningsCard = document.getElementById("intake-warnings-card");
 const warningsList = document.getElementById("intake-warnings");
 
 const authCard = document.getElementById("intake-auth");
-const signInForm = document.getElementById("intake-signin-form");
-const emailInput = document.getElementById("intake-email");
-const passwordInput = document.getElementById("intake-password");
-const signInBtn = document.getElementById("intake-signin-btn");
-const authError = document.getElementById("intake-auth-error");
-const signedInRow = document.getElementById("intake-signed-in");
-const userEmailEl = document.getElementById("intake-user-email");
-const signOutBtn = document.getElementById("intake-signout-btn");
+const authNotice = document.getElementById("intake-auth-notice");
+const authReady = document.getElementById("intake-auth-ready");
+const inboxBtn = document.getElementById("intake-inbox-btn");
+const inboxStatus = document.getElementById("intake-inbox-status");
 const processBtn = document.getElementById("intake-process-btn");
 const processStatus = document.getElementById("intake-process-status");
 
@@ -167,96 +172,48 @@ jsonFileInput.addEventListener("change", () => {
 
 // ── Sign-in ──────────────────────────────────────────────────────────────
 
-// Only the extraction route is gated. Pasting a draft, validating it, and
-// previewing it all work signed out — and keep working if the service is down.
+/* Only the extraction route is gated. Pasting a draft, validating it, and
+   previewing it all work without the passphrase — and keep working if the
+   service is down.
 
-let session = null;
+   This replaced a Supabase email-and-password sign-in, which was the gate the
+   Worker used to check. That gate presumed an authenticated user the app has
+   never had, so the route it protected had never run once; see
+   worker/README.md § The gate. The passphrase lives in localStorage on this
+   origin, which is the same origin as the app, so Settings → Reading documents
+   sets it for both pages at once. */
 
-function renderAuthState() {
-	const signedIn = !!session;
+function renderExtractState() {
+	const ready = hasPassphrase();
 	authCard.hidden = false;
-	signInForm.hidden = signedIn;
-	signedInRow.hidden = !signedIn;
-	if (signedIn) userEmailEl.textContent = session.user?.email || "";
-	processBtn.disabled = !signedIn;
+	authNotice.hidden = ready;
+	authReady.hidden = !ready;
+	processBtn.disabled = !ready;
 	processBtn.setAttribute(
 		"title",
-		signedIn ? "Extract a trip draft from the source material" : "Sign in to process documents",
+		ready
+			? "Extract a trip draft from the source material"
+			: "Add the extraction passphrase in the app's Settings first",
 	);
 }
 
-supabase.auth.getSession().then(({ data }) => {
-	session = data.session;
-	renderAuthState();
-});
-
-supabase.auth.onAuthStateChange((_event, next) => {
-	session = next;
-	renderAuthState();
-});
-
-signInForm.addEventListener("submit", async (event) => {
-	event.preventDefault();
-	authError.hidden = true;
-	signInBtn.disabled = true;
-	const { error } = await supabase.auth.signInWithPassword({
-		email: emailInput.value.trim(),
-		password: passwordInput.value,
-	});
-	signInBtn.disabled = false;
-	passwordInput.value = "";
-	if (error) {
-		authError.textContent = error.message;
-		authError.hidden = false;
-	}
-});
-
-signOutBtn.addEventListener("click", () => supabase.auth.signOut());
+renderExtractState();
 
 // ── Process ──────────────────────────────────────────────────────────────
-
-const EXTRACT_URL = `${SUPABASE_URL}/ai/extract`;
-
-const EXTENSION_TYPES = {
-	pdf: "application/pdf",
-	png: "image/png",
-	jpg: "image/jpeg",
-	jpeg: "image/jpeg",
-	webp: "image/webp",
-	gif: "image/gif",
-	txt: "text/plain",
-};
-
-// A dropped file's type can be empty depending on the source, so fall back to
-// the extension rather than sending the model a blank media type.
-function mediaTypeOf(file) {
-	if (file.type) return file.type;
-	return EXTENSION_TYPES[file.name.split(".").pop()?.toLowerCase()] || "";
-}
 
 function isTextFile(file) {
 	return mediaTypeOf(file) === "text/plain";
 }
 
-function readFile(file, as) {
+// Text only now: extract.js owns the base64 encoding of everything else, so a
+// second reader here would be a second answer about the same file.
+function readFile(file) {
 	return new Promise((resolve, reject) => {
 		const reader = new FileReader();
 		reader.onload = () => resolve(reader.result);
 		reader.onerror = () => reject(reader.error || new Error(`Could not read ${file.name}.`));
-		if (as === "text") reader.readAsText(file);
-		else reader.readAsDataURL(file);
+		reader.readAsText(file);
 	});
-}
-
-async function toFilePayload(file) {
-	const dataUrl = String(await readFile(file, "dataURL"));
-	return {
-		name: file.name,
-		media_type: mediaTypeOf(file),
-		// readAsDataURL gives "data:<type>;base64,<payload>" — the API wants
-		// only the payload.
-		data: dataUrl.slice(dataUrl.indexOf(",") + 1),
-	};
 }
 
 function setProcessStatus(message, tone) {
@@ -265,13 +222,9 @@ function setProcessStatus(message, tone) {
 }
 
 processBtn.addEventListener("click", async () => {
-	// Ask for the session fresh rather than trusting the cached one: an access
-	// token expires, and supabase-js refreshes it on demand.
-	const { data } = await supabase.auth.getSession();
-	session = data.session;
-	renderAuthState();
-	if (!session) {
-		setProcessStatus("Sign in first.", "error");
+	renderExtractState();
+	if (!hasPassphrase()) {
+		setProcessStatus("Add the extraction passphrase in the app's Settings first.", "error");
 		return;
 	}
 
@@ -284,8 +237,8 @@ processBtn.addEventListener("click", async () => {
 		const textParts = [sourceText.value.trim()].filter(Boolean);
 		const files = [];
 		for (const file of attachedFiles) {
-			if (isTextFile(file)) textParts.push(String(await readFile(file, "text")).trim());
-			else files.push(await toFilePayload(file));
+			if (isTextFile(file)) textParts.push(String(await readFile(file)).trim());
+			else files.push(file);
 		}
 		const text = textParts.filter(Boolean).join("\n\n");
 
@@ -295,28 +248,60 @@ processBtn.addEventListener("click", async () => {
 		}
 
 		setProcessStatus("Extracting the trip draft…", "busy");
-		const response = await fetch(EXTRACT_URL, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${session.access_token}`,
-			},
-			body: JSON.stringify({ text, files }),
-		});
+		// One extraction client, shared with the app's Grid tab, so the two
+		// cannot disagree about the endpoint, the header or the lane.
+		const { draft } = await extractDraft({ text, files, lane: "itinerary" });
 
-		const body = await response.json().catch(() => ({}));
-		if (!response.ok) {
-			throw new Error(body.error || `Processing failed (${response.status}).`);
-		}
-
-		jsonText.value = JSON.stringify(body.draft, null, 2);
+		jsonText.value = JSON.stringify(draft, null, 2);
 		setProcessStatus("Draft ready. Check it against the source before using it.", "ok");
 		// Reuse the one validation path rather than a second copy of it.
 		previewBtn.click();
 	} catch (error) {
 		setProcessStatus(error.message, "error");
 	} finally {
-		processBtn.disabled = !session;
+		renderExtractState();
+	}
+});
+
+/* ── Send to the itinerary inbox ──────────────────────────────────────────
+
+   The third way out, and the one that matches how the work actually arrives:
+   an itinerary turns up before anyone has decided whether it is a new trip, an
+   update to one already booked, or a quote that never becomes either. Filing
+   it does not force that decision.
+
+   saveItineraryDraft is the inbox's one way in — the same call the module's own
+   New itinerary button makes — so this page is a client of that rather than a
+   second writer with its own idea of the row's shape. */
+
+inboxBtn.addEventListener("click", async () => {
+	if (!lastValidJson) return;
+	if (Number(lastValidJson.schema_version) !== 3) {
+		inboxStatus.textContent =
+			"The inbox reads Trip Draft v3. This draft is an older version — open it in the trip editor instead.";
+		inboxStatus.dataset.tone = "error";
+		return;
+	}
+
+	inboxBtn.disabled = true;
+	inboxStatus.textContent = "Filing…";
+	inboxStatus.dataset.tone = "busy";
+	try {
+		const label = String(lastValidJson.trip?.client || lastValidJson.trip?.destination || "");
+		const saved = await saveItineraryDraft(lastValidJson, label);
+		if (saved) {
+			inboxStatus.textContent = "Filed. It is in Itineraries, waiting for a decision.";
+			inboxStatus.dataset.tone = "ok";
+		} else {
+			inboxStatus.textContent =
+				"The inbox is not set up — run supabase/trip_itineraries_inbox.sql.";
+			inboxStatus.dataset.tone = "error";
+		}
+	} catch (error) {
+		inboxStatus.textContent = error?.message || "That itinerary could not be filed.";
+		inboxStatus.dataset.tone = "error";
+	} finally {
+		inboxBtn.disabled = false;
 	}
 });
 
@@ -350,8 +335,10 @@ previewBtn.addEventListener("click", () => {
 	renderPreview(result.trip, result.warnings, payload);
 	previewSection.hidden = false;
 	copyBtn.hidden = false;
+	inboxBtn.hidden = false;
 	openBtn.hidden = false;
 	clearBtn.hidden = false;
+	inboxStatus.textContent = "";
 	previewSection.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
@@ -413,8 +400,10 @@ clearBtn.addEventListener("click", () => {
 	lastValidJson = null;
 	previewSection.hidden = true;
 	copyBtn.hidden = true;
+	inboxBtn.hidden = true;
 	openBtn.hidden = true;
 	clearBtn.hidden = true;
+	inboxStatus.textContent = "";
 	hideError();
 });
 

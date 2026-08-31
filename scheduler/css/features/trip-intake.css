@@ -196,6 +196,7 @@
 
 .trip-intake__actions {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	gap: var(--rux-space-3);
 }
@@ -380,15 +381,11 @@
 	color: var(--rux-warning);
 }
 
-/* ── Sign-in ───────────────────────────────────────────────────────────────
+/* ── Extraction passphrase ─────────────────────────────────────────────────
    Only the extraction route is gated, so this sits above the panels as a
-   condition on one button rather than a gate on the page. */
-
-.trip-intake__auth-form {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-space-4);
-}
+   condition on one button rather than a gate on the page. The sign-in form
+   this replaced is gone with the Supabase session gate it served — the rules
+   for the form fields went with it, since nothing types anything here now. */
 
 .trip-intake__auth-lede {
 	display: flex;
@@ -402,22 +399,6 @@
 .trip-intake__auth-lede .rux-icon {
 	color: var(--rux-text-secondary);
 	flex: none;
-}
-
-.trip-intake__auth-fields {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: flex-end;
-	gap: var(--rux-space-3);
-}
-
-.trip-intake__auth-fields .rux-field {
-	flex: 1 1 14rem;
-	min-width: 0;
-}
-
-.trip-intake__auth-error {
-	margin: 0;
 }
 
 .trip-intake__auth-status {
@@ -436,6 +417,23 @@
 .trip-intake__auth-who {
 	flex: 1;
 	min-width: 0;
+}
+
+/* Where the filing went. Sits after the actions rather than beside them, so a
+   long message wraps under the row instead of squeezing the buttons. */
+.trip-intake__inbox-status {
+	flex-basis: 100%;
+	margin: 0;
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-size-14);
+}
+
+.trip-intake__inbox-status[data-tone="ok"] {
+	color: var(--rux-success);
+}
+
+.trip-intake__inbox-status[data-tone="error"] {
+	color: var(--rux-danger);
 }
 
 /* ── Process action ────────────────────────────────────────────────────── */

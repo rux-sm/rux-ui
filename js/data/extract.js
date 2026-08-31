@@ -41,6 +41,25 @@ export const ACCEPTED_TYPES = [
 ];
 export const MAX_FILES = 8;
 
+/* A dropped file's `type` can be empty depending on where it was dragged from,
+   and the Worker rejects a blank media type by name. The extension is the only
+   thing left to go on. Lives here rather than in either caller so the intake
+   workbench and the Grid tab cannot disagree about what a .jpg is. */
+const EXTENSION_TYPES = {
+	pdf: "application/pdf",
+	png: "image/png",
+	jpg: "image/jpeg",
+	jpeg: "image/jpeg",
+	webp: "image/webp",
+	gif: "image/gif",
+	txt: "text/plain",
+};
+
+export function mediaTypeOf(file) {
+	if (file?.type) return file.type;
+	return EXTENSION_TYPES[String(file?.name || "").split(".").pop()?.toLowerCase()] || "";
+}
+
 export function getPassphrase() {
 	try {
 		return localStorage.getItem(STORAGE_KEY) || "";
@@ -110,7 +129,7 @@ export async function extractDraft({ text = "", files = [], lane = "itinerary", 
 	for (const file of files) {
 		encoded.push({
 			name: file.name,
-			media_type: file.type,
+			media_type: mediaTypeOf(file),
 			data: await fileToBase64(file),
 		});
 	}

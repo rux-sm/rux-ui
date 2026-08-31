@@ -78,6 +78,19 @@ queue item tells a dispatcher nothing.
   trip already holding an itinerary refuses the move and keeps its own; the
   inbox copy is closed rather than deleted.
 
+### Three ways out of the workbench
+
+[`intake.html`](../intake.html) is the operator's own paste-and-drop bench, and
+its draft now has somewhere to go in each of the three directions the work
+takes: **Send to inbox** files it with no trip, **Open in trip editor** hands it
+across for review through `sessionStorage`, and **Copy JSON** is the escape
+hatch. Filing goes through `saveItineraryDraft` — the inbox's one way in, the
+same call the module's own New itinerary button makes — so the page is a client
+of the inbox rather than a second writer with its own idea of a row.
+
+Its Supabase email-and-password sign-in is gone with the gate it served. See
+[`worker/README.md`](../worker/README.md) § The gate.
+
 ## Two lanes, and they are not the same
 
 The word "itinerary" covers two different documents, and confusing them is
@@ -87,11 +100,11 @@ what the old three-prompt chain got wrong.
 through `itinerary-prompt.md` and Trip Draft v3. This is the lane everything
 above describes.
 
-**Inbound quote request** — a stranger asking for a price. Goes to
-[`intake.html`](../intake.html), through
-[`gem-itinerary-prompt.md`](gem-itinerary-prompt.md) and Trip Draft v2. Still
-v2 on purpose: v3 is a superset, but repointing that lane is a behavioural
-change to a page that has never run its extraction route at all (todo T4).
+**Inbound quote request** — a stranger asking for a price. The Worker's
+`quote` lane and [`gem-itinerary-prompt.md`](gem-itinerary-prompt.md) still
+speak v2 for it. There is no page on that lane: `intake.html` moved to the
+itinerary lane on 2026-08-31, because it is an internal workbench for the
+operator's own documents rather than anything a stranger reaches.
 
 `normalizeTripImport` reads v1, v2 and v3, so both lanes land in the same
 editor.
@@ -185,9 +198,8 @@ passphrase can cost.
   key, no auth user, no `wrangler.toml`, never deployed (todo T4, T5). The
   workflow is built to not need it.
 - **The quote lane's `data_flags`** (todo T7) and **its lane gate** (todo T8).
-- **`intake.html` feeding the inbox.** It produces a v2 draft and still
-  dead-ends; `ItineraryInbox.add` is the one call it needs. The Worker's
-  `quote` lane is ready for it.
+- **A public enquiry form on the `quote` lane.** The Worker lane exists and
+  speaks v2; nothing calls it.
 - **Retiring the classic Itinerary tab.** Both tabs edit the same trip. Whether
   the Grid replaces it is a decision, not a leftover.
 

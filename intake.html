@@ -16,7 +16,7 @@
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=135" />
 		<link rel="stylesheet" href="./scheduler/css/components.css?v=282" />
-		<link rel="stylesheet" href="./scheduler/css/features/trip-intake.css?v=2" />
+		<link rel="stylesheet" href="./scheduler/css/features/trip-intake.css?v=4" />
 		<link
 			rel="stylesheet"
 			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap"
@@ -46,64 +46,37 @@
 				</p>
 			</div>
 
-			<!-- ── Sign-in ─────────────────────────────────────────── -->
+			<!-- ── Extraction passphrase ───────────────────────────── -->
+			<!-- Replaced an email-and-password sign-in. The Worker used to gate
+			     /ai/extract on a Supabase session belonging to one user, which
+			     presumed an authenticated user this app has never had — so the
+			     route had never run. The passphrase lives in localStorage on
+			     this origin, which is the app's origin too, so Settings sets it
+			     for both pages at once. -->
 			<section class="rux-card trip-intake__auth" id="intake-auth" hidden>
 				<div class="rux-card__body">
-					<form class="trip-intake__auth-form" id="intake-signin-form" hidden>
-						<p class="trip-intake__auth-lede">
-							<span class="rux-icon" aria-hidden="true">lock</span>
-							Processing runs against a paid service, so it needs a sign-in.
-							Everything else on this page works without one.
-						</p>
-						<div class="trip-intake__auth-fields">
-							<label class="rux-field">
-								<span class="rux-field__label">Email</span>
-								<input
-									class="rux-input"
-									type="email"
-									id="intake-email"
-									autocomplete="username"
-									required
-								/>
-							</label>
-							<label class="rux-field">
-								<span class="rux-field__label">Password</span>
-								<input
-									class="rux-input"
-									type="password"
-									id="intake-password"
-									autocomplete="current-password"
-									required
-								/>
-							</label>
-							<button
-								class="rux-button rux-button--default"
-								type="submit"
-								id="intake-signin-btn"
-							>
-								<span class="rux-button__label">Sign in</span>
-							</button>
-						</div>
-						<p
-							class="rux-alert rux-alert--danger trip-intake__auth-error"
-							id="intake-auth-error"
-							role="alert"
-							hidden
-						></p>
-					</form>
-
-					<div class="trip-intake__auth-status" id="intake-signed-in" hidden>
+					<p
+						class="trip-intake__auth-lede"
+						id="intake-auth-notice"
+						hidden
+					>
+						<span class="rux-icon" aria-hidden="true">lock</span>
+						<!-- One span, not a bare text node: the lede is a flex
+						     row, so an inline <strong> beside loose text becomes
+						     its own flex item and the sentence breaks into
+						     three columns. -->
+						<span>
+							Processing runs against a paid service and needs the
+							extraction passphrase. Set it once in the app under
+							<strong>Settings → Reading documents</strong>.
+							Everything else on this page works without it.
+						</span>
+					</p>
+					<div class="trip-intake__auth-status" id="intake-auth-ready" hidden>
 						<span class="rux-icon" aria-hidden="true">check_circle</span>
 						<span class="trip-intake__auth-who">
-							Signed in as <strong id="intake-user-email"></strong>
+							Ready to process documents.
 						</span>
-						<button
-							class="rux-button rux-button--ghost rux-button--sm"
-							type="button"
-							id="intake-signout-btn"
-						>
-							<span class="rux-button__label">Sign out</span>
-						</button>
 					</div>
 				</div>
 			</section>
@@ -200,7 +173,7 @@
 								class="rux-textarea trip-intake__json-text"
 								id="intake-json-text"
 								rows="8"
-								placeholder='{"schema_version": 2, "trip": { ... }}'
+								placeholder='{"schema_version": 3, "trip": { ... }}'
 								spellcheck="false"
 							></textarea>
 						</label>
@@ -226,6 +199,15 @@
 				<button
 					class="rux-button rux-button--accent"
 					type="button"
+					id="intake-inbox-btn"
+					hidden
+				>
+					<span class="rux-icon" aria-hidden="true">inbox</span>
+					<span class="rux-button__label">Send to inbox</span>
+				</button>
+				<button
+					class="rux-button rux-button--default"
+					type="button"
 					id="intake-open-btn"
 					hidden
 				>
@@ -250,6 +232,12 @@
 					<span class="rux-icon" aria-hidden="true">delete</span>
 					<span class="rux-button__label">Clear</span>
 				</button>
+				<p
+					class="trip-intake__inbox-status"
+					id="intake-inbox-status"
+					role="status"
+					aria-live="polite"
+				></p>
 			</div>
 
 			<!-- ── Draft preview ───────────────────────────────────── -->
@@ -296,6 +284,6 @@
 			</section>
 		</main>
 
-		<script type="module" src="./js/pages/trip-intake.js?v=4"></script>
+		<script type="module" src="./js/pages/trip-intake.js?v=6"></script>
 	</body>
 </html>
