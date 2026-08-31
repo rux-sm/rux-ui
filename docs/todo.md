@@ -321,6 +321,58 @@ distinction on the geocoder path, so a directory hit could use the same pair
 instead of a destructive assignment. Then "Mine is right" in the address review
 has something to restore, which today it does not.
 
+### T11 — the detour check fires on every out-and-back, because the two stops either side are the same place
+
+`suspectLocations()` in [`itinerary-grid.js:302`](../js/components/itinerary-grid.js:302)
+flags a stop when going via it is far enough, and enough times, further than
+going straight from the stop before to the stop after:
+
+```
+direct = crow(before, after)
+via    = crow(before, here) + crow(here, after)
+detour = via - direct            // must clear DETOUR_FLOOR_MILES = 40
+via >= direct * DETOUR_RATIO     // DETOUR_RATIO = 4
+```
+
+On a round trip whose passengers are dropped back where they were collected —
+the ordinary shape for a school trip — the stop before the destination and the
+stop after it are the **same location**. So `direct` is 0, `via` is twice the
+run out, `detour` is the whole round trip, and `via >= 0 * 4` is true for any
+`via` at all. Both guards pass unconditionally and the destination is always
+accused of being a bad geocode.
+
+Seen on the Veterans Memorial HS (CCISD) band trip to Shirley Field, Laredo,
+2026-08-31: Shirley Field resolved correctly from the saved directory to 2002
+San Bernardo Avenue and still drew "This resolved about 262 miles off the line
+between the stops either side of it" — 262 being exactly twice the 131-mile
+crow flight to Laredo.
+
+The cost is not cosmetic. `renderReview()` returns early at line 1288, so the
+accusation renders *instead of* whatever review the stop would otherwise get.
+On this trip Shirley Field had come from the saved directory and so carried no
+confidence note of its own — the flag was pure false alarm on an address the
+operator had already verified. On a stop that did need confirming, the same
+early return would swallow its "Address is right" button, leaving an accusation
+the operator has no control to answer. Either way the toolbar count is inflated
+by a stop it offers no action for: it read "3 addresses to check" while
+rendering two buttons.
+
+How it is known: reproduced while processing a real customer itinerary; the
+262 figure matches the geometry exactly.
+
+Why it was not fixed on the spot: the task was to process an itinerary, and the
+fix is a judgement call about the heuristic rather than a typo — it needs a
+decision about what "off the line" should mean when there is no line.
+
+Cost to close: small, but pick the rule deliberately. When `direct` is ~0 the
+neighbours are one point, so the meaningful comparison is against the leg
+lengths themselves, not against zero — e.g. skip the ratio test when `direct`
+falls below some floor and lean on an absolute detour bound, or compare `here`
+against the *nearest* neighbour rather than the pair. Whichever is chosen,
+`renderReview()` should fall through to the address review rather than return
+early, so a suspect stop still offers its confirm button.
+
+
 ---
 
 *A third entry — fourteen `trip_ref` values each shared by two active trips — was drafted
