@@ -27,7 +27,7 @@ new Function("window", source)(host);
 const {
 	fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
 	legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops, toCleanV3, localityOf,
-	needsReview,
+	needsReview, suspectLocations,
 } = host.ItineraryGrid;
 
 // legRisks and dutyByDay both take the derived days alongside the stops, so
@@ -694,6 +694,63 @@ test("duty and drive are counted per day, not across the trip", () => {
 test("a day with a single time has no duty span", () => {
 	const [stops, days] = withDays({ type: "pickup", depart: "05:00" });
 	assert.equal(dutyByDay(stops, days)[0].duty, 0);
+});
+
+/* ── A stop in the wrong place ───────────────────────────────────────── */
+
+test("a stop nowhere near its neighbours is flagged, whatever its address says", () => {
+	/* The real failure, from an IDEA Mission quote. Asked for "NorthPark
+	   Center, Dallas, TX" while proximity was biased to the operator's own
+	   McAllen address, Mapbox matched "615 W Dallas Ave, McAllen" — Dallas as
+	   a STREET, 500 miles from the trip. sameAddress passed it, because a
+	   query with no house number and no ZIP gives it nothing to contradict.
+
+	   Geometry is what sees it: going SMU → NorthPark → hotel this way is
+	   hundreds of miles when the direct hop is three. */
+	const stops = [
+		{ type: "stop", name: "SMU", lat: 32.8437, lng: -96.7860 },
+		{ type: "stop", name: "NorthPark (mis-resolved to McAllen)", lat: 26.1985, lng: -98.2267 },
+		{ type: "stop", name: "Hotel, Dallas", lat: 32.8000, lng: -96.8000 },
+	].map(normalizeStop);
+
+	const flags = suspectLocations(stops);
+	assert.ok(flags[1], "the middle stop is flagged");
+	assert.ok(flags[1] > 900, `the detour is ~1000 miles, got ${flags[1]}`);
+	assert.equal(flags[0], false, "the ends are never flagged — they have only one neighbour");
+	assert.equal(flags[2], false);
+});
+
+test("an ordinary on-route stop is not flagged", () => {
+	// George West sits between Mission and New Braunfels. A real trip is full
+	// of these, and flagging them would make the warning worthless.
+	const stops = [
+		{ type: "pickup", name: "Mission", lat: 26.2159, lng: -98.3253 },
+		{ type: "stop", name: "George West", lat: 28.3325, lng: -98.1181 },
+		{ type: "stop", name: "New Braunfels", lat: 29.7030, lng: -98.1245 },
+	].map(normalizeStop);
+	assert.deepEqual(suspectLocations(stops), [false, false, false]);
+});
+
+test("a short hop with a big ratio is not flagged", () => {
+	/* Two stops a few hundred yards apart with a third beside them can produce
+	   an enormous RATIO over a trivial distance. The absolute floor is what
+	   stops that reading as an error. */
+	const stops = [
+		{ type: "stop", lat: 32.8000, lng: -96.8000 },
+		{ type: "stop", lat: 32.8100, lng: -96.8000 },
+		{ type: "stop", lat: 32.8001, lng: -96.8000 },
+	].map(normalizeStop);
+	assert.deepEqual(suspectLocations(stops), [false, false, false]);
+});
+
+test("an unresolved stop is not judged", () => {
+	// No coordinates is a different problem, reported a different way.
+	const stops = [
+		{ type: "stop", lat: 32.8, lng: -96.8 },
+		{ type: "stop" },
+		{ type: "stop", lat: 32.9, lng: -96.9 },
+	].map(normalizeStop);
+	assert.deepEqual(suspectLocations(stops), [false, false, false]);
 });
 
 /* ── Split trips ─────────────────────────────────────────────────────── */

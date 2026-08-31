@@ -259,6 +259,54 @@
 		});
 	}
 
+	/* Straight-line miles between two points. Haversine, not a route: this is
+	   only ever used for plausibility, where the road distance is beside the
+	   point and an API call per stop would not be worth it. */
+	function crowMiles(a, b) {
+		if (a?.lat == null || b?.lat == null) return null;
+		const toRad = (deg) => (deg * Math.PI) / 180;
+		const dLat = toRad(b.lat - a.lat);
+		const dLng = toRad(b.lng - a.lng);
+		const h = Math.sin(dLat / 2) ** 2
+			+ Math.cos(toRad(a.lat)) * Math.cos(toRad(b.lat)) * Math.sin(dLng / 2) ** 2;
+		return 3958.8 * 2 * Math.asin(Math.min(1, Math.sqrt(h)));
+	}
+
+	/* A stop that is nowhere near the two either side of it.
+
+	   The address check cannot see this class at all: a query with no house
+	   number and no ZIP gives it nothing to compare, which is exactly the
+	   query a geocoder is most likely to get wrong. "NorthPark Center, Dallas,
+	   TX" came back as a street in McAllen, 500 miles off, and every string
+	   test passed it.
+
+	   Geometry catches what the string cannot. If going via this stop is many
+	   times further than going straight from the one before to the one after,
+	   the stop is in the wrong place — whatever its address says. Both a ratio
+	   AND an absolute floor, because a short hop between two near-identical
+	   points can produce a huge ratio over a trivial distance. */
+	const DETOUR_RATIO = 4;
+	const DETOUR_FLOOR_MILES = 40;
+
+	function suspectLocations(stops) {
+		const flags = new Array(stops.length).fill(false);
+		for (let i = 1; i < stops.length - 1; i += 1) {
+			const before = stops[i - 1];
+			const here = stops[i];
+			const after = stops[i + 1];
+			if (here.lat == null || before.lat == null || after.lat == null) continue;
+
+			const direct = crowMiles(before, after);
+			const via = crowMiles(before, here) + crowMiles(here, after);
+			if (direct == null || via == null) continue;
+			const detour = via - direct;
+			if (detour < DETOUR_FLOOR_MILES) continue;
+			if (via < direct * DETOUR_RATIO) continue;
+			flags[i] = Math.round(detour);
+		}
+		return flags;
+	}
+
 	/* Schedule risk, per leg.
 
 	   The comparison is made on absolute minutes — day offset times 1440 plus
@@ -907,14 +955,29 @@
 		return parts.slice(-2).join(", ");
 	}
 
-	async function geocode(address, token, types = "address,poi") {
+	/* `near` is the anchor the geocoder biases toward, and getting it wrong is
+	   not a near miss.
+
+	   This used to send proximity=ip, which is the OPERATOR's location. On a
+	   trip that leaves the region that is the worst possible hint: asked for
+	   "NorthPark Center, Dallas, TX" from a McAllen address it returned
+	   "615 W Dallas Ave, McAllen" — it matched Dallas as a STREET name nearby
+	   rather than the city 500 miles away, and "University of Dallas, Irving,
+	   TX" landed on the identical wrong point. Both passed sameAddress,
+	   because a query with no house number and no ZIP gives it nothing to
+	   contradict.
+
+	   A trip is a chain, so the previous resolved stop is the honest anchor:
+	   the next stop is usually near the last one, and where it is not, the
+	   detour check below catches it. */
+	async function geocode(address, token, types = "address,poi", near = null) {
 		const url = new URL("https://api.mapbox.com/search/searchbox/v1/forward");
 		url.searchParams.set("q", address);
 		url.searchParams.set("access_token", token);
 		url.searchParams.set("country", "US");
 		url.searchParams.set("types", types);
 		url.searchParams.set("limit", "1");
-		url.searchParams.set("proximity", "ip");
+		url.searchParams.set("proximity", near ? `${near.lng},${near.lat}` : "ip");
 		const response = await fetch(url);
 		if (!response.ok) throw new Error(`Mapbox forward failed: ${response.status}`);
 		const feature = (await response.json()).features?.[0];
@@ -999,7 +1062,7 @@
 								value="${escHtml(stop.activity)}" autocomplete="off"/>
 						</label>
 					</div>`}
-				${fixed ? "" : renderReview(stop, index)}
+				${fixed ? "" : renderReview(stop, index, extras.suspect)}
 				${extras.plan ? `<p class="sched-itinerary-grid__plan">
 					<span class="rux-icon" aria-hidden="true">route</span>
 					<span>${escHtml(extras.plan.text)}</span>
@@ -1048,7 +1111,17 @@
 	   Confirming writes the address to the saved-locations directory, so the
 	   next trip resolves it instantly and never asks again. That is the point
 	   of asking once. */
-	function renderReview(stop, index) {
+	function renderReview(stop, index, suspectMiles) {
+		if (suspectMiles) {
+			return `<div class="sched-itinerary-grid__review">
+				<p class="sched-itinerary-grid__note">
+					<span class="rux-icon" aria-hidden="true">wrong_location</span>
+					This resolved about ${escHtml(String(suspectMiles))} miles off the line between the
+					stops either side of it. Check the address — the geocoder may have matched
+					somewhere else with a similar name.
+				</p>
+			</div>`;
+		}
 		if (stop.approxFrom) {
 			return `<p class="sched-itinerary-grid__note">
 				<span class="rux-icon" aria-hidden="true">my_location</span>
@@ -1101,6 +1174,13 @@
 		return !!CONFIDENCE_NOTE[stop.addressConfidence];
 	}
 
+	// Stops the geometry says are in the wrong place, whatever their address
+	// claims. Counted separately because needsReview reads one stop at a time
+	// and this one is only visible from its neighbours.
+	function suspectCount(stops) {
+		return suspectLocations(stops).filter(Boolean).length;
+	}
+
 	function renderLeg(stop, index, risk, approx) {
 		const miles = Number.parseFloat(stop.miles);
 		const mins = driveMins(stop.drive);
@@ -1133,6 +1213,7 @@
 		const days = deriveDays(leg.stops);
 		const risks = legRisks(leg.stops, days);
 		const plan = yardPlan(leg.stops);
+		const suspect = suspectLocations(leg.stops);
 		const parts = [];
 		let shownDay = -1;
 		leg.stops.forEach((stop, index) => {
@@ -1152,6 +1233,7 @@
 			}
 			parts.push(renderRow(stop, index, days[index], leg.stops.length, {
 				plan: rowPlan(stop, plan),
+				suspect: suspect[index],
 			}));
 		});
 		return parts.join("");
@@ -1368,7 +1450,7 @@
 		const reviewLabel = host.querySelector("[data-review-label]");
 
 		function syncReviewButton() {
-			const count = L().stops.filter(needsReview).length;
+			const count = L().stops.filter(needsReview).length + suspectCount(L().stops);
 			reviewBtn.hidden = count === 0;
 			reviewLabel.textContent = count === 1
 				? "1 address to check"
@@ -1642,9 +1724,19 @@
 			let failed = 0;
 
 			try {
+				/* The anchor for the next lookup: the last point we are confident
+				   about. Starts at the yard, since a trip starts there. */
+				const yard = window.RuxSettings?.getYard?.() || YARD_FALLBACK;
+				let near = yard.lat != null && yard.lng != null
+					? { lat: yard.lat, lng: yard.lng }
+					: null;
+
 				for (const [index, stop] of L().stops.entries()) {
 					const address = stop.address.trim();
-					if (stop.lat != null && stop.lng != null) continue;
+					if (stop.lat != null && stop.lng != null) {
+						near = { lat: stop.lat, lng: stop.lng };
+						continue;
+					}
 					if (address.length < 3) continue;
 					sayRoute(`Resolving stop ${index + 1} of ${L().stops.length}…`);
 
@@ -1666,11 +1758,12 @@
 						stop.addressConfidence = null;
 						stop.matchedAddress = null;
 						stop.approxFrom = null;
+						near = { lat: stop.lat, lng: stop.lng };
 						fromDirectory += 1;
 						continue;
 					}
 					try {
-						const found = await geocode(address, token);
+						const found = await geocode(address, token, "address,poi", near);
 						if (found) {
 							stop.lat = found.lat;
 							stop.lng = found.lng;
@@ -1691,6 +1784,7 @@
 								? found.address
 								: null;
 							stop.approxFrom = null;
+							near = { lat: stop.lat, lng: stop.lng };
 							resolved += 1;
 							continue;
 						}
@@ -1715,13 +1809,14 @@
 						   Whataburger. */
 						const town = localityOf(address);
 						if (town && town.toLowerCase() !== address.toLowerCase()) {
-							const place = await geocode(town, token, "place,locality,postcode");
+							const place = await geocode(town, token, "place,locality,postcode", near);
 							if (place) {
 								stop.lat = place.lat;
 								stop.lng = place.lng;
 								stop.mapboxId = null;
 								stop.matchedAddress = null;
 								stop.approxFrom = place.address || town;
+								near = { lat: stop.lat, lng: stop.lng };
 								approximated += 1;
 								continue;
 							}
@@ -1989,6 +2084,6 @@
 	window.ItineraryGrid = {
 		init, fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
 		legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops, toCleanV3, localityOf,
-		needsReview,
+		needsReview, suspectLocations,
 	};
 })();
