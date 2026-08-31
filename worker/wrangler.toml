@@ -1,0 +1,25 @@
+# Deploy with `wrangler deploy` from this directory.
+#
+# The Worker predates this file — it was created in the Cloudflare dashboard,
+# so `name` must match the existing Worker exactly or `deploy` creates a SECOND
+# one at a different hostname and the app keeps talking to the old one.
+name = "white-boat-9932"
+main = "index.js"
+compatibility_date = "2026-08-31"
+
+# Not sensitive: the app's own origin, used for /ai/extract's CORS. Everything
+# else on this Worker is a deliberately open proxy.
+[vars]
+APP_ORIGIN = "https://rux-sm.github.io"
+
+# Secrets are NOT set here and must never be committed. Set them once with:
+#
+#   wrangler secret put ANTHROPIC_API_KEY
+#   wrangler secret put EXTRACT_PASSPHRASE
+#
+# ANTHROPIC_API_KEY   the key this route spends. Set a hard spend limit in the
+#                     Anthropic Console at the same time — that limit, not any
+#                     code here, is the real ceiling on what a leak can cost.
+# EXTRACT_PASSPHRASE  the shared passphrase, typed once per device into the
+#                     app's Settings. Pick something long; it is the only thing
+#                     standing between a public page and your API bill.

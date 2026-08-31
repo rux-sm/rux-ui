@@ -226,6 +226,7 @@
 	const editorEl = document.getElementById("itinerary-inbox-editor");
 	const editorTitleEl = document.getElementById("itinerary-inbox-editor-title");
 	const editorHeaderEl = editorEl?.querySelector("[data-itin-editor-header]");
+	const saveBtn = document.getElementById("itinerary-inbox-save");
 	let grid = null;
 	let openDraft = null;
 
@@ -239,6 +240,14 @@
 		return grid;
 	}
 
+	/* Open a row, or — with no row — a blank one.
+
+	   The blank case is the inbox's front door. Everything that turns a
+	   customer's document into an itinerary already lives in the Grid's intake
+	   box: paste the email, attach the PDF, "Read it for me", or paste JSON
+	   back from a chat. Opening that box empty is therefore the whole of "new
+	   itinerary", and it means the document lane no longer requires a trip to
+	   exist first, which was the gap. Save to inbox creates the row. */
 	function openEditor(row) {
 		if (!editorEl) return;
 		const instance = ensureGrid();
@@ -246,12 +255,18 @@
 			window.Rux?.toast?.("The itinerary editor could not be opened.");
 			return;
 		}
-		openDraft = row;
+		openDraft = row ?? null;
 		if (editorTitleEl) {
-			editorTitleEl.textContent =
-				row.label || summarise(row.document)?.client || "Itinerary";
+			editorTitleEl.textContent = row
+				? (row.label || summarise(row.document)?.client || "Itinerary")
+				: "New itinerary";
 		}
-		instance.setDocument(row.document);
+		if (row) instance.setDocument(row.document);
+		else instance.clear();
+		if (saveBtn) {
+			saveBtn.querySelector(".rux-button__label").textContent =
+				row ? "Save to inbox" : "Add to inbox";
+		}
 		editorEl.hidden = false;
 		if (window.innerWidth <= 580) window.RuxFloatingWindow?.resetGeometry(editorEl);
 		document.getElementById("itinerary-inbox-editor-close")?.focus();
@@ -275,12 +290,36 @@
 	}
 
 	async function saveToInbox() {
-		if (!openDraft) return;
 		// The annex-carrying export — see currentDocument above. Saving the
 		// clean one silently discarded the entire routing pass.
 		const document_ = grid?.getStoredDocument();
 		if (!document_) return;
-		const label = summarise(document_)?.client || openDraft.label || "";
+		const summary = summarise(document_);
+		if (!summary?.stops) {
+			window.Rux?.toast?.("There is nothing to save yet — read a document first.");
+			return;
+		}
+
+		// No open row means this came in through the front door and has no row
+		// yet. Creating one here rather than in a separate handler keeps the
+		// button honest: it says where the itinerary ends up, not how it got
+		// there.
+		if (!openDraft) {
+			const created = await add(document_, summary.client || "");
+			if (!created) {
+				window.Rux?.toast?.("Could not add it — the inbox may not be set up yet.");
+				return;
+			}
+			openDraft = created;
+			if (editorTitleEl) editorTitleEl.textContent = created.label || "Itinerary";
+			if (saveBtn) {
+				saveBtn.querySelector(".rux-button__label").textContent = "Save to inbox";
+			}
+			window.Rux?.toast?.("Added to the inbox.");
+			return;
+		}
+
+		const label = summary.client || openDraft.label || "";
 		const saved = await (await db()).updateItineraryDraft(openDraft.id, {
 			document: document_,
 			label,
@@ -389,9 +428,19 @@
 
 	document.getElementById("itinerary-inbox-editor-close")?.addEventListener("click", closeEditor);
 	document.getElementById("itinerary-inbox-discard")?.addEventListener("click", closeEditor);
-	document.getElementById("itinerary-inbox-save")?.addEventListener("click", () => void saveToInbox());
+	saveBtn?.addEventListener("click", () => void saveToInbox());
 	document.getElementById("itinerary-inbox-to-trip")?.addEventListener("click", () => {
-		if (openDraft) openAsNewTrip(openDraft);
+		if (openDraft) return openAsNewTrip(openDraft);
+		// Straight from the front door to a trip, never having been a row here.
+		// A document that turns out to be a booking nobody needs to think about
+		// should not have to be filed first.
+		const document_ = grid?.getStoredDocument();
+		const summary = summarise(document_);
+		if (!summary?.stops) {
+			window.Rux?.toast?.("There is nothing to open yet — read a document first.");
+			return;
+		}
+		openAsNewTrip({ document: document_, label: summary.client || "" });
 	});
 
 	editorEl?.addEventListener("keydown", (event) => {
@@ -412,27 +461,15 @@
 		render();
 	});
 
-	addBtn?.addEventListener("click", async () => {
-		const pasted = window.prompt("Paste a Trip Draft v3 document");
-		if (!pasted) return;
-		let payload;
-		try {
-			const fenced = /```(?:json)?\s*([\s\S]*?)```/.exec(pasted);
-			payload = JSON.parse(fenced ? fenced[1] : pasted);
-		} catch {
-			window.Rux?.toast?.("That is not valid JSON.");
-			return;
-		}
-		if (Number(payload?.schema_version) !== 3) {
-			window.Rux?.toast?.('Expected a Trip Draft v3 document ("schema_version": 3).');
-			return;
-		}
-		const label = summarise(payload)?.client || "";
-		const saved = await add(payload, label);
-		window.Rux?.toast?.(saved
-			? "Added to the inbox."
-			: "Could not add it — the inbox may not be set up yet.");
-	});
+	/* The front door.
+
+	   This was a window.prompt() taking pasted JSON, which was a stopgap and a
+	   bad one: it could not take a PDF, it could not take a customer's email,
+	   and pasting 5KB of JSON into a native prompt is miserable. It opens the
+	   editor on a blank itinerary instead, where the Grid's own intake box
+	   already does all four — read a document, attach a PDF, copy the prompt
+	   out, paste JSON back. */
+	addBtn?.addEventListener("click", () => openEditor(null));
 
 	let started = false;
 	function init() {

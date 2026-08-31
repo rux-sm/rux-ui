@@ -1203,11 +1203,17 @@
 		</li>`;
 	}
 
-	function renderList(leg) {
+	/* `alone` is the standalone mount — the itinerary inbox's window, which has
+	   no trip behind it. Pull from Itinerary tab is hidden there, so offering
+	   it in the empty state would name a button that is not on screen. */
+	function renderList(leg, alone = false) {
 		if (!leg.stops.length) {
+			const ways = alone
+				? "Read the customer's document above, or paste a trip draft"
+				: "Paste a trip draft above, pull the current itinerary in";
 			return `<li class="sched-itinerary-grid__empty">
 				<span class="rux-icon" aria-hidden="true">route</span>
-				<p>No stops yet. Paste a trip draft above, pull the current itinerary in, or add a stop.</p>
+				<p>No stops yet. ${ways}, or add a stop.</p>
 			</li>`;
 		}
 		const days = deriveDays(leg.stops);
@@ -1381,6 +1387,16 @@
 							placeholder="Paste the customer's email or schedule here, copy the prompt, then paste the JSON back."></textarea>
 					</label>
 					<div class="sched-itinerary-grid__intake-actions">
+						<button type="button" class="rux-button rux-button--accent" data-extract>
+							<span class="rux-icon" aria-hidden="true">auto_awesome</span>
+							<span class="rux-button__label">Read it for me</span>
+						</button>
+						<button type="button" class="rux-button rux-button--default" data-attach>
+							<span class="rux-icon" aria-hidden="true">attach_file</span>
+							<span class="rux-button__label">Attach a PDF</span>
+						</button>
+						<input type="file" data-files hidden multiple
+							accept="application/pdf,image/png,image/jpeg,image/webp,image/gif" />
 						<button type="button" class="rux-button rux-button--default" data-copy-prompt>
 							<span class="rux-icon" aria-hidden="true">content_copy</span>
 							<span class="rux-button__label">Copy prompt + document</span>
@@ -1398,6 +1414,7 @@
 							<span class="rux-button__label">Load from inbox</span>
 						</button>
 					</div>
+					<p class="sched-itinerary-grid__attachments" data-attachments></p>
 					<div class="sched-itinerary-grid__inbox" data-inbox-list hidden></div>
 					<p class="sched-itinerary-grid__status" data-status role="status" aria-live="polite"></p>
 				</div>
@@ -1443,6 +1460,9 @@
 		const statusEl = host.querySelector("[data-status]");
 		const intakeEl = host.querySelector("[data-intake]");
 		const inboxListEl = host.querySelector("[data-inbox-list]");
+		const extractBtn = host.querySelector("[data-extract]");
+		const fileInputEl = host.querySelector("[data-files]");
+		const attachmentsEl = host.querySelector("[data-attachments]");
 		const routeStatusEl = host.querySelector("[data-route-status]");
 		const routeBtn = host.querySelector("[data-route]");
 		let routing = false;
@@ -1458,7 +1478,7 @@
 		}
 
 		function render() {
-			listEl.innerHTML = renderList(L());
+			listEl.innerHTML = renderList(L(), standalone);
 			syncReviewButton();
 			summaryEl.innerHTML = renderSummary(state);
 			legsEl.innerHTML = renderLegToggle(state);
@@ -1619,6 +1639,8 @@
 			if (event.target.closest("[data-copy-prompt]")) return copyPrompt();
 			if (event.target.closest("[data-copy-json]")) return copyJson();
 			if (event.target.closest("[data-pull]")) return pullFromItinerary();
+			if (event.target.closest("[data-extract]")) return void extractFromDocument();
+			if (event.target.closest("[data-attach]")) return fileInputEl?.click();
 			if (event.target.closest("[data-inbox]")) return void loadFromInbox();
 			const pick = event.target.closest("[data-inbox-pick]");
 			if (pick) return pickFromInbox(pick.dataset.inboxPick);
@@ -1651,23 +1673,19 @@
 			if (event.target.closest("[data-print]")) return printDriverSheet();
 		});
 
-		function loadPasted() {
-			const text = pasteEl.value.trim();
-			if (!text) return say("Paste a trip draft JSON first.", true);
-			let payload;
-			try {
-				// Tolerate a ```json fence, which is what most assistants return.
-				const fenced = /```(?:json)?\s*([\s\S]*?)```/.exec(text);
-				payload = JSON.parse(fenced ? fenced[1] : text);
-			} catch {
-				return say("That is not valid JSON. Paste the whole object, braces included.", true);
-			}
+		/* Put a v3 payload on screen. Shared by every way one arrives —
+		   pasted JSON, the extraction service, the inbox picker — so the
+		   validation, the blank-field fill and the wording of the result are
+		   the same whichever door it came through. */
+		function applyDraft(payload, lead) {
 			if (Number(payload?.schema_version) !== 3) {
-				return say("Expected a Trip Draft v3 document (\"schema_version\": 3).", true);
+				say("Expected a Trip Draft v3 document (\"schema_version\": 3).", true);
+				return false;
 			}
 			const loaded = fromV3(payload);
 			if (!loaded.legs.outbound.stops.length) {
-				return say("That draft has no stops in its outbound leg.", true);
+				say("That draft has no stops in its outbound leg.", true);
+				return false;
 			}
 			Object.assign(state, loaded);
 			fromInboxId = null;
@@ -1679,11 +1697,74 @@
 			const outboundCount = loaded.legs.outbound.stops.length;
 			const returnCount = loaded.legs.return?.stops.length ?? 0;
 			const parts = [returnCount
-				? `Loaded ${outboundCount} outbound and ${returnCount} inbound stops`
-				: `Loaded ${outboundCount} stops`];
+				? `${lead} ${outboundCount} outbound and ${returnCount} inbound stops`
+				: `${lead} ${outboundCount} stops`];
 			if (filled.length) parts.push(`filled the ${filled.join(", ")}`);
 			if (loaded.dataFlags.length) parts.push(`${loaded.dataFlags.length} to ask about`);
 			say(`${parts.join(", ")}.`);
+			return true;
+		}
+
+		function loadPasted() {
+			const text = pasteEl.value.trim();
+			if (!text) return say("Paste a trip draft JSON first.", true);
+			let payload;
+			try {
+				// Tolerate a ```json fence, which is what most assistants return.
+				const fenced = /```(?:json)?\s*([\s\S]*?)```/.exec(text);
+				payload = JSON.parse(fenced ? fenced[1] : text);
+			} catch {
+				return say("That is not valid JSON. Paste the whole object, braces included.", true);
+			}
+			applyDraft(payload, "Loaded");
+		}
+
+		/* ── Straight from the document ───────────────────────────────────
+
+		   The paste-into-a-chat-and-paste-back round trip, without the chat.
+		   Sends whatever is in the box plus any attached PDFs or photos to the
+		   Worker, which holds the Anthropic key and returns a v3 draft.
+
+		   Costs real money per press, so it says so while it runs and the
+		   button is disabled for the duration — a second press would be a
+		   second bill for the same document. */
+		let extractFiles = [];
+		let extracting = false;
+
+		async function extractFromDocument() {
+			if (extracting) return;
+			const text = pasteEl.value.trim();
+			if (!text && !extractFiles.length) {
+				return say("Paste the customer's email, or attach their document, first.", true);
+			}
+
+			extracting = true;
+			extractBtn.disabled = true;
+			const what = extractFiles.length
+				? `${extractFiles.length} file${extractFiles.length === 1 ? "" : "s"}`
+				: "the pasted document";
+			say(`Reading ${what}… this takes a few seconds and costs a little.`);
+
+			try {
+				const mod = await import("../data/extract.js?v=1");
+				const { draft } = await mod.extractDraft({ text, files: extractFiles, lane: "itinerary" });
+				extractFiles = [];
+				if (fileInputEl) fileInputEl.value = "";
+				renderAttachments();
+				applyDraft(draft, "Read");
+			} catch (error) {
+				say(error?.message || "The document could not be read.", true);
+			} finally {
+				extracting = false;
+				extractBtn.disabled = false;
+			}
+		}
+
+		function renderAttachments() {
+			if (!attachmentsEl) return;
+			attachmentsEl.textContent = extractFiles.length
+				? `Attached: ${extractFiles.map((f) => f.name).join(", ")}`
+				: "";
 		}
 
 		/* ── Updating a trip that already exists ──────────────────────────
@@ -2121,6 +2202,28 @@
 			render();
 			say(`Pulled ${L().stops.length} stops from the Itinerary tab. Nothing is written back.`);
 		}
+
+		fileInputEl?.addEventListener("change", () => {
+			extractFiles = [...(fileInputEl.files || [])];
+			renderAttachments();
+			if (extractFiles.length) say("");
+		});
+
+		/* Hidden until the extraction passphrase is set, because a button whose
+		   only outcome is "add the passphrase in Settings" is a button that
+		   teaches people not to press buttons. Everything else in the intake
+		   box works without it. */
+		(async () => {
+			try {
+				const mod = await import("../data/extract.js?v=1");
+				const ready = mod.hasPassphrase();
+				if (extractBtn) extractBtn.hidden = !ready;
+				const attachBtn = host.querySelector("[data-attach]");
+				if (attachBtn) attachBtn.hidden = !ready;
+			} catch {
+				if (extractBtn) extractBtn.hidden = true;
+			}
+		})();
 
 		render();
 

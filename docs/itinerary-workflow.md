@@ -15,7 +15,7 @@ A customer's document becomes a trip in six steps. Each is owned by one file.
 
 | Step | Owner | State |
 |---|---|---|
-| Read the document | [`.claude/skills/process-itinerary`](../.claude/skills/process-itinerary/SKILL.md) | Built. Carries a PDF text extractor for machines without poppler. |
+| Read the document | [`worker/index.js`](../worker/index.js) `/ai/extract`, or [`.claude/skills/process-itinerary`](../.claude/skills/process-itinerary/SKILL.md) | The in-app route is written and **not deployed**; the skill is built and is the working path today. |
 | Extract to Trip Draft v3 | [`itinerary-prompt.md`](itinerary-prompt.md) + [`trip-import-schema-v3.json`](trip-import-schema-v3.json) | Built. One prompt, model-agnostic. |
 | Load and fill the trip | [`js/components/itinerary-grid.js`](../js/components/itinerary-grid.js) | Built. Fills stops **and** the trip's blank Details. |
 | Resolve and route | same | Built. Saved locations first, then Mapbox; town fallback when there is no street address. |
@@ -133,6 +133,30 @@ asked it to hand-write HTML that is now the driver sheet. They are kept because
 step 1's day-offset and address-confidence rules were the source for
 `itinerary-prompt.md`, and deleting the reasoning would lose it.
 
+## Reading a document in the app
+
+Wired 2026-08-31, **not deployed**. `POST /ai/extract` on the Worker takes the
+pasted email and any attached PDFs or photos, calls Claude server-side with
+`itinerary-prompt.md` and the v3 schema, and returns a draft. The Grid's intake
+box calls it as **Read it for me**, in the trip editor and in the inbox alike.
+
+- The Anthropic key lives on the Worker as a secret. A browser holding it would
+  ship it in page source, which is tolerable for the Supabase anon key only
+  because that key is meant to be public.
+- The gate is a shared passphrase in `X-Rux-Extract-Key`, held in the browser's
+  `localStorage` — deliberately not in the `settings` table, which the anon
+  client reads. See [`worker/README.md`](../worker/README.md) § The gate for
+  what that buys and what it does not.
+- The button hides itself until the passphrase is set, so it is never a control
+  whose only outcome is an instruction.
+- The live Worker still answers that path with the proxy's 404, so the client
+  says "not deployed yet" rather than passing PostgREST's wording along.
+
+Two things stand between this and working: `wrangler deploy` from `worker/`,
+and the two secrets. Set a spend limit in the Anthropic Console at the same
+time — that limit, not any code here, is the ceiling on what a leaked
+passphrase can cost.
+
 ## Not built
 
 - **Routing the return leg from one press.** Resolve & route measures the leg
@@ -143,7 +167,8 @@ step 1's day-offset and address-confidence rules were the source for
   workflow is built to not need it.
 - **The quote lane's `data_flags`** (todo T7) and **its lane gate** (todo T8).
 - **`intake.html` feeding the inbox.** It produces a v2 draft and still
-  dead-ends; `ItineraryInbox.add` is the one call it needs.
+  dead-ends; `ItineraryInbox.add` is the one call it needs. The Worker's
+  `quote` lane is ready for it.
 - **Retiring the classic Itinerary tab.** Both tabs edit the same trip. Whether
   the Grid replaces it is a decision, not a leftover.
 

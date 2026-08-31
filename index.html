@@ -46,7 +46,7 @@
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=152" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=396" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=399" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=17"
@@ -5530,7 +5530,7 @@
 										>note_add</span
 									>
 									<span class="rux-button__label"
-										>Add from JSON</span
+										>New itinerary</span
 									>
 								</button>
 							</div>
@@ -6045,6 +6045,60 @@
 										</button>
 									</div>
 								</footer>
+							</section>
+
+							<!-- Reading a document costs money per press, so the
+							     Worker that holds the Anthropic key will not run
+							     without this. It is stored in THIS BROWSER'S
+							     localStorage, not in the settings table — that
+							     table is read by the anon client, so anything in
+							     it is public. Type it once per device. -->
+							<section
+								class="rux-card settings-app__panel"
+								aria-labelledby="settings-extract-title"
+							>
+								<header class="rux-card__header settings-app__panel-header">
+									<div>
+										<h2
+											class="rux-card__title settings-app__panel-title"
+											id="settings-extract-title"
+										>
+											Reading documents
+										</h2>
+										<p class="rux-card__subtitle settings-app__panel-copy">
+											Lets the app turn a customer's email
+											or PDF into an itinerary by itself.
+										</p>
+									</div>
+									<span
+										class="rux-badge rux-badge--info"
+										id="settings-extract-status"
+										>Not set</span
+									>
+								</header>
+
+								<div class="rux-card__body settings-app__form">
+									<div class="rux-field">
+										<label
+											class="rux-field__label"
+											for="settings-extract-key"
+											>Extraction passphrase</label
+										>
+										<input
+											class="rux-input"
+											id="settings-extract-key"
+											type="password"
+											autocomplete="off"
+										/>
+										<span class="rux-field__help"
+											>Stored in this browser only, so it
+											has to be entered on each device.
+											Set a spend limit in the Anthropic
+											Console — that is the real
+											ceiling.</span
+										>
+									</div>
+								</div>
 							</section>
 
 							<section
@@ -6724,14 +6778,14 @@
 		<script src="./rux-ui/js/boot.js?v=1"></script>
 		<script src="./js/panels/trip-panel.js?v=49"></script>
 		<script src="./js/components/itinerary.js?v=66"></script>
-		<script src="./js/components/itinerary-grid.js?v=37"></script>
+		<script src="./js/components/itinerary-grid.js?v=40"></script>
 		<script src="./js/panels/driver-sheet.js?v=8" defer></script>
-		<script src="./js/panels/itinerary-inbox.js?v=3" defer></script>
+		<script src="./js/panels/itinerary-inbox.js?v=5" defer></script>
 		<script src="./js/panels/driver-panel.js?v=32" defer></script>
 		<script src="./js/panels/driver-roster-panel.js?v=5" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=20" defer></script>
 		<script src="./js/panels/customers-panel.js?v=13" defer></script>
-		<script src="./js/panels/settings-panel.js?v=12" defer></script>
+		<script src="./js/panels/settings-panel.js?v=15" defer></script>
 		<script src="./js/panels/trip-finder.js?v=11" defer></script>
 		<script src="./js/panels/request-inbox.js?v=12" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=13" defer></script>

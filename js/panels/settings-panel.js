@@ -624,9 +624,54 @@
     renderBillingSettings(billingConfig);
   }
 
+  /* ── The extraction passphrase ─────────────────────────────────────────
+     Deliberately NOT saved through settings-db like everything else on this
+     page. That table is read by the anon client, which means anything in it
+     ships to whoever opens the app; this is the one secret here that must not.
+     It lives in this browser's localStorage and travels only in the header
+     js/data/extract.js sends to the Worker. Per-device is the cost of that,
+     and it is the right cost. */
+  const extractKeyInput = document.getElementById("settings-extract-key");
+  const extractStatusEl = document.getElementById("settings-extract-status");
+
+  function setExtractStatus(set) {
+    if (!extractStatusEl) return;
+    extractStatusEl.textContent = set ? "Ready" : "Not set";
+    extractStatusEl.classList.toggle("rux-badge--success", set);
+    extractStatusEl.classList.toggle("rux-badge--info", !set);
+  }
+
+  async function loadExtractKey() {
+    if (!extractKeyInput) return;
+    try {
+      const mod = await import("../data/extract.js?v=1");
+      extractKeyInput.value = mod.getPassphrase();
+      setExtractStatus(mod.hasPassphrase());
+    } catch (err) {
+      console.warn("Could not load the extraction settings:", err);
+    }
+  }
+
+  // Saved as it is typed, like nothing else here — but there is nothing to
+  // validate against without spending money, so a Save button would only be
+  // able to say "stored", which the badge already says.
+  extractKeyInput?.addEventListener("change", async () => {
+    try {
+      const mod = await import("../data/extract.js?v=1");
+      const stored = mod.setPassphrase(extractKeyInput.value);
+      // A refusal leaves the badge on "Not set", which is the honest reading:
+      // nothing was stored, so nothing will extract. setMessage() is not used
+      // because it writes into the Yard card's footer, several cards away.
+      setExtractStatus(stored && mod.hasPassphrase());
+    } catch (err) {
+      console.warn("Could not store the extraction passphrase:", err);
+    }
+  });
+
   async function init() {
     if (!root || initialized) return;
     initialized = true;
+    await loadExtractKey();
     await loadYard();
     await loadMapboxToken();
     await loadLocations();

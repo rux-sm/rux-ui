@@ -97,6 +97,18 @@
 /* — Summary — */
 
 
+/* What is attached and waiting to be read. Quiet: it is a receipt for an
+   action already taken, not something to act on. */
+.sched-itinerary-grid__attachments:empty {
+	display: none;
+}
+
+.sched-itinerary-grid__attachments {
+	margin: 0;
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-size-14);
+}
+
 /* The inbox picker — "which of the waiting itineraries goes on this trip?".
    A stack of full-width buttons rather than a <select>: each line carries the
    date and the stop count as well as the name, and picking the wrong
