@@ -256,6 +256,39 @@ Cost to close: a line of copy on intake.html saying what it is for, or the same
 `.rux-tabs--attached` lane picker originally proposed is probably now over-built for one
 remaining lane.
 
+### T9 — README's load-order snippet is a contract with no test, and it was wrong
+
+The snippet under § Index is what someone copies to stand a new page up. Until
+2026-08-28 it omitted `overlay.js` and `boot.js` entirely, and stated that
+"only `utilities.js` is strictly required".
+
+Both halves were false. `overlay.js` is the dismiss kernel, and the dependency
+is hard rather than graceful — `menu.js`, `popover.js`, `suggestions.js` and
+`utilities.js` all call `window.RuxOverlay.register(...)` unguarded, so a page
+built from the snippet threw on its first menu, popover, dropdown or modal.
+Only `drawer.js` and `ui-shell.js` use `?.`. `utilities.js` was not
+self-sufficient either: `Rux.openModal` registers with the kernel.
+
+`tools/vendor-into.sh` has carried the correct rule in its stamp since the
+kernel landed ("`overlay.js` first, since the other behaviors delegate
+outside-press and Escape to it"). So the repository knew, in one place, and the
+README disagreed in another — the one-home rule broken between a script and a
+document rather than between two documents.
+
+The prose is fixed. **What is not fixed is that nothing would have caught it.**
+Four other counts in the same block had drifted the same way and were corrected
+in the same pass: `features/` said 30 against 33 on disk, the skills list was
+missing `ponytail-review`, the `rux-ui/js/` list was missing two modules, and
+the `js/` tree showed one of its five subdirectories.
+
+How it is known: read while checking the README after a pull.
+
+Cost to close: one test that parses the snippet out of README.md and asserts
+every `rux-ui/js/*.js` file appears in it, that `overlay.js` precedes every
+module naming `RuxOverlay`, and that the directory counts in the same block
+match a `find`. The counts are the cheap half and would have caught four of
+the five.
+
 ---
 
 *A third entry — fourteen `trip_ref` values each shared by two active trips — was drafted

@@ -42,7 +42,7 @@ happened) and before `npm test`.
 │                            (10 of 23 base files so far — tests/gallery-coverage
 │                             records the gaps and stops new ones appearing)
 ├── .claude/skills/        ← Claude Code skills: rux-design, vendor-rux-ui, verify,
-│                            process-itinerary
+│                            process-itinerary, ponytail-review
 ├── CLAUDE.md              ← concise Claude Code repository policy
 ├── docs/itinerary-workflow.md ← how a customer's document becomes a trip,
 │                            and which parts are built
@@ -56,19 +56,25 @@ happened) and before `npm test`.
 │   │   └── base/              ← 21 reusable BEM components, utils.css, and
 │   │                             text.css (the .rux-text-* type utilities)
 │   └── js/                    ← the JS engine behind rux-ui/css/base/* components:
+│                                 overlay.js (the dismiss kernel every menu,
+│                                 popover, dropdown and modal registers with),
 │                                 utilities.js (toast/modal/copy/accent), theme.js,
 │                                 menu.js, popover.js, drawer.js, floating-window.js,
 │                                 suggestions.js, controls.js, ui-shell.js,
-│                                 view-router.js
+│                                 view-router.js, boot.js
 ├── scheduler/
 │   └── css/
 │       ├── components.css     ← scheduler bundle (features + layout; needs rux.css)
-│       ├── features/          ← 30 scheduler-specific panels and components
+│       ├── features/          ← 33 scheduler-specific panels and components
 │       └── layout/            ← scheduler grid and application shell
-├── js/
-│   └── core/               ← scheduler business logic (billing, trip requests,
-│                              driver workload, contacts) — not part of the
-│                              portable design system, stays with this app
+├── js/                    ← the reference application, not part of the portable
+│   │                         design system — all of it stays with this app
+│   ├── core/               ← business logic (billing, trip requests, driver
+│   │                          workload, contacts, trip colours)
+│   ├── components/         ← itinerary editors, trip bar, driver assignment
+│   ├── panels/             ← the app's panels, print views and driver sheet
+│   ├── data/               ← Supabase access, one module per table group
+│   └── pages/              ← the standalone pages (intake, share links, request)
 ├── index.html             ← current full application and composition reference
 ├── assets/                ← logos, favicons
 └── tests/                 ← component and application contract tests
@@ -81,6 +87,7 @@ To use the complete reference-application bundle in an existing page:
 ```html
 <link rel="stylesheet" href="rux-ui/css/rux.css" />
 <link rel="stylesheet" href="scheduler/css/components.css" />
+<script src="rux-ui/js/overlay.js" defer></script>
 <script src="rux-ui/js/utilities.js" defer></script>
 <script src="rux-ui/js/theme.js" defer></script>
 <script src="rux-ui/js/menu.js" defer></script>
@@ -91,10 +98,31 @@ To use the complete reference-application bundle in an existing page:
 <script src="rux-ui/js/controls.js" defer></script>
 <script src="rux-ui/js/ui-shell.js" defer></script>
 <script src="rux-ui/js/view-router.js" defer></script>
+<script src="rux-ui/js/boot.js" defer></script>
 ```
 
-Only `utilities.js` is strictly required for the reference-app bundle to run
-without errors; the rest wire up specific components (menus, popovers,
+**`overlay.js` goes first, and it is not optional.** It is the kernel every
+menu, popover, suggestions dropdown and modal registers with, and it owns the
+only document-level outside-press and Escape listeners in the system
+(`tests/overlay-kernel.test.mjs` enforces that there is exactly one of each).
+
+It is a hard dependency, not a graceful one: `menu.js`, `popover.js`,
+`suggestions.js` and `utilities.js` all call `window.RuxOverlay.register(...)`
+unguarded, so without it opening any of those surfaces — including a modal —
+throws. Only `drawer.js` and `ui-shell.js` guard with `?.`.
+`tools/vendor-into.sh` has said `overlay.js` goes first since the kernel
+landed; this snippet did not, and omitted the file entirely.
+
+**`boot.js` goes last**, so every namespace it calls already exists. It
+attaches the four scanning behaviors to markup that arrives after first parse;
+a page whose components are all in the initial HTML does not need it, since
+those four also self-start on DOMContentLoaded.
+
+Past those two, `utilities.js` is the one to keep — it carries the toast,
+modal, copy and accent helpers the reference app calls from everywhere. It is
+not, however, self-sufficient: `Rux.openModal` registers with the kernel
+above, so `utilities.js` without `overlay.js` throws on the first modal. The
+rest wire up specific components (menus, popovers,
 drawers, floating panels, the search dropdown, tab/toggle declarative
 controls, the header disclosure button, the show-one-view router) — include
 whichever ones the page actually uses.
