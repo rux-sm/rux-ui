@@ -1328,9 +1328,30 @@
 
 	/* ── Init ────────────────────────────────────────────────────────────── */
 
-	function init(root) {
-		const host = root?.querySelector?.("#tp-grid") || document.getElementById("tp-grid");
+	/* Instantiable more than once.
+
+	   The trip editor mounts one at #tp-grid; the itinerary inbox mounts a
+	   second in its own floating window. Each keeps its own state in its own
+	   closure, which is what makes two safe — but only ONE may publish the
+	   hooks trip-db.js calls (clear, hydrate, persist, mirrorToItinerary).
+	   Those act on "the itinerary of the trip being saved", and a second
+	   instance overwriting them would point a trip save at whichever editor
+	   happened to mount last. */
+	function init(root, options = {}) {
+		const hostId = options.hostId || "tp-grid";
+		const host = root?.querySelector?.(`#${hostId}`) || document.getElementById(hostId);
 		if (!host) return null;
+
+		/* Mounted outside the trip editor's form.
+
+		   The trip fields (#tp-customer, #tp-start, the booking contact) are
+		   global ids belonging to the ONE trip form. An instance in the
+		   itinerary inbox's window is editing a document that has no trip yet,
+		   so reading them would borrow whatever trip happens to be open and
+		   writing them would edit that trip from a window that is not it. It
+		   reads and writes only its own state instead. */
+		const standalone = options.standalone === true;
+		const tripField = (id) => (standalone ? "" : document.getElementById(id)?.value || "");
 
 		const state = {
 			client: "", destination: "", notes: "",
@@ -1368,7 +1389,7 @@
 							<span class="rux-icon" aria-hidden="true">download</span>
 							<span class="rux-button__label">Load JSON</span>
 						</button>
-						<button type="button" class="rux-button rux-button--ghost" data-pull>
+						<button type="button" class="rux-button rux-button--ghost" data-pull${standalone ? " hidden" : ""}>
 							<span class="rux-icon" aria-hidden="true">move_down</span>
 							<span class="rux-button__label">Pull from Itinerary tab</span>
 						</button>
@@ -1901,13 +1922,13 @@
 				: "";
 			const printed = window.DriverSheet?.print?.({
 				meta: {
-					client: state.client || document.getElementById("tp-customer")?.value || "",
-					destination: state.destination || document.getElementById("tp-destination")?.value || "",
-					contactName: document.getElementById("tp-contact-1-name")?.value || "",
-					contactPhone: document.getElementById("tp-contact-1-phone")?.value || "",
+					client: state.client || tripField("tp-customer"),
+					destination: state.destination || tripField("tp-destination"),
+					contactName: state.bookingName || tripField("tp-contact-1-name"),
+					contactPhone: state.bookingPhone || tripField("tp-contact-1-phone"),
 					leg: legLabel,
 				},
-				startDate: leg.startDate || document.getElementById("tp-start")?.value || "",
+				startDate: leg.startDate || tripField("tp-start"),
 				stops: leg.stops,
 				days,
 				risks: legRisks(leg.stops, days),
@@ -1935,6 +1956,7 @@
 		   Itinerary-only mode: the itinerary is the draft's to state, the trip's
 		   identity is not. */
 		function fillTripDetails() {
+			if (standalone) return [];
 			const written = [];
 			const setIfBlank = (id, value, label) => {
 				const el = document.getElementById(id);
@@ -1972,14 +1994,15 @@
 		}
 
 		function pullFromItinerary() {
+			if (standalone) return say("There is no Itinerary tab to pull from here.", true);
 			const source = window.Itinerary?.getStops?.();
 			if (!Array.isArray(source) || !source.length) {
 				return say("The Itinerary tab has no stops to pull.", true);
 			}
-			const startDate = document.getElementById("tp-start")?.value || "";
+			const startDate = tripField("tp-start");
 			L().startDate = startDate;
-			state.client = document.getElementById("tp-customer")?.value || "";
-			state.destination = document.getElementById("tp-destination")?.value || "";
+			state.client = tripField("tp-customer");
+			state.destination = tripField("tp-destination");
 			state.dataFlags = [];
 			L().stops = fromEditorStops(source, startDate);
 			render();
@@ -2068,22 +2091,37 @@
 					return false;
 				}
 			},
+			/* Called when the trip editor opens a different trip.
+
+			   This wrote `stops: []` and `returnLeg: null` at the top of state,
+			   which is where they lived before the split-trip change moved them
+			   under `legs`. Object.assign happily added two properties nothing
+			   reads and left the real stops in place, so the previous trip's
+			   itinerary stayed on screen under the next trip's name. Rebuilt
+			   from the same emptyLeg() the constructor uses so the two shapes
+			   cannot drift apart again. */
 			clear() {
 				Object.assign(state, {
-					startDate: "", client: "", destination: "", notes: "", bookingName: "", bookingPhone: "", bookingEmail: "", dataFlags: [], tripType: "", serviceType: "", returnLeg: null, stops: [],
+					client: "", destination: "", notes: "",
+					bookingName: "", bookingPhone: "", bookingEmail: "",
+					dataFlags: [], tripType: "", serviceType: "",
+					activeLeg: "outbound",
+					legs: { outbound: emptyLeg(), return: null },
 				});
 				pasteEl.value = "";
 				say("");
 				render();
 			},
 		};
-		window.ItineraryGrid = Object.assign(window.ItineraryGrid || {}, api);
+		if (options.publishHooks !== false) {
+			window.ItineraryGrid = Object.assign(window.ItineraryGrid || {}, api);
+		}
 		return api;
 	}
 
 	window.ItineraryGrid = {
 		init, fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
 		legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops, toCleanV3, localityOf,
-		needsReview, suspectLocations,
+		needsReview, suspectLocations, suspectCount,
 	};
 })();

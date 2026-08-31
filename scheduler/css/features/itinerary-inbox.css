@@ -1,0 +1,104 @@
+/* ==========================================================================
+   ITINERARY INBOX  ·  .sched-itinerary-inbox
+   --------------------------------------------------------------------------
+   The Itineraries module view (data-view="itineraries" in index.html) — a
+   list of processed itineraries that do not belong to a trip yet.
+
+   Two surfaces, per composition.md §2.3: the module hosts the list, and a
+   floating window hosts the editor of one record. The window's contents are
+   an ItineraryGrid instance, so everything inside it is already styled by
+   features/itinerary-grid.css; this file gives the window its size and the
+   list its columns, and nothing else.
+   ========================================================================== */
+
+/* The count sits beside the module title, muted — it complements the nav
+   badge rather than repeating it. Same treatment as the request inbox. */
+.sched-itinerary-inbox__count {
+	color: var(--rux-text-disabled);
+	font-size: var(--rux-size-14);
+	font-weight: var(--rux-weight-400);
+}
+
+
+/* ── The list ─────────────────────────────────────────────────────────── */
+
+/* The name is the control that opens the row, so it reads as one: left-aligned
+   against the column rather than centred like an ordinary button, and wrapping
+   rather than truncating, because a client name is what the dispatcher scans
+   for. */
+.sched-itinerary-inbox__open {
+	justify-content: flex-start;
+	max-width: 100%;
+	padding-inline: 0;
+	text-align: left;
+}
+
+.sched-itinerary-inbox__open .rux-button__label {
+	white-space: normal;
+}
+
+/* Sizes and dates get compared down the column. */
+.sched-itinerary-inbox__table [data-col="when"],
+.sched-itinerary-inbox__table [data-col="size"] {
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-size-14);
+	font-variant-numeric: tabular-nums;
+}
+
+/* What still needs a person. Warning rather than danger: an itinerary with
+   open questions is the normal state of one that just arrived, not a fault. */
+.sched-itinerary-inbox__attention {
+	color: var(--rux-warning);
+	font-size: var(--rux-size-14);
+}
+
+.sched-itinerary-inbox__table [data-col="actions"] {
+	display: flex;
+	gap: var(--rux-space-1);
+	justify-content: flex-end;
+	white-space: nowrap;
+}
+
+.sched-itinerary-inbox__empty {
+	padding-block: var(--rux-space-6);
+	color: var(--rux-text-secondary);
+	text-align: center;
+}
+
+
+/* ── The editor window ────────────────────────────────────────────────── */
+
+/* Wider than the request detail window because the Grid is a table of stops
+   with times, mileage and addresses across it — the same content the trip
+   editor's Grid tab gets a full pane for. Tall, because scrolling a schedule
+   in a short window loses the day dividers that make it readable. */
+.sched-itinerary-inbox__editor {
+	top: var(--rux-space-6);
+	left: 50%;
+	transform: translateX(-50%);
+	width: min(980px, calc(100vw - var(--rux-space-4)));
+	max-height: calc(100dvh - var(--rux-space-8));
+}
+
+/* Three actions do not fit side by side once the window is dragged narrow or
+   opened on a phone: at 375px "Save to inbox" and "Add as new trip" printed
+   over each other. The element already carries .sched-scope-trip — the Grid
+   inside it queries the same container — so this asks the container rather
+   than the viewport, and a window dragged narrow on a desktop stacks too.
+
+   The selector mirrors panel.css's even-fill default deliberately. That rule
+   is `.rux-panel__footer:not(:has(...)):has(...) > .rux-button`, and :has()
+   takes the specificity of its argument, so it weighs (0,4,0) — a plain
+   `.sched-itinerary-inbox__editor .rux-panel__footer .rux-button` is (0,3,0)
+   and loses. Two simpler attempts are on record as not working: `flex: 1 1
+   auto` left all three sharing the row at 98px with the labels overflowing
+   their own buttons, and `flex-direction: column` let the base `flex: 1`
+   distribute the footer's HEIGHT instead, squashing every button to 20px.
+   Overriding the shorthand at matching weight is what actually stacks them. */
+@container (max-width: 560px) {
+	.sched-itinerary-inbox__editor
+		.rux-panel__footer:not(:has(> :not(.rux-button))):has(> .rux-button ~ .rux-button)
+		> .rux-button {
+		flex: 1 1 100%;
+	}
+}

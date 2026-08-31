@@ -33,14 +33,37 @@ function isMissingTable(error) {
 	return /schema cache|does not exist|could not find the table/i.test(error.message || "");
 }
 
-// Latched rather than re-probed. The table cannot appear or vanish inside a
-// session — running the patch means reloading the page — and re-checking on
-// every save would turn one missing-table error into one per keystroke in the
-// console.
+/* The inbox columns arrive in a second patch (trip_itineraries_inbox.sql), so
+   the table can exist while they do not. Tracked separately from the table:
+   a trip's own itinerary keeps working either way, and only the inbox has to
+   stand down. */
+function isMissingColumn(error) {
+	if (!error) return false;
+	if (String(error.code || "") === "42703") return true;
+	return /column .* does not exist|could not find the .* column/i.test(error.message || "");
+}
+
+// Latched rather than re-probed. Neither can appear or vanish inside a session
+// — running a patch means reloading the page — and re-checking on every save
+// would turn one missing-table error into one per keystroke in the console.
 let available = null;
+let inboxAvailable = null;
 
 export function isAvailable() {
 	return available;
+}
+
+export function isInboxAvailable() {
+	return inboxAvailable;
+}
+
+function inboxStoodDown(error, what) {
+	if (isMissingTable(error)) available = false;
+	inboxAvailable = false;
+	console.info(
+		`The itinerary inbox is not set up — ${what} is unavailable. `
+		+ "Run supabase/trip_itineraries_inbox.sql.",
+	);
 }
 
 export async function loadItineraryDocument(tripId) {
@@ -78,12 +101,23 @@ export async function loadItineraryDocument(tripId) {
    fields, and turning that into a failed save would cost the whole trip. */
 export async function saveItineraryDocument(tripId, document) {
 	if (!tripId || !document || available === false) return false;
-	const { error } = await supabase
-		.from(TABLE)
-		.upsert({ trip_id: tripId, document }, { onConflict: "trip_id" });
 
-	if (error) {
-		if (isMissingTable(error)) {
+	/* Read, then insert or update — not upsert.
+
+	   It was upsert(onConflict: "trip_id") while trip_id was the primary key.
+	   The inbox patch moves the key to `id` and enforces one-itinerary-per-trip
+	   with a PARTIAL unique index instead, and a partial index cannot be an
+	   ON CONFLICT target through PostgREST: the conflict clause would have to
+	   repeat the index's WHERE, which the client cannot express. Two round
+	   trips is the honest price of that. */
+	const { data: existing, error: readError } = await supabase
+		.from(TABLE)
+		.select("id")
+		.eq("trip_id", tripId)
+		.maybeSingle();
+
+	if (readError) {
+		if (isMissingTable(readError)) {
 			available = false;
 			console.info(
 				"trip_itineraries is not set up — the Grid tab's itinerary was not persisted. "
@@ -91,10 +125,124 @@ export async function saveItineraryDocument(tripId, document) {
 			);
 			return false;
 		}
+		console.warn("The Grid itinerary document could not be read back:", readError);
+		return false;
+	}
+
+	const { error } = existing
+		? await supabase.from(TABLE).update({ document }).eq("id", existing.id)
+		: await supabase.from(TABLE).insert({ trip_id: tripId, document });
+
+	if (error) {
 		console.warn("The Grid itinerary document could not be saved:", error);
 		return false;
 	}
 	available = true;
+	return true;
+}
+
+/* ── The inbox ───────────────────────────────────────────────────────────
+   A processed itinerary with no trip yet. Same table, same document, trip_id
+   NULL — attaching to the calendar is an UPDATE rather than a copy, so there
+   is never a second version to drift.
+
+   Everything here degrades when the inbox patch has not been run: the caller
+   gets an empty list or false, and one console line says which file to run. */
+
+const INBOX_COLUMNS = "id, document, label, status, created_at, updated_at";
+
+export async function listItineraryDrafts() {
+	if (available === false || inboxAvailable === false) return [];
+	const { data, error } = await supabase
+		.from(TABLE)
+		.select(INBOX_COLUMNS)
+		.is("trip_id", null)
+		.order("created_at", { ascending: false });
+
+	if (error) {
+		if (isMissingTable(error) || isMissingColumn(error)) {
+			inboxStoodDown(error, "the list");
+			return [];
+		}
+		console.warn("The itinerary inbox could not be listed:", error);
+		return [];
+	}
+	available = true;
+	inboxAvailable = true;
+	return data ?? [];
+}
+
+export async function saveItineraryDraft(document, label) {
+	if (!document || available === false || inboxAvailable === false) return null;
+	const { data, error } = await supabase
+		.from(TABLE)
+		.insert({ trip_id: null, document, label: label || null })
+		.select(INBOX_COLUMNS)
+		.single();
+
+	if (error) {
+		if (isMissingTable(error) || isMissingColumn(error)) {
+			inboxStoodDown(error, "adding a draft");
+			return null;
+		}
+		console.warn("The itinerary draft could not be saved:", error);
+		return null;
+	}
+	available = true;
+	inboxAvailable = true;
+	return data;
+}
+
+export async function updateItineraryDraft(id, patch) {
+	if (!id || inboxAvailable === false) return false;
+	const { error } = await supabase.from(TABLE).update(patch).eq("id", id);
+	if (error) {
+		if (isMissingTable(error) || isMissingColumn(error)) {
+			inboxStoodDown(error, "editing a draft");
+			return false;
+		}
+		console.warn("The itinerary draft could not be updated:", error);
+		return false;
+	}
+	return true;
+}
+
+/* Attach a draft to a trip: the row stops being in the inbox and becomes that
+   trip's itinerary. One UPDATE, so there is no window where the document
+   exists twice and no chance of the two diverging.
+
+   A trip already holding an itinerary is refused rather than silently
+   overwritten — the partial unique index would reject it anyway, and saying
+   so is better than surfacing a constraint violation. */
+export async function attachDraftToTrip(id, tripId) {
+	if (!id || !tripId || inboxAvailable === false) return { ok: false, reason: "unavailable" };
+
+	const { data: taken, error: readError } = await supabase
+		.from(TABLE)
+		.select("id")
+		.eq("trip_id", tripId)
+		.maybeSingle();
+	if (readError && !isMissingTable(readError) && !isMissingColumn(readError)) {
+		console.warn("Could not check whether that trip already has an itinerary:", readError);
+		return { ok: false, reason: "error" };
+	}
+	if (taken) return { ok: false, reason: "occupied" };
+
+	const { error } = await supabase.from(TABLE).update({ trip_id: tripId }).eq("id", id);
+	if (error) {
+		console.warn("The itinerary could not be attached to the trip:", error);
+		return { ok: false, reason: "error" };
+	}
+	return { ok: true };
+}
+
+export async function deleteItineraryDraft(id) {
+	if (!id || inboxAvailable === false) return false;
+	const { error } = await supabase.from(TABLE).delete().eq("id", id);
+	if (error) {
+		console.warn("The itinerary draft could not be deleted:", error);
+		return false;
+	}
 	return true;
 }
 
