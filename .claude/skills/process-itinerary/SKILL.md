@@ -101,6 +101,22 @@ Read what comes back rather than assuming:
 | `Tight — … Leave by …` | The schedule does not fit the drive. This is a finding, not a formatting detail. |
 | A leg reading "Not routed yet" | Nothing resolved at all, and the trip total is short by that leg. |
 
+## 3b. Or park it in the inbox
+
+Only when the trip is not being decided now — a quote, an itinerary for a trip
+nobody has booked, one waiting on the customer. **Itineraries** in the side
+nav, **Add from JSON**, paste the v3 document. It lands routed, with its own
+count of what still needs a look, and opens into the same Grid in a floating
+window.
+
+From there: **Add as new trip** opens it in the trip editor for review, and
+saving is still the user's call. To put it on a trip that *already exists*, the
+control is **Load from inbox** in that trip's Grid tab — pick the itinerary
+while the trip is on screen, rather than picking the trip from the inbox.
+
+Needs `supabase/trip_itineraries_inbox.sql`. If the list says the inbox is not
+set up, say so and carry on through the Grid tab — nothing else depends on it.
+
 ## 4. Confirm the addresses
 
 Resolve leaves a count in the toolbar — **"N addresses to check"** — and a

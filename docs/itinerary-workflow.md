@@ -5,7 +5,7 @@ got. Every rule it touches has a home elsewhere and is linked rather than
 restated, per CLAUDE.md's one-home rule. If a value or a MUST appears here, it
 is in the wrong file.
 
-Last updated 2026-08-28.
+Last updated 2026-08-31.
 
 ---
 
@@ -21,6 +21,7 @@ A customer's document becomes a trip in six steps. Each is owned by one file.
 | Resolve and route | same | Built. Saved locations first, then Mapbox; town fallback when there is no street address. |
 | Confirm addresses | same | Built. Confirming writes to the saved-locations directory. |
 | Driver sheet | [`js/panels/driver-sheet.js`](../js/panels/driver-sheet.js) | Built. Prints on the `--print-*` palette. |
+| Wait for a decision | [`js/panels/itinerary-inbox.js`](../js/panels/itinerary-inbox.js) | Built 2026-08-31, unverified live. Optional — an itinerary that has no trip yet waits here. |
 | Save to the calendar | [`js/data/trip-db.js`](../js/data/trip-db.js) | Built. Mirrors both legs into `trip_stops`; the Grid's own document goes to `trip_itineraries`. |
 
 ## Split trips
@@ -46,6 +47,36 @@ This replaced the carried-through guard from earlier the same day, which kept
 `legs.return` verbatim and warned that the Grid could not show it. Carrying was
 right while the leg could not be rendered; once it can, couriering would make
 the second leg the only part of a trip nobody could fix.
+
+## The inbox
+
+Built 2026-08-31. The Grid tab can only be reached with a trip already open,
+which is the wrong way round for how the work arrives: a customer's itinerary
+turns up before anyone has decided whether it is a new trip, an update to one
+already booked, or a quote that never becomes either. Making the trip a
+prerequisite forced that decision first. The Itineraries module
+(`data-view="itineraries"`) is where one waits while it is made.
+
+What lands there is **already processed** — stops, per-leg mileage, drive
+times, day offsets, and the questions to put back to the customer. An unrouted
+queue item tells a dispatcher nothing.
+
+- **One way in:** `saveItineraryDraft(document)`. Every feed is a client of it,
+  so a feed can be added or dropped without touching the inbox.
+- **The editor is the Grid**, mounted a second time in the module's floating
+  window with `{ hostId, publishHooks: false, standalone: true }`. Same
+  routing, address checking and driver sheet, with no trip in existence.
+  `standalone` is what stops it reading and writing `#tp-*`, which are the one
+  trip form's global ids; `publishHooks: false` keeps a trip save pointed at
+  the tab's instance.
+- **Out to a new trip:** `TripEditor.openFromDraft`, same bridge the request
+  inbox uses. Nothing is saved — the dispatcher saves.
+- **Out to a trip that exists:** *Load from inbox* in the **Grid tab**, not in
+  the inbox. The target trip is then the one already open on screen, so the
+  only question asked is "which itinerary?". On save the row **moves** —
+  `attachDraftToTrip` sets `trip_id` — so the document never exists twice. A
+  trip already holding an itinerary refuses the move and keeps its own; the
+  inbox copy is closed rather than deleted.
 
 ## Two lanes, and they are not the same
 
@@ -79,6 +110,12 @@ activity, address confidence, and what the geocoder matched. Plus a private
 `distance_miles` means "the source stated it", so measured values cannot travel
 there without becoming un-refreshable.
 
+[`supabase/trip_itineraries_inbox.sql`](../supabase/trip_itineraries_inbox.sql)
+makes that table able to hold a row with no trip: `trip_id` becomes nullable,
+the row gets a `uuid` primary key of its own, and a partial unique index keeps
+"a trip has at most one itinerary". **Not run yet**, so every inbox path below
+the data layer is unverified against a live table.
+
 Code must still work when that table is absent. A fresh clone will not have it.
 
 ## Retired
@@ -98,6 +135,8 @@ step 1's day-offset and address-confidence rules were the source for
   key, no auth user, no `wrangler.toml`, never deployed (todo T4, T5). The
   workflow is built to not need it.
 - **The quote lane's `data_flags`** (todo T7) and **its lane gate** (todo T8).
+- **`intake.html` feeding the inbox.** It produces a v2 draft and still
+  dead-ends; `ItineraryInbox.add` is the one call it needs.
 - **Retiring the classic Itinerary tab.** Both tabs edit the same trip. Whether
   the Grid replaces it is a decision, not a leftover.
 
@@ -112,6 +151,20 @@ Against the live project on 2026-08-28, with a real customer PDF:
 - The saved-locations directory resolving 3 of 3 stops with no geocoding call,
   and overruling an extraction that had guessed the wrong town.
 - The driver sheet in both themes, at 480px, 600px and 860px.
+
+On 2026-08-31, in the browser, without the inbox patch applied:
+
+- The Itineraries module routes, lists, and stands itself down to its empty
+  state with one console line when the table is missing.
+- The second Grid mounts in the floating window, loads a draft, and leaves the
+  trip form's own fields untouched — checked with a sentinel in `#tp-customer`.
+- The editor's three footer actions stack one per row at 375px instead of
+  printing over each other, in both themes.
+- *Load from inbox* appears in the Grid tab, is absent from the standalone
+  instance, and names the patch to run.
+
+**Not** verified, because there is no live table yet: saving a draft, reading
+the list back, attaching a draft to a trip, and the occupied-trip fallback.
 
 Six colour-scale tests failed on `main` when this was written, unrelated to any of
 this. They were fixed on 2026-08-28 by `color.md` steps 47-48 and `trip-bar.md` step
