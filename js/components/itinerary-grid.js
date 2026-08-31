@@ -1060,27 +1060,110 @@
 	   A trip is a chain, so the previous resolved stop is the honest anchor:
 	   the next stop is usually near the last one, and where it is not, the
 	   detour check below catches it. */
+	/* Words that say what KIND of road it is rather than which one, plus the
+	   directionals. "S Alamo Rd" and "Alamo Road" are the same street; letting
+	   "s" and "rd" count as evidence would say they are not. */
+	const STREET_NOISE = new Set([
+		"n", "s", "e", "w", "ne", "nw", "se", "sw",
+		"north", "south", "east", "west",
+		"st", "street", "rd", "road", "ave", "avenue", "blvd", "boulevard",
+		"dr", "drive", "ln", "lane", "hwy", "highway", "route", "us", "fm",
+		"pkwy", "parkway", "ct", "court", "cir", "circle", "way", "trl", "trail",
+		"ste", "suite", "apt", "unit",
+	]);
+
+	/* What is distinctive about a street: "800 S Alamo Rd" is about ALAMO,
+	   "201 W 21st St" is about 21ST, "141 US-281" is about 281. The leading
+	   house number goes because it is scored separately. */
+	function streetTokens(address) {
+		const words = loosely(String(address ?? "").split(",")[0]).split(" ").filter(Boolean);
+		if (words.length && /^\d+$/.test(words[0])) words.shift();
+		return new Set(words.filter((word) => !STREET_NOISE.has(word)));
+	}
+
+	function zipOf(address) {
+		const zips = String(address ?? "").match(/\b\d{5}\b(?!\d)/g);
+		return zips ? zips[zips.length - 1] : null;
+	}
+
+	function houseNumberOf(address) {
+		return /^\s*(\d+)/.exec(String(address ?? ""))?.[1] || null;
+	}
+
+	/* How well a candidate agrees with what was actually typed.
+
+	   Mapbox's own ranking weights the street-name match above the city and the
+	   ZIP, which is exactly backwards for this job. Asked for "800 S Alamo Rd,
+	   Alamo, TX 78516" it ranks Edinburg first — Edinburg's street really is
+	   named SOUTH Alamo Road, while Alamo's is plain Alamo Road — and puts the
+	   correct "800 Alamo Road, Alamo, TX 78516" fourth. Same story for a
+	   Corpus Christi school (right answer fourth, behind Mission and
+	   Pennsylvania) and for 201 W 21st St in Austin (right answer fourth,
+	   behind West Saint Elmo Road).
+
+	   The ZIP outweighs everything because a customer who types one has told us
+	   something only they know. It is not absolute: PSJA's own document gave UT
+	   Austin's ZIP as 78705 when the campus is 78712, so a wrong ZIP must lose
+	   to town-plus-street rather than veto them. */
+	function candidateScore(typed, candidate) {
+		let score = 0;
+		const wantedZip = zipOf(typed);
+		if (wantedZip && wantedZip === zipOf(candidate)) score += 4;
+		if (sameTown(typed, candidate)) score += 3;
+		const wantedNumber = houseNumberOf(typed);
+		if (wantedNumber && wantedNumber === houseNumberOf(candidate)) score += 2;
+		const wanted = streetTokens(typed);
+		if (wanted.size) {
+			const found = streetTokens(candidate);
+			if ([...wanted].some((token) => found.has(token))) score += 2;
+		}
+		return score;
+	}
+
 	async function geocode(address, token, types = "address,poi", near = null) {
 		const url = new URL("https://api.mapbox.com/search/searchbox/v1/forward");
 		url.searchParams.set("q", address);
 		url.searchParams.set("access_token", token);
 		url.searchParams.set("country", "US");
 		url.searchParams.set("types", types);
-		url.searchParams.set("limit", "1");
+		/* Five, not one. One meant taking Mapbox's ranking on faith, and every
+		   wrong address this app has produced came through that door — with the
+		   right answer sitting two or three places below it. Same request, same
+		   cost; the choosing happens here now. */
+		url.searchParams.set("limit", "5");
 		url.searchParams.set("proximity", near ? `${near.lng},${near.lat}` : "ip");
 		const response = await fetch(url);
 		if (!response.ok) throw new Error(`Mapbox forward failed: ${response.status}`);
-		const feature = (await response.json()).features?.[0];
-		const coordinates = feature?.geometry?.coordinates;
-		if (!Array.isArray(coordinates) || coordinates.length < 2) return null;
+		const features = (await response.json()).features || [];
+
+		const usable = features.filter((feature) => {
+			const coordinates = feature?.geometry?.coordinates;
+			return Array.isArray(coordinates) && coordinates.length >= 2;
+		});
+		if (!usable.length) return null;
+
+		const addressOf = (feature) => feature.properties?.full_address
+			|| feature.properties?.address
+			|| feature.properties?.name
+			|| null;
+
+		// Mapbox's order is the tiebreak, not the decision: a strictly greater
+		// score wins, so an equal one leaves the earlier candidate in front.
+		let best = usable[0];
+		let bestScore = candidateScore(address, addressOf(usable[0]));
+		for (const feature of usable.slice(1)) {
+			const score = candidateScore(address, addressOf(feature));
+			if (score > bestScore) {
+				best = feature;
+				bestScore = score;
+			}
+		}
+
 		return {
-			lng: coordinates[0],
-			lat: coordinates[1],
-			mapboxId: feature.properties?.mapbox_id || null,
-			address: feature.properties?.full_address
-				|| feature.properties?.address
-				|| feature.properties?.name
-				|| null,
+			lng: best.geometry.coordinates[0],
+			lat: best.geometry.coordinates[1],
+			mapboxId: best.properties?.mapbox_id || null,
+			address: addressOf(best),
 		};
 	}
 
@@ -2482,6 +2565,6 @@
 	window.ItineraryGrid = {
 		init, fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
 		legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops, toCleanV3, localityOf,
-		needsReview, suspectLocations, suspectCount, sameTown,
+		needsReview, suspectLocations, suspectCount, sameTown, candidateScore,
 	};
 })();

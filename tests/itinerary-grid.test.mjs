@@ -27,7 +27,7 @@ new Function("window", source)(host);
 const {
 	fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
 	legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops, toCleanV3, localityOf,
-	needsReview, suspectLocations, sameTown,
+	needsReview, suspectLocations, sameTown, candidateScore,
 } = host.ItineraryGrid;
 
 // legRisks and dutyByDay both take the derived days alongside the stops, so
@@ -971,6 +971,84 @@ test("a town-level fix survives being saved and reloaded", () => {
 		"Whataburger, Falfurrias, TX",
 		"and the typed address is untouched — a driver is never sent to the town centre",
 	);
+});
+
+/* ── Choosing among the geocoder's candidates ────────────────────────── */
+
+/* Every list below is what Mapbox actually returned on 2026-08-31, in its own
+   order. The bug was taking [0] on faith: in four of these five the right
+   answer was already on the list, two or three places down. `best` is what the
+   scoring picks. */
+const best = (typed, candidates) =>
+	candidates.reduce((winner, candidate) =>
+		candidateScore(typed, candidate) > candidateScore(typed, winner) ? candidate : winner);
+
+test("a correct ZIP and town beat an exact street-name match elsewhere", () => {
+	/* The one that started it. Edinburg's street really is named SOUTH Alamo
+	   Road while Alamo's is plain Alamo Road, so Mapbox ranks Edinburg first
+	   and the right answer fourth. Two PSJA trips were measured from the wrong
+	   school before anyone noticed. */
+	assert.equal(
+		best("800 S Alamo Rd, Alamo, TX 78516", [
+			"800 South Alamo Road, Edinburg, Texas 78542, United States",
+			"5010 S Alamo Rd, Edinburg, Texas 78542, United States",
+			"439 Medina Ln, Alamo, Texas 78516, United States",
+			"800 Alamo Road, Alamo, Texas 78516, United States",
+		]),
+		"800 Alamo Road, Alamo, Texas 78516, United States",
+	);
+});
+
+test("a wrong ZIP loses to the town and the street rather than vetoing them", () => {
+	/* PSJA's own document gives UT Austin's ZIP as 78705; the campus is 78712.
+	   No candidate carries the typed ZIP, so the decision falls to town plus
+	   street — and 21ST is what separates the right answer from West Saint
+	   Elmo Road, which shares the house number and the city. */
+	assert.equal(
+		best("201 W 21st St, Austin, TX 78705", [
+			"201 West Saint Elmo Road, Austin, Texas 78745, United States",
+			"201 West Avenue, Austin, Texas 78701, United States",
+			"310 W Austin St, Weslaco, Texas 78599, United States",
+			"201 West 21st Street, Austin, Texas 78712, United States",
+		]),
+		"201 West 21st Street, Austin, Texas 78712, United States",
+	);
+});
+
+test("a school name with only a town still finds the right town", () => {
+	// No number and no ZIP to go on, and the name is shared across states.
+	assert.equal(
+		best("Veterans Memorial High School, Corpus Christi, TX", [
+			"700 E Mile 2 Rd, Mission, Texas 78574, United States",
+			"301 1st St, Old Forge, Pennsylvania 18518, United States",
+			"4550 US-281, Brownsville, Texas 78520, United States",
+			"3750 Cimarron Blvd, Corpus Christi, Texas 78414, United States",
+			"7618 E Evans Rd, San Antonio, Texas 78266, United States",
+		]),
+		"3750 Cimarron Blvd, Corpus Christi, Texas 78414, United States",
+	);
+});
+
+test("the right town beats a matching house number in the wrong one", () => {
+	/* Both of these are imperfect — the customer wrote "1419 US-281,
+	   Falfurrias" and US-281 through Falfurrias is St Mary's Street. Landing in
+	   Falfurrias is still the answer; landing in Brownsville is 150 miles of
+	   error in a quote. */
+	assert.equal(
+		best("1419 US-281, Falfurrias, TX 78355", [
+			"1419 Boca Chica Boulevard, Brownsville, Texas 78520, United States",
+			"1419 South Saint Mary's Street, Falfurrias, Texas 78355, United States",
+			"281 North Saint Mary's Street, Falfurrias, Texas 78355, United States",
+		]),
+		"1419 South Saint Mary's Street, Falfurrias, Texas 78355, United States",
+	);
+});
+
+test("Mapbox's order still decides when nothing else does", () => {
+	// A strictly greater score wins, so an equal one leaves the earlier
+	// candidate in front and the old behaviour is what remains.
+	const tie = ["A Street, Alamo, Texas 78516, United States", "B Street, Alamo, Texas 78516, United States"];
+	assert.equal(best("Somewhere, Alamo, TX 78516", tie), tie[0]);
 });
 
 /* ── The saved directory, and the towns it must not cross ────────────── */
