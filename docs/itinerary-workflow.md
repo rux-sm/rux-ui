@@ -21,7 +21,7 @@ A customer's document becomes a trip in six steps. Each is owned by one file.
 | Resolve and route | same | Built. Saved locations first, then Mapbox; town fallback when there is no street address. |
 | Confirm addresses | same | Built. Confirming writes to the saved-locations directory. |
 | Driver sheet | [`js/panels/driver-sheet.js`](../js/panels/driver-sheet.js) | Built. Prints on the `--print-*` palette. |
-| Wait for a decision | [`js/panels/itinerary-inbox.js`](../js/panels/itinerary-inbox.js) | Built 2026-08-31, unverified live. Optional — an itinerary that has no trip yet waits here. |
+| Wait for a decision | [`js/panels/itinerary-inbox.js`](../js/panels/itinerary-inbox.js) | Built and verified live 2026-08-31. Optional — an itinerary that has no trip yet waits here. |
 | Save to the calendar | [`js/data/trip-db.js`](../js/data/trip-db.js) | Built. Mirrors both legs into `trip_stops`; the Grid's own document goes to `trip_itineraries`. |
 
 ## Split trips
@@ -113,8 +113,15 @@ there without becoming un-refreshable.
 [`supabase/trip_itineraries_inbox.sql`](../supabase/trip_itineraries_inbox.sql)
 makes that table able to hold a row with no trip: `trip_id` becomes nullable,
 the row gets a `uuid` primary key of its own, and a partial unique index keeps
-"a trip has at most one itinerary". **Not run yet**, so every inbox path below
-the data layer is unverified against a live table.
+"a trip has at most one itinerary". Applied 2026-08-31.
+
+**Storing an itinerary means storing `toV3`, never `toCleanV3`.** The clean
+export is what `trip-import-schema-v3.json` describes and is for handing out —
+Copy as JSON, the importer. It strips the private `rux_route` annex, which is
+the only place measured mileage, drive time, coordinates and geocoder matches
+live. The Grid instance exposes both as `getDocument` (clean) and
+`getStoredDocument` (annex); a save that picks the first loses the entire
+routing pass silently.
 
 Code must still work when that table is absent. A fresh clone will not have it.
 
@@ -152,19 +159,28 @@ Against the live project on 2026-08-28, with a real customer PDF:
   and overruling an extraction that had guessed the wrong town.
 - The driver sheet in both themes, at 480px, 600px and 860px.
 
-On 2026-08-31, in the browser, without the inbox patch applied:
+Before the inbox patch was applied, on 2026-08-31: the module routes and
+lists, stands itself down to its empty state with one console line when the
+table is missing, mounts its second Grid without touching the trip form's own
+fields (checked with a sentinel in `#tp-customer`), stacks its three footer
+actions one per row at 375px in both themes, and shows *Load from inbox* in the
+Grid tab but not in the standalone instance.
 
-- The Itineraries module routes, lists, and stands itself down to its empty
-  state with one console line when the table is missing.
-- The second Grid mounts in the floating window, loads a draft, and leaves the
-  trip form's own fields untouched — checked with a sentinel in `#tp-customer`.
-- The editor's three footer actions stack one per row at 375px instead of
-  printing over each other, in both themes.
-- *Load from inbox* appears in the Grid tab, is absent from the standalone
-  instance, and names the patch to run.
+After the patch, against the live table with a real 16-stop three-day quote —
+and with every row deleted afterwards, leaving `trip_itineraries` empty:
 
-**Not** verified, because there is no live table yet: saving a draft, reading
-the list back, attaching a draft to a trip, and the occupied-trip fallback.
+- Add, list, open, route, save, reload, status, filters, driver sheet, delete.
+- Routing measured 1,111.2 miles and 18h 18m, resolving one address from the
+  saved directory with no geocoding call.
+- The routed document survived save and reload with its annex intact — 13 drive
+  legs, 15 of 16 coordinates — and the list row reported `≈ 1111 mi · 18h 18m`.
+- `attachDraftToTrip` moved the row onto a trip, which then read back all 16
+  stops; a second draft aimed at the same trip was refused as `occupied`
+  without writing.
+- `TripEditor.openFromDraft` accepts an annex-carrying document unchanged.
+
+**Not** verified: pressing Save in the trip editor after *Load from inbox*.
+That saves a trip, and a trip is only ever saved on a per-trip go-ahead.
 
 Six colour-scale tests failed on `main` when this was written, unrelated to any of
 this. They were fixed on 2026-08-28 by `color.md` steps 47-48 and `trip-bar.md` step
