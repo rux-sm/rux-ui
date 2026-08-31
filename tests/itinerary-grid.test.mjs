@@ -27,7 +27,7 @@ new Function("window", source)(host);
 const {
 	fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
 	legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops, toCleanV3, localityOf,
-	needsReview, suspectLocations,
+	needsReview, suspectLocations, sameTown,
 } = host.ItineraryGrid;
 
 // legRisks and dutyByDay both take the derived days alongside the stops, so
@@ -973,6 +973,42 @@ test("a town-level fix survives being saved and reloaded", () => {
 	);
 });
 
+/* ── The saved directory, and the towns it must not cross ────────────── */
+
+test("a school name saved in one town does not answer for another", () => {
+	/* The directory is checked BEFORE Mapbox and a hit skips geocoding
+	   entirely, so a name-only match does not merely pick the wrong place — it
+	   stops anything else from looking. A Corpus Christi band trip resolved to
+	   "Veterans Memorial High School" in the Valley, 150 miles away and 5.7
+	   miles from the yard, because the operator had the local one saved. */
+	assert.equal(
+		sameTown("Veterans Memorial High School, Corpus Christi, TX", "1200 Bryce Dr, Mission, TX 78572"),
+		false,
+	);
+});
+
+test("the same school in the same town still matches", () => {
+	// The whole value of the directory is that a correction sticks. The check
+	// must not reject the hits it exists to make.
+	assert.equal(
+		sameTown("Audie Murphy Middle School, Pharr, TX", "1400 N Cage Blvd, Pharr, TX 78577"),
+		true,
+	);
+});
+
+test("a customer's loose wording still matches a verified address", () => {
+	// "Laredo Texas" with no comma is the customer's; the saved one is a real
+	// street address. Containment either way is what accepts this.
+	assert.equal(sameTown("Shirley Field, Laredo Texas", "2001 San Bernardo Ave, Laredo, TX 78040"), true);
+});
+
+test("an address with no town to read is not treated as a mismatch", () => {
+	/* A saved entry predating this check is the operator's own record. Refusing
+	   it would silently stop honouring corrections they already made. */
+	assert.equal(sameTown("Somewhere", "1400 N Cage Blvd, Pharr, TX 78577"), true);
+	assert.equal(sameTown("Audie Murphy Middle School, Pharr, TX", "The yard"), true);
+});
+
 /* ── Geocoder substitution ───────────────────────────────────────────── */
 
 test("an expanded spelling of the same address is not a substitution", () => {
@@ -998,6 +1034,24 @@ test("a different place is a substitution, however plausible it looks", () => {
 		sameAddress("101 E Hackberry Ave, McAllen, TX 78501", "508 TX-107, Elsa, Texas 78543"),
 		false,
 		"both the house number and the ZIP moved",
+	);
+});
+
+test("a venue-and-town address is checked against the town it was handed", () => {
+	/* The hole this closes: with no house number and no ZIP there was nothing
+	   to compare, so sameAddress returned true and any answer at all passed.
+	   Asked for a school name common to many states, the geocoder returned one
+	   1,890 miles from the previous stop and it went straight into the mileage.
+	   Naming a town and being handed a different one is a contradiction even
+	   when no street number was given. */
+	assert.equal(
+		sameAddress("Veterans Memorial High School, Corpus Christi, TX", "700 E Mile 2 Rd, Mission, Texas 78574, United States"),
+		false,
+	);
+	assert.equal(
+		sameAddress("Shirley Field, Laredo, TX", "2001 San Bernardo Ave, Laredo, Texas 78040, United States"),
+		true,
+		"the same town still passes — this must not flag every venue lookup",
 	);
 });
 

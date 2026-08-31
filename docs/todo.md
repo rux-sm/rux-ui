@@ -290,6 +290,37 @@ match a `find`. The counts are the cheap half and would have caught four of
 the five.
 
 
+
+### T10 — a wrong saved-directory hit rewrites the document, so it outlives the fix
+
+`fromSavedLocations` takes the saved address as well as its coordinates:
+
+```js
+// Take the saved address too. It is the one somebody already corrected by
+// hand, so a draft's vaguer wording should give way to it.
+if (saved.address) stop.address = saved.address;
+```
+
+That is right when the hit is right, and it is how a correction sticks. It is
+also unrecoverable when the hit is wrong. On 2026-08-31 a Corpus Christi band
+trip matched the operator's saved "Veterans Memorial High School" in Mission —
+a name-only match, since fixed — and the document's own wording, "Veterans
+Memorial High School, Corpus Christi, TX", was overwritten with "700 E Mile 2
+Rd, Mission, Texas 78574".
+
+The customer's words were gone. Re-routing after the matcher was fixed matched
+Mission again and legitimately so, because by then the document really did say
+Mission. It took hand-editing the stored row to get back to what the customer
+had actually written.
+
+How it is known: it happened, and the recovery was manual.
+
+Cost to close: keep the source wording beside the resolved one rather than on
+top of it — the stop already carries `matchedAddress` for exactly this
+distinction on the geocoder path, so a directory hit could use the same pair
+instead of a destructive assignment. Then "Mine is right" in the address review
+has something to restore, which today it does not.
+
 ---
 
 *A third entry — fourteen `trip_ref` values each shared by two active trips — was drafted

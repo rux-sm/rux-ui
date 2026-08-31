@@ -123,7 +123,18 @@
 		if (a.number && a.zip) return a.number === b.number && a.zip === b.zip;
 		if (a.zip) return a.zip === b.zip;
 		if (a.number) return a.number === b.number;
-		return true; // nothing identifying was typed, so nothing to contradict
+
+		/* No house number and no ZIP — which is exactly the wording that most
+		   needs checking, and used to be the wording that was never checked.
+		   "nothing identifying was typed, so nothing to contradict" let a
+		   venue-and-town address match anything at all: asked for "Veterans
+		   Memorial High School, Corpus Christi, TX" the geocoder answered a
+		   school of that name 1,890 miles from the previous stop, and it landed
+		   in the mileage without a word, because there was no number to compare.
+
+		   A town IS identifying. Naming one and being handed another town is a
+		   contradiction whether or not a street number was given. */
+		return sameTown(typed, matched);
 	}
 
 	function escHtml(value) {
@@ -970,11 +981,57 @@
 				const savedName = loosely(location.name);
 				if (savedAddress && savedAddress === wantedAddress) return true;
 				if (!savedName) return false;
-				return savedName === wantedName || savedName === leadingSegment;
+				if (savedName !== wantedName && savedName !== leadingSegment) return false;
+				// A NAME IS NOT UNIQUE ACROSS TOWNS, and this directory is
+				// checked before Mapbox — so a name-only match does not just
+				// pick the wrong place, it stops anything else from looking.
+				// A Corpus Christi band trip resolved to "Veterans Memorial
+				// High School" in the Valley, 150 miles away and 5.7 miles from
+				// the yard, because the operator had the local one saved.
+				return sameTown(address, location.address);
 			}) || null;
 		} catch {
 			return null;
 		}
+	}
+
+	/* The town two addresses claim, compared forgivingly.
+
+	   Forgiving on purpose: the wanted address is the customer's wording
+	   ("Shirley Field, Laredo Texas") and the saved one is a verified street
+	   address ("2001 San Bernardo Ave, Laredo, TX 78040"), so demanding they
+	   match exactly would reject the directory hits that make it worth having.
+	   Containment either way accepts "laredo" against "laredo texas" and still
+	   refuses "corpus christi" against "mission".
+
+	   Undecidable means yes. A saved entry with no town in it is the operator's
+	   own record and predates this check; treating it as a mismatch would
+	   silently stop honouring corrections they already made. */
+	function townOf(address) {
+		const parts = String(address ?? "").split(",").map((part) => part.trim()).filter(Boolean);
+		// One part is a name, not an address: "Somewhere", "The yard". Nothing
+		// in it says which words are the town, so there is no town to read —
+		// and guessing one out of it is what would make this check reject a
+		// perfectly good saved entry.
+		if (parts.length < 2) return null;
+
+		/* Walk in from the end past the parts that are never a town. Mapbox
+		   answers "…, Mission, Texas 78574, United States" while a customer
+		   writes "…, Mission, TX" — reading only the last-but-one gave "Texas
+		   78574" for one and "Mission" for the other, so two spellings of the
+		   same town compared unequal and every geocoded venue looked wrong. */
+		let i = parts.length - 1;
+		if (i > 0 && /^(united states|usa|u s a|us|mexico)$/.test(loosely(parts[i]))) i -= 1;
+		// "TX", "TX 78504", "Texas 78504" — a state, optionally with a ZIP.
+		if (i > 0 && /^[A-Za-z]{2,}\.?(\s+\d{5}(-\d{4})?)?$/.test(parts[i])) i -= 1;
+		return loosely(parts[i]) || null;
+	}
+
+	function sameTown(wanted, saved) {
+		const a = townOf(wanted);
+		const b = townOf(saved);
+		if (!a || !b) return true;
+		return a === b || a.includes(b) || b.includes(a);
 	}
 
 	/* The town an address sits in, for the fallback below.
@@ -2425,6 +2482,6 @@
 	window.ItineraryGrid = {
 		init, fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
 		legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops, toCleanV3, localityOf,
-		needsReview, suspectLocations, suspectCount,
+		needsReview, suspectLocations, suspectCount, sameTown,
 	};
 })();
