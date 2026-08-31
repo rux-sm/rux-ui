@@ -552,6 +552,39 @@
 		});
 
 		applyAnnex(stops, annex);
+
+		/* The yard the document never mentions.
+
+		   docs/itinerary-prompt.md tells the model to omit `yard_origin` unless
+		   the source states a depot departure, on the promise that "the app
+		   calculates it backwards from the pickup once the route is measured".
+		   yardPlan() could not keep that promise: it returns null unless a row
+		   already sits before the pickup, and it needs that row's measured
+		   drive to back off from. So a draft that followed the prompt got no
+		   report, roll or spot time, and the run out to the first pickup was in
+		   no total — not the mileage, not the drive time, not the duty hours.
+		   The trip simply read as though it began at the pickup.
+
+		   Silent, and worst exactly where it matters most: a local run hides a
+		   few miles, a Laredo run hid three hours each way and turned a
+		   19h 32m duty day into a 12h 30m one. See docs/todo.md T10.
+
+		   AFTER applyAnnex, deliberately. The annex is keyed by position in the
+		   document's own stops array, so inserting before it would slide every
+		   measured mile onto the wrong leg. A document that already carries a
+		   yard_origin is left alone, which is what keeps the round trip stable
+		   once one has been emitted.
+
+		   Not done for a missing `return`, and the asymmetry is the point: the
+		   prompt tells the model to omit yard_origin, so its absence is the
+		   design working and the app owes the row. It tells the model to emit
+		   `return` always, so a missing one is a model error — papering over
+		   that would hide a broken extraction rather than complete a correct
+		   one. */
+		if (stops.length && stops[0].type === "pickup") {
+			stops.unshift(withYard(normalizeStop({ type: "yard_origin" })));
+		}
+
 		return {
 			startDate: String(leg.start_date ?? ""),
 			busCount: Number.isFinite(leg.bus_count) ? leg.bus_count : 1,

@@ -96,6 +96,25 @@ change to a page that has never run its extraction route at all (todo T4).
 `normalizeTripImport` reads v1, v2 and v3, so both lanes land in the same
 editor.
 
+## The yard is the app's, not the document's
+
+`docs/itinerary-prompt.md` tells a model to omit `yard_origin` unless the source
+states a depot departure — the app owns the yard, and a draft should only report
+what the customer said. `fromV3` therefore supplies the row on load, ahead of any
+leg that starts with a pickup.
+
+It has to be a row rather than a calculation. Routing measures leg *n* from stop
+*n−1*, so with nothing before the pickup there is no leg to measure: no mileage,
+no drive time, no duty, and `yardPlan` returns no roll or report time. Until
+2026-08-31 that is exactly what happened, and it was silent — the trip simply
+read as though it began at the pickup.
+
+The insertion runs **after** the `rux_route` annex is applied, because the annex
+is keyed by position in the document's own stops. A missing `return` is *not*
+supplied the same way: the prompt mandates that one, so its absence is a broken
+extraction rather than a designed omission, and filling it in would hide the
+difference.
+
 ## Storage
 
 `trip_stops` remains what every other reader uses — print schedules, the trip
