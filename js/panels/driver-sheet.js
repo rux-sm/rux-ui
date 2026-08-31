@@ -247,6 +247,7 @@
 				<header class="sched-driver-sheet__header">
 					<h1>Trip Itinerary</h1>
 					<div class="sched-driver-sheet__meta">
+						${meta.leg ? `<div><strong>${escHtml(meta.leg)}</strong></div>` : ""}
 						${date ? `<div><strong>${escHtml(date)}</strong></div>` : ""}
 						${meta.client ? `<div>${escHtml(meta.client)}</div>` : ""}
 						${meta.destination ? `<div>${escHtml(meta.destination)}</div>` : ""}

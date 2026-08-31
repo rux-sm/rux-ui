@@ -81,6 +81,10 @@ Serve with `node tools/serve.mjs` (see the `verify` skill — never
 `python3 -m http.server`). Then in the browser: New Trip → **Grid** tab →
 paste into the intake box → **Load JSON** → **Resolve & route**.
 
+A Drop-off / Pick-up draft loads both legs and grows a leg picker. Route,
+review and print each leg separately — they are days apart and separately
+crewed. The summary's **Both legs** figure is the one to quote from.
+
 Load JSON also fills the trip's blank Details from the draft — customer,
 destination, dates, notes, booking contact. It never overwrites a field that
 already has something in it.
@@ -146,8 +150,8 @@ an itinerary document does not state them. That is correct, not incomplete.
 
 ## What this cannot do
 
-- **Split trips.** The Grid reads `legs.outbound` only. A `dropoff_pickup`
-  needs the classic Itinerary tab.
+- **Routing both legs at once.** A split trip routes one leg per press. Switch
+  with the leg picker and press again; the status names the leg it measured.
 - **Confirm anything with the customer.** Every `data_flag` stays open.
 - **Know the bus count, driver, price, or day-of contact** unless the document
   states them, which it usually does not.

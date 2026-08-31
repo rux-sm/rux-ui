@@ -124,6 +124,31 @@
 	font-variant-numeric: tabular-nums;
 }
 
+/* — Leg picker —
+   Only a split trip has two legs, so only a split trip renders this. It sits
+   above the run rather than in the toolbar because it changes what the whole
+   list IS, not what a button does to it. */
+
+.sched-itinerary-grid__legs {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-3);
+}
+
+.sched-itinerary-grid__legs .rux-field__label {
+	flex: none;
+}
+
+/* The stop count riding on each segment, so switching is an informed choice
+   rather than a look-and-come-back. */
+.sched-itinerary-grid__leg-count {
+	margin-inline-start: var(--rux-space-1-5);
+	font-size: var(--rux-text-label-12-size);
+	line-height: var(--rux-text-label-12-line-height);
+	color: var(--rux-text-secondary);
+	font-variant-numeric: tabular-nums;
+}
+
 /* — Routing toolbar — */
 
 .sched-itinerary-grid__toolbar {

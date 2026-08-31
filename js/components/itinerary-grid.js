@@ -403,16 +403,49 @@
 	const TRIP_TYPES = ["round_trip", "one_way", "dropoff_pickup"];
 	const SERVICE_TYPES = ["charter", "ticketed"];
 
-	function fromV3(payload) {
-		const doc = payload && typeof payload === "object" ? payload : {};
-		const trip = doc.trip && typeof doc.trip === "object" ? doc.trip : {};
-		const legs = trip.legs && typeof trip.legs === "object" ? trip.legs : {};
-		const outbound = legs.outbound && typeof legs.outbound === "object" ? legs.outbound : {};
-		/* Verbatim, not normalized: this editor is a courier for it, and
-		   reshaping a leg it cannot render is how a courier loses a parcel. */
-		const returnLeg = legs.return && typeof legs.return === "object" ? legs.return : null;
-		const source = Array.isArray(outbound.stops) ? outbound.stops : [];
+	/* The routing annex, applied to one leg's stops.
 
+	   Only when its length matches: a draft edited by hand since it was saved
+	   would otherwise put one stop's mileage on another's leg, which is worse
+	   than having none. */
+	function applyAnnex(stops, annex) {
+		if (!Array.isArray(annex) || annex.length !== stops.length) return;
+		stops.forEach((stop, index) => {
+			const entry = annex[index] && typeof annex[index] === "object" ? annex[index] : {};
+			if (entry.miles) stop.miles = String(entry.miles);
+			if (entry.drive) stop.drive = String(entry.drive);
+			stop.milesSource = entry.miles_source === "manual" ? "manual" : "estimated";
+			stop.driveSource = entry.drive_source === "manual" ? "manual" : "estimated";
+			if (entry.lat != null) stop.lat = entry.lat;
+			if (entry.lng != null) stop.lng = entry.lng;
+			if (entry.mapbox_id) stop.mapboxId = entry.mapbox_id;
+			if (entry.matched_address) stop.matchedAddress = entry.matched_address;
+			if (entry.approx_from) stop.approxFrom = entry.approx_from;
+		});
+	}
+
+	/* rux_route was a flat array when only one leg existed. Documents saved in
+	   that shape are still in the database, so a bare array still reads as the
+	   outbound leg's annex; a keyed object is the two-leg form. */
+	function annexesOf(doc) {
+		const annex = doc.rux_route;
+		if (Array.isArray(annex)) return { outbound: annex, return: null };
+		if (annex && typeof annex === "object") {
+			return {
+				outbound: Array.isArray(annex.outbound) ? annex.outbound : null,
+				return: Array.isArray(annex.return) ? annex.return : null,
+			};
+		}
+		return { outbound: null, return: null };
+	}
+
+	/* One leg, parsed. The Grid used to read only legs.outbound and carry
+	   legs.return through untouched — a courier rather than an editor for it.
+	   That stopped the second leg being deleted; it did not let anyone edit
+	   it. This is the same parse applied to whichever leg is asked for. */
+	function parseLeg(rawLeg, annex) {
+		const leg = rawLeg && typeof rawLeg === "object" ? rawLeg : {};
+		const source = Array.isArray(leg.stops) ? leg.stops : [];
 		const stops = [];
 		const stated = [];
 		let previousDay = 0;
@@ -470,31 +503,40 @@
 			}
 		});
 
-		/* The routing annex, when this document came from here rather than
-		   from a model. Applied only when its length matches: a draft that
-		   has been edited by hand since it was saved would otherwise put one
-		   stop's mileage on another's leg, which is worse than none. */
-		const annex = Array.isArray(doc.rux_route) ? doc.rux_route : null;
-		if (annex && annex.length === stops.length) {
-			stops.forEach((stop, index) => {
-				const entry = annex[index] && typeof annex[index] === "object" ? annex[index] : {};
-				if (entry.miles) stop.miles = String(entry.miles);
-				if (entry.drive) stop.drive = String(entry.drive);
-				stop.milesSource = entry.miles_source === "manual" ? "manual" : "estimated";
-				stop.driveSource = entry.drive_source === "manual" ? "manual" : "estimated";
-				if (entry.lat != null) stop.lat = entry.lat;
-				if (entry.lng != null) stop.lng = entry.lng;
-				if (entry.mapbox_id) stop.mapboxId = entry.mapbox_id;
-				if (entry.matched_address) stop.matchedAddress = entry.matched_address;
-				if (entry.approx_from) stop.approxFrom = entry.approx_from;
-			});
-		}
+		applyAnnex(stops, annex);
+		return {
+			startDate: String(leg.start_date ?? ""),
+			busCount: Number.isFinite(leg.bus_count) ? leg.bus_count : 1,
+			stops,
+		};
+	}
 
+	function emptyLeg(startDate = "") {
+		return { startDate, busCount: 1, stops: [] };
+	}
+
+	// The active leg, or the outbound one when a caller has not chosen.
+	function legOf(state, which) {
+		const key = which || state.activeLeg || "outbound";
+		return state.legs?.[key] || state.legs?.outbound || emptyLeg();
+	}
+
+	function fromV3(payload) {
+		const doc = payload && typeof payload === "object" ? payload : {};
+		const trip = doc.trip && typeof doc.trip === "object" ? doc.trip : {};
+		const legs = trip.legs && typeof trip.legs === "object" ? trip.legs : {};
+		const annexes = annexesOf(doc);
 		const booking = trip.booking_contact && typeof trip.booking_contact === "object"
 			? trip.booking_contact
 			: {};
+
+		const outbound = parseLeg(legs.outbound, annexes.outbound);
+		/* A return leg is now PARSED rather than carried verbatim. The Grid can
+		   render and route it, so keeping it as an opaque blob would be the
+		   courier behaviour outliving its reason. */
+		const hasReturn = legs.return && typeof legs.return === "object";
+
 		return {
-			startDate: String(outbound.start_date ?? ""),
 			client: String(trip.client ?? ""),
 			destination: String(trip.destination ?? ""),
 			notes: String(trip.notes ?? ""),
@@ -504,14 +546,18 @@
 			dataFlags: Array.isArray(doc.data_flags) ? doc.data_flags.filter(Boolean).map(String) : [],
 			tripType: TRIP_TYPES.includes(trip.type) ? trip.type : "",
 			serviceType: SERVICE_TYPES.includes(trip.service_type) ? trip.service_type : "",
-			returnLeg,
-			stops,
+			activeLeg: "outbound",
+			legs: {
+				outbound,
+				return: hasReturn ? parseLeg(legs.return, annexes.return) : null,
+			},
 		};
 	}
 
-	function toV3(state) {
-		const days = deriveDays(state.stops);
-		const stops = state.stops.map((stop, index) => {
+	/* One leg, emitted: the schema-clean stops and the annex beside them. */
+	function emitLeg(leg) {
+		const days = deriveDays(leg.stops);
+		const stops = leg.stops.map((stop, index) => {
 			const { arriveDay, departDay } = days[index];
 			const out = { type: stop.type };
 			if (stop.type !== "yard_origin" && stop.type !== "return") {
@@ -535,7 +581,7 @@
 			/* v3's distance_miles means "the source stated it" — that is why
 			   the importer marks a stated value manual. So only a typed
 			   override belongs here. Measured mileage is the app's own, and
-			   goes in the annex below rather than being laundered into a
+			   goes in the annex rather than being laundered into a
 			   customer-stated number that no later Resolve would refresh. */
 			if (stop.milesSource === "manual" && stop.miles) {
 				const miles = Number.parseFloat(stop.miles);
@@ -548,43 +594,7 @@
 			return out;
 		});
 
-		/* The defaults are what a hand-entered grid is; a loaded document's own
-		   values win, so a Drop-off / Pick-up survives the round trip. */
-		const trip = {
-			type: state.tripType || "round_trip",
-			service_type: state.serviceType || "charter",
-			legs: { outbound: { stops } },
-		};
-		if (state.client) trip.client = state.client;
-		if (state.destination) trip.destination = state.destination;
-		if (state.notes) trip.notes = state.notes;
-		if (state.bookingName || state.bookingPhone || state.bookingEmail) {
-			trip.booking_contact = {};
-			if (state.bookingName) trip.booking_contact.name = state.bookingName;
-			if (state.bookingPhone) trip.booking_contact.phone = state.bookingPhone;
-			if (state.bookingEmail) trip.booking_contact.email = state.bookingEmail;
-		}
-		if (state.startDate) trip.legs.outbound.start_date = state.startDate;
-		/* Unmodified, and last, so it is obvious nothing here touched it. */
-		if (state.returnLeg) trip.legs.return = state.returnLeg;
-		const doc = { schema_version: 3, trip };
-		if (state.dataFlags.length) doc.data_flags = state.dataFlags;
-
-		/* The routing annex.
-
-		   Everything a Resolve pass worked out and v3 has no room for:
-		   measured mileage and drive time, which of the two were typed, the
-		   coordinates they were measured between, and what the geocoder
-		   actually matched. Without it a saved itinerary comes back unrouted
-		   and every leg has to be measured again — which is what the driver
-		   sheet found by trying to print numbers that were not there.
-
-		   It sits beside `trip` rather than inside it so the v3 document stays
-		   exactly what docs/trip-import-schema-v3.json describes: Copy as JSON
-		   and the importer both see a clean, schema-valid draft, and only this
-		   tab's own storage carries the annex. One index per emitted stop —
-		   toV3 maps one-to-one over state.stops, so the positions line up. */
-		const annex = state.stops.map((stop) => {
+		const annex = leg.stops.map((stop) => {
 			const entry = {};
 			if (stop.miles) entry.miles = stop.miles;
 			if (stop.drive) entry.drive = stop.drive;
@@ -597,7 +607,56 @@
 			if (stop.approxFrom) entry.approx_from = stop.approxFrom;
 			return entry;
 		});
-		if (annex.some((entry) => Object.keys(entry).length)) doc.rux_route = annex;
+
+		const emitted = { stops };
+		if (leg.startDate) emitted.start_date = leg.startDate;
+		if (leg.busCount && leg.busCount !== 1) emitted.bus_count = leg.busCount;
+		return { leg: emitted, annex };
+	}
+
+	function toV3(state) {
+		const outbound = emitLeg(legOf(state, "outbound"));
+		const returnLeg = state.legs?.return ? emitLeg(state.legs.return) : null;
+
+		/* The defaults are what a hand-entered grid is; a loaded document's own
+		   values win, so a Drop-off / Pick-up survives the round trip. */
+		const trip = {
+			type: state.tripType || (returnLeg ? "dropoff_pickup" : "round_trip"),
+			service_type: state.serviceType || "charter",
+			legs: { outbound: outbound.leg },
+		};
+		if (state.client) trip.client = state.client;
+		if (state.destination) trip.destination = state.destination;
+		if (state.notes) trip.notes = state.notes;
+		if (state.bookingName || state.bookingPhone || state.bookingEmail) {
+			trip.booking_contact = {};
+			if (state.bookingName) trip.booking_contact.name = state.bookingName;
+			if (state.bookingPhone) trip.booking_contact.phone = state.bookingPhone;
+			if (state.bookingEmail) trip.booking_contact.email = state.bookingEmail;
+		}
+		if (returnLeg) trip.legs.return = returnLeg.leg;
+
+		const doc = { schema_version: 3, trip };
+		if (state.dataFlags.length) doc.data_flags = state.dataFlags;
+
+		/* The routing annex.
+
+		   Everything a Resolve pass worked out and v3 has no room for:
+		   measured mileage and drive time, which of the two were typed, the
+		   coordinates they were measured between, and what the geocoder
+		   actually matched. Without it a saved itinerary comes back unrouted
+		   and every leg has to be measured again.
+
+		   It sits beside `trip` rather than inside it so the v3 document stays
+		   exactly what docs/trip-import-schema-v3.json describes: Copy as JSON
+		   and the importer both see a clean, schema-valid draft, and only this
+		   tab's own storage carries the annex. Keyed by leg since the Grid
+		   grew a second one; annexesOf still reads the old flat array. */
+		const carries = (annex) => annex.some((entry) => Object.keys(entry).length);
+		const route = {};
+		if (carries(outbound.annex)) route.outbound = outbound.annex;
+		if (returnLeg && carries(returnLeg.annex)) route.return = returnLeg.annex;
+		if (Object.keys(route).length) doc.rux_route = route;
 		return doc;
 	}
 
@@ -698,9 +757,9 @@
 	   onto the next card as its departPrev, and the yard row folds into the
 	   pickup. Dates are stamped from the derived day offsets, which is the one
 	   thing the editor cannot work out for itself. */
-	function toEditorStops(state) {
-		const days = deriveDays(state.stops);
-		const dated = (offset) => addDays(state.startDate, offset) || "";
+	function toEditorStops(leg) {
+		const days = deriveDays(leg.stops);
+		const dated = (offset) => addDays(leg.startDate, offset) || "";
 		const rows = [];
 		let yard = null;
 		// The previous stop's departure, already resolved to a date. Carried
@@ -708,7 +767,7 @@
 		// before it, and searching back for it invites an off-by-one.
 		let previous = null;
 
-		state.stops.forEach((stop, index) => {
+		leg.stops.forEach((stop, index) => {
 			if (stop.type === "yard_origin") {
 				yard = { time: stop.depart || "", date: dated(days[index].departDay) };
 				return;
@@ -1047,7 +1106,7 @@
 		const mins = driveMins(stop.drive);
 		const known = Number.isFinite(miles) || mins !== null;
 		const manual = stop.milesSource === "manual" || stop.driveSource === "manual";
-		return `<li class="sched-itinerary-grid__leg${known ? "" : " sched-itinerary-grid__leg--unknown"}${risk ? " sched-itinerary-grid__leg--tight" : ""}" data-leg="${index}">
+		return `<li class="sched-itinerary-grid__leg${known ? "" : " sched-itinerary-grid__leg--unknown"}${risk ? " sched-itinerary-grid__leg--tight" : ""}" data-leg-index="${index}">
 			<span class="rux-icon" aria-hidden="true">${risk ? "warning" : "arrow_downward"}</span>
 			${known
 				? `<span>${approx ? "≈ " : ""}${Number.isFinite(miles) ? `${miles.toFixed(1)} mi` : "— mi"}${mins !== null ? ` · ${escHtml(formatSpan(mins))}` : ""}${manual ? " · entered" : ""}${approx ? " · to the town" : ""}</span>`
@@ -1064,22 +1123,22 @@
 		</li>`;
 	}
 
-	function renderList(state) {
-		if (!state.stops.length) {
+	function renderList(leg) {
+		if (!leg.stops.length) {
 			return `<li class="sched-itinerary-grid__empty">
 				<span class="rux-icon" aria-hidden="true">route</span>
 				<p>No stops yet. Paste a trip draft above, pull the current itinerary in, or add a stop.</p>
 			</li>`;
 		}
-		const days = deriveDays(state.stops);
-		const risks = legRisks(state.stops, days);
-		const plan = yardPlan(state.stops);
+		const days = deriveDays(leg.stops);
+		const risks = legRisks(leg.stops, days);
+		const plan = yardPlan(leg.stops);
 		const parts = [];
 		let shownDay = -1;
-		state.stops.forEach((stop, index) => {
+		leg.stops.forEach((stop, index) => {
 			if (days[index].arriveDay !== shownDay) {
 				shownDay = days[index].arriveDay;
-				parts.push(renderDay(shownDay + 1, addDays(state.startDate, shownDay)));
+				parts.push(renderDay(shownDay + 1, addDays(leg.startDate, shownDay)));
 			}
 			// The leg is emitted even on a day boundary. Letting the divider
 			// stand in for it hid the drive home on every overnight trip — the
@@ -1088,10 +1147,10 @@
 			if (index > 0) {
 				// Either end being town-level makes the leg approximate, not
 				// just the stop that could not be resolved.
-				const approx = !!(stop.approxFrom || state.stops[index - 1]?.approxFrom);
+				const approx = !!(stop.approxFrom || leg.stops[index - 1]?.approxFrom);
 				parts.push(renderLeg(stop, index, risks[index], approx));
 			}
-			parts.push(renderRow(stop, index, days[index], state.stops.length, {
+			parts.push(renderRow(stop, index, days[index], leg.stops.length, {
 				plan: rowPlan(stop, plan),
 			}));
 		});
@@ -1116,13 +1175,14 @@
 	}
 
 	function renderSummary(state) {
-		const { miles, drive } = totals(state.stops);
-		const days = deriveDays(state.stops);
-		const dayCount = state.stops.length ? days[days.length - 1].departDay + 1 : 0;
-		const duty = dutyByDay(state.stops, days);
+		const leg = legOf(state);
+		const { miles, drive } = totals(leg.stops);
+		const days = deriveDays(leg.stops);
+		const dayCount = leg.stops.length ? days[days.length - 1].departDay + 1 : 0;
+		const duty = dutyByDay(leg.stops, days);
 		const worstDuty = duty.reduce((worst, day) => Math.max(worst, day.duty), 0);
 		const stats = [
-			["Stops", String(state.stops.length)],
+			["Stops", String(leg.stops.length)],
 			["Days", dayCount ? String(dayCount) : "—"],
 			["Miles", miles ? miles.toFixed(1) : "—"],
 			["Drive", drive ? formatSpan(drive) : "—"],
@@ -1130,28 +1190,41 @@
 			// worst day is the number that decides whether this trip is legal.
 			["Longest day", worstDuty ? formatSpan(worstDuty) : "—"],
 		];
+
+		/* On a split trip the figures above are ONE leg's, because that is what
+		   is on screen. The quote is both, so the trip total gets its own stat
+		   rather than leaving someone to add two numbers off two screens. */
+		if (state.legs?.return) {
+			const both = totals([...state.legs.outbound.stops, ...state.legs.return.stops]);
+			stats.push(["Both legs", both.miles ? `${both.miles.toFixed(1)} mi` : "—"]);
+		}
+
 		return stats.map(([label, value]) => `<div class="sched-itinerary-grid__stat">
 			<span class="sched-itinerary-grid__stat-label">${escHtml(label)}</span>
 			<span class="sched-itinerary-grid__stat-value">${escHtml(value)}</span>
 		</div>`).join("");
 	}
 
-	/* Says what the Grid is NOT editing. The carried return leg is safe on save
-	   — that is what fromV3/toV3 above guarantee — but "safe" is not "visible",
-	   and a dispatcher who cannot see the second leg will assume the trip has
-	   one. Deliberately NOT a data flag: that card is questions for the
-	   customer, and this is a limitation of this editor. */
-	function renderCarried(state) {
-		if (!state.returnLeg) return "";
-		const stops = Array.isArray(state.returnLeg.stops) ? state.returnLeg.stops.length : 0;
-		const when = state.returnLeg.start_date ? ` starting ${escHtml(String(state.returnLeg.start_date))}` : "";
-		return `<div class="rux-alert rux-alert--warning">
-			<span class="rux-icon rux-alert__icon" aria-hidden="true">call_split</span>
-			<div class="rux-alert__body">
-				<p class="rux-alert__title">This trip has a return leg the Grid does not show</p>
-				<p>${stops} stop${stops === 1 ? "" : "s"}${when}. It is kept exactly as imported and
-				saved back unchanged, but it cannot be edited or routed here — use the Itinerary tab
-				for the return leg.</p>
+	/* The leg picker. Only a split trip has two, so only a split trip sees it.
+
+	   It replaces the notice that used to say "this trip has a return leg the
+	   Grid does not show" — the Grid shows it now. Same segmented vocabulary
+	   the Itinerary tab uses, so the two tabs read the same way. */
+	function renderLegToggle(state) {
+		if (!state.legs?.return) return "";
+		const button = (key, label) => {
+			const count = state.legs[key]?.stops.length ?? 0;
+			return `<button type="button" class="rux-button rux-button--segment"
+				data-leg="${key}" aria-pressed="${state.activeLeg === key}">
+				<span class="rux-button__label">${escHtml(label)}</span>
+				<span class="sched-itinerary-grid__leg-count">${count}</span>
+			</button>`;
+		};
+		return `<div class="sched-itinerary-grid__legs">
+			<span class="rux-field__label" id="sched-itin-leg-label">Leg</span>
+			<div class="rux-segmented-track" role="group" aria-labelledby="sched-itin-leg-label">
+				${button("outbound", "Outbound")}
+				${button("return", "Inbound")}
 			</div>
 		</div>`;
 	}
@@ -1177,7 +1250,19 @@
 		const host = root?.querySelector?.("#tp-grid") || document.getElementById("tp-grid");
 		if (!host) return null;
 
-		const state = { startDate: "", client: "", destination: "", notes: "", bookingName: "", bookingPhone: "", bookingEmail: "", dataFlags: [], tripType: "", serviceType: "", returnLeg: null, stops: [] };
+		const state = {
+			client: "", destination: "", notes: "",
+			bookingName: "", bookingPhone: "", bookingEmail: "",
+			dataFlags: [], tripType: "", serviceType: "",
+			activeLeg: "outbound",
+			legs: { outbound: emptyLeg(), return: null },
+		};
+
+		/* The leg being edited. Every stop, time and mileage on screen belongs
+		   to it; the trip-level fields beside it do not. One accessor rather
+		   than a second array kept in sync, because two arrays is how one of
+		   them goes stale. */
+		const L = () => legOf(state);
 
 		host.innerHTML = `
 		<section class="sched-itinerary-grid">
@@ -1222,6 +1307,7 @@
 				</button>
 				<p class="sched-itinerary-grid__status" data-route-status role="status" aria-live="polite"></p>
 			</div>
+			<div data-legs></div>
 			<div data-flags></div>
 			<ol class="sched-itinerary-grid__list" data-list></ol>
 
@@ -1244,6 +1330,7 @@
 		const listEl = host.querySelector("[data-list]");
 		const summaryEl = host.querySelector("[data-summary]");
 		const flagsEl = host.querySelector("[data-flags]");
+		const legsEl = host.querySelector("[data-legs]");
 		const pasteEl = host.querySelector("[data-paste]");
 		const statusEl = host.querySelector("[data-status]");
 		const intakeEl = host.querySelector("[data-intake]");
@@ -1262,11 +1349,12 @@
 		}
 
 		function render() {
-			listEl.innerHTML = renderList(state);
+			listEl.innerHTML = renderList(L());
 			syncReviewButton();
 			summaryEl.innerHTML = renderSummary(state);
-			flagsEl.innerHTML = renderCarried(state) + renderFlags(state);
-			intakeEl.open = state.stops.length === 0;
+			legsEl.innerHTML = renderLegToggle(state);
+			flagsEl.innerHTML = renderFlags(state);
+			intakeEl.open = L().stops.length === 0;
 		}
 
 		/* The review step, such as it is: a count and a jump.
@@ -1280,7 +1368,7 @@
 		const reviewLabel = host.querySelector("[data-review-label]");
 
 		function syncReviewButton() {
-			const count = state.stops.filter(needsReview).length;
+			const count = L().stops.filter(needsReview).length;
 			reviewBtn.hidden = count === 0;
 			reviewLabel.textContent = count === 1
 				? "1 address to check"
@@ -1288,7 +1376,7 @@
 		}
 
 		function jumpToNextReview() {
-			const index = state.stops.findIndex(needsReview);
+			const index = L().stops.findIndex(needsReview);
 			if (index < 0) return;
 			const row = host.querySelector(`.sched-itinerary-grid__row[data-idx="${index}"]`);
 			row?.scrollIntoView({ block: "center", behavior: "smooth" });
@@ -1301,7 +1389,7 @@
 		   not fail the confirmation — the dispatcher's answer is the point,
 		   the directory entry is the bonus. */
 		async function confirmAddress(index) {
-			const stop = state.stops[index];
+			const stop = L().stops[index];
 			if (!stop) return;
 			stop.addressConfidence = null;
 			stop.matchedAddress = null;
@@ -1340,7 +1428,7 @@
 		host.addEventListener("change", (event) => {
 			const field = event.target.closest("[data-field]");
 			if (!field) return;
-			const stop = state.stops[Number(field.dataset.idx)];
+			const stop = L().stops[Number(field.dataset.idx)];
 			if (!stop) return;
 			const name = field.dataset.field;
 
@@ -1378,9 +1466,9 @@
 				const from = Number(move.dataset.idx);
 				const to = move.dataset.move === "up" ? from - 1 : from + 1;
 				// The yard bookends are not reorderable and nothing may pass them.
-				if (to < 1 || to > state.stops.length - 2) return;
-				const [row] = state.stops.splice(from, 1);
-				state.stops.splice(to, 0, row);
+				if (to < 1 || to > L().stops.length - 2) return;
+				const [row] = L().stops.splice(from, 1);
+				L().stops.splice(to, 0, row);
 				render();
 				host.querySelector(`[data-move="${move.dataset.move}"][data-idx="${to}"]`)?.focus();
 				return;
@@ -1389,17 +1477,17 @@
 			const remove = event.target.closest("[data-remove]");
 			if (remove) {
 				const index = Number(remove.dataset.idx);
-				const stop = state.stops[index];
+				const stop = L().stops[index];
 				const what = stop?.name || stop?.address || `stop ${index + 1}`;
 				if (!window.confirm(`Delete ${what}?`)) return;
-				state.stops.splice(index, 1);
+				L().stops.splice(index, 1);
 				render();
 				return;
 			}
 
 			if (event.target.closest("[data-add]")) {
-				if (!state.stops.length) state.stops = scaffold();
-				else state.stops.splice(Math.max(1, state.stops.length - 1), 0, normalizeStop({ type: "stop" }));
+				if (!L().stops.length) L().stops = scaffold();
+				else L().stops.splice(Math.max(1, L().stops.length - 1), 0, normalizeStop({ type: "stop" }));
 				render();
 				const rows = host.querySelectorAll('[data-field="address"]');
 				rows[rows.length - 1]?.focus();
@@ -1408,7 +1496,7 @@
 
 			const apply = event.target.closest("[data-apply-plan]");
 			if (apply) {
-				const stop = state.stops[Number(apply.dataset.idx)];
+				const stop = L().stops[Number(apply.dataset.idx)];
 				if (!stop) return;
 				// yard_origin has no arrival, so the route's answer for it is
 				// its departure; the pickup's is when it must be staged.
@@ -1428,13 +1516,23 @@
 
 			const useMatched = event.target.closest("[data-use-matched]");
 			if (useMatched) {
-				const stop = state.stops[Number(useMatched.dataset.idx)];
+				const stop = L().stops[Number(useMatched.dataset.idx)];
 				if (!stop) return;
 				// The coordinates already point at the matched place, so taking
 				// its address is agreeing with where the route was measured —
 				// no re-resolve, and nothing moves.
 				stop.address = stop.matchedAddress;
 				return confirmAddress(Number(useMatched.dataset.idx));
+			}
+
+			const legBtn = event.target.closest("[data-leg]");
+			if (legBtn) {
+				const key = legBtn.dataset.leg;
+				if (!state.legs[key] || state.activeLeg === key) return;
+				state.activeLeg = key;
+				render();
+				sayRoute("");
+				return;
 			}
 
 			if (event.target.closest("[data-review]")) return jumpToNextReview();
@@ -1456,14 +1554,20 @@
 				return say("Expected a Trip Draft v3 document (\"schema_version\": 3).", true);
 			}
 			const loaded = fromV3(payload);
-			if (!loaded.stops.length) return say("That draft has no stops in its outbound leg.", true);
+			if (!loaded.legs.outbound.stops.length) {
+				return say("That draft has no stops in its outbound leg.", true);
+			}
 			Object.assign(state, loaded);
 			pasteEl.value = "";
 			render();
 			// The stops are only half a trip. Without dates Save refuses it, so
 			// the draft's own trip fields go in too — see fillTripDetails.
 			const filled = fillTripDetails();
-			const parts = [`Loaded ${loaded.stops.length} stops`];
+			const outboundCount = loaded.legs.outbound.stops.length;
+			const returnCount = loaded.legs.return?.stops.length ?? 0;
+			const parts = [returnCount
+				? `Loaded ${outboundCount} outbound and ${returnCount} inbound stops`
+				: `Loaded ${outboundCount} stops`];
 			if (filled.length) parts.push(`filled the ${filled.join(", ")}`);
 			if (loaded.dataFlags.length) parts.push(`${loaded.dataFlags.length} to ask about`);
 			say(`${parts.join(", ")}.`);
@@ -1495,7 +1599,7 @@
 		}
 
 		async function copyJson() {
-			if (!state.stops.length) return say("Nothing to copy yet.", true);
+			if (!L().stops.length) return say("Nothing to copy yet.", true);
 			try {
 				await navigator.clipboard.writeText(JSON.stringify(toCleanV3(state), null, 2));
 				say("Copied this itinerary as Trip Draft v3.");
@@ -1517,7 +1621,13 @@
 		   silently reverted it would make the button unusable. */
 		async function resolveAndRoute() {
 			if (routing) return;
-			if (!state.stops.length) return sayRoute("Nothing to route yet.", true);
+			if (!L().stops.length) return sayRoute("Nothing to route yet.", true);
+			// Each leg is routed on its own. They are days apart and separately
+			// crewed, so measuring them together would only hide which one a
+			// number belongs to.
+			const legName = state.legs.return
+				? (state.activeLeg === "return" ? "the inbound leg" : "the outbound leg")
+				: null;
 			const token = window.RuxSettings?.getMapboxToken?.();
 			if (!token) {
 				return sayRoute("No Mapbox token — add one in Settings to resolve and route.", true);
@@ -1532,11 +1642,11 @@
 			let failed = 0;
 
 			try {
-				for (const [index, stop] of state.stops.entries()) {
+				for (const [index, stop] of L().stops.entries()) {
 					const address = stop.address.trim();
 					if (stop.lat != null && stop.lng != null) continue;
 					if (address.length < 3) continue;
-					sayRoute(`Resolving stop ${index + 1} of ${state.stops.length}…`);
+					sayRoute(`Resolving stop ${index + 1} of ${L().stops.length}…`);
 
 					// A saved location is a place this operator has actually been,
 					// with coordinates already verified against a real trip. That
@@ -1623,8 +1733,8 @@
 					}
 				}
 
-				for (let index = 1; index < state.stops.length; index += 1) {
-					const stop = state.stops[index];
+				for (let index = 1; index < L().stops.length; index += 1) {
+					const stop = L().stops[index];
 					// A sleeper rests where the bus already is, so its leg is
 					// zero by definition rather than something to measure.
 					if (stop.type === "sleeper") {
@@ -1633,10 +1743,10 @@
 						continue;
 					}
 					if (stop.milesSource === "manual" && stop.driveSource === "manual") continue;
-					const previous = state.stops[index - 1];
+					const previous = L().stops[index - 1];
 					if (previous.lat == null || stop.lat == null) continue;
 
-					sayRoute(`Routing leg ${index} of ${state.stops.length - 1}…`);
+					sayRoute(`Routing leg ${index} of ${L().stops.length - 1}…`);
 					try {
 						const leg = await directions(previous, stop, token);
 						if (!leg) { failed += 1; continue; }
@@ -1666,8 +1776,11 @@
 			}
 			if (routed) parts.push(`${routed} leg${routed === 1 ? "" : "s"} measured`);
 			if (failed) parts.push(`${failed} could not be worked out`);
+			const summary = parts.length
+				? `${parts.join(", ")}.`
+				: "Everything was already resolved and routed.";
 			sayRoute(
-				parts.length ? `${parts.join(", ")}.` : "Everything was already resolved and routed.",
+				legName ? `${summary.replace(/\.$/, "")} on ${legName}.` : summary,
 				failed > 0 || approximated > 0,
 			);
 		}
@@ -1679,24 +1792,33 @@
 		   second answer waiting to disagree with what is on screen, and the
 		   one on paper is the one nobody can check against anything. */
 		function printDriverSheet() {
-			if (!state.stops.length) {
+			const leg = L();
+			if (!leg.stops.length) {
 				return sayRoute("Nothing to print yet — load a draft or pull the itinerary in.", true);
 			}
-			const days = deriveDays(state.stops);
+			const days = deriveDays(leg.stops);
+			/* One sheet per leg, and the leg is named on it. A split trip's two
+			   legs are days apart and separately crewed — printing them as one
+			   document would hand a driver a page half of which is not their
+			   run. The dispatcher prints the other leg from the other tab. */
+			const legLabel = state.legs.return
+				? (state.activeLeg === "return" ? "Inbound leg" : "Outbound leg")
+				: "";
 			const printed = window.DriverSheet?.print?.({
 				meta: {
 					client: state.client || document.getElementById("tp-customer")?.value || "",
 					destination: state.destination || document.getElementById("tp-destination")?.value || "",
 					contactName: document.getElementById("tp-contact-1-name")?.value || "",
 					contactPhone: document.getElementById("tp-contact-1-phone")?.value || "",
+					leg: legLabel,
 				},
-				startDate: state.startDate || document.getElementById("tp-start")?.value || "",
-				stops: state.stops,
+				startDate: leg.startDate || document.getElementById("tp-start")?.value || "",
+				stops: leg.stops,
 				days,
-				risks: legRisks(state.stops, days),
-				plan: yardPlan(state.stops),
-				duty: dutyByDay(state.stops, days),
-				totals: totals(state.stops),
+				risks: legRisks(leg.stops, days),
+				plan: yardPlan(leg.stops),
+				duty: dutyByDay(leg.stops, days),
+				totals: totals(leg.stops),
 				dataFlags: state.dataFlags,
 			});
 			if (printed === false || printed === undefined) {
@@ -1729,16 +1851,26 @@
 				written.push(label);
 			};
 
-			const days = deriveDays(state.stops);
-			const lastDay = days.length ? days[days.length - 1].departDay : 0;
+			// The end date is the one field a document never states directly.
+			const endOf = (leg) => {
+				const days = deriveDays(leg.stops);
+				return addDays(leg.startDate, days.length ? days[days.length - 1].departDay : 0);
+			};
+
 			setIfBlank("tp-customer", state.client, "customer");
 			setIfBlank("tp-destination", state.destination, "destination");
-			setIfBlank("tp-start", state.startDate, "dates");
-			setIfBlank("tp-end", addDays(state.startDate, lastDay), null);
+			setIfBlank("tp-start", state.legs.outbound.startDate, "dates");
+			setIfBlank("tp-end", endOf(state.legs.outbound), null);
 			setIfBlank("tp-notes", state.notes, "notes");
 			setIfBlank("tp-book-name", state.bookingName, "booking contact");
 			setIfBlank("tp-book-phone", state.bookingPhone, null);
 			setIfBlank("tp-book-email", state.bookingEmail, null);
+			// A split trip's second leg carries its own range, and Save reads it
+			// from these two fields rather than deriving it.
+			if (state.legs.return) {
+				setIfBlank("tp-return-start", state.legs.return.startDate, "return dates");
+				setIfBlank("tp-return-end", endOf(state.legs.return), null);
+			}
 
 			if (written.length) window.Rux?.syncDateInputs?.(document);
 			return written.filter(Boolean);
@@ -1750,13 +1882,13 @@
 				return say("The Itinerary tab has no stops to pull.", true);
 			}
 			const startDate = document.getElementById("tp-start")?.value || "";
-			state.startDate = startDate;
+			L().startDate = startDate;
 			state.client = document.getElementById("tp-customer")?.value || "";
 			state.destination = document.getElementById("tp-destination")?.value || "";
 			state.dataFlags = [];
-			state.stops = fromEditorStops(source, startDate);
+			L().stops = fromEditorStops(source, startDate);
 			render();
-			say(`Pulled ${state.stops.length} stops from the Itinerary tab. Nothing is written back.`);
+			say(`Pulled ${L().stops.length} stops from the Itinerary tab. Nothing is written back.`);
 		}
 
 		render();
@@ -1798,7 +1930,7 @@
 			// projection carries what the road says. Both are true, and the one
 			// that survives is the one this tab owns.
 			mirrorToItinerary() {
-				if (!state.stops.length) return false;
+				if (!L().stops.length) return false;
 				const rows = toEditorStops(state);
 				if (!rows.length) return false;
 				window.Itinerary?.setStops?.(rows, "outbound");
@@ -1809,7 +1941,7 @@
 			// under. Never throws: the stops are already safely in trip_stops
 			// by this point, so losing the document must not lose the trip.
 			async persist(tripId) {
-				if (!tripId || !state.stops.length) return false;
+				if (!tripId || !L().stops.length) return false;
 				try {
 					const db = await getGridDb();
 					const stored = await db.saveItineraryDocument(tripId, toV3(state));
@@ -1834,7 +1966,7 @@
 					if (!document) return false;
 					Object.assign(state, fromV3(document));
 					render();
-					say(`Loaded this trip's saved itinerary — ${state.stops.length} stops.`);
+					say(`Loaded this trip's saved itinerary — ${L().stops.length} stops.`);
 					return true;
 				} catch (error) {
 					console.warn("The Grid itinerary could not be loaded:", error);

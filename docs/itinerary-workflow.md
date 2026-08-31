@@ -21,7 +21,31 @@ A customer's document becomes a trip in six steps. Each is owned by one file.
 | Resolve and route | same | Built. Saved locations first, then Mapbox; town fallback when there is no street address. |
 | Confirm addresses | same | Built. Confirming writes to the saved-locations directory. |
 | Driver sheet | [`js/panels/driver-sheet.js`](../js/panels/driver-sheet.js) | Built. Prints on the `--print-*` palette. |
-| Save to the calendar | [`js/data/trip-db.js`](../js/data/trip-db.js) | Built. Mirrors into `trip_stops`; the Grid's own document goes to `trip_itineraries`. |
+| Save to the calendar | [`js/data/trip-db.js`](../js/data/trip-db.js) | Built. Mirrors both legs into `trip_stops`; the Grid's own document goes to `trip_itineraries`. |
+
+## Split trips
+
+Built 2026-08-28. The Grid is a per-leg editor: `state.legs` holds `outbound`
+and `return`, `state.activeLeg` says which is on screen, and a leg picker
+appears only when there are two. Each leg carries its own start date, stops,
+routing and driver sheet, because a Drop-off / Pick-up's two legs are days
+apart and separately crewed.
+
+What that means in practice:
+
+- The summary reports the **leg you are editing**, plus a **Both legs** mileage
+  figure, because the quote is both and the screen is one.
+- Resolve & route measures the active leg and says which one it measured.
+- The driver sheet prints the active leg and names it on the page.
+- `rux_route` is keyed by leg. A flat array — the shape saved before there were
+  two legs — still reads as the outbound leg's annex.
+- `mirrorToItinerary` writes both legs, so `collectStops` sees what the Grid
+  actually holds rather than a half-replaced trip.
+
+This replaced the carried-through guard from earlier the same day, which kept
+`legs.return` verbatim and warned that the Grid could not show it. Carrying was
+right while the leg could not be rendered; once it can, couriering would make
+the second leg the only part of a trip nobody could fix.
 
 ## Two lanes, and they are not the same
 
@@ -67,21 +91,9 @@ step 1's day-offset and address-confidence rules were the source for
 
 ## Not built
 
-- **Split trips.** The Grid reads `legs.outbound` only. A `dropoff_pickup`
-  needs the classic Itinerary tab, which handles both legs. **The gap is one
-  component, not the stack:** `trip_stops.leg` exists, `js/core/bus-slots.js`
-  publishes `legOf` / `legsForTrip` / `assignmentsOnLeg`, the classic tab has
-  `setActiveLeg`, and v3 already carries `legs.return`. Only
-  `js/components/itinerary-grid.js` assumes one leg.
-
-  **Loading a split trip is no longer lossy** (2026-08-28). `toV3` used to
-  hard-code `type: "round_trip"` and write only `legs.outbound`, so a
-  Drop-off / Pick-up draft came out of the Grid as a *different trip* — return
-  leg deleted, type rewritten — with nothing reported. The Grid now carries
-  `trip.type`, `trip.service_type` and `legs.return` through unchanged and
-  shows a warning saying it is not editing the return leg. It still cannot
-  edit or route that leg; it no longer destroys it. Pinned by five cases in
-  `tests/itinerary-grid.test.mjs`, each verified to fail without the guard.
+- **Routing the return leg from one press.** Resolve & route measures the leg
+  on screen. The other one is one toggle and a second press away, and the
+  status says which leg it just measured, but there is no route-both button.
 - **In-app extraction.** `POST /ai/extract` exists and has never run — no API
   key, no auth user, no `wrangler.toml`, never deployed (todo T4, T5). The
   workflow is built to not need it.

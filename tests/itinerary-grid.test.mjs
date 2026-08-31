@@ -126,9 +126,9 @@ test("a v3 draft loads one-to-one, with no carry-forward", () => {
 		{ type: "return", arrival_time: "20:00" },
 	]));
 
-	assert.equal(state.startDate, "2026-07-27");
+	assert.equal(state.legs.outbound.startDate, "2026-07-27");
 	assert.deepEqual(
-		state.stops.map((stop) => [stop.type, stop.arrive, stop.depart]),
+		state.legs.outbound.stops.map((stop) => [stop.type, stop.arrive, stop.depart]),
 		[
 			["yard_origin", "", "04:15"],
 			["pickup", "", "05:00"],
@@ -137,7 +137,7 @@ test("a v3 draft loads one-to-one, with no carry-forward", () => {
 		],
 		"each stop keeps its own two times — the field's 14:30 does not move to the return",
 	);
-	assert.equal(state.stops[2].activity, "game");
+	assert.equal(state.legs.outbound.stops[2].activity, "game");
 });
 
 test("the yard bookends are filled from settings, not from the draft", () => {
@@ -147,8 +147,8 @@ test("the yard bookends are filled from settings, not from the draft", () => {
 		{ type: "pickup", departure_time: "05:00" },
 		{ type: "return", arrival_time: "20:00" },
 	]));
-	assert.equal(state.stops[0].address, YARD);
-	assert.equal(state.stops[2].address, YARD);
+	assert.equal(state.legs.outbound.stops[0].address, YARD);
+	assert.equal(state.legs.outbound.stops[2].address, YARD);
 });
 
 test("a sleeper's rest window becomes its arrive and depart", () => {
@@ -157,8 +157,8 @@ test("a sleeper's rest window becomes its arrive and depart", () => {
 		{ type: "sleeper", name: "Lot", rest_start_time: "22:00", rest_end_time: "07:00" },
 		{ type: "return", arrival_time: "20:00" },
 	]));
-	assert.equal(state.stops[1].arrive, "22:00");
-	assert.equal(state.stops[1].depart, "07:00");
+	assert.equal(state.legs.outbound.stops[1].arrive, "22:00");
+	assert.equal(state.legs.outbound.stops[1].depart, "07:00");
 });
 
 test("a pickup's spot time is its arrival, and round-trips as one", () => {
@@ -171,8 +171,8 @@ test("a pickup's spot time is its arrival, and round-trips as one", () => {
 		{ type: "pickup", name: "School", spot_time: "05:00", departure_time: "05:30" },
 		{ type: "return", arrival_time: "23:10" },
 	]));
-	assert.equal(state.stops[0].arrive, "05:00");
-	assert.equal(state.stops[0].depart, "05:30");
+	assert.equal(state.legs.outbound.stops[0].arrive, "05:00");
+	assert.equal(state.legs.outbound.stops[0].depart, "05:30");
 
 	const emitted = toV3(state).trip.legs.outbound.stops[0];
 	assert.equal(emitted.spot_time, "05:00", "and it goes back out as spot_time, not arrival_time");
@@ -186,7 +186,7 @@ test("a pickup with only an arrival_time still loads", () => {
 		{ type: "pickup", arrival_time: "04:40", departure_time: "05:00" },
 		{ type: "return", arrival_time: "20:00" },
 	]));
-	assert.equal(state.stops[0].arrive, "04:40");
+	assert.equal(state.legs.outbound.stops[0].arrive, "04:40");
 });
 
 test("day markers in a draft are dropped — this tab derives them", () => {
@@ -195,7 +195,7 @@ test("day markers in a draft are dropped — this tab derives them", () => {
 		{ type: "day", date: "2026-07-28", label: "End of Day 1" },
 		{ type: "return", arrival_time: "20:00", day_offset: 1 },
 	]));
-	assert.deepEqual(state.stops.map((stop) => stop.type), ["pickup", "return"]);
+	assert.deepEqual(state.legs.outbound.stops.map((stop) => stop.type), ["pickup", "return"]);
 });
 
 test("a gap the clock cannot explain survives as a held day", () => {
@@ -208,8 +208,8 @@ test("a gap the clock cannot explain survives as a held day", () => {
 		{ type: "stop", name: "Casino", arrival_time: "16:30", departure_time: "17:00" },
 		{ type: "stop", name: "Home", arrival_time: "23:00", day_offset: 3 },
 	]));
-	assert.equal(state.stops[2].extraDays, 3);
-	assert.equal(deriveDays(state.stops)[2].arriveDay, 3, "the derived day matches what the draft said");
+	assert.equal(state.legs.outbound.stops[2].extraDays, 3);
+	assert.equal(deriveDays(state.legs.outbound.stops)[2].arriveDay, 3, "the derived day matches what the draft said");
 });
 
 test("a held day is not invented when the clock already explains the gap", () => {
@@ -220,8 +220,8 @@ test("a held day is not invented when the clock already explains the gap", () =>
 		{ type: "stop", name: "Casino", arrival_time: "16:30", departure_time: "22:00" },
 		{ type: "stop", name: "Home", arrival_time: "07:00", day_offset: 1 },
 	]));
-	assert.equal(state.stops[2].extraDays, 0);
-	assert.equal(deriveDays(state.stops)[2].arriveDay, 1);
+	assert.equal(state.legs.outbound.stops[2].extraDays, 0);
+	assert.equal(deriveDays(state.legs.outbound.stops)[2].arriveDay, 1);
 });
 
 test("a draft's trip-level fields survive the round trip", () => {
@@ -236,7 +236,7 @@ test("a draft's trip-level fields survive the round trip", () => {
 	const state = fromV3(payload);
 	assert.equal(state.client, "Audie Murphy Middle School");
 	assert.equal(state.destination, "Austin, TX");
-	assert.equal(state.startDate, "2026-07-27");
+	assert.equal(state.legs.outbound.startDate, "2026-07-27");
 	assert.equal(state.notes, "Lunch is at the park.");
 	assert.equal(state.bookingName, "Coach Reyes");
 	assert.equal(state.bookingPhone, "956-555-0148");
@@ -267,7 +267,7 @@ test("the document this tab emits loads back into it unchanged", () => {
 		{ type: "stop", name: "Hotel", address: "500 E 4th St", arrival_time: "15:30", departure_time: "07:00" },
 		{ type: "return", arrival_time: "20:00" },
 	]));
-	const shape = (state) => state.stops.map((stop) =>
+	const shape = (state) => state.legs.outbound.stops.map((stop) =>
 		[stop.type, stop.name, stop.address, stop.activity, stop.arrive, stop.depart, stop.extraDays]);
 
 	assert.deepEqual(shape(fromV3(toV3(original))), shape(original));
@@ -297,20 +297,17 @@ test("a saved itinerary keeps its measured route, and keeps it measured", () => 
 	   and a manual value is one a later Resolve refuses to refresh. Measured
 	   mileage therefore travels in the annex, which carries its source with
 	   it. */
-	const routed = {
-		startDate: "2026-07-27", client: "", destination: "", dataFlags: [],
-		stops: [
+	const routed = gridState([
 			{ type: "pickup", name: "School", address: "101 E Hackberry", arrive: "04:45", depart: "05:00" },
 			{ type: "stop", name: "Field", address: "1300 E MLK", arrive: "10:00", depart: "14:30",
 				miles: "312.4", drive: "4:48", lat: 30.2, lng: -97.7, mapboxId: "abc" },
 			{ type: "stop", name: "Detour", address: "Somewhere", arrive: "16:00",
 				miles: "40.0", drive: "1:05", milesSource: "manual", driveSource: "manual" },
 			{ type: "return", arrive: "20:00", miles: "315.0", drive: "4:55" },
-		].map(normalizeStop),
-	};
+		], "2026-07-27");
 
 	const doc = toV3(routed);
-	assert.ok(Array.isArray(doc.rux_route), "the annex is emitted");
+	assert.ok(Array.isArray(doc.rux_route?.outbound), "the annex is emitted, keyed by leg");
 	assert.equal(
 		doc.trip.legs.outbound.stops[1].distance_miles,
 		undefined,
@@ -324,7 +321,7 @@ test("a saved itinerary keeps its measured route, and keeps it measured", () => 
 
 	const back = fromV3(doc);
 	assert.deepEqual(
-		back.stops.map((stop) => [stop.miles, stop.drive, stop.milesSource]),
+		back.legs.outbound.stops.map((stop) => [stop.miles, stop.drive, stop.milesSource]),
 		[
 			["", "", "estimated"],
 			["312.4", "4:48", "estimated"],
@@ -333,22 +330,19 @@ test("a saved itinerary keeps its measured route, and keeps it measured", () => 
 		],
 		"every measured number survives, and stays refreshable by the next Resolve",
 	);
-	assert.equal(back.stops[1].lat, 30.2, "and so do the coordinates it was measured between");
-	assert.equal(back.stops[1].mapboxId, "abc");
+	assert.equal(back.legs.outbound.stops[1].lat, 30.2, "and so do the coordinates it was measured between");
+	assert.equal(back.legs.outbound.stops[1].mapboxId, "abc");
 });
 
 test("the annex is ignored when it cannot be trusted to line up", () => {
 	// A draft edited by hand since it was saved would otherwise put one stop's
 	// mileage on another's leg, which is worse than having none.
-	const doc = toV3({
-		startDate: "2026-07-27", client: "", destination: "", dataFlags: [],
-		stops: [{ type: "pickup", depart: "05:00", miles: "5.2", drive: "0:16" }].map(normalizeStop),
-	});
+	const doc = toV3(gridState([{ type: "pickup", depart: "05:00", miles: "5.2", drive: "0:16" }], "2026-07-27"));
 	doc.trip.legs.outbound.stops.push({ type: "return", arrival_time: "20:00" });
 
 	const back = fromV3(doc);
-	assert.equal(back.stops.length, 2);
-	assert.equal(back.stops[0].miles, "", "a mismatched annex is dropped whole, not applied partly");
+	assert.equal(back.legs.outbound.stops.length, 2);
+	assert.equal(back.legs.outbound.stops[0].miles, "", "a mismatched annex is dropped whole, not applied partly");
 });
 
 test("a document with no annex still loads, as a model's own draft does", () => {
@@ -359,8 +353,8 @@ test("a document with no annex still loads, as a model's own draft does", () => 
 	]);
 	assert.equal(plain.rux_route, undefined);
 	const back = fromV3(plain);
-	assert.equal(back.stops[1].miles, "37.7");
-	assert.equal(back.stops[1].milesSource, "manual", "a model stating mileage means the source did");
+	assert.equal(back.legs.outbound.stops[1].miles, "37.7");
+	assert.equal(back.legs.outbound.stops[1].milesSource, "manual", "a model stating mileage means the source did");
 });
 
 test("what a person copies is schema-clean; what is persisted carries the annex", () => {
@@ -368,14 +362,11 @@ test("what a person copies is schema-clean; what is persisted carries the annex"
 	   root is additionalProperties: false, so the annex would fail validation
 	   for anyone who checked a copied draft against the published schema — and
 	   it means nothing outside this tab anyway. */
-	const state = {
-		startDate: "2026-07-27", client: "", destination: "", dataFlags: [],
-		stops: [
+	const state = gridState([
 			{ type: "pickup", depart: "05:00" },
 			{ type: "stop", name: "Field", arrive: "10:00", miles: "312.4", drive: "4:48" },
-		].map(normalizeStop),
-	};
-	assert.ok(toV3(state).rux_route, "persisted");
+		], "2026-07-27");
+	assert.ok(toV3(state).rux_route?.outbound, "persisted");
 	assert.equal(toCleanV3(state).rux_route, undefined, "copied");
 	assert.deepEqual(
 		Object.keys(toCleanV3(state)).sort(),
@@ -385,9 +376,9 @@ test("what a person copies is schema-clean; what is persisted carries the annex"
 });
 
 test("a draft with no stops yields no stops rather than throwing", () => {
-	assert.deepEqual(fromV3({}).stops, []);
-	assert.deepEqual(fromV3(null).stops, []);
-	assert.deepEqual(fromV3(v3([])).stops, []);
+	assert.deepEqual(fromV3({}).legs.outbound.stops, []);
+	assert.deepEqual(fromV3(null).legs.outbound.stops, []);
+	assert.deepEqual(fromV3(v3([])).legs.outbound.stops, []);
 });
 
 /* ── Reading the Itinerary tab ───────────────────────────────────────── */
@@ -438,12 +429,23 @@ test("day rows are dropped and their gap becomes a held day", () => {
 // a wrong trip_stops for every reader downstream — print schedules, the trip
 // envelope, driver share, trip-bar mileage.
 
-const gridState = (stops, startDate = "2026-07-27") => ({
-	startDate, client: "", destination: "", dataFlags: [], stops: stops.map(normalizeStop),
+// One leg, for the functions that take a leg (toEditorStops, emitLeg).
+const gridLeg = (stops, startDate = "2026-07-27") => ({
+	startDate, busCount: 1, stops: stops.map(normalizeStop),
+});
+
+// A whole state, for the ones that take the trip (toV3, renderSummary).
+const gridState = (stops, startDate = "2026-07-27", extra = {}) => ({
+	client: "", destination: "", notes: "",
+	bookingName: "", bookingPhone: "", bookingEmail: "",
+	dataFlags: [], tripType: "", serviceType: "",
+	activeLeg: "outbound",
+	legs: { outbound: gridLeg(stops, startDate), return: null },
+	...extra,
 });
 
 test("the mirror pushes each departure forward onto the next card", () => {
-	const rows = toEditorStops(gridState([
+	const rows = toEditorStops(gridLeg([
 		{ type: "yard_origin", depart: "04:15" },
 		{ type: "pickup", name: "School", address: "101 E Hackberry", arrive: "04:45", depart: "05:00" },
 		{ type: "stop", name: "Field", address: "1300 E MLK", arrive: "10:00", depart: "14:30" },
@@ -460,7 +462,7 @@ test("the mirror pushes each departure forward onto the next card", () => {
 });
 
 test("the mirror stamps dates from the derived day offsets", () => {
-	const rows = toEditorStops(gridState([
+	const rows = toEditorStops(gridLeg([
 		{ type: "yard_origin", depart: "04:15" },
 		{ type: "pickup", arrive: "04:45", depart: "05:00" },
 		{ type: "stop", name: "Hotel", arrive: "15:30", depart: "07:00" },
@@ -476,7 +478,7 @@ test("the mirror never writes the origin:yard sentinel", () => {
 	// It means the passengers board AT the depot, which is not what a
 	// yard_origin row says, and it is what autoPopulatePickupDepart uses to
 	// decide it may overwrite the stated yard departure.
-	const rows = toEditorStops(gridState([
+	const rows = toEditorStops(gridLeg([
 		{ type: "yard_origin", depart: "04:15" },
 		{ type: "pickup", activity: "load passengers", depart: "05:00" },
 		{ type: "return", arrive: "20:00" },
@@ -486,7 +488,7 @@ test("the mirror never writes the origin:yard sentinel", () => {
 });
 
 test("the mirror carries activity across in the label column", () => {
-	const rows = toEditorStops(gridState([
+	const rows = toEditorStops(gridLeg([
 		{ type: "pickup", depart: "05:00" },
 		{ type: "stop", name: "Choctaw", activity: "casino", arrive: "16:00", depart: "17:00" },
 		{ type: "return", arrive: "20:00" },
@@ -495,7 +497,7 @@ test("the mirror carries activity across in the label column", () => {
 });
 
 test("the mirror carries the measured route and its coordinates", () => {
-	const rows = toEditorStops(gridState([
+	const rows = toEditorStops(gridLeg([
 		{ type: "pickup", depart: "05:00", lat: 26.2, lng: -98.2 },
 		{ type: "stop", name: "Field", arrive: "10:00", miles: "312.4", drive: "4:48", lat: 30.2, lng: -97.7 },
 		{ type: "return", arrive: "20:00" },
@@ -517,7 +519,7 @@ test("a sleeper survives the round trip through the editor's inverted shape", ()
 		{ type: "sleeper", arrive: "22:00", depart: "07:00" },
 		{ type: "return", arrive: "12:00" },
 	]);
-	const rows = toEditorStops(original);
+	const rows = toEditorStops(original.legs.outbound);
 
 	assert.equal(rows[1].type, "stop");
 	assert.equal(rows[2].type, "sleeper");
@@ -545,15 +547,15 @@ test("mirror and pull are inverses for an ordinary trip", () => {
 		[stop.type, stop.name, stop.activity, stop.arrive, stop.depart]);
 
 	assert.deepEqual(
-		shape(fromEditorStops(toEditorStops(original), "2026-07-27")),
-		shape(original.stops),
+		shape(fromEditorStops(toEditorStops(original.legs.outbound), "2026-07-27")),
+		shape(original.legs.outbound.stops),
 	);
 });
 
 test("the mirror produces nothing from an empty tab", () => {
 	// The guard that stops an untouched Grid tab wiping an itinerary entered
 	// in the other one.
-	assert.deepEqual(toEditorStops(gridState([])), []);
+	assert.deepEqual(toEditorStops(gridLeg([])), []);
 });
 
 /* ── Schedule risk ───────────────────────────────────────────────────── */
@@ -694,6 +696,74 @@ test("a day with a single time has no duty span", () => {
 	assert.equal(dutyByDay(stops, days)[0].duty, 0);
 });
 
+/* ── Split trips ─────────────────────────────────────────────────────── */
+
+test("both legs are parsed, and each keeps its own start date", () => {
+	const state = fromV3(splitV3());
+	assert.ok(state.legs.outbound.stops.length);
+	assert.ok(state.legs.return.stops.length);
+	assert.notEqual(
+		state.legs.outbound.startDate,
+		state.legs.return.startDate,
+		"a split trip's legs are days apart — one start date for both would be the bug",
+	);
+	assert.equal(state.activeLeg, "outbound", "and it opens on the outbound one");
+});
+
+test("a single-leg trip has no return leg at all", () => {
+	// Not an empty one: renderLegToggle keys off its absence, and an empty leg
+	// would put a picker on every round trip.
+	const state = fromV3(v3([{ type: "pickup", departure_time: "05:00" }]));
+	assert.equal(state.legs.return, null);
+});
+
+test("the annex is keyed by leg, and each leg gets its own", () => {
+	/* It was a flat array when only one leg existed. Two legs sharing one
+	   array would put the inbound leg's mileage on the outbound leg's stops
+	   the moment the counts happened to match. */
+	const state = fromV3(splitV3());
+	state.legs.outbound.stops[0].miles = "312.4";
+	state.legs.outbound.stops[0].drive = "4:48";
+	state.legs.return.stops[1].miles = "310.5";
+	state.legs.return.stops[1].drive = "4:55";
+
+	const doc = toV3(state);
+	assert.equal(doc.rux_route.outbound[0].miles, "312.4");
+	assert.equal(doc.rux_route.return[1].miles, "310.5");
+	assert.equal(doc.rux_route.outbound.length, 1, "one entry per stop, per leg");
+	assert.equal(doc.rux_route.return.length, 2);
+
+	const back = fromV3(doc);
+	assert.equal(back.legs.outbound.stops[0].miles, "312.4");
+	assert.equal(back.legs.return.stops[1].miles, "310.5");
+	assert.equal(back.legs.return.stops[0].miles, "", "and no leakage between them");
+});
+
+test("a flat annex from before two legs still reads as the outbound one", () => {
+	// Documents saved in the old shape are in the database already.
+	const doc = v3([
+		{ type: "pickup", departure_time: "05:00" },
+		{ type: "stop", name: "Field", arrival_time: "10:00" },
+		{ type: "return", arrival_time: "20:00" },
+	]);
+	doc.rux_route = [{}, { miles: "312.4", drive: "4:48" }, {}];
+
+	const state = fromV3(doc);
+	assert.equal(state.legs.outbound.stops[1].miles, "312.4");
+	assert.equal(state.legs.outbound.stops[1].milesSource, "estimated");
+});
+
+test("a split trip round-trips both legs through save and reload", () => {
+	const original = fromV3(splitV3());
+	const shape = (leg) => leg.stops.map((stop) =>
+		[stop.type, stop.name, stop.arrive, stop.depart]);
+
+	const back = fromV3(toV3(original));
+	assert.deepEqual(shape(back.legs.outbound), shape(original.legs.outbound));
+	assert.deepEqual(shape(back.legs.return), shape(original.legs.return));
+	assert.equal(back.legs.return.startDate, original.legs.return.startDate);
+});
+
 /* ── Which addresses need a look ─────────────────────────────────────── */
 
 test("only real doubt counts as needing review", () => {
@@ -736,20 +806,17 @@ test("a town-level fix survives being saved and reloaded", () => {
 	/* The point of the fallback is a usable quote, so it has to persist: a
 	   trip reopened tomorrow must still show its mileage AND still say that
 	   one leg was measured to the town rather than to the stop. */
-	const state = {
-		startDate: "2027-05-20", client: "", destination: "", dataFlags: [],
-		stops: [
+	const state = gridState([
 			{ type: "pickup", address: "Audie Murphy Middle School, Weslaco, TX", depart: "05:30" },
 			{ type: "stop", name: "Whataburger", address: "Whataburger, Falfurrias, TX",
 				arrive: "07:30", miles: "88.4", drive: "1:22", approxFrom: "Falfurrias, Texas, United States" },
 			{ type: "return", arrive: "23:10" },
-		].map(normalizeStop),
-	};
+		], "2027-05-20");
 	const back = fromV3(toV3(state));
-	assert.equal(back.stops[1].approxFrom, "Falfurrias, Texas, United States");
-	assert.equal(back.stops[1].miles, "88.4");
+	assert.equal(back.legs.outbound.stops[1].approxFrom, "Falfurrias, Texas, United States");
+	assert.equal(back.legs.outbound.stops[1].miles, "88.4");
 	assert.equal(
-		back.stops[1].address,
+		back.legs.outbound.stops[1].address,
 		"Whataburger, Falfurrias, TX",
 		"and the typed address is untouched — a driver is never sent to the town centre",
 	);
@@ -865,12 +932,37 @@ test("a split trip's return leg survives a load-and-save round trip", () => {
 	assert.equal(out.trip.legs.return.stops[1].name, "Campus");
 });
 
-test("the return leg is carried byte-for-byte, not reshaped", () => {
-	// The Grid cannot render it, so it must not normalize it either — a
-	// courier that repacks the parcel is how a field goes missing.
-	const source = splitV3();
-	const out = toCleanV3(fromV3(source));
-	assert.deepEqual(out.trip.legs.return, source.trip.legs.return);
+test("the return leg is parsed and editable, not carried verbatim", () => {
+	/* This replaces "carried byte-for-byte". That rule existed because the
+	   Grid could not render the leg, so repacking it could only lose fields.
+	   It can render it now, so couriering would be the workaround outliving
+	   its reason — and would make the second leg the only part of the trip
+	   nobody could fix. Byte-equality is deliberately NOT asserted: a parsed
+	   leg re-emits in this editor's own normal form. */
+	const state = fromV3(splitV3());
+	const leg = state.legs.return;
+
+	assert.ok(leg, "the return leg is a leg, not an opaque blob");
+	assert.ok(leg.stops.length, "with real stops");
+	assert.ok(leg.stops.every((stop) => typeof stop.id === "string"), "each normalized like any other");
+	assert.equal(leg.startDate, splitV3().trip.legs.return.start_date);
+});
+
+test("editing the return leg changes only the return leg", () => {
+	const state = fromV3(splitV3());
+	const outboundBefore = JSON.stringify(state.legs.outbound.stops);
+
+	state.activeLeg = "return";
+	state.legs.return.stops[0].name = "Edited on the inbound";
+
+	const out = toCleanV3(state);
+	assert.equal(out.trip.legs.return.stops[0].name, "Edited on the inbound");
+	assert.equal(
+		JSON.stringify(state.legs.outbound.stops),
+		outboundBefore,
+		"the outbound leg is untouched by an edit on the other one",
+	);
+	assert.equal(out.trip.type, "dropoff_pickup", "and the trip is still a split trip");
 });
 
 test("trip type and service type survive instead of resetting to the defaults", () => {
@@ -891,10 +983,18 @@ test("a hand-entered grid still defaults to a charter round trip", () => {
 });
 
 test("an unrecognised trip type falls back rather than being echoed", () => {
+	/* A value outside v3's enum must not reach a document that has to
+	   validate. What it falls back TO now depends on the legs: a document
+	   carrying legs.return is a split trip whatever its type field says, and
+	   answering "round_trip" would emit a document contradicting itself. */
 	const bad = splitV3();
 	bad.trip.type = "teleport";
 	bad.trip.service_type = "barter";
 	const out = toCleanV3(fromV3(bad));
-	assert.equal(out.trip.type, "round_trip");
+	assert.equal(out.trip.type, "dropoff_pickup", "the return leg settles it");
 	assert.equal(out.trip.service_type, "charter");
+
+	const single = v3([{ type: "pickup", departure_time: "05:00" }]);
+	single.trip.type = "teleport";
+	assert.equal(toCleanV3(fromV3(single)).trip.type, "round_trip", "with one leg, round trip");
 });
