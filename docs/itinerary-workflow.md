@@ -205,7 +205,17 @@ passphrase can cost.
 - **A public enquiry form on the `quote` lane.** The Worker lane exists and
   speaks v2; nothing calls it.
 - **Retiring the classic Itinerary tab.** Both tabs edit the same trip. Whether
-  the Grid replaces it is a decision, not a leftover.
+  the Grid replaces it is a decision, not a leftover. The 2026-09-01 audit's
+  position is that it is now overdue: the split has started costing correctness
+  rather than duplication, and the two tabs are not interchangeable — see
+  [`itinerary-system-audit.md`](itinerary-system-audit.md) §1.
+- **Hours of service in the Grid.** The classic tab warns at 10h drive and 15h
+  duty and segments sessions around off-duty periods. The Grid does neither: it
+  reports the worst day as a plain figure, and sums duty only from legs that
+  measured, so an unresolvable address makes a trip look *shorter* than it is
+  (todo T13). The classic tab's engine — the app's only one — has no
+  behavioural tests (todo T15), and the Grid's projection erases the flag it
+  runs on (todo T14).
 
 ## Verified
 

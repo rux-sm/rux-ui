@@ -78,6 +78,8 @@ Ordered by consequence. Each states how it is known.
 
 ### A1 — The Grid tab has no hours-of-service check, and it is the tab the whole pipeline funnels into
 
+*Work item: **T13**.*
+
 `itinerary.js` warns at `driveForWarn > 10 * 60` and `dutyForWarn > 15 * 60`
 ([`itinerary.js:552`](../js/components/itinerary.js:552)), segments duty into
 sessions bounded by off-duty periods, and treats 8 consecutive hours off as a
@@ -116,6 +118,8 @@ is most likely to lose again, because the arithmetic already exists and looks
 finished.
 
 ### A2 — Projecting the Grid into the Itinerary tab silently destroys duty segmentation
+
+*Work item: **T14**.*
 
 `toEditorStops` writes **`dwellStatus: "on"` as a literal** on every projected
 row ([`itinerary-grid.js:911`](../js/components/itinerary-grid.js:911)), and
@@ -169,6 +173,8 @@ sibling tab, and the Grid is the tab everything else funnels into.
 
 ### A5 — A trip cannot record its driving or on-duty hours
 
+*Work item: **T16**.*
+
 `trip-db.js` reads and writes `driving_hours` and `on_duty_hours` from
 `#tp-drive-hr` and `#tp-duty-hr`
 ([`trip-db.js:443`](../js/data/trip-db.js:443)). **Neither element exists in
@@ -183,6 +189,8 @@ How it is known: grepped both ids across `index.html` and `js/` — four hits in
 `trip-db.js`, zero in markup.
 
 ### A6 — The classic Itinerary tab is effectively untested
+
+*Work item: **T15**.*
 
 [`itinerary-segmented.test.mjs`](../tests/itinerary-segmented.test.mjs) is 28
 lines and asserts markup contracts with regex against the source text. It
@@ -400,8 +408,18 @@ Not checked, and worth its own pass:
 - Accessibility and keyboard paths through either editor.
 - Mobile and narrow-width behaviour of the Grid.
 
-Related open items already recorded elsewhere and deliberately not repeated
-here: **T4** (extraction never run), **T5** (Worker not deployed from the
-repo), **T10** (a wrong saved-directory hit outlives its fix), **T11** (detour
-check false-positives), **T12** (a bare venue name suppresses the substitution
-warning) — all in [`todo.md`](todo.md).
+**How this document relates to [`todo.md`](todo.md).** The four findings that
+are defects on their own terms — independent of any redesign — are filed there
+as work items: **T13** (A1), **T14** (A2), **T15** (A6) and **T16** (A5). Each
+todo entry carries what is wrong, how it is known, and what closing it costs, in
+that file's own four-part form, and points back here rather than restating the
+analysis. This document keeps the analysis; that file keeps the queue.
+
+The remaining findings are deliberately *not* filed. A3, A7, A8 and A9 are
+consequences of decisions still open in §5 — writing them as work items would
+smuggle the decision in.
+
+Also already recorded there and not repeated here: **T4** (extraction never
+run), **T5** (Worker not deployed from the repo), **T10** (a wrong
+saved-directory hit outlives its fix), **T11** (detour check false-positives),
+**T12** (a bare venue name suppresses the substitution warning).

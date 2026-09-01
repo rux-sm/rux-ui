@@ -425,6 +425,110 @@ tie-break in `candidateScore` — when several candidates score equally and the 
 cannot separate them, that is itself the signal to surface all of them rather than pick
 one.
 
+### T13 — the Grid shows the number that decides whether a trip is legal, and does not judge it
+
+`itinerary-grid.js` computes `dutyByDay` and renders the worst day as a plain statistic
+beside Miles and Drive. The comment directly above it says the worst day "decides whether
+this trip is legal"; nothing compares it to a limit. `itinerary.js` has the check —
+`driveForWarn > 10 * 60` and `dutyForWarn > 15 * 60` at
+[`itinerary.js:552`](../js/components/itinerary.js:552) — and the Grid is the tab the whole
+document pipeline funnels into.
+
+There is a second half that is worse than the missing threshold. **Duty is summed only from
+legs that measured.** A stop whose address will not resolve contributes no drive time, so
+an unroutable address does not merely shorten the mileage total — which the status line
+does report — it *flatters* the duty figure, which nothing reports.
+
+How it is known: three real TAMIU itineraries processed 2026-09-01. All three run past the
+15-hour federal on-duty limit once the McAllen-to-Laredo deadhead is counted. The app
+displayed 17h, 12h and 10h 30m and raised nothing; the 10h 30m trip is a day approaching
+24 hours whose two legs home never resolved.
+
+Why it was not fixed on the spot: the task was to process itineraries, and the honest fix
+is two changes, not one — a shared threshold, and a rule for what to display when the route
+is incomplete.
+
+Cost to close: small for the threshold, and it must be imported from one place rather than
+retyped in the second editor. Medium for the honesty half: decide what a duty total means
+when a leg is unmeasured, and refuse to print a bare number until it is. Full analysis in
+[`itinerary-system-audit.md`](itinerary-system-audit.md) §3 A1; sequenced there as step 3.
+
+### T14 — the Grid's projection hardcodes `dwellStatus: "on"`, so a rest marked Off Duty is silently erased
+
+`toEditorStops` writes `dwellStatus: "on"` as a literal on every projected row
+([`itinerary-grid.js:911`](../js/components/itinerary-grid.js:911)), and `fromEditorStops`
+never reads the field back. `dwellStatus` is the per-stop `on` / `off` / `sleeper` flag the
+hours-of-service engine runs on — it is what ends a duty session
+([`itinerary.js:390`](../js/components/itinerary.js:390)) — and it has a real column,
+`trip_stops.dwell_status`.
+
+So a dispatcher marks an overnight rest **Off Duty** in the Itinerary tab, opens the Grid,
+presses *Pull from Itinerary*, saves, and `mirrorToItinerary` writes every stop back as
+on-duty. A legal two-session trip becomes one continuous illegal session in the older
+editor's own math, with no warning and no undo.
+
+How it is known: read directly from the projection while auditing. **Not** reproduced
+against a live trip, because reproducing it means saving one.
+
+Why it was not fixed on the spot: found during an audit that was explicitly read-only, and
+the test that would prove it fixed is a duty test — which cannot be written until the HOS
+engine has any coverage at all (T15).
+
+Cost to close: small. Carry the existing status through as an opaque passenger rather than
+asserting a value, and where the Grid has nothing to say, leave the editor's own value
+alone. Note that this protects the value in memory only: v3 has no way to express off-duty
+at all, so the inbox and `trip_itineraries` still lose it — that half is a schema amendment
+with a version bump, and is a decision rather than a defect. See
+[`itinerary-system-audit.md`](itinerary-system-audit.md) §3 A2 and A3.
+
+### T15 — the only hours-of-service implementation in the app has no behavioural tests
+
+[`itinerary-segmented.test.mjs`](../tests/itinerary-segmented.test.mjs) is 28 lines and
+asserts markup contracts with regex against the source text; it executes none of the
+module. [`locations.test.mjs`](../tests/locations.test.mjs) touches `itinerary.js` only to
+check it reads the saved directory. That leaves roughly 2,470 lines — including duty
+segmentation, the 10h/15h thresholds and the 8-hour restart — with nothing exercising them.
+`itinerary-grid.js`, a file of the same size, has 1,391 lines of tests.
+
+The asymmetry is the point: the tab that is safe to delete is the one with the tests, and
+the tab holding the irreplaceable logic is the one nobody can refactor safely. That is what
+makes the two-editor split expensive, rather than the duplication itself.
+
+How it is known: counted while auditing; `itinerary.js` appears in four test files and is
+executed by none of them.
+
+Why it was not fixed on the spot: it is a day's work, not a passing fix, and it is the
+first step of a sequenced plan rather than a standalone chore.
+
+Cost to close: medium. Publish `dutyIntervalData`, `sessionOnDutyThroughWindow`,
+`sessionDriveThroughWindow` and the thresholds on the module's API the way
+`itinerary-grid.js` publishes its pure half, then test them — including a session that
+crosses midnight. Sequenced as step 1 in
+[`itinerary-system-audit.md`](itinerary-system-audit.md) §6, because T13 and T14 both
+depend on it.
+
+### T16 — `driving_hours` and `on_duty_hours` are read from fields that do not exist
+
+[`trip-db.js:443`](../js/data/trip-db.js:443) reads `#tp-drive-hr` and `#tp-duty-hr`, and
+line 830 writes them back on load. **Neither element exists in `index.html`.**
+`optionalNumVal` returns `undefined` for a missing field, so the write path is a silent
+no-op and both columns stay null for every trip this app has ever saved.
+
+Meanwhile the Grid computes duty per day and has nowhere to put it, and the driver sheet
+prints it from a payload that is never persisted. The number the business runs on is
+calculated, displayed, printed, and discarded.
+
+How it is known: grepped both ids across `index.html` and `js/` — four hits in
+`trip-db.js`, zero in markup.
+
+Why it was not fixed on the spot: adding the two inputs would make a derived value durable
+and therefore staleable, which is a decision about where computed hours belong rather than
+a repair.
+
+Cost to close: small either way, but pick deliberately — give the columns a writer, or drop
+them. A column the app cannot fill is what kept this invisible. See
+[`itinerary-system-audit.md`](itinerary-system-audit.md) §3 A5 and §5.3.
+
 
 ---
 
