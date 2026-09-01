@@ -26,7 +26,8 @@ new Function("window", source)(host);
 
 const {
 	fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
-	legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops, toCleanV3, localityOf,
+	legRisks, yardPlan, arrivalPlan, rowPlan, dutyByDay, sameAddress, toEditorStops,
+	toCleanV3, localityOf,
 	needsReview, suspectLocations, sameTown, candidateScore,
 } = host.ItineraryGrid;
 
@@ -1284,4 +1285,107 @@ test("an unrecognised trip type falls back rather than being echoed", () => {
 	const single = v3([{ type: "pickup", departure_time: "05:00" }]);
 	single.trip.type = "teleport";
 	assert.equal(toCleanV3(fromV3(single)).trip.type, "round_trip", "with one leg, round trip");
+});
+
+/* ── arrivalPlan ─────────────────────────────────────────────────────────
+ *
+ * The forward half of yardPlan: an arrival the document never stated, read
+ * off the measured leg and OFFERED. Every case here is really one rule —
+ * it fills a blank and never argues with a time the customer set.
+ */
+
+test("arrivalPlan fills a blank arrival off the measured leg", () => {
+	const [stops] = withDays(
+		{ type: "pickup", depart: "15:00" },
+		{ type: "stop", drive: "6:06" },
+	);
+	// 366 minutes of road, padded the way legRisks judges it: ceil(366 × 1.15)
+	// + 5 = 426, so 15:00 + 7h06m.
+	const plan = arrivalPlan(stops[1], stops[0]);
+	assert.equal(plan.time, "22:06");
+	assert.match(plan.text, /about 22:06/, "offered as an estimate, not a fact");
+});
+
+test("the offered arrival does not trip the risk check that judges it", () => {
+	/* The reason for the padding. A bare depart + drive lands under
+	   needed + margin, so taking the suggestion would immediately flag the leg
+	   it created — the failure yardPlan's comment already names. */
+	const [stops] = withDays(
+		{ type: "pickup", depart: "15:00" },
+		{ type: "stop", drive: "6:06" },
+	);
+	stops[1].arrive = arrivalPlan(stops[1], stops[0]).time;
+	const days = deriveDays(stops);
+	assert.equal(legRisks(stops, days)[1], null, "the tab warned about its own advice");
+});
+
+test("arrivalPlan never argues with an arrival the document gave", () => {
+	/* The whole point of the redirect. A stated arrival is the hour the
+	   customer needs the bus there; the road's opinion of it is a question for
+	   them, not a suggestion to overwrite. */
+	const [stops] = withDays(
+		{ type: "pickup", depart: "06:30" },
+		{ type: "stop", arrive: "09:00", drive: "3:18" },
+	);
+	assert.equal(arrivalPlan(stops[1], stops[0]), null);
+
+	// Midnight is a real arrival, not an absent one.
+	const [crossing] = withDays(
+		{ type: "pickup", depart: "21:00" },
+		{ type: "stop", arrive: "00:00", drive: "2:30" },
+	);
+	assert.equal(arrivalPlan(crossing[1], crossing[0]), null, "00:00 read as blank");
+});
+
+test("arrivalPlan stays silent without a measured leg or a departure", () => {
+	const [unrouted] = withDays(
+		{ type: "pickup", depart: "15:00" },
+		{ type: "stop" },
+	);
+	assert.equal(arrivalPlan(unrouted[1], unrouted[0]), null, "nothing to read forward from");
+
+	const [noAnchor] = withDays(
+		{ type: "pickup" },
+		{ type: "stop", drive: "3:00" },
+	);
+	assert.equal(arrivalPlan(noAnchor[1], noAnchor[0]), null, "no departure to add to");
+});
+
+test("only rows whose arrival is a consequence of the drive are offered one", () => {
+	/* pickup's blank arrival is the spot time, which yardPlan owns; a sleeper
+	   never moved, so it has no drive to read. */
+	const [stops] = withDays(
+		{ type: "yard_origin", depart: "04:00" },
+		{ type: "pickup", drive: "1:00" },
+		{ type: "sleeper" },
+	);
+	assert.equal(arrivalPlan(stops[1], stops[0]), null, "the pickup's blank is a spot time");
+	assert.equal(arrivalPlan(stops[2], stops[1]), null, "a sleeper is already where it sleeps");
+
+	const [home] = withDays(
+		{ type: "stop", depart: "23:00" },
+		{ type: "return", drive: "2:30" },
+	);
+	assert.equal(home[1].type, "return");
+	assert.equal(arrivalPlan(home[1], home[0]).time, "01:58", "the yard arrival is worth having");
+});
+
+test("rowPlan still answers the yard and the pickup first", () => {
+	/* The advisories that already existed keep precedence, and the arrival
+	   case reaches a leg with no pickup in it at all — which is why it sits
+	   outside the yardPlan guard. */
+	const [stops] = withDays(
+		{ type: "yard_origin", depart: "05:00" },
+		{ type: "pickup", depart: "04:30", drive: "3:07" },
+	);
+	const plan = yardPlan(stops);
+	assert.match(rowPlan(stops[0], plan, undefined).text, /Route says roll/);
+	assert.match(rowPlan(stops[1], plan, stops[0]).text, /^Spot /);
+
+	const [orphan] = withDays(
+		{ type: "stop", depart: "08:00" },
+		{ type: "stop", drive: "1:00" },
+	);
+	assert.equal(yardPlan(orphan), null, "no pickup, no yard plan");
+	assert.equal(rowPlan(orphan[1], null, orphan[0]).time, "09:14", "and still an arrival");
 });

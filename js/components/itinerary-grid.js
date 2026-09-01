@@ -42,6 +42,10 @@
 	// deletes, and neither carries an address the dispatcher types.
 	const TYPES = ["yard_origin", "pickup", "stop", "sleeper", "return"];
 	const FIXED_TYPES = new Set(["yard_origin", "return"]);
+	// Rows whose arrival is a consequence of the drive rather than a time
+	// the customer set. yard_origin has no arrival, pickup's is the spot
+	// time yardPlan already answers, and a sleeper never moved.
+	const ARRIVAL_PLAN_TYPES = new Set(["stop", "return"]);
 	const TYPE_LABEL = {
 		yard_origin: "Leave yard",
 		pickup: "Pickup",
@@ -394,6 +398,32 @@
 
 	function toClock(mins) {
 		return `${String(Math.floor(mins / 60)).padStart(2, "0")}:${String(mins % 60).padStart(2, "0")}`;
+	}
+
+	/* An arrival the document never gave, read forward off the measured leg.
+
+	   Offered only when the cell is EMPTY. A stated arrival is a constraint the
+	   customer set — the hour they need the bus there — so the route's opinion
+	   of it is not an improvement on the document, it is a disagreement with
+	   it, and that belongs in the review block rather than in a suggestion to
+	   overwrite. For the same reason taking this must not retire the
+	   extraction's "no arrival time was given" flag: it fills the column, it
+	   does not answer the question. Trip 1's "Daytime" event is the case that
+	   matters — 09:48 off the road is not what time Texas State expects them.
+
+	   Padded by the same buffer and margin legRisks judges against, for the
+	   reason yardPlan is: the bare drive time lands exactly on the threshold
+	   the risk check fails, so the tab would offer an arrival and then flag
+	   the leg it had just created. */
+	function arrivalPlan(stop, previous) {
+		if (!previous || !ARRIVAL_PLAN_TYPES.has(stop.type)) return null;
+		if (clockMins(stop.arrive) !== null) return null;
+		const depart = clockMins(previous.depart);
+		const drive = driveMins(stop.drive);
+		if (depart === null || drive === null || drive <= 0) return null;
+		const needed = Math.ceil(drive * (1 + TRAFFIC_BUFFER)) + RISK_MARGIN_MINS;
+		const time = toClock((depart + needed) % 1440);
+		return { time, text: `Route puts arrival about ${time}` };
 	}
 
 	/* Duty and drive, counted per day.
@@ -1411,7 +1441,7 @@
 				parts.push(renderLeg(stop, index, risks[index], approx));
 			}
 			parts.push(renderRow(stop, index, days[index], leg.stops.length, {
-				plan: rowPlan(stop, plan),
+				plan: rowPlan(stop, plan, leg.stops[index - 1]),
 				suspect: suspect[index],
 			}));
 		});
@@ -1421,18 +1451,21 @@
 	// The route's answer for a row, offered rather than applied. Only shown
 	// when it disagrees with what is already there — an advisory that repeats
 	// the value beside it is noise.
-	function rowPlan(stop, plan) {
-		if (!plan) return null;
-		if (stop.type === "yard_origin" && plan.roll && stop.depart !== plan.roll) {
-			return {
-				time: plan.roll,
-				text: `Route says roll at ${plan.roll}${plan.report ? ` — report ${plan.report}` : ""}`,
-			};
+	function rowPlan(stop, plan, previous) {
+		if (plan) {
+			if (stop.type === "yard_origin" && plan.roll && stop.depart !== plan.roll) {
+				return {
+					time: plan.roll,
+					text: `Route says roll at ${plan.roll}${plan.report ? ` — report ${plan.report}` : ""}`,
+				};
+			}
+			if (stop.type === "pickup" && plan.spot && stop.arrive !== plan.spot) {
+				return { time: plan.spot, text: `Spot ${plan.spot} to depart on time` };
+			}
 		}
-		if (stop.type === "pickup" && plan.spot && stop.arrive !== plan.spot) {
-			return { time: plan.spot, text: `Spot ${plan.spot} to depart on time` };
-		}
-		return null;
+		// A leg with no pickup still measures, so this is deliberately outside
+		// the yardPlan guard above.
+		return arrivalPlan(stop, previous);
 	}
 
 	function renderSummary(state) {
@@ -2564,7 +2597,8 @@
 
 	window.ItineraryGrid = {
 		init, fromV3, toV3, deriveDays, fromEditorStops, normalizeStop,
-		legRisks, yardPlan, dutyByDay, sameAddress, toEditorStops, toCleanV3, localityOf,
+		legRisks, yardPlan, arrivalPlan, rowPlan, dutyByDay, sameAddress, toEditorStops,
+		toCleanV3, localityOf,
 		needsReview, suspectLocations, suspectCount, sameTown, candidateScore,
 	};
 })();

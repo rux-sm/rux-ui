@@ -75,6 +75,18 @@ is the yard. Say so in `data_flags` as well; it changes how the trip is timed.
    `11:30 AM–12:15 PM` at one location maps to `arrival_time` `11:30` and
    `departure_time` `12:15`.
 
+   **A missing arrival stays missing.** Omitting `arrival_time` is the correct
+   output, not an incomplete one. The Grid tab reads it forward off the
+   measured leg and offers it on the row as *"Route puts arrival about …"* with
+   a **Use it** button, padded the same way the tight-leg check judges. You
+   cannot do that here — you do not have the drive time, and estimating one is
+   rule 6.
+
+   Taking that suggestion fills the column; it does not answer the question. An
+   arrival the customer never stated may be a time they simply did not write
+   down, or a constraint they assumed you knew — so record it in `data_flags`
+   regardless of what the route says the road takes.
+
 3. **Day offsets.** `day_offset` is the number of calendar days after the leg's
    `start_date`, and it applies to the stop's `arrival_time`. The first stop is
    `0`. When the running sequence of times rolls past `23:59` into `00:00`,
