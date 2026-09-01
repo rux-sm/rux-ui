@@ -7,6 +7,10 @@ is in the wrong file.
 
 Last updated 2026-08-31.
 
+How well the pieces hold together — and the sequenced work that follows from
+that — is [`itinerary-system-audit.md`](itinerary-system-audit.md) (2026-09-01).
+This file stays the status doc; the audit does not restate it.
+
 ---
 
 ## The pipeline

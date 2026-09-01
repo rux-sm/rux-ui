@@ -372,6 +372,59 @@ against the *nearest* neighbour rather than the pair. Whichever is chosen,
 `renderReview()` should fall through to the address review rather than return
 early, so a suspect stop still offers its confirm button.
 
+### T12 — a bare venue name suppresses the substitution warning, so the geocoder's choice of campus is never shown
+
+`sameAddress()` ends by falling through to `sameTown(typed, matched)` when the typed
+address carries neither a house number nor a ZIP
+([`itinerary-grid.js:141`](../js/components/itinerary-grid.js:141)). When the typed text
+names no town either — a bare venue name — there is nothing for `sameTown` to contradict
+and it answers true. `resolveAndRoute` then reads that as "the geocoder returned what was
+asked for" and sets `stop.matchedAddress = null`
+([`itinerary-grid.js:2189`](../js/components/itinerary-grid.js:2189)), so `renderReview()`
+never reaches its **Routed to … — is that the right place?** branch.
+
+The result is the opposite of the intent recorded in the comment above `sameAddress`: the
+substitution check is disabled exactly where the input is weakest. A full street address
+gets checked; "San Jacinto Junior College" does not.
+
+Reproduced on a real trip. TAMIU's Oct 17 2026 itinerary says only "San Jacinto Junior
+College", no city. The Searchbox forward call returns three Houston-area campuses —
+Central at 8060 Spencer Hwy, Pasadena; South at 13735 Beamer Rd, Houston; North at 5800
+Uvalde Rd, Houston — and `candidateScore` gives all three **3**, because the typed string
+offers no ZIP, no house number and no town to score against. The tie leaves Mapbox's order
+in front, so the trip measured 331.9 mi to the Central campus. The row displays the
+source's own wording, a soft "not a verified address" note, and no statement anywhere that
+Pasadena is where the miles were measured to.
+
+The sharp edge is the button beside it. `confirmAddress()` writes `stop.address` with
+`stop.lat`/`stop.lng` into the saved-locations directory
+([`itinerary-grid.js:1736`](../js/components/itinerary-grid.js:1736)), keyed on the name.
+Pressing **Address is right** on that row saves the name "San Jacinto Junior College"
+against the *Central campus* coordinates, permanently and with no doubt attached — and the
+directory is checked before Mapbox, so every later TAMIU trip to San Jacinto resolves
+there and never asks again. If the game was at North, the wrong campus is now the
+operator's own verified answer. That is T10's failure mode reached through a different
+door: T10 is a wrong hit outliving its fix, this is a wrong hit being *created* by a
+confirmation the operator had no way to evaluate.
+
+How it is known: reproduced while processing a real customer itinerary. `sameAddress("San
+Jacinto Junior College", "8060 Spencer Hwy, Pasadena, Texas 77505, United States")`
+returns `true` in the running app, and `candidateScore` returns 3 for all three campuses.
+
+Why it was not fixed on the spot: the task was to process an itinerary, and the fix is a
+judgement call about what the app should claim when it genuinely cannot tell — not a typo.
+
+Cost to close: small in code, but decide the rule deliberately. `sameAddress` answering
+"same" for two strings with nothing in common is the part that is plainly wrong; the
+honest answer is *unknown*, and the caller should treat unknown as "show what it matched"
+rather than as "no substitution". Note that flipping it alone would make every
+saved-directory hit start accusing itself, so the branch at
+[`itinerary-grid.js:2189`](../js/components/itinerary-grid.js:2189) needs to distinguish
+"matched something I cannot verify" from "matched what I asked for". Worth pairing with a
+tie-break in `candidateScore` — when several candidates score equally and the typed text
+cannot separate them, that is itself the signal to surface all of them rather than pick
+one.
+
 
 ---
 
