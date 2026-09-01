@@ -5,6 +5,10 @@
 
 	const dialog = document.getElementById("driver-editor-dialog");
 	const panelEl = dialog;
+	/* The legacy Drivers and rebuilt Driver Roster views share this editor.
+	   A dialog inside either routable view disappears when that view receives
+	   `hidden`, so host the one shared floating surface at page level. */
+	document.body.appendChild(dialog);
 	const tbody = document.getElementById("driver-roster-body");
 	const tabBtns = document.querySelectorAll('[data-rux-tabs][data-scope="driver"] .rux-tab');
 	const panes = document.querySelectorAll(".sched-scope-driver__pane");
@@ -91,6 +95,7 @@
 			.querySelectorAll(".driver-app__row")
 			.forEach((r) => r.removeAttribute("aria-current"));
 		selectedId = null;
+		window.dispatchEvent(new CustomEvent("rux:driver-editor-closed"));
 		return true;
 	}
 
@@ -103,6 +108,14 @@
 		clearPanel();
 		openDialog("New Driver");
 	});
+
+	async function newEditor() {
+		if (!db) await init();
+		if (!closeDialog()) return false;
+		clearPanel();
+		openDialog("New Driver");
+		return true;
+	}
 
 	// Right-side "Table Options" drawer (View Options + Filters) — the
 	// calendar Tools pattern: resizable right drawer, workspace-header toggle.
@@ -824,13 +837,38 @@
 
 	function selectRow(tr, d) {
 		if (!closeDialog()) return;
-		tr.setAttribute("aria-current", "true");
+		tr?.setAttribute("aria-current", "true");
 		selectedId = d.id;
 		populatePanel(d);
 		loadDriverTrips(d.id);
 		loadDriverScheduleShare(d.id);
 		loadTimeOff(d.id);
 		openDialog(d.name || "Edit Driver");
+	}
+
+	async function openEditor(driverId) {
+		if (!db || !allDrivers.length) await init();
+		const driver = allDrivers.find(
+			(item) => String(item.id) === String(driverId),
+		);
+		if (!driver) {
+			window.Rux?.toast?.("That driver could not be opened.", {
+				variant: "danger",
+			});
+			return false;
+		}
+		if (!closeDialog()) return false;
+		const row = tbody.querySelector(
+			`[data-id="${CSS.escape(String(driver.id))}"]`,
+		);
+		row?.setAttribute("aria-current", "true");
+		selectedId = driver.id;
+		populatePanel(driver);
+		loadDriverTrips(driver.id);
+		loadDriverScheduleShare(driver.id);
+		loadTimeOff(driver.id);
+		openDialog(driver.name || "Edit Driver");
+		return true;
 	}
 
 	// ── Panel population ──────────────────────────────────────────────────────
@@ -1218,9 +1256,14 @@
 					selectedId ? { id: selectedId, ...payload } : payload,
 				);
 				await loadDrivers();
+				window.dispatchEvent(new CustomEvent("rux:drivers-changed"));
 				closeDialog({ discard: true });
 			} catch (err) {
 				console.error("Could not save driver:", err);
+				window.Rux?.toast?.(
+					"Could not save the driver. Check your connection and try again.",
+					{ variant: "danger" },
+				);
 			} finally {
 				btn.disabled = false;
 			}
@@ -1239,9 +1282,14 @@
 				await db.deleteDriver(selectedId);
 				selectedId = null;
 				await loadDrivers();
+				window.dispatchEvent(new CustomEvent("rux:drivers-changed"));
 				closeDialog({ discard: true });
 			} catch (err) {
 				console.error("Could not delete driver:", err);
+				window.Rux?.toast?.(
+					"Could not delete the driver. Check your connection and try again.",
+					{ variant: "danger" },
+				);
 			} finally {
 				btn.disabled = false;
 			}
@@ -1763,7 +1811,13 @@
 			?.click();
 	}
 
-	window.DriverPanel = { init, reload: loadDrivers, openTimeOff };
+	window.DriverPanel = {
+		init,
+		reload: loadDrivers,
+		openTimeOff,
+		openEditor,
+		newEditor,
+	};
 
 	// Auto-init: don't wait for nav event — defer timing means the nav click
 	// fires before this script runs on direct load / refresh at #drivers.

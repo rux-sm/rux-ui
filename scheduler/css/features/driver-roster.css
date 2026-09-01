@@ -71,26 +71,6 @@
 	cursor: default;
 }
 
-/* — Detail window —
-     Same window geometry as the trip, fleet and driver editors
-     (.sched-driver-dialog, driver-app.css). Plan step 7 rebuilds what is
-     inside it; the frame is what §2.3 requires of a records view now. — */
-
-.driver-roster__detail {
-	top: 50%;
-	left: 50%;
-	width: min(460px, calc(100vw - (var(--rux-space-4) * 2)));
-	height: min(720px, calc(100dvh - (var(--rux-space-4) * 2)));
-	max-width: calc(100vw - (var(--rux-space-4) * 2));
-	max-height: calc(100dvh - (var(--rux-space-4) * 2));
-	transform: translate(-50%, -50%);
-	overflow: hidden;
-}
-
-.driver-roster__detail[hidden] {
-	display: none;
-}
-
 /* — Driver cell: name over short name — */
 
 .driver-roster__name {
@@ -201,34 +181,6 @@
 	--_icon-size: var(--rux-icon-sm);
 	--_icon-optical-size: var(--rux-icon-optical-size-sm);
 	color: var(--rux-text-secondary);
-}
-
-/* — Read-only detail facts —
-     A label/value list. There is no published .rux-* component for one, and
-     inventing a .rux-key-value would be adding shared vocabulary to fit a
-     feature — so this stays app-tier. If a second view needs the same shape,
-     that is the moment to propose promoting it. — */
-
-.driver-roster__facts {
-	display: grid;
-	grid-template-columns: minmax(0, auto) minmax(0, 1fr);
-	gap: var(--rux-space-2) var(--rux-space-4);
-	margin: 0;
-}
-
-.driver-roster__facts dt {
-	color: var(--rux-text-secondary);
-	font-size: var(--rux-text-copy-13-size);
-	line-height: var(--rux-text-copy-13-line-height);
-}
-
-.driver-roster__facts dd {
-	margin: 0;
-	min-width: 0;
-	color: var(--rux-text-primary);
-	font-size: var(--rux-text-copy-13-size);
-	line-height: var(--rux-text-copy-13-line-height);
-	overflow-wrap: anywhere;
 }
 
 /* — Empty state — */

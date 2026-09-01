@@ -30,10 +30,7 @@
 	const table = document.getElementById("droster-grid");
 	const searchInput = document.getElementById("droster-search");
 	const scopeTrack = document.getElementById("droster-scope");
-	const detail = document.getElementById("droster-detail");
-	const detailTitle = document.getElementById("droster-detail-title");
-	const detailBody = document.getElementById("droster-detail-body");
-	const detailClose = document.getElementById("droster-detail-close");
+	const newDriverBtn = document.getElementById("droster-new");
 	const columnsBtn = document.getElementById("droster-columns");
 	const columnsMenu = document.getElementById("droster-columns-menu");
 	const columnsList = document.getElementById("droster-columns-list");
@@ -390,47 +387,18 @@
 		renderRows();
 	}
 
-	/* ── Read-only detail window ─────────────────────────────────────────── */
-
-	const DETAIL_FIELDS = [
-		["Reference", (d) => d.driver_ref],
-		["Short name", (d) => d.short_name],
-		["Status", (d) => (d.status === "active" ? "Active" : "Inactive")],
-		["Employment", (d) => EMPLOYMENT_LABELS[d.employment_type]],
-		["Priority", (d) => (d.priority ? `Priority ${d.priority}` : null)],
-		["Phone", (d) => d.phone],
-		["Email", (d) => d.email],
-		["CDL class", (d) => (d.cdl_class ? `CDL-${d.cdl_class}` : null)],
-		["Licence expires", (d) => fmtDate(d.license_exp)],
-		["Medical expires", (d) => fmtDate(d.med_card_expiry)],
-		["Hire date", (d) => fmtDate(d.hire_date)],
-		["Notes", (d) => d.notes],
-	];
-
-	function openDetail(d) {
+	/* The rebuilt roster and the legacy view share one editor while both views
+	   coexist. Keeping one form preserves photo, time-off, trip, schedule-link,
+	   create/update/delete and dirty-state behaviour without letting two copies
+	   of the same database form drift during the migration. */
+	async function openEditor(d) {
 		selectedId = d.id;
-		detailTitle.textContent = d.name || "Driver";
-		detailBody.textContent = "";
-
-		const dl = el("dl", "driver-roster__facts");
-		for (const [label, read] of DETAIL_FIELDS) {
-			const value = read(d);
-			if (!value) continue;
-			dl.appendChild(el("dt", null, label));
-			dl.appendChild(el("dd", null, value));
+		render();
+		const opened = await window.DriverPanel?.openEditor?.(d.id);
+		if (!opened) {
+			selectedId = null;
+			render();
 		}
-		detailBody.appendChild(dl);
-		detail.hidden = false;
-		detailClose.focus();
-		render();
-	}
-
-	function closeDetail() {
-		detail.hidden = true;
-		const row = tbody.querySelector(`[data-id="${CSS.escape(String(selectedId))}"]`);
-		selectedId = null;
-		render();
-		row?.focus();
 	}
 
 	/* ── Events — one delegated pair, not one per row ────────────────────── */
@@ -439,7 +407,7 @@
 		const tr = e.target.closest("tr[data-id]");
 		if (!tr) return;
 		const d = allDrivers.find((x) => String(x.id) === tr.dataset.id);
-		if (d) openDetail(d);
+		if (d) openEditor(d);
 	});
 
 	tbody.addEventListener("keydown", (e) => {
@@ -448,10 +416,22 @@
 		if (!tr) return;
 		e.preventDefault();
 		const d = allDrivers.find((x) => String(x.id) === tr.dataset.id);
-		if (d) openDetail(d);
+		if (d) openEditor(d);
 	});
 
-	detailClose.addEventListener("click", closeDetail);
+	newDriverBtn?.addEventListener("click", async () => {
+		await window.DriverPanel?.newEditor?.();
+	});
+
+	window.addEventListener("rux:drivers-changed", () => {
+		selectedId = null;
+		load();
+	});
+
+	window.addEventListener("rux:driver-editor-closed", () => {
+		selectedId = null;
+		render();
+	});
 
 	searchInput.addEventListener("input", () => {
 		query = searchInput.value.trim().toLowerCase();

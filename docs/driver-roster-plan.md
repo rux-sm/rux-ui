@@ -2,7 +2,8 @@
 
 Status: **in progress**, written 2026-08-26. **Done:** 0 (ID strip), 1 (B1), 2 (status fold),
 3 — all three amendments, 4 (the view), 5 (the table, including the Columns popover).
-**Not started:** 6 (Workload on its own table), 7 (the editor), 8 (the two tests), 9 (cut over).
+**Partially done:** 7 (the working editor is shared by both rosters; data modelling remains).
+**Not started:** 6 (Workload on its own table), 8 (the two broad tests), 9 (cut over).
 
 Rebuilds the Drivers module (`index.html`, `data-view="drivers"`) as a new view,
 `driver-roster`, beside the current one rather than in place of it. The current module keeps
@@ -127,7 +128,7 @@ Amendment classes are `foundations/README.md` §2.1.
 | 4 | Scaffold the view — `scheduler/css/features/driver-roster.css`, `js/panels/driver-roster-panel.js`, block `driver-roster`. Side-nav item, `data-archetype="records"`, router `allow`, lazy boot. | A |
 | 5 | **Phase 1 — the table.** Header band, narrow layout, Columns popover. Cells via `textContent` (closes S1 by construction), one delegated `<tbody>` listener, real row semantics (S4). Editor markup copied across as scaffolding only. | A |
 | 6 | Workload on its own table element; missing-data warning moves from the cells to the column header. | A |
-| 7 | **Phase 2 — the editor.** Opens with §2's modelling question, then the layout: thirteen fields in one Profile pane, five tabs, and S7's silent save. | A |
+| 7 | **Phase 2 — the editor. Partially done 2026-09-01.** The rebuilt roster now opens the existing complete editor through a small shared API instead of maintaining a second read-only copy. The floating dialog is hosted at page level so either routable view can use it; `data-editor="shared"` declares that composition. This preserves profile, licence, status, time off, trips, photo, schedule-link, create/update/delete, and dirty-form behavior. Save and delete failures now produce danger toasts, closing S7, and a successful mutation refreshes both rosters. **Still pending:** §2's data-modelling decision and any resulting field reorganization. No schema or stored data changed. Rejected: copying the full form into `driver-roster`, because two forms over one table would drift before cutover. | A |
 | 8 | Two tests: widen `class-resolution` past `.rux-*` to app-tier blocks (would have caught S2); assert every `[data-col]` hides as a header/cell pair (would have caught B1). | A |
 | 9 | Cut over and delete `driver-app`. **Stops and proposes first**, rename grep protocol, own recorded step. | **C** |
 
