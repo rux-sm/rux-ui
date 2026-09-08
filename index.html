@@ -46,7 +46,7 @@
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=152" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=399" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=404" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=17"
@@ -1029,6 +1029,47 @@
 							</nav>
 						</div>
 						<div class="rux-panel__body sched-scope-trip__body">
+							<!-- Cancelled-trip status. A cancelled trip stays
+							     editable and reachable from the Trips list, but
+							     never renders a bar, so without this strip the
+							     editor looks identical to an active trip's and
+							     saving it appears to do nothing. Shown by
+							     trip-db.js's syncCancelledState(). -->
+							<div
+								class="rux-alert rux-alert--danger sched-scope-trip__status"
+								id="tp-cancelled-banner"
+								role="status"
+								hidden
+							>
+								<span
+									class="rux-icon rux-alert__icon"
+									aria-hidden="true"
+									>event_busy</span
+								>
+								<div class="rux-alert__body">
+									<p class="rux-alert__title">
+										Trip cancelled
+									</p>
+									<p id="tp-cancelled-meta"></p>
+									<p>
+										It stays on record and off the schedule.
+										Reinstating puts it back, but its buses
+										and drivers were released when it was
+										cancelled and are not restored.
+									</p>
+								</div>
+								<button
+									class="rux-button rux-button--default"
+									type="button"
+									id="tp-btn-reinstate"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>event_available</span
+									><span class="rux-button__label"
+										>Reinstate Trip</span
+									>
+								</button>
+							</div>
 							<!-- Trip -->
 							<div
 								id="pane-trip"
@@ -8011,7 +8052,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=52");
+					const db = await import("./js/data/trip-db.js?v=57");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -9590,6 +9631,12 @@
 				}
 				loadTripsFromDB();
 				resetTripPanel();
+			});
+			// Unlike a cancellation, this leaves the editor open and on the
+			// trip: it comes back with no buses and no drivers, and the Fleet
+			// tab is where that gets fixed. Only the grid needs the reload.
+			tripPanel.addEventListener("rux:trip-reinstated", () => {
+				loadTripsFromDB();
 			});
 			tripPanel.addEventListener("rux:trip-cleared", resetTripPanelView);
 			document.addEventListener("settings:billing", () => {
@@ -11190,7 +11237,7 @@
 			// the calendar without a reload. renderBusRows ends in
 			// renderScheduler(), which repaints the bars and the stripes.
 			async function loadFleet() {
-				const db = await import("./js/data/trip-db.js?v=52");
+				const db = await import("./js/data/trip-db.js?v=57");
 				try {
 					schedulerBuses = await db.fetchBuses();
 				} catch (err) {
@@ -11223,7 +11270,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=52");
+					const db = await import("./js/data/trip-db.js?v=57");
 					loadTrip = db.loadTrip;
 					applyItinerary = db.applyItinerary;
 					getCurrentTripId = db.getCurrentTripId;

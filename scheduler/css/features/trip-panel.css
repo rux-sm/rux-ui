@@ -19,6 +19,9 @@
                             .rux-panel--floating.sched-trip-dialog.
    .rux-panel__header           Shared title + close row.
    .rux-panel__nav--attached    Tabs slot (Details/Billing/Itinerary/Fleet).
+   .sched-scope-trip__status      The .rux-alert strip above the panes, shown
+                            only while the loaded trip is cancelled, so the
+                            status holds on whichever tab is open.
    .sched-scope-trip__body        .rux-panel__body plus its own loading-state
                             opacity fade (below) — a real override, not a
                             duplicate, so it keeps its own class.
@@ -125,6 +128,46 @@
    to carry its own padding-block override for the same value, which is
    what the Tools panel's own panes were missing until that rule existed. */
 .sched-scope-trip__pane[hidden] {
+	display: none;
+}
+
+/* — Cancelled-trip status — */
+
+/* Sits above the panes rather than inside one, so the status holds on every
+   tab. Its top and side spacing is the pane's own padding; the gap below it
+   is the pane's top padding, so the strip joins the pane rhythm instead of
+   starting a second one. Wraps because the action is a real button and this
+   panel is narrow at its smallest width — the body keeps the first line and
+   the button drops beneath it. */
+.sched-scope-trip__status {
+	flex-wrap: wrap;
+	margin: var(--rux-panel-padding) var(--rux-panel-padding) 0;
+}
+
+/* Centred on the body it sits beside, rather than pinned to its first line —
+   the alert's icon keeps the top alignment every other alert in the system
+   has. Moot once the query below drops the button onto its own line. */
+.sched-scope-trip__status > .rux-button {
+	align-self: center;
+	flex: none;
+}
+
+/* The dialog's own default width is 480px, and inline the action leaves the
+   body about 220px — the note then runs five lines down a column narrower
+   than the button beside it. Below the width phones already get their own
+   floating-window frame at, the action takes its own full-width line instead
+   and the body gets the whole first one. Container, not media: this follows
+   the dialog, which the dispatcher can resize at any viewport. */
+@container (max-width: 580px) {
+	.sched-scope-trip__status > .rux-button {
+		width: 100%;
+	}
+}
+
+/* .rux-alert sets display: flex, which wins over the user-agent [hidden]
+   rule, so the hidden state has to be restated the way every other
+   flex/grid component in the system restates it. */
+.sched-scope-trip__status[hidden] {
 	display: none;
 }
 

@@ -28,6 +28,14 @@ const fleetDb = await readFile(
 	new URL("../js/data/fleet-db.js", import.meta.url),
 	"utf8",
 );
+const indexHtml = await readFile(
+	new URL("../index.html", import.meta.url),
+	"utf8",
+);
+const reinstatedPatch = await readFile(
+	new URL("../supabase/trip-history-reinstated-patch.sql", import.meta.url),
+	"utf8",
+);
 
 function between(source, startMarker, endMarker, file) {
 	const start = source.indexOf(startMarker);
@@ -51,7 +59,7 @@ test("cancelling a trip clears its bus and driver assignments", () => {
 	const block = between(
 		tripDb,
 		"async function deleteTrip",
-		"── Fetch",
+		"── Reinstate",
 		"trip-db.js",
 	);
 	// The trip row is soft-deleted, never removed.
@@ -138,4 +146,55 @@ test("cancelled trips stay off driver-facing views even with leftover rows", () 
 		"fleet-db.js",
 	);
 	assert.match(busTripsBlock, /cancelled_at\b[\s\S]*if \(trip\.cancelled_at\) return null;/);
+});
+
+test("a cancelled trip can be reinstated, and says what that does not restore", () => {
+	const block = between(tripDb, "── Reinstate", "── Fetch", "trip-db.js");
+	// Both columns clear together: a reason left behind on an active trip
+	// would still render in Trip Finder's badge tooltip.
+	assert.match(
+		block,
+		/\.update\(\{ cancelled_at: null, cancellation_reason: null \}\)/,
+	);
+	// A failed write must not report success or leave the button spinning.
+	assert.match(block, /if \(error\) \{[\s\S]*?return;/);
+	assert.match(block, /action: "reinstated"/);
+	assert.match(block, /"rux:trip-reinstated"/);
+	// Reinstating restores the trip row only — deleteTrip deleted the
+	// assignment rows, and re-booking those buses and drivers behind the
+	// dispatcher is the double-booking cancelling prevented.
+	assert.doesNotMatch(block, /from\("trip_assignments"\)/);
+	// One owner for every cancelled-dependent control, so the two callers
+	// cannot disagree: cancelling an already-cancelled trip is a no-op.
+	assert.match(
+		block,
+		/function syncCancelledState[\s\S]*?cancelBtn\.disabled = !currentTripId \|\| !!cancelledAt/,
+	);
+	assert.match(block, /banner\.hidden = !cancelledAt/);
+	assert.equal((tripDb.match(/syncCancelledState\(root\);/g) ?? []).length, 3);
+	// trip_history.action is a CHECK constraint, so an action the code emits
+	// and the allowlist omits is rejected — and recordTripHistory is non-fatal,
+	// so it fails as a console warning and a missing audit row. That is what
+	// happened to "reinstated" on 2026-09-08. Keep the two in step.
+	assert.match(reinstatedPatch, /'reinstated'/);
+	assert.match(reinstatedPatch, /'cancelled'/);
+});
+
+test("the editor shows a cancelled trip's status and the way back", () => {
+	// Without this the editor is identical to an active trip's, and a save
+	// commits while the trip still never reaches the grid.
+	assert.match(indexHtml, /id="tp-cancelled-banner"/);
+	assert.match(indexHtml, /id="tp-cancelled-meta"/);
+	assert.match(indexHtml, /id="tp-btn-reinstate"/);
+	// The banner sits above the panes, not inside one, so it holds on every tab.
+	const bodyAt = indexHtml.indexOf('class="rux-panel__body sched-scope-trip__body"');
+	const bannerAt = indexHtml.indexOf('id="tp-cancelled-banner"');
+	const firstPaneAt = indexHtml.indexOf('id="pane-trip"');
+	assert.ok(bodyAt !== -1 && bannerAt > bodyAt && bannerAt < firstPaneAt);
+	// The grid reloads so the bar comes back; the editor stays open, because
+	// the trip returns with no buses and no drivers to reassign.
+	assert.match(
+		indexHtml,
+		/addEventListener\("rux:trip-reinstated", \(\) => \{\s*loadTripsFromDB\(\);\s*\}\)/,
+	);
 });

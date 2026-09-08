@@ -1169,8 +1169,6 @@ import {
 		root.querySelectorAll("[data-req]").forEach((btn) => {
 			btn.setAttribute("aria-pressed", "false");
 		});
-		const delBtn = root.querySelector("#tp-btn-delete");
-		if (delBtn) delBtn.disabled = true;
 		syncBusCount(root, 1);
 		syncReturnBusCount(root, 1);
 		root.querySelectorAll(".sched-scope-trip__role-label").forEach((button) => {
@@ -1189,6 +1187,7 @@ import {
 		currentStopsHydrated = true;
 		syncManifestBtn(root);
 		syncContactInfoBtn();
+		syncCancelledState(root);
 		root.querySelector("#tp-price")?.dispatchEvent(new Event("input"));
 		window.Rux?.syncDateInputs(root);
 		window.Rux?.syncSelectPlaceholders?.(root);
@@ -1801,6 +1800,103 @@ export function isSaveInFlight() {
 		}
 	}
 
+	/* ── Reinstate ───────────────────────────────────────────────────────── */
+	// The way back from a cancellation. Until this existed, cancelling was
+	// one-way from inside the app: the trip stayed editable and still opened
+	// from the Trips list, but nothing in the editor said it was cancelled and
+	// no control cleared cancelled_at — and because save() upserts only the
+	// columns the form collects, saving the trip left the flag untouched, so
+	// the edit committed and the trip still never came back to the grid.
+	//
+	// Reinstating restores the trip row alone. Its trip_assignments were
+	// deleted at cancel time (see above) and are NOT rebuilt: the buses and
+	// drivers it held were released to other trips, and re-booking them behind
+	// the dispatcher's back is exactly the double-booking cancellation
+	// prevented. The banner says so before the button is pressed, which is why
+	// this has no confirmation step of its own — the consequence is on screen,
+	// and the action is reversible by cancelling again.
+	//
+	// The history entry needs supabase/trip-history-reinstated-patch.sql: the
+	// action allowlist is a CHECK constraint, and 'reinstated' is not in the
+	// list 'cancelled' was added to. Until that patch is run the reinstate
+	// still commits and only its history row is dropped, because
+	// safelyRecordTripHistory is non-fatal by design — measured against the
+	// live database on 2026-09-08, not inferred.
+
+	function formatCancelledOn(timestamp) {
+		if (!timestamp) return "";
+		const date = new Date(timestamp);
+		if (Number.isNaN(date.getTime())) return "";
+		return new Intl.DateTimeFormat(undefined, {
+			month: "long",
+			day: "numeric",
+			year: "numeric",
+		}).format(date);
+	}
+
+	// Single owner of every control whose state depends on whether the loaded
+	// trip is cancelled — the banner and the footer's Cancel Trip button, which
+	// is a no-op on a trip that is already cancelled. Called from loadTrip and
+	// clearForm, both of which used to set the button's disabled state by hand.
+	function syncCancelledState(root) {
+		const cancelledAt = currentTripId ? currentLoadedTrip?.cancelled_at ?? null : null;
+		const cancelBtn = root.querySelector("#tp-btn-delete");
+		if (cancelBtn) cancelBtn.disabled = !currentTripId || !!cancelledAt;
+		const banner = root.querySelector("#tp-cancelled-banner");
+		if (!banner) return;
+		banner.hidden = !cancelledAt;
+		const meta = banner.querySelector("#tp-cancelled-meta");
+		if (!meta) return;
+		const on = formatCancelledOn(cancelledAt);
+		const reason = String(currentLoadedTrip?.cancellation_reason ?? "").trim();
+		meta.textContent = [on ? `Cancelled ${on}` : "Cancelled", reason]
+			.filter(Boolean)
+			.join(" — ");
+	}
+
+	async function reinstateTrip(root, button) {
+		const tripId = currentTripId;
+		if (!tripId || !currentLoadedTrip?.cancelled_at) return;
+		const label = button?.querySelector(".rux-button__label");
+		const idleLabel = label?.textContent ?? "";
+		if (button) button.disabled = true;
+		if (label) label.textContent = "Reinstating…";
+		const { error } = await supabase
+			.from("trips")
+			.update({ cancelled_at: null, cancellation_reason: null })
+			.eq("id", tripId);
+		if (label) label.textContent = idleLabel;
+		if (button) button.disabled = false;
+		if (error) {
+			console.error("Reinstate failed:", error);
+			window.Rux?.toast?.(
+				"Reinstate failed — check your connection and try again.",
+				{ variant: "danger" },
+			);
+			return;
+		}
+		const reason = String(currentLoadedTrip.cancellation_reason ?? "").trim();
+		await safelyRecordTripHistory({
+			tripId,
+			action: "reinstated",
+			snapshot: cloneHistoryValue(currentLoadedTrip) || { id: tripId },
+			changes: [{
+				field: "trip",
+				label: "Trip",
+				before: reason ? `Cancelled — ${reason}` : "Cancelled",
+				after: "Active",
+			}],
+		});
+		// Patch the loaded object rather than reloading the form: the panel may
+		// hold unsaved edits, and this write touched neither the form's columns
+		// nor its assignments. Same in-place cache patch reassignBus makes.
+		currentLoadedTrip.cancelled_at = null;
+		currentLoadedTrip.cancellation_reason = null;
+		syncCancelledState(root);
+		root.dispatchEvent(new CustomEvent("rux:trip-reinstated", { bubbles: true, detail: { id: tripId } }));
+		window.Rux?.toast?.("Trip reinstated — its buses and drivers need reassigning");
+	}
+
 	/* ── Fetch ───────────────────────────────────────────────────────────── */
 	function fetchTripRows(includeDriverShareFields = true) {
 		const driverShareFields = includeDriverShareFields
@@ -2043,8 +2139,7 @@ export function loadTrip(root, itinerary, trip) {
 	currentTripRef = trip.trip_ref ?? null;
 	currentLoadedTrip = trip;
 	syncContactInfoBtn();
-	const delBtn = root.querySelector("#tp-btn-delete");
-	if (delBtn) delBtn.disabled = !currentTripId;
+	syncCancelledState(root);
 	currentTripSnapshot = { ...normalized };
 	currentAssignments = snapshotAssignments(loadedAssignments);
 
@@ -2857,6 +2952,7 @@ export function initTripDB(root, itinerary) {
 	const saveBtn   = root.querySelector("#tp-btn-save");
 	const clearBtn  = root.querySelector("#tp-btn-clear");
 	const deleteBtn = root.querySelector("#tp-btn-delete");
+	const reinstateBtn = root.querySelector("#tp-btn-reinstate");
 	const contactInfoBtn = document.getElementById("rp-contact-info-btn");
 	const tripReminderBtn = document.getElementById("rp-trip-reminder-btn");
 	syncContactInfoBtn();
@@ -2937,6 +3033,7 @@ export function initTripDB(root, itinerary) {
 		clearForm(root, itinerary);
 	});
 	deleteBtn?.addEventListener("click", () => deleteTrip(root, itinerary));
+	reinstateBtn?.addEventListener("click", () => reinstateTrip(root, reinstateBtn));
 	contactInfoBtn?.addEventListener("click", () => {
 		const trip = activeContactTrip();
 		if (!trip) {
