@@ -739,6 +739,14 @@ const PAYMENT_METHOD_ICONS = { Cash: "universal_currency_alt", Check: "checkbook
 // Returns a DOM element (icon + ref + amount per payment, "·"-separated)
 // rather than a string, since detailFieldEl can't put an icon inside a
 // plain textContent value.
+// A trip can hold several POs or invoices; a detail field names the first and
+// counts the rest, such as "4471 +1".
+function firstAndCount(first, count) {
+  const extra = Math.max(0, (Number(count) || 0) - 1);
+  if (!first) return extra > 0 ? `${extra + 1} on file` : "";
+  return extra > 0 ? `${first} +${extra}` : first;
+}
+
 function buildPaymentValueEl(trip) {
   const valueEl = document.createElement("span");
   valueEl.className = "sched-trip-bar__detail-field-value sched-trip-bar__payment-value";
@@ -1244,8 +1252,8 @@ export function createTripBar(trip, callbacks = {}) {
     ["Mi", formatMiles(trip.estimatedMiles ?? itineraryMiles(trip))],
     ["Act Mi", trip.actualMiles ? String(trip.actualMiles) : ""],
     ["Qt", trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : ""],
-    ["PO", trip.paymentRef || ""],
-    ["Inv", trip.invoiceNumber || "", { wide: true }],
+    ["PO", firstAndCount(trip.paymentRef, trip.poCount)],
+    ["Inv", firstAndCount(trip.invoiceNumber, trip.invoiceCount), { wide: true }],
     ["Pmt", "", { wide: true, valueEl: buildPaymentValueEl(trip), alignItems: "center" }],
   ];
   const placedRestFields = layoutDetailFields(restFields)

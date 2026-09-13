@@ -374,7 +374,7 @@
 /* Billing quantities scan as one numeric column even though some are
    editable inputs and others are computed outputs. The currency prefix
    remains independently anchored by .rux-input-group__prefix. */
-#pane-billing :is(#tp-price, #tp-po-amount, #tp-est-mi, #tp-act-mi) {
+#pane-billing :is(#tp-price, #tp-est-mi, #tp-act-mi, [data-billing-list-amount]) {
 	text-align: end;
 	font-variant-numeric: tabular-nums;
 }
@@ -408,11 +408,18 @@
 .sched-scope-trip__billing-step-row .rux-switch {
 	flex: none;
 }
+/* The PO and invoice steps put an Add button where the other steps put a field,
+   so the switch still ends the row. */
+.sched-scope-trip__billing-step-row > .rux-button {
+	margin-inline-end: auto;
+}
+.sched-scope-trip__billing-list[hidden] {
+	display: none;
+}
+/* The coverage readout sits under the PO rows, at the row's end. */
 .sched-scope-trip__po-details {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) var(--rux-switch-width);
-	align-items: end;
-	gap: var(--rux-control-content-gap);
+	display: flex;
+	justify-content: flex-end;
 }
 .sched-scope-trip__po-details[hidden] {
 	display: none;

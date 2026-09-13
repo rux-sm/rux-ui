@@ -145,9 +145,12 @@ When saving a trip (`trip-db.js` → `collectTrip()`):
 | Contract toggle | `contract_status` | "Signed" or "Pending"             |
 | Contract amount | `quoted_price`    | Only saved if contract is signed  |
 | PO toggle       | `po_received`     | Boolean                           |
-| PO number       | `po_ref`          | Only saved if PO received         |
+| PO rows         | `trip_pos`        | One row per PO: number, amount, date |
+| PO number       | `po_ref`          | The first PO's number             |
+| PO amount       | `po_amount`       | The sum of the PO amounts          |
 | Invoice toggle  | `invoiced`        | Boolean                           |
-| Invoice number  | `invoice_number`  | Only saved if invoiced            |
+| Invoice rows    | `trip_invoices`   | One row per invoice: number, amount, date |
+| Invoice number  | `invoice_number`  | The first invoice's number        |
 | Payment rows    | `deposit_amount`  | Sum of all payments               |
 | Date paid       | `date_paid`       | Latest payment date               |
 | Balance paid    | `balance_paid`    | Computed from payments            |

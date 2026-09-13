@@ -321,7 +321,6 @@ function formatDisplayDate(value) {
 function initBillingWorkflow(root) {
 	const toggles = root.querySelectorAll('[data-rux-domain-toggle][data-scope="trip"]');
 	const priceEl = root.querySelector("#tp-price");
-	const poAmountEl = root.querySelector("#tp-po-amount");
 	const poCoverageEl = root.querySelector("#tp-po-coverage");
 	const poDetails = root.querySelector("[data-billing-details]");
 	const poStep = root.querySelector('[data-billing-key="poReceived"]');
@@ -453,6 +452,134 @@ function initBillingWorkflow(root) {
 			date: row.querySelector("[data-payment-date]")?.value.trim() || "",
 			ref: row.querySelector("[data-payment-ref]")?.value.trim() || "",
 		}));
+	/* PO and invoice rows. Each step's switch says whether the trip has any; the
+	   rows under it hold one PO or invoice each. They reuse the payment row's
+	   anatomy under their own data attributes, so the payment handlers never
+	   see them. trip-db.js fills them through TripPanel.setBillingListRows and
+	   reads them back on save. */
+	const BILLING_LISTS = {
+		po: {
+			title: "PO",
+			refLabel: "PO number",
+			toggle: root.querySelector("#tp-po-received"),
+			rows: root.querySelector("#tp-po-rows"),
+			add: root.querySelector("#tp-po-add-btn"),
+		},
+		invoice: {
+			title: "Invoice",
+			refLabel: "Invoice number",
+			toggle: root.querySelector("#tp-invoiced"),
+			rows: root.querySelector("#tp-invoice-rows"),
+			add: root.querySelector("#tp-invoice-add-btn"),
+		},
+	};
+	const billingListRows = (kind) => Array.from(BILLING_LISTS[kind]?.rows?.querySelectorAll("[data-billing-list-row]") || []);
+	const readBillingListAmounts = (kind) =>
+		billingListRows(kind).reduce((sum, row) => sum + readMoney(row.querySelector("[data-billing-list-amount]")), 0);
+	const createBillingListRow = (kind, index) => {
+		const { title, refLabel } = BILLING_LISTS[kind];
+		const n = index + 1;
+		const row = document.createElement("div");
+		row.className = "sched-scope-trip__payment-row";
+		row.dataset.billingListRow = kind;
+		row.dataset.rowId = "";
+		row.innerHTML = `
+			<div class="sched-scope-trip__payment-content" role="group" aria-labelledby="tp-${kind}-label-${n}">
+				<div class="rux-card__header sched-scope-trip__payment-header">
+					<div class="sched-scope-trip__payment-method">
+						<span class="sched-scope-trip__payment-method-label" id="tp-${kind}-label-${n}" data-billing-list-label>${title} ${n}</span>
+					</div>
+					<button type="button" class="sched-scope-trip__payment-select" data-billing-list-delete aria-label="Delete ${title} ${n}">
+						<span class="rux-icon" aria-hidden="true">delete</span>
+					</button>
+				</div>
+				<div class="rux-card__body sched-scope-trip__payment-fields">
+					<label class="rux-field sched-scope-trip__payment-date-field">
+						<span class="rux-field__label">Date</span>
+						<span class="rux-input sched-scope-trip__payment-date-control">
+							<span class="sched-scope-trip__payment-date-label" data-payment-date-label aria-hidden="true">Date</span>
+							<input class="sched-scope-trip__payment-date" id="tp-${kind}-date-${n}" data-billing-list-date type="date" />
+						</span>
+					</label>
+					<label class="rux-field sched-scope-trip__payment-amount">
+						<span class="rux-field__label">Amount</span>
+						<span class="rux-input-group rux-input-group--prefix">
+							<span class="rux-input-group__prefix" aria-hidden="true">$</span>
+							<input class="rux-input sched-scope-trip__payment-amount-input" id="tp-${kind}-amount-${n}" data-billing-list-amount type="number" min="0" step="0.01" placeholder="0.00" />
+						</span>
+					</label>
+					<label class="rux-field sched-scope-trip__payment-reference">
+						<span class="rux-field__label">${refLabel}</span>
+						<input class="rux-input sched-scope-trip__payment-ref" id="tp-${kind}-ref-${n}" data-billing-list-ref type="text" placeholder="Optional" />
+					</label>
+				</div>
+			</div>`;
+		return row;
+	};
+	const renumberBillingListRows = (kind) => {
+		const { title } = BILLING_LISTS[kind];
+		billingListRows(kind).forEach((row, index) => {
+			const n = index + 1;
+			const label = row.querySelector("[data-billing-list-label]");
+			if (label) {
+				label.id = `tp-${kind}-label-${n}`;
+				label.textContent = `${title} ${n}`;
+			}
+			row.querySelector(".sched-scope-trip__payment-content")?.setAttribute("aria-labelledby", `tp-${kind}-label-${n}`);
+			row.querySelector("[data-billing-list-delete]")?.setAttribute("aria-label", `Delete ${title} ${n}`);
+			[["date", "[data-billing-list-date]"], ["amount", "[data-billing-list-amount]"], ["ref", "[data-billing-list-ref]"]]
+				.forEach(([part, selector]) => {
+					const input = row.querySelector(selector);
+					if (input) input.id = `tp-${kind}-${part}-${n}`;
+				});
+		});
+	};
+	const addBillingListRow = (kind, values = {}) => {
+		const list = BILLING_LISTS[kind];
+		if (!list?.rows) return null;
+		const row = createBillingListRow(kind, billingListRows(kind).length);
+		list.rows.appendChild(row);
+		row.dataset.rowId = values.id || "";
+		const refEl = row.querySelector("[data-billing-list-ref]");
+		const amountEl = row.querySelector("[data-billing-list-amount]");
+		const dateEl = row.querySelector("[data-billing-list-date]");
+		const refValue = kind === "po" ? values.ref : values.number;
+		if (refEl && refValue) refEl.value = refValue;
+		if (amountEl && values.amount !== null && values.amount !== undefined && values.amount !== "") {
+			amountEl.value = values.amount;
+			formatPaymentAmount(amountEl);
+		}
+		if (dateEl && values.date) dateEl.value = values.date;
+		syncPaymentDateLabel(dateEl);
+		return row;
+	};
+	const deleteBillingListRow = (row) => {
+		const kind = row?.dataset.billingListRow;
+		const list = BILLING_LISTS[kind];
+		if (!list) return;
+		const hasData = Array.from(row.querySelectorAll("input")).some((el) => el.value);
+		if (hasData && !confirm(`Delete this ${list.title}?`)) return;
+		row.remove();
+		renumberBillingListRows(kind);
+		// No rows left means no PO or no invoice, which is what the switch says.
+		if (!billingListRows(kind).length && list.toggle?.checked) {
+			list.toggle.checked = false;
+			list.toggle.dispatchEvent(new Event("change", { bubbles: true }));
+		}
+		sync();
+	};
+	const clearBillingLists = () => {
+		Object.keys(BILLING_LISTS).forEach((kind) => billingListRows(kind).forEach((row) => row.remove()));
+	};
+	root.__ruxBillingLists = {
+		set(kind, rows = []) {
+			billingListRows(kind).forEach((row) => row.remove());
+			[...rows]
+				.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+				.forEach((values) => addBillingListRow(kind, values));
+			sync();
+		},
+	};
 	const sync = () => {
 		const price = readMoney(priceEl);
 		const payments = readPayments();
@@ -465,7 +592,7 @@ function initBillingWorkflow(root) {
 			.pop() || "";
 		const fullyPaid = price > 0 && balance <= 0;
 		const overpaid = price > 0 && balance < 0;
-		const poAmount = readMoney(poAmountEl);
+		const poAmount = readBillingListAmounts("po");
 
 		// Four states, not two: nothing paid yet (red) reads very differently
 		// from a partial payment already in (yellow), even though both used to
@@ -487,6 +614,8 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 			step?.classList.toggle("is-enabled", enabled);
 			const details = step?.querySelector("[data-billing-details]");
 			if (details) details.hidden = !enabled;
+			const listRows = step?.querySelector("[data-billing-list]");
+			if (listRows) listRows.hidden = !enabled;
 
 			(toggle.dataset.billingControls || "")
 				.split(/\s+/)
@@ -596,9 +725,7 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 
 	toggles.forEach((toggle) => toggle.addEventListener("change", sync));
 	priceEl?.addEventListener("input", sync);
-	poAmountEl?.addEventListener("input", sync);
 	priceEl?.addEventListener("focusout", () => formatPaymentAmount(priceEl));
-	poAmountEl?.addEventListener("focusout", () => formatPaymentAmount(poAmountEl));
 	paymentRows?.addEventListener("input", (event) => {
 		if (event.target.closest("[data-payment-row]")) paymentRows.dataset.paymentsTouched = "true";
 		sync();
@@ -628,6 +755,30 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 		closePaymentMenu();
 		addPaymentRow(btn.dataset.paymentMethodChoice);
 	});
+	Object.entries(BILLING_LISTS).forEach(([kind, list]) => {
+		list.toggle?.addEventListener("change", () => {
+			if (list.toggle.checked && !billingListRows(kind).length) {
+				addBillingListRow(kind)?.querySelector("[data-billing-list-ref]")?.focus();
+			}
+			sync();
+		});
+		list.add?.addEventListener("click", () => {
+			addBillingListRow(kind)?.querySelector("[data-billing-list-ref]")?.focus();
+			sync();
+		});
+		list.rows?.addEventListener("input", sync);
+		list.rows?.addEventListener("change", (event) => {
+			if (event.target.matches("[data-billing-list-date]")) syncPaymentDateLabel(event.target);
+			sync();
+		});
+		list.rows?.addEventListener("focusout", (event) => {
+			if (event.target.matches("[data-billing-list-amount]")) formatPaymentAmount(event.target);
+		});
+		list.rows?.addEventListener("click", (event) => {
+			const button = event.target.closest("[data-billing-list-delete]");
+			if (button) deleteBillingListRow(button.closest("[data-billing-list-row]"));
+		});
+	});
 	root.addEventListener("rux:payments-loaded", (event) => {
 		if (!paymentRows) return;
 		const payments = (event.detail?.payments || []).sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
@@ -651,6 +802,7 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 		sync();
 	});
 	root.addEventListener("rux:trip-cleared", () => {
+		clearBillingLists();
 		if (paymentRows) {
 			paymentRows.dataset.paymentsTouched = "true";
 			paymentRows.querySelectorAll("[data-payment-row]").forEach((row) => row.remove());
@@ -1447,6 +1599,10 @@ function refreshRequirements(root) {
 	
 }
 
+function setBillingListRows(root, kind, rows) {
+	root?.__ruxBillingLists?.set(kind, rows);
+}
+
 window.TripPanel = {
 	init: initTripPanel,
 	initTabs: initTripTabs,
@@ -1462,4 +1618,5 @@ window.TripPanel = {
 	setContactNotNeeded,
 	getItineraryNotNeeded,
 	setItineraryNotNeeded,
+	setBillingListRows,
 };

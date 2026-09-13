@@ -31,9 +31,6 @@ const TRIP_FIELDS = [
 	["driving_hours", "Drive hours", "number"],
 	["on_duty_hours", "On-duty hours", "number"],
 	["invoice_status", "Invoice status"],
-	["po_ref", "PO"],
-	["po_amount", "PO authorized amount", "money"],
-	["invoice_number", "Invoice"],
 	["date_paid", "Date paid"],
 	["bus_count", "Bus count", "number"],
 	["return_bus_count", "Inbound bus count", "number"],
@@ -212,6 +209,32 @@ function significantPayments(payments = []) {
 	}));
 }
 
+// POs and invoices are lists; the history names each one and its amount.
+function billingListSummary(rows = [], refField, noun) {
+	if (!rows.length) return null;
+	return rows
+		.map((row) => {
+			const amount = Number(row.amount);
+			const money = row.amount !== null && row.amount !== undefined && row.amount !== "" && Number.isFinite(amount)
+				? amount.toLocaleString(undefined, { style: "currency", currency: "USD" })
+				: "";
+			return [row[refField] ? `${noun} ${row[refField]}` : noun, money].filter(Boolean).join(" ");
+		})
+		.join(" · ");
+}
+
+function significantBillingList(rows = [], refField) {
+	return [...rows]
+		.sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+		.map((row) => ({
+			[refField]: normalized(row[refField]),
+			amount: row.amount === null || row.amount === undefined || row.amount === ""
+				? null
+				: Number(row.amount),
+			date: normalized(row.date),
+		}));
+}
+
 function ticketSummary(options = []) {
 	if (!options.length) return null;
 	return options
@@ -261,6 +284,10 @@ export function buildTripHistoryChanges({
 	afterStops = [],
 	beforePayments = [],
 	afterPayments = [],
+	beforePurchaseOrders = [],
+	afterPurchaseOrders = [],
+	beforeInvoices = [],
+	afterInvoices = [],
 	beforeTicketOptions = [],
 	afterTicketOptions = [],
 	options = {},
@@ -320,6 +347,16 @@ export function buildTripHistoryChanges({
 			paymentSummary(newPayments),
 		);
 	}
+
+	[
+		["purchase_orders", "Purchase orders", beforePurchaseOrders, afterPurchaseOrders, "ref", "PO"],
+		["invoices", "Invoices", beforeInvoices, afterInvoices, "number", "Invoice"],
+	].forEach(([field, label, before, after, refField, noun]) => {
+		const oldRows = significantBillingList(before, refField);
+		const newRows = significantBillingList(after, refField);
+		if (sameValue(oldRows, newRows)) return;
+		pushChange(changes, field, label, billingListSummary(oldRows, refField, noun), billingListSummary(newRows, refField, noun));
+	});
 
 	const oldTickets = significantTickets(beforeTicketOptions);
 	const newTickets = significantTickets(afterTicketOptions);

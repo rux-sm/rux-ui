@@ -374,9 +374,13 @@ import {
 		const poReceived = billingActive("poReceived") && !!root.querySelector("#tp-po-received")?.checked;
 		const invoiced = !!root.querySelector("#tp-invoiced")?.checked;
 		const balancePaid = !!root.querySelector("#tp-balance-paid")?.checked;
-		const poRef = poReceived ? fieldVal(root, "tp-po") : null;
-		const poAmount = poReceived ? numVal(root, "tp-po-amount") : null;
-		const invoiceNumber = invoiced ? fieldVal(root, "tp-inv-num") : null;
+		// The single PO and invoice columns are filled from the rows (billing-config.js
+		// listMirror). Without that module a save would blank them, so it stops instead.
+		if (!window.RuxBilling?.listMirror) throw new Error("The billing module did not load. Reload the page before saving.");
+		const listColumns = window.RuxBilling.listMirror(collectBillingLists(root, { poReceived, invoiced }));
+		const poRef = listColumns.po_ref;
+		const poAmount = listColumns.po_amount;
+		const invoiceNumber = listColumns.invoice_number;
 		const datePaid = balancePaid ? fieldVal(root, "tp-date-paid") : null;
 		const depositAmount = collectPayments(root).reduce((sum, p) => sum + (p.amount || 0), 0) || null;
 		const quotedPrice = numVal(root, "tp-price");
@@ -593,6 +597,28 @@ import {
 			date: row.querySelector("[data-payment-date]")?.value || null,
 			ref: row.querySelector("[data-payment-ref]")?.value?.trim() || null,
 		})).filter(p => p.amount || p.method || p.date || p.ref);
+	}
+
+	// The PO and invoice rows on the Billing tab. A switch that is off saves no
+	// rows; one that is on saves at least one, so `po_received` and `invoiced`
+	// always agree with whether rows exist. A row keeps its database id so the
+	// save updates it rather than replacing it.
+	function collectBillingLists(root, { poReceived, invoiced }) {
+		const read = (kind, refField, on) => {
+			if (!on) return [];
+			const rows = Array.from(root.querySelectorAll(`#tp-${kind}-rows [data-billing-list-row]`)).map((row) => {
+				const amount = Number.parseFloat(row.querySelector("[data-billing-list-amount]")?.value);
+				return {
+					id: row.dataset.rowId || null,
+					[refField]: row.querySelector("[data-billing-list-ref]")?.value?.trim() || null,
+					amount: Number.isFinite(amount) ? amount : null,
+					date: row.querySelector("[data-billing-list-date]")?.value || null,
+				};
+			}).filter((row) => row.id || row[refField] || row.amount !== null || row.date);
+			const kept = rows.length ? rows : [{ id: null, [refField]: null, amount: null, date: null }];
+			return kept.map((row, position) => ({ ...row, position }));
+		};
+		return { pos: read("po", "ref", poReceived), invoices: read("invoice", "number", invoiced) };
 	}
 
 	function collectTicketOptions(root) {
@@ -829,9 +855,6 @@ import {
 		setEstimatedMilesField(root, trip.est_miles);
 		setVal(root, "tp-drive-hr", trip.driving_hours);
 		setVal(root, "tp-duty-hr",  trip.on_duty_hours);
-		setVal(root, "tp-po",        trip.po_ref);
-		setVal(root, "tp-po-amount", trip.po_amount);
-		setVal(root, "tp-inv-num",   trip.invoice_number);
 		setVal(root, "tp-date-paid", trip.date_paid);
 		setVal(root, "tp-act-mi",    trip.actual_miles);
 		// Dispatch requirements — prefer trip_reqs JSONB, fall back to legacy columns
@@ -1212,6 +1235,24 @@ import {
 		if (labelEl) labelEl.textContent = label;
 	}
 
+	// Writes one PO or invoice list by id: removed rows are deleted, changed rows
+	// updated, new rows inserted. billing-config.js diffListRows says which.
+	async function writeBillingList(table, tripId, before, after, fields) {
+		const { inserts, updates, deletes } = window.RuxBilling.diffListRows(before, after, fields);
+		if (deletes.length) {
+			const { error } = await supabase.from(table).delete().eq("trip_id", tripId).in("id", deletes);
+			if (error) throw error;
+		}
+		for (const { id, values } of updates) {
+			const { error } = await supabase.from(table).update(values).eq("trip_id", tripId).eq("id", id);
+			if (error) throw error;
+		}
+		if (inserts.length) {
+			const { error } = await supabase.from(table).insert(inserts.map((values) => ({ trip_id: tripId, ...values })));
+			if (error) throw error;
+		}
+	}
+
 	async function save(root, itinerary, saveBtn) {
 		// Freeze identity at call time so a mid-save loadTrip can't corrupt state.
 		const savingTripId       = currentTripId;
@@ -1235,6 +1276,14 @@ import {
 				: compactPayload(nextTripData);
 			const assignments = collectAssignments(root);
 			const payments = collectPayments(root);
+			const billingLists = collectBillingLists(root, {
+				poReceived: !!nextTripData.po_received,
+				invoiced: !!nextTripData.invoiced,
+			});
+			// A trip opened from an object that never carried its PO and invoice
+			// rows cannot be diffed safely, so its rows are left as they are.
+			const billingListsLoaded = !savingTripId
+				|| (Array.isArray(savingLoadedTrip?.trip_pos) && Array.isArray(savingLoadedTrip?.trip_invoices));
 			const ticketOptions = collectTicketOptions(root);
 			// The Grid tab holds its stops in its own arrive/depart model. It
 			// pushes them into the itinerary here, BEFORE they are collected,
@@ -1458,6 +1507,16 @@ import {
 				if (paymentsErr) throw paymentsErr;
 			}
 
+			// POs and invoices, by id, so a row the scheduler saved after this trip
+			// loaded survives. A new trip's rows are all inserts.
+			if (billingListsLoaded) {
+				const stripIds = (rows) => (savingTripId ? rows : rows.map(({ id, ...row }) => row));
+				await writeBillingList("trip_pos", savedId, savingTripId ? savingLoadedTrip.trip_pos : [], stripIds(billingLists.pos), ["ref", "amount", "date"]);
+				await writeBillingList("trip_invoices", savedId, savingTripId ? savingLoadedTrip.trip_invoices : [], stripIds(billingLists.invoices), ["number", "amount", "date"]);
+			} else {
+				console.warn("This trip was opened without its PO and invoice rows; they were left unchanged.");
+			}
+
 			// Replace ticket pricing options
 			const { error: deleteTicketOptionsErr } = await supabase
 				.from("trip_ticket_options")
@@ -1565,6 +1624,10 @@ import {
 				afterStops: stopsData,
 				beforePayments: savingLoadedTrip?.trip_payments ?? [],
 				afterPayments: payments,
+				beforePurchaseOrders: savingLoadedTrip?.trip_pos ?? [],
+				afterPurchaseOrders: billingListsLoaded ? billingLists.pos : (savingLoadedTrip?.trip_pos ?? []),
+				beforeInvoices: savingLoadedTrip?.trip_invoices ?? [],
+				afterInvoices: billingListsLoaded ? billingLists.invoices : (savingLoadedTrip?.trip_invoices ?? []),
 				beforeTicketOptions: savingLoadedTrip?.trip_ticket_options ?? [],
 				afterTicketOptions: ticketOptions,
 				options: root.__ruxTripPanelOptions || {},
@@ -1936,7 +1999,7 @@ export function isSaveInFlight() {
 	}
 
 export async function fetchTrips() {
-	let [tripsResult, paymentsResult, docsResult, passengersResult, ticketOptionsResult] = await Promise.all([
+	let [tripsResult, paymentsResult, docsResult, passengersResult, ticketOptionsResult, posResult, invoicesResult] = await Promise.all([
 		fetchTripRows(true),
 		supabase
 			.from("trip_payments")
@@ -1954,6 +2017,14 @@ export async function fetchTrips() {
 			.from("trip_ticket_options")
 			.select("*")
 			.order("position", { ascending: true }),
+		supabase
+			.from("trip_pos")
+			.select("id, trip_id, position, ref, amount, date")
+			.order("position", { ascending: true }),
+		supabase
+			.from("trip_invoices")
+			.select("id, trip_id, position, number, amount, date")
+			.order("position", { ascending: true }),
 	]);
 	if (tripsResult.error && isMissingDriverShareField(tripsResult.error)) {
 		driverShareFieldsAvailable = false;
@@ -1966,6 +2037,10 @@ export async function fetchTrips() {
 	}
 	if (tripsResult.error) throw tripsResult.error;
 	if (paymentsResult.error) throw paymentsResult.error;
+	// Thrown, not skipped: a trip loaded with an empty list by mistake would
+	// insert its PO or invoice again on the next save.
+	if (posResult.error) throw posResult.error;
+	if (invoicesResult.error) throw invoicesResult.error;
 
 	let canonicalDriverStatuses = [];
 	try {
@@ -1997,6 +2072,17 @@ export async function fetchTrips() {
 		passengersByTrip.get(p.trip_id).push(p);
 	}
 
+	const groupByTrip = (rows) => {
+		const byTrip = new Map();
+		for (const row of rows ?? []) {
+			if (!byTrip.has(row.trip_id)) byTrip.set(row.trip_id, []);
+			byTrip.get(row.trip_id).push(row);
+		}
+		return byTrip;
+	};
+	const posByTrip = groupByTrip(posResult.data);
+	const invoicesByTrip = groupByTrip(invoicesResult.data);
+
 	const ticketOptionsByTrip = new Map();
 	for (const o of ticketOptionsResult?.data ?? []) {
 		if (!ticketOptionsByTrip.has(o.trip_id)) ticketOptionsByTrip.set(o.trip_id, []);
@@ -2016,6 +2102,8 @@ export async function fetchTrips() {
 		trip_passengers: passengersByTrip.get(trip.id) ?? [],
 		trip_documents: docsByTrip.get(trip.id) ?? [],
 		trip_ticket_options: ticketOptionsByTrip.get(trip.id) ?? [],
+		trip_pos: posByTrip.get(trip.id) ?? [],
+		trip_invoices: invoicesByTrip.get(trip.id) ?? [],
 	}));
 }
 
@@ -2159,6 +2247,14 @@ export function loadTrip(root, itinerary, trip) {
 	populateAssignments(root, loadedAssignments);
 
 	populatePayments(root, trip.trip_payments ?? []);
+	// A trip object that never carried its rows shows the single columns as one
+	// unsaved row; the save leaves that trip's tables alone.
+	window.TripPanel?.setBillingListRows?.(root, "po", Array.isArray(trip.trip_pos)
+		? trip.trip_pos
+		: (normalized.po_ref || normalized.po_amount != null ? [{ position: 0, ref: normalized.po_ref, amount: normalized.po_amount }] : []));
+	window.TripPanel?.setBillingListRows?.(root, "invoice", Array.isArray(trip.trip_invoices)
+		? trip.trip_invoices
+		: (normalized.invoice_number ? [{ position: 0, number: normalized.invoice_number }] : []));
 	populateTicketOptions(root, trip.trip_ticket_options ?? []);
 	root.querySelector("#tp-price")?.dispatchEvent(new Event("input"));
 	// Scheduler bars carry leg-filtered trip_stops for their own summary, plus

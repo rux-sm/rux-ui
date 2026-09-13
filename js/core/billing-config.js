@@ -256,6 +256,58 @@
 		return getConfig();
 	}
 
+	/* PO and invoice lists. A trip keeps its POs in `trip_pos` and its invoices
+	   in `trip_invoices`. The single columns on `trips` stay, filled from the
+	   rows, because the status ladder, filters and other readers use them. */
+	const listByPosition = (rows = []) => [...rows].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+	const hasValue = (value) => value !== null && value !== undefined && value !== "";
+
+	function listMirror({ pos = [], invoices = [] } = {}) {
+		const poRows = listByPosition(pos);
+		const invoiceRows = listByPosition(invoices);
+		const amounts = poRows.filter((row) => hasValue(row.amount)).map((row) => Number(row.amount)).filter(Number.isFinite);
+		return {
+			po_received: poRows.length > 0,
+			po_ref: poRows[0]?.ref || null,
+			po_amount: amounts.length ? Math.round(amounts.reduce((sum, amount) => sum + amount, 0) * 100) / 100 : null,
+			invoiced: invoiceRows.length > 0,
+			invoice_status: invoiceRows.length > 0 ? "Invoiced" : "Pending",
+			invoice_number: invoiceRows[0]?.number || null,
+		};
+	}
+
+	/* Rows are written by id and never deleted wholesale, because the scheduler
+	   edits the same rows. A row saved elsewhere after this trip loaded is not
+	   in `before`, so it is neither updated nor deleted. A row whose id is not
+	   in `before` is inserted as new, so an id copied from another trip can
+	   never overwrite that trip's row. */
+	function diffListRows(before = [], after = [], fields = []) {
+		const beforeById = new Map(before.filter((row) => row?.id).map((row) => [String(row.id), row]));
+		const columns = ["position", ...fields];
+		const norm = (value) => (hasValue(value) ? value : null);
+		const changed = (previous, next) => columns.some((column) => {
+			const a = norm(previous[column]);
+			const b = norm(next[column]);
+			if (a === null || b === null) return a !== b;
+			return column === "amount" ? Number(a) !== Number(b) : String(a) !== String(b);
+		});
+		const inserts = [];
+		const updates = [];
+		const kept = new Set();
+		after.forEach((row) => {
+			const values = Object.fromEntries(columns.map((column) => [column, norm(row[column])]));
+			const previous = row.id ? beforeById.get(String(row.id)) : null;
+			if (!previous) {
+				inserts.push(values);
+				return;
+			}
+			kept.add(String(row.id));
+			if (changed(previous, row)) updates.push({ id: String(row.id), values });
+		});
+		const deletes = [...beforeById.keys()].filter((id) => !kept.has(id));
+		return { inserts, updates, deletes };
+	}
+
 	window.RuxBilling = {
 		KEY,
 		DEFAULT_CONFIG: clone(DEFAULT_CONFIG),
@@ -272,6 +324,8 @@
 		isStatusConfirmed,
 		isStateConfirmed,
 		isRecordConfirmed,
+		listMirror,
+		diffListRows,
 		applyToTripPanel,
 		load,
 		save,

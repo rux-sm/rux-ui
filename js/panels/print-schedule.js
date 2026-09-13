@@ -198,6 +198,14 @@
   // populated by the current save flow, so they were always empty. Returns
   // a DOM element (icon + ref + amount per payment, "·"-separated) rather
   // than a string, same reason as trip-bar.js's buildPaymentValueEl.
+  // A trip can hold several POs or invoices; a detail field names the first and
+  // counts the rest, such as "4471 +1".
+  function firstAndCount(first, count) {
+    const extra = Math.max(0, (Number(count) || 0) - 1);
+    if (!first) return extra > 0 ? `${extra + 1} on file` : "";
+    return extra > 0 ? `${first} +${extra}` : first;
+  }
+
   function buildPaymentValueEl(trip) {
     const valueEl = el("span", "sched-print-trip__detail-value sched-print-trip__payment-value");
     const payments = Array.isArray(trip.trip_payments) ? trip.trip_payments : [];
@@ -399,8 +407,8 @@
         : [["D1", ""]];
       appendDetailRow(content, driverPayFields, "sched-print-trip__detail-row--after-drivers");
       appendDetailRow(content, [["Mi", formatMiles(trip.estimatedMiles ?? itineraryMiles(trip))], ["Act", trip.actualMiles ? String(trip.actualMiles) : ""]]);
-      appendDetailRow(content, [["Qt", trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : ""], ["PO", trip.paymentRef || ""]]);
-      appendDetailRow(content, [["Inv", trip.invoiceNumber || ""]], "sched-print-trip__detail-row--single");
+      appendDetailRow(content, [["Qt", trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : ""], ["PO", firstAndCount(trip.paymentRef, trip.poCount)]]);
+      appendDetailRow(content, [["Inv", firstAndCount(trip.invoiceNumber, trip.invoiceCount)]], "sched-print-trip__detail-row--single");
       appendDetailRow(content, [["Pmt", "", buildPaymentValueEl(trip)]], "sched-print-trip__detail-row--single");
     }
     card.appendChild(content);

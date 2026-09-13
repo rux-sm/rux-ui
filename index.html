@@ -46,7 +46,7 @@
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=152" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=404" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=405" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=17"
@@ -1887,17 +1887,14 @@
 											<div
 												class="sched-scope-trip__billing-step-row"
 											>
-												<input
-													class="rux-input"
-													id="tp-po"
-													name="paymentRef"
-													type="text"
-													placeholder="Not received"
-													data-off-placeholder="Not received"
-													data-on-placeholder="Enter PO number"
-													aria-label="PO Number"
+												<button
+													class="rux-button rux-button--ghost"
+													type="button"
+													id="tp-po-add-btn"
 													disabled
-												/>
+												>
+													<span class="rux-icon" aria-hidden="true">add</span>Add PO
+												</button>
 												<label class="rux-switch"
 													><input
 														type="checkbox"
@@ -1905,7 +1902,7 @@
 														name="poReceived"
 														data-rux-domain-toggle
 														data-scope="trip"
-														data-billing-controls="tp-po tp-po-amount" /><span
+														data-billing-controls="tp-po-add-btn" /><span
 														class="rux-switch__track"
 													></span
 													><span
@@ -1913,6 +1910,12 @@
 													></span
 												></label>
 											</div>
+											<div
+												class="sched-scope-trip__payment-rows sched-scope-trip__billing-list"
+												id="tp-po-rows"
+												data-billing-list
+												hidden
+											></div>
 										</div>
 										<div
 											class="sched-scope-trip__billing-step"
@@ -1928,17 +1931,14 @@
 											<div
 												class="sched-scope-trip__billing-step-row"
 											>
-												<input
-													class="rux-input"
-													id="tp-inv-num"
-													name="invoiceNumber"
-													type="text"
-													placeholder="Pending"
-													data-off-placeholder="Pending"
-													data-on-placeholder="Enter Invoice Number"
-													aria-label="Invoice Number"
+												<button
+													class="rux-button rux-button--ghost"
+													type="button"
+													id="tp-invoice-add-btn"
 													disabled
-												/>
+												>
+													<span class="rux-icon" aria-hidden="true">add</span>Add invoice
+												</button>
 												<label class="rux-switch"
 													><input
 														type="checkbox"
@@ -1946,7 +1946,7 @@
 														name="invoiced"
 														data-rux-domain-toggle
 														data-scope="trip"
-														data-billing-controls="tp-inv-num" /><span
+														data-billing-controls="tp-invoice-add-btn" /><span
 														class="rux-switch__track"
 													></span
 													><span
@@ -1954,38 +1954,18 @@
 													></span
 												></label>
 											</div>
+											<div
+												class="sched-scope-trip__payment-rows sched-scope-trip__billing-list"
+												id="tp-invoice-rows"
+												data-billing-list
+												hidden
+											></div>
 										</div>
 										<div
 											class="sched-scope-trip__po-details"
 											data-billing-details
 											hidden
 										>
-											<div class="rux-field">
-												<label
-													class="rux-field__label"
-													for="tp-po-amount"
-													>Authorized amount</label
-												>
-												<div
-													class="rux-input-group rux-input-group--prefix"
-												>
-													<span
-														class="rux-input-group__prefix"
-														aria-hidden="true"
-														>$</span
-													>
-													<input
-														class="rux-input"
-														id="tp-po-amount"
-														name="poAmount"
-														type="number"
-														min="0"
-														step="0.01"
-														placeholder="0.00"
-														disabled
-													/>
-												</div>
-											</div>
 											<output
 												class="sched-scope-trip__po-coverage"
 												id="tp-po-coverage"
@@ -6784,7 +6764,7 @@
 		<script src="./rux-ui/js/popover.js?v=8"></script>
 		<script src="./rux-ui/js/menu.js?v=8"></script>
 		<script src="./rux-ui/js/controls.js?v=10"></script>
-		<script src="./js/core/billing-config.js?v=9"></script>
+		<script src="./js/core/billing-config.js?v=10"></script>
 		<script src="./rux-ui/js/floating-window.js?v=7"></script>
 		<script src="./js/core/doc-viewer.js?v=18"></script>
 		<script src="./rux-ui/js/suggestions.js?v=9"></script>
@@ -6793,7 +6773,7 @@
 		     last so every namespace it calls already exists. It does not boot
 		     the page itself; each module still does that for itself. -->
 		<script src="./rux-ui/js/boot.js?v=1"></script>
-		<script src="./js/panels/trip-panel.js?v=49"></script>
+		<script src="./js/panels/trip-panel.js?v=50"></script>
 		<script src="./js/components/itinerary.js?v=66"></script>
 		<script src="./js/components/itinerary-grid.js?v=47"></script>
 		<script src="./js/panels/driver-sheet.js?v=8" defer></script>
@@ -6806,7 +6786,7 @@
 		<script src="./js/panels/trip-finder.js?v=11" defer></script>
 		<script src="./js/panels/request-inbox.js?v=12" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=13" defer></script>
-		<script src="./js/panels/print-schedule.js?v=37" defer></script>
+		<script src="./js/panels/print-schedule.js?v=38" defer></script>
 		<script src="./js/panels/trip-envelope.js?v=23" defer></script>
 		<script type="module" src="./js/core/app-reload.js?v=4"></script>
 		<script
@@ -6842,7 +6822,7 @@
 				clearTripBars,
 				applyItineraryUploaded,
 				applyItineraryDeleted,
-			} from "./js/components/trip-bar.js?v=31";
+			} from "./js/components/trip-bar.js?v=32";
 			import BusPicker, {
 				findConflict as findBusConflict,
 			} from "./js/components/bus-picker.js?v=8";
@@ -8052,7 +8032,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=57");
+					const db = await import("./js/data/trip-db.js?v=58");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -9491,6 +9471,8 @@
 							// leg in the editor must hydrate both itinerary buffers.
 							allTripStops: t.trip_stops ?? [],
 							trip_payments: t.trip_payments ?? [],
+							trip_pos: t.trip_pos,
+							trip_invoices: t.trip_invoices,
 							trip_documents: t.trip_documents ?? [],
 							trip_passengers: t.trip_passengers ?? [],
 							is_self_organized: t.is_self_organized,
@@ -9554,7 +9536,9 @@
 							// the payments list existed.
 							deposit_amount: t.deposit_amount,
 							paymentRef: t.po_ref,
+							poCount: (t.trip_pos ?? []).length,
 							invoiceNumber: t.invoice_number,
+							invoiceCount: (t.trip_invoices ?? []).length,
 							datePaid: t.date_paid,
 							paymentRefs: [
 								t.payment_ref_1,
@@ -11237,7 +11221,7 @@
 			// the calendar without a reload. renderBusRows ends in
 			// renderScheduler(), which repaints the bars and the stripes.
 			async function loadFleet() {
-				const db = await import("./js/data/trip-db.js?v=57");
+				const db = await import("./js/data/trip-db.js?v=58");
 				try {
 					schedulerBuses = await db.fetchBuses();
 				} catch (err) {
@@ -11270,7 +11254,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=57");
+					const db = await import("./js/data/trip-db.js?v=58");
 					loadTrip = db.loadTrip;
 					applyItinerary = db.applyItinerary;
 					getCurrentTripId = db.getCurrentTripId;
@@ -11499,6 +11483,24 @@
 							event: "*",
 							schema: "public",
 							table: "trip_payments",
+						},
+						scheduleTripsReload,
+					)
+					.on(
+						"postgres_changes",
+						{
+							event: "*",
+							schema: "public",
+							table: "trip_pos",
+						},
+						scheduleTripsReload,
+					)
+					.on(
+						"postgres_changes",
+						{
+							event: "*",
+							schema: "public",
+							table: "trip_invoices",
 						},
 						scheduleTripsReload,
 					)
