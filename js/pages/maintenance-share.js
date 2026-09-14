@@ -299,12 +299,12 @@ function scheduleReload() {
 	reloadTimer = window.setTimeout(reload, 300);
 }
 
+// A broadcast the database sends when trips, assignments, stops or buses
+// change. The page cannot watch those tables itself once the database admits
+// only staff; the 30-second poll below still catches anything missed.
 const scheduleChannel = supabase
-	.channel("maintenance-schedule")
-	.on("postgres_changes", { event: "*", schema: "public", table: "trips" }, scheduleReload)
-	.on("postgres_changes", { event: "*", schema: "public", table: "trip_assignments" }, scheduleReload)
-	.on("postgres_changes", { event: "*", schema: "public", table: "trip_stops" }, scheduleReload)
-	.on("postgres_changes", { event: "*", schema: "public", table: "buses" }, scheduleReload)
+	.channel("maintenance-schedule-signal")
+	.on("broadcast", { event: "changed" }, scheduleReload)
 	.subscribe((channelStatus) => {
 		if (["CHANNEL_ERROR", "TIMED_OUT"].includes(channelStatus)) {
 			console.warn(`Maintenance schedule realtime: ${channelStatus}`);

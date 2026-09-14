@@ -41,11 +41,10 @@
       msg.textContent = "No document ID provided.";
     } else {
       try {
-        const { data, error } = await supabase
-          .from("trip_documents")
-          .select("file_path, label, file_name")
-          .eq("id", id)
-          .single();
+        // A token-free lookup by document id, through a function rather than
+        // the table, so the link keeps working once the database admits only
+        // staff.
+        const { data, error } = await supabase.rpc("get_trip_document", { p_id: id });
 
         if (error || !data) {
           msg.textContent = "Document not found.";

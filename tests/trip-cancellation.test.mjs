@@ -130,13 +130,9 @@ test("cancelled trips stay off driver-facing views even with leftover rows", () 
 	// The share page drops a cancelled trip's ref entirely — it must not fall
 	// through to the "could not be loaded" error card.
 	assert.match(driverShare, /if \(trip\.cancelled_at\) return null;/);
-	const shareFetch = between(
-		driverShare,
-		"function fetchSharedTrips",
-		"function isMissingReliefField",
-		"driver-share.js",
-	);
-	assert.match(shareFetch, /cancelled_at/);
+	// Its trips come from get_driver_share_trips, which returns cancelled_at
+	// with every trip.
+	assert.match(driverShare, /rpc\("get_driver_share_trips"/);
 	// The fleet panel's per-vehicle trip list drives out-of-service clash
 	// warnings — a cancelled trip must not occupy the vehicle there either.
 	const busTripsBlock = between(

@@ -1,5 +1,5 @@
 import { supabase } from "../data/supabase.js";
-import { loadRequirements } from "../data/requirements-db.js";
+import { DEFAULT_REQUIREMENTS } from "../data/requirements-db.js";
 import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
 import { latestDocument } from "../core/trip-documents.js";
@@ -174,30 +174,6 @@ function documentsFor(trip) {
 		statusLabel: "Available",
 	});
 	return documents;
-}
-
-function fetchSharedTrips(tripIds, includeReliefDetails = true) {
-	const reliefFields = includeReliefDetails ? ", report_time, instructions" : "";
-	return supabase.from("trips").select(`
-		id, trip_ref, cancelled_at, start_date, end_date, return_start_date, return_end_date, updated_at,
-		trip_type, destination, customer, departure_time, spot_time, return_time, notes,
-		booking_contact_name, booking_contact_phone,
-		trip_contact_1_name, trip_contact_1_phone,
-		trip_contact_2_name, trip_contact_2_phone,
-		trip_reqs, req_sleeper, req_56pax, req_ada, need_hotel, need_fuel_card,
-		trip_stops(*),
-		trip_assignments(
-			id, leg, bus_id, active_roles,
-			buses(id, number),
-			trip_drivers(driver_id, role${reliefFields}, drivers(id, name, short_name, phone))
-		)
-	`).in("id", tripIds);
-}
-
-function isMissingReliefField(error) {
-	return /\b(report_time|instructions)\b/i.test(
-		[error?.message, error?.details, error?.hint].filter(Boolean).join(" "),
-	);
 }
 
 function isMissingRpc(error, functionName) {
@@ -520,14 +496,6 @@ async function load() {
 		return;
 	}
 
-	try {
-		const requirements = await loadRequirements();
-		requirementLabels = new Map(requirements.map((item) => [item.id, item.label]));
-		window.appRequirements = requirements;
-	} catch (_) {
-		requirementLabels = new Map();
-	}
-
 	const { data: share, error: shareError } = await supabase.rpc(
 		"get_driver_schedule_share",
 		{ p_token: token },
@@ -543,22 +511,18 @@ async function load() {
 	}
 
 	const assignmentRefs = share.assignmentRefs || [];
-	const tripIds = [...new Set(assignmentRefs.map((ref) => ref.tripId).filter(Boolean))];
-	let [tripsResult, documentsResult, statusesResult] = await Promise.all([
-		fetchSharedTrips(tripIds, true),
-		supabase
-			.from("trip_documents")
-			.select("id, trip_id, label, file_name, file_path, created_at")
-			.in("trip_id", tripIds),
+	// The link's trips come from one token-checked function, never from the
+	// tables, so the page keeps working once the database admits only staff.
+	// It returns each trip with its stops, assignments, drivers and documents,
+	// and the requirement labels.
+	const [sharedResult, statusesResult] = await Promise.all([
+		supabase.rpc("get_driver_share_trips", { p_token: token }),
 		fetchAssignmentStatuses(),
 	]);
-	if (tripsResult.error && isMissingReliefField(tripsResult.error)) {
-		tripsResult = await fetchSharedTrips(tripIds, false);
-	}
-	const { data: trips, error: tripsError } = tripsResult;
-	const { data: documents, error: documentsError } = documentsResult;
+	const { data: shared, error: tripsError } = sharedResult;
+	const trips = shared?.trips || [];
 
-	if (tripsError) {
+	if (tripsError || !shared) {
 		console.error("Could not load shared driver assignments:", tripsError);
 		showStatus(
 			"error",
@@ -568,15 +532,13 @@ async function load() {
 		);
 		return;
 	}
-	if (documentsError) console.warn("Could not load shared trip documents:", documentsError);
 	if (statusesResult.error) console.warn("Could not load driver statuses:", statusesResult.error);
 
-	const documentsByTrip = new Map();
-	for (const document of documents || []) {
-		if (!documentsByTrip.has(document.trip_id)) documentsByTrip.set(document.trip_id, []);
-		documentsByTrip.get(document.trip_id).push(document);
-	}
-	for (const trip of trips || []) trip.trip_documents = documentsByTrip.get(trip.id) || [];
+	const requirements = Array.isArray(shared.requirements)
+		? shared.requirements
+		: [...DEFAULT_REQUIREMENTS];
+	requirementLabels = new Map(requirements.map((item) => [item.id, item.label]));
+	window.appRequirements = requirements;
 
 	const statusesByKey = new Map(
 		(statusesResult.data || []).map((item) => [
