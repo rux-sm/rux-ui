@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-sched-auth="staff">
 	<head>
 		<meta charset="utf-8" />
 		<meta
@@ -46,7 +46,7 @@
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=152" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=405" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=406" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=17"
@@ -162,6 +162,7 @@
 				font-size: var(--rux-size-14);
 			}
 		</style>
+			<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 	</head>
 	<body class="sched-app-page">
 		<div class="rux-splash" id="splash" aria-hidden="true">
@@ -363,9 +364,9 @@
 					id="profile-menu-switch-btn"
 				>
 					<span class="rux-icon" aria-hidden="true"
-						>switch_account</span
+						>logout</span
 					>
-					<span>Switch profile</span>
+					<span>Log out</span>
 				</button>
 				<button
 					class="rux-menu__item"
@@ -6841,6 +6842,11 @@
 			import { normalizeTripImport } from "./js/data/trip-import.js?v=11";
 			import { supabase } from "./js/data/supabase.js";
 			import {
+				requireStaffSignIn,
+				watchStaffSession,
+				signOutStaff,
+			} from "./js/components/staff-sign-in.js?v=1";
+			import {
 				fetchProfiles,
 				createProfile,
 				updateProfile,
@@ -6860,6 +6866,10 @@
 				applyAvatarColor,
 				driverInitials,
 			} from "./js/core/avatar.js";
+
+			// Staff sign in before anything loads, so every request and realtime
+			// channel carries their session (js/components/staff-sign-in.js).
+			const staffProfile = await requireStaffSignIn();
 
 			// Load requirements before trip panel is used (window.appRequirements cache)
 			if (!window.appRequirements)
@@ -7313,7 +7323,7 @@
 			});
 
 			profileMenuSwitchBtn?.addEventListener("click", () => {
-				openProfilePicker(true);
+				signOutStaff();
 			});
 
 			profilePickerAddBtn.addEventListener("click", () =>
@@ -11731,7 +11741,8 @@
 			// Runs last so every listener above (header avatar, per-profile
 			// settings) is already registered before a remembered profile (or
 			// the picker's own selection) can fire rux:profile-changed.
-			initProfilePicker();
+			setCurrentProfile(staffProfile);
+			watchStaffSession();
 		</script>
 
 		<!-- Import trip modal -->

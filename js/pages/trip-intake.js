@@ -26,6 +26,10 @@
 import { normalizeTripImport } from "../data/trip-import.js";
 import { extractDraft, hasPassphrase, mediaTypeOf } from "../data/extract.js";
 import { saveItineraryDraft } from "../data/itinerary-grid-db.js";
+import { requireStaffSignIn } from "../components/staff-sign-in.js?v=1";
+
+// The workbench saves drafts to the database, so it needs a staff sign-in too.
+await requireStaffSignIn();
 
 // ── DOM refs ─────────────────────────────────────────────────────────────
 

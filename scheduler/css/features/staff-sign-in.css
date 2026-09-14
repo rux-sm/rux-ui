@@ -1,0 +1,37 @@
+/* ==========================================================================
+   STAFF SIGN-IN  ·  .sched-sign-in
+   --------------------------------------------------------------------------
+   The screen in front of the app until a staff account signs in
+   (js/components/staff-sign-in.js). It sits above everything, open modals
+   included, so nothing behind it can be used.
+   ========================================================================== */
+
+.sched-sign-in {
+	position: fixed;
+	inset: 0;
+	z-index: calc(var(--rux-z-modal) + 10);
+	display: grid;
+	place-items: center;
+	padding: var(--rux-space-6);
+	overflow-y: auto;
+	background: var(--rux-background-100);
+}
+.sched-sign-in__card {
+	width: min(100%, 22rem);
+}
+.sched-sign-in__title {
+	margin: 0 0 var(--rux-space-4);
+	color: var(--rux-text-primary);
+	font-size: var(--rux-text-heading-24-size);
+	font-weight: var(--rux-text-heading-24-weight);
+	line-height: var(--rux-text-heading-24-line-height);
+	letter-spacing: var(--rux-text-heading-24-tracking);
+}
+.sched-sign-in__form {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-4);
+}
+.sched-sign-in__message {
+	margin: 0;
+}
