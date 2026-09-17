@@ -110,14 +110,14 @@
   }
 
   const TYPE_ICONS = {
-    Motorcoach: { material: "directions_bus" },
-    Sprinter:  { material: "airport_shuttle" },
+    Coach:     { material: "directions_bus" },
+    Van:       { material: "airport_shuttle" },
     Car:       { material: "directions_car" },
     Truck:     { material: "local_shipping" },
   };
 
   function vehicleIconHtml(type) {
-    const icon = TYPE_ICONS[type] || TYPE_ICONS.Motorcoach;
+    const icon = TYPE_ICONS[type] || TYPE_ICONS.Coach;
     return `<span class="rux-icon">${icon.material}</span>`;
   }
 
@@ -382,7 +382,7 @@
         await saveBusOrder();
       });
 
-      const typeTitle   = b.type || "Motorcoach";
+      const typeTitle   = b.type || "Coach";
       const hexColor    = b.color && /^#[0-9a-fA-F]{6}$/.test(b.color) ? b.color : null;
       const avatarStyle = hexColor
         ? `style="background:color-mix(in srgb,${hexColor} 50%,var(--sched-bg-bus));"`
@@ -549,7 +549,7 @@
     document.getElementById("fp-inspection-exp").value   = b.inspection_exp  || "";
     document.getElementById("fp-notes").value            = b.notes           || "";
 
-    typeSelect.value = b.type || "Motorcoach";
+    typeSelect.value = b.type || "Coach";
     updateTypeIcon();
     // Normalized, so a row still holding the pre-patch 'retired' selects
     // Inactive instead of leaving the control with nothing pressed.
@@ -591,7 +591,7 @@
       vin:              document.getElementById("fp-vin").value.trim()              || null,
       color:            colorHex.value.trim()                                        || null,
       capacity:         parseInt(document.getElementById("fp-capacity").value, 10)  || null,
-      type:             typeSelect.value                                             || "Motorcoach",
+      type:             typeSelect.value                                             || "Coach",
       ada_lift:         adaBtn?.getAttribute("aria-pressed") === "true",
       sleeper:          document.getElementById("fp-sleeper")?.getAttribute("aria-pressed") === "true",
       status:           statusBtn?.dataset.value                                    || "active",
@@ -678,7 +678,7 @@
       .forEach(f => { f.value = ""; });
     colorSwatch.style.background = "";
 
-    typeSelect.value = "Motorcoach";
+    typeSelect.value = "Coach";
     updateTypeIcon();
 
     // Reset status to active
