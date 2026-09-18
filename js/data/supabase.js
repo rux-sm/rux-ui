@@ -1,4 +1,8 @@
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+// Pinned, not the floating @2: a browser that cached the floating address
+// keeps serving whatever version it fetched, and one sat on 2.112.4 for
+// weeks. A version in the address is a different file, so an upgrade is a
+// commit here rather than whatever each browser happens to hold.
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/+esm";
 
 // Exported so pages calling the Worker's own routes (not Supabase's) build
 // their URL from the same origin rather than hardcoding a second copy.
