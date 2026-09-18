@@ -26,7 +26,7 @@ const DEFAULT_REQUIREMENTS = [
 ];
 
 const ROLE_STATUS_STATES = [
-	{ value: "off", label: "Off" },
+	{ value: "off", label: "Not sent" },
 	{ value: "pending-assignment", label: "Pending assignment" },
 	{ value: "pending-response", label: "Pending response" },
 	{ value: "confirmed", label: "Confirmed" },
@@ -183,7 +183,7 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
     <div class="sched-scope-trip__driver-row" data-role-row="${escHtml(r.role)}" hidden>
       <div class="rux-input-group rux-input-group--prefix rux-input-group--action sched-scope-trip__driver-select">
         <span class="rux-input-group__prefix">
-          <button type="button" class="rux-button rux-button--ghost rux-button--icon sched-scope-trip__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.status" data-role-label="${escHtml(r.title)}" data-role-state="off" title="${escHtml(r.title)} status: Off" aria-label="${escHtml(r.title)} status: Off">
+          <button type="button" class="rux-button rux-button--ghost rux-button--icon sched-scope-trip__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.status" data-role-label="${escHtml(r.title)}" data-role-state="off" title="${escHtml(r.title)} status: Not sent" aria-label="${escHtml(r.title)} status: Not sent">
             <span class="rux-icon" aria-hidden="true">${escHtml(mapIcon(r.icon))}</span>
           </button>
         </span>
@@ -227,7 +227,7 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
       <div class="sched-scope-trip__driver-row">
         <div class="rux-input-group rux-input-group--prefix rux-input-group--action sched-scope-trip__driver-select">
           <span class="rux-input-group__prefix">
-            <button type="button" class="rux-button rux-button--ghost rux-button--icon sched-scope-trip__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].driver.status" data-role-label="Driver" data-role-state="off" title="Driver status: Off" aria-label="Driver status: Off">
+            <button type="button" class="rux-button rux-button--ghost rux-button--icon sched-scope-trip__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].driver.status" data-role-label="Driver" data-role-state="off" title="Driver status: Not sent" aria-label="Driver status: Not sent">
               <span class="rux-icon" aria-hidden="true">person</span>
             </button>
           </span>
