@@ -60,20 +60,22 @@ has never had, and the scheduler would see it.
   page of its own, not a tab.
 - `docs/itinerary-system-audit.md`, as the record of what the old system was.
 
-## The inbox holds a second Grid
+## What the Grid's four calls actually do
 
-The Itinerary inbox is its own view, but it is not independent of the Grid: it mounts a
-**second** `ItineraryGrid` as the editor for one inbox record, and reads that record's
-mileage and drive back through it. Deleting the module takes the inbox's editor with it.
+`js/data/trip-db.js` calls `ItineraryGrid.clear`, `hydrate`, `persist` and
+`mirrorToItinerary`, which looks like the save path but is not. `trip_stops` is written by
+trip-db's own code from the Itinerary tab; `persist` runs after that, as its own comment
+says, and writes the Grid's extra record — day offsets, activity, address confidence, what
+the geocoder matched — to `trip_itineraries`. `hydrate` reads it back, and the other two are
+tab-to-tab plumbing.
 
-`js/data/trip-db.js` also calls `ItineraryGrid.clear`, `hydrate`, `persist` and
-`mirrorToItinerary` on save and load. They are optional-chained, so they would not throw
-once the module is gone — they would quietly stop writing, which is worse.
+So removing the Grid drops that extra record and nothing else. No trip loses a stop, and the
+four calls are optional-chained, so they need no edit for the app to keep running — they are
+deleted as dead code rather than re-pointed.
 
-**So the order is the reverse of the obvious one:** the new Itinerary tab is built first and
-takes over writing the route rows, and only then does the Grid come out. Removing it first
-would leave saves silently dropping stops. The inbox goes with the Grid, so its second
-editor is no longer something to replace.
+The inbox mounts a **second** `ItineraryGrid` as its record editor and reads mileage back
+through it, so the two have to come out together. They are, because rux does not use the
+inbox.
 
 ## Old stops are kept, and not editable
 
@@ -84,11 +86,10 @@ is thrown away. The scheduler's tab already behaves this way, so the two agree.
 
 ## Steps
 
-1. Replace the Itinerary tab's body with the six fields and the worked-out times, writing
-   the same rows the scheduler writes, and re-point `trip-db.js`'s four `ItineraryGrid`
-   calls at it.
-2. Remove the Grid tab and the inbox: both modules, their script tags, their markup, their
-   tab and view entries, and the Grid's test.
+1. Remove the Grid tab and the inbox together: both modules, their script tags, their
+   markup, their tab and view entries, trip-db's four dead calls, and the Grid's test.
+2. Replace the Itinerary tab's body with the six fields and the worked-out times, writing
+   the same rows the scheduler writes.
 3. Retire the `process-itinerary` skill and the prompt documents, leaving the audit.
 4. Grep `Grid`, `itineraryGrid` and `itinerary-grid` across `index.html`, `js/`, `tests/`,
    `docs/` and the CSS, and report the count before and after, as the rename protocol asks.
