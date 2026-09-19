@@ -9,23 +9,22 @@
    server-side. The draft comes back into the output area, where
    normalizeTripImport validates it and the preview renders it.
 
-   Three ways out, and the page had only the middle one for a while: Send to
-   inbox files it as an itinerary with no trip yet, Open in trip editor hands
-   it across for review, Copy JSON is the escape hatch.
+   Two ways out: Open in trip editor hands it across for review, and Copy JSON
+   is the escape hatch. Send to inbox went with the Itineraries view, which
+   nothing lists any more.
 
    Processing costs money per call, so it needs the extraction passphrase —
    the same one Settings holds in the app, on the same origin, so it is set
    once and both pages see it. Everything else here works without it, and
    pasting a draft in by hand is still the fallback when the service is down.
 
-   v3 rather than v2 now. That is what the inbox and the Grid tab read, and
-   the Worker's `itinerary` lane is the contract for it; the `quote` lane
-   still speaks v2 for a public enquiry form that does not exist yet.
+   v3 rather than v2 now. The Worker's `itinerary` lane is the contract for it;
+   the `quote` lane still speaks v2 for a public enquiry form that does not
+   exist yet.
    ========================================================================== */
 
 import { normalizeTripImport } from "../data/trip-import.js";
 import { extractDraft, hasPassphrase, mediaTypeOf } from "../data/extract.js";
-import { saveItineraryDraft } from "../data/itinerary-grid-db.js";
 import { requireStaffSignIn } from "../components/staff-sign-in.js?v=1";
 
 // The workbench saves drafts to the database, so it needs a staff sign-in too.
@@ -55,8 +54,6 @@ const warningsList = document.getElementById("intake-warnings");
 const authCard = document.getElementById("intake-auth");
 const authNotice = document.getElementById("intake-auth-notice");
 const authReady = document.getElementById("intake-auth-ready");
-const inboxBtn = document.getElementById("intake-inbox-btn");
-const inboxStatus = document.getElementById("intake-inbox-status");
 const processBtn = document.getElementById("intake-process-btn");
 const processStatus = document.getElementById("intake-process-status");
 
@@ -267,117 +264,6 @@ processBtn.addEventListener("click", async () => {
 	}
 });
 
-/* ── Send to the itinerary inbox ──────────────────────────────────────────
-
-   The third way out, and the one that matches how the work actually arrives:
-   an itinerary turns up before anyone has decided whether it is a new trip, an
-   update to one already booked, or a quote that never becomes either. Filing
-   it does not force that decision.
-
-   saveItineraryDraft is the inbox's one way in — the same call the module's own
-   New itinerary button makes — so this page is a client of that rather than a
-   second writer with its own idea of the row's shape. */
-
-inboxBtn.addEventListener("click", async () => {
-	if (!lastValidJson) return;
-	if (Number(lastValidJson.schema_version) !== 3) {
-		inboxStatus.textContent =
-			"The inbox reads Trip Draft v3. This draft is an older version — open it in the trip editor instead.";
-		inboxStatus.dataset.tone = "error";
-		return;
-	}
-
-	inboxBtn.disabled = true;
-	inboxStatus.textContent = "Filing…";
-	inboxStatus.dataset.tone = "busy";
-	try {
-		const label = String(lastValidJson.trip?.client || lastValidJson.trip?.destination || "");
-		const saved = await saveItineraryDraft(lastValidJson, label);
-		if (saved) {
-			inboxStatus.textContent = "Filed. It is in Itineraries, waiting for a decision.";
-			inboxStatus.dataset.tone = "ok";
-		} else {
-			inboxStatus.textContent =
-				"The inbox is not set up — run supabase/trip_itineraries_inbox.sql.";
-			inboxStatus.dataset.tone = "error";
-		}
-	} catch (error) {
-		inboxStatus.textContent = error?.message || "That itinerary could not be filed.";
-		inboxStatus.dataset.tone = "error";
-	} finally {
-		inboxBtn.disabled = false;
-	}
-});
-
-// ── Preview ──────────────────────────────────────────────────────────────
-
-previewBtn.addEventListener("click", () => {
-	const raw = jsonText.value.trim();
-	if (!raw) {
-		showError("Paste trip JSON above.");
-		return;
-	}
-
-	let payload;
-	try {
-		payload = JSON.parse(raw);
-	} catch (e) {
-		showError(`Invalid JSON: ${e.message}`);
-		return;
-	}
-
-	let result;
-	try {
-		result = normalizeTripImport(payload);
-	} catch (e) {
-		showError(e.message);
-		return;
-	}
-
-	hideError();
-	lastValidJson = payload;
-	renderPreview(result.trip, result.warnings, payload);
-	previewSection.hidden = false;
-	copyBtn.hidden = false;
-	inboxBtn.hidden = false;
-	openBtn.hidden = false;
-	clearBtn.hidden = false;
-	inboxStatus.textContent = "";
-	previewSection.scrollIntoView({ behavior: "smooth", block: "start" });
-});
-
-/* ── Open in the trip editor ──────────────────────────────────────────────
-
-   This page produced a valid draft and had nowhere to send it: the only way
-   across was to copy the JSON by hand and paste it into the editor's own
-   import box, on a page that already knows how to read it.
-
-   The handoff is sessionStorage rather than a query string. A draft is a
-   customer's schedule with their contact details in it, and CLAUDE.md's
-   privacy rule is explicit that personal data does not go in a URL — where it
-   would land in history, in any logging proxy, and in the referrer of
-   whatever the page loads next. sessionStorage is same-origin, never leaves
-   the tab, and is read once and removed. */
-
-const HANDOFF_KEY = "rux-trip-draft-handoff";
-
-openBtn.addEventListener("click", () => {
-	if (!lastValidJson) return;
-	try {
-		sessionStorage.setItem(HANDOFF_KEY, JSON.stringify(lastValidJson));
-	} catch (error) {
-		// A private window, or storage the browser refuses. Say so rather than
-		// navigating to an editor that will open empty.
-		showError(
-			"This browser would not hand the draft over. Copy the JSON and use "
-			+ "Upload JSON in the trip editor instead.",
-		);
-		console.warn("Draft handoff could not be stored:", error);
-		return;
-	}
-	window.location.href = "./index.html";
-});
-
 // ── Copy JSON ────────────────────────────────────────────────────────────
 
 copyBtn.addEventListener("click", async () => {
@@ -404,10 +290,8 @@ clearBtn.addEventListener("click", () => {
 	lastValidJson = null;
 	previewSection.hidden = true;
 	copyBtn.hidden = true;
-	inboxBtn.hidden = true;
 	openBtn.hidden = true;
 	clearBtn.hidden = true;
-	inboxStatus.textContent = "";
 	hideError();
 });
 

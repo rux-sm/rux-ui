@@ -80,16 +80,15 @@ Code must still work when that table is absent. A fresh clone will not have it.
   paste-a-draft path is what the connector does from a document without the
   pasting, and the inbox is where those documents waited.
 - **The `process-itinerary` skill**, whose path ended at the Grid tab.
+- **`intake.html`'s *Send to inbox*** and `js/data/itinerary-grid-db.js` with it: the
+  button was that module's only caller, and it filed to a view that no longer lists
+  anything. The page keeps *Open in trip editor* and *Copy JSON*.
 - `gem-itinerary-prompt-1/2/3.md`, superseded and marked so in their own headers.
   Kept because step 1's day-offset and address-confidence rules were the source
   for `itinerary-prompt.md`, and deleting the reasoning would lose it.
 
 ## Loose ends from the removal
 
-- **`intake.html`'s *Send to inbox* files a row nothing can read.**
-  `saveItineraryDraft` still writes to `trip_itineraries` with no `trip_id`, and
-  the view that listed those rows is gone. The action needs removing, or the page
-  needs to list its own drafts.
 - **`/ai/extract` lost its in-app caller.** The Grid's *Read it for me* button
   went with the tab; `intake.html` is the only page left that calls the route,
   and the route has still never been deployed.

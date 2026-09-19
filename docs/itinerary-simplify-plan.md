@@ -42,6 +42,8 @@ has never had, and the scheduler would see it.
 
 - `js/components/itinerary-grid.js`, the Grid tab, and its script tag and tab markup in
   `index.html`. 2,604 lines.
+- `js/data/itinerary-grid-db.js`, once `intake.html`'s *Send to inbox* goes: that button
+  was its only caller, so the module has no importer left.
 - `js/panels/itinerary-inbox.js` and the inbox view, 494 lines and its markup. rux does not
   use it, and its job -- a customer's document before it is a trip -- is what the
   connector does from the Claude app now.
@@ -60,8 +62,6 @@ worked example. Deleting them would have broken a passing test.
 
 ## What stays, and why
 
-- `js/data/itinerary-grid-db.js`, because `intake.html` saves drafts through it and is a
-  page of its own, not a tab.
 - `docs/itinerary-system-audit.md`, as the record of what the old system was.
 
 ## What the Grid's four calls actually do
@@ -94,9 +94,6 @@ is thrown away. The scheduler's tab already behaves this way, so the two agree.
    markup, their tab and view entries, trip-db's four dead calls, and the Grid's test.
 2. Replace the Itinerary tab's body with the six fields and the worked-out times, writing
    the same rows the scheduler writes.
-3. Settle `intake.html`'s *Send to inbox*, which now files a row nothing can read: either
-   drop the action or let the page list its own drafts. See
-   [`itinerary-workflow.md`](itinerary-workflow.md) § Loose ends.
 4. Grep `Grid`, `itineraryGrid` and `itinerary-grid` across `index.html`, `js/`, `tests/`,
    `docs/` and the CSS, and report the count before and after, as the rename protocol asks.
 5. rux enters a route on a real trip in each app and checks the other shows the same times.
