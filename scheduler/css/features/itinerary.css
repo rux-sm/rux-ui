@@ -869,3 +869,59 @@
 		margin-left: 0;
 	}
 }
+
+/* ── The six-field route, and the times it works out ──────────────────────
+   The tab asks for a pickup and a drop-off, each a name and an address, and
+   the two times the group moves; everything else is derived and listed in the
+   summary card's body. Replaced the per-day stop editor on 2026-09-19
+   (docs/itinerary-simplify-plan.md). */
+
+.sched-trip-itinerary__route {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--rux-space-4);
+}
+
+/* One column once two would leave a field too narrow to read an address in. */
+@media (max-width: 40rem) {
+	.sched-trip-itinerary__route {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.sched-trip-itinerary__times {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: var(--rux-space-1) var(--rux-space-4);
+	margin: 0;
+}
+
+.sched-trip-itinerary__times dt {
+	color: var(--rux-text-secondary);
+}
+
+.sched-trip-itinerary__times dd {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: var(--rux-space-2);
+	margin: 0;
+}
+
+.sched-trip-itinerary__time {
+	font-variant-numeric: tabular-nums;
+}
+
+.sched-trip-itinerary__why {
+	color: var(--rux-text-secondary);
+}
+
+.sched-trip-itinerary__duty {
+	margin: var(--rux-space-3) 0 0;
+	color: var(--rux-text-secondary);
+}
+
+/* The bus's day past fifteen hours is a limit, not a preference. */
+.sched-trip-itinerary__duty.is-over {
+	color: var(--rux-danger);
+}

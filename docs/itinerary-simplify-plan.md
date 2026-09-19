@@ -1,6 +1,6 @@
 # Itinerary — simplify to match the scheduler
 
-Status: **in progress**, written 2026-09-19. No questions open.
+Status: **in progress**, written 2026-09-19. Steps 1 and 2 done; rux has not opened it.
 
 Replaces the trip panel's Itinerary tab with the six fields the scheduler's Route tab now
 asks for, and removes the Grid tab. Both apps then describe a trip's route the same way and
@@ -97,19 +97,26 @@ The module's contract does not change: `init`, `getStops`, `setStops`, `clearSto
 `getConfirmed`, `setConfirmed`, `setActiveLeg`, `getActiveLeg`, `resetActiveLeg` and
 `setLegToggleVisible` all stay, because `trip-db.js` and `trip-panel.js` call every one.
 
-## Old stops are kept, and not editable
+## The six fields are the route
 
-Trips already in the database carry day rows and mid-trip stops that only the Grid tab and
-the old Itinerary tab could edit. Both apps keep every one of them, say how many a leg has,
-and edit none: the driver sheet and the envelope still read them, and nothing anyone typed
-is thrown away. The scheduler's tab already behaves this way, so the two agree.
+rux retired the stops system in this app: the six fields are a trip's route, and nothing
+else. Saving a trip here writes three rows — pickup, drop-off, yard — so a trip the old
+per-day editor left with mid-trip stops loses them the first time it is saved in rux-ui.
+That is irreversible and it is the point: a new itinerary system with stops and driver
+time may come later as its own feature, separate from trip information.
+
+The scheduler still keeps stops it did not write, because it patches rows rather than
+replacing them. So an untouched trip keeps its itinerary until someone saves it here.
+
+**The hours-of-service engine went with the per-day editor.** It segmented duty sessions
+around off-duty and sleeper periods and warned at 10 hours driving and 15 on duty, and it
+was the app's only one. What is left is a single line under the times: how long the bus is
+out, from yard depart to yard return, marked when it passes fifteen hours. That is a
+weaker check than the one it replaces, and it is the one the six fields can support.
 
 ## Steps
 
-1. Remove the Grid tab and the inbox together: both modules, their script tags, their
-   markup, their tab and view entries, trip-db's four dead calls, and the Grid's test.
-2. Replace the Itinerary tab's body with the six fields and the worked-out times, writing
-   the same rows the scheduler writes.
-4. Grep `Grid`, `itineraryGrid` and `itinerary-grid` across `index.html`, `js/`, `tests/`,
-   `docs/` and the CSS, and report the count before and after, as the rename protocol asks.
-5. rux enters a route on a real trip in each app and checks the other shows the same times.
+1. Prune `scheduler/css/features/itinerary.css`. Most of its 920 lines styled the per-day
+   stop editor, which is gone; the six fields and the times are the last fifty.
+2. rux opens the tab on a real trip, enters a route, saves, and checks the scheduler shows
+   the same five times. Nothing here has been opened with a log-in.

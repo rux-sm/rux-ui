@@ -215,7 +215,6 @@ test("an aria-label is not a copy of the placeholder (§2.3)", () => {
    Q5 rather than a fix smuggled in here. Deleting a line is the goal; adding
    one needs Q5 answered first. */
 const KNOWN_DOUBLE_NAMED = [
-	"js/components/itinerary.js:1059",
 	"js/panels/trip-panel.js:174",
 	"js/panels/trip-panel.js:178",
 ];
