@@ -31,12 +31,13 @@ const views = starts.map((s, i) => {
 });
 
 test("every view declares a valid archetype (§2.1)", () => {
-	/* Ten since 2026-08-31: itineraries joined as the inbox for processed
-	   itineraries that have no trip yet. driver-roster is still the rebuild of
-	   the drivers module (docs/driver-roster-plan.md step 4) and the two run
-	   side by side until that plan's step 9 deletes the old one, which takes
-	   this to nine. */
-	assert.equal(views.length, 10, "ten views expected");
+	/* Nine: the itineraries inbox left with the Grid tab
+	   (docs/itinerary-simplify-plan.md step 1), its job now the scheduler's
+	   Claude connector. driver-roster is still the rebuild of the drivers
+	   module (docs/driver-roster-plan.md step 4) and the two run side by side
+	   until that plan's step 9 deletes the old one, which takes this to
+	   eight. */
+	assert.equal(views.length, 9, "nine views expected");
 	for (const v of views) {
 		assert.ok(v.view, "view without data-view");
 		assert.ok(v.archetype, `${v.view}: no data-archetype`);

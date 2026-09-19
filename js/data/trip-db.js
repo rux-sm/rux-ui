@@ -1201,7 +1201,6 @@ import {
 		// The Grid tab owns its own state, so blanking its inputs through the
 		// selector above would only desynchronise them from its model — the
 		// next render writes the old values straight back. It clears itself.
-		window.ItineraryGrid?.clear?.();
 		currentTripId  = null;
 		currentTripRef = null;
 		currentTripSnapshot = null;
@@ -1291,7 +1290,6 @@ import {
 			// reader is unaffected. A Grid tab with no stops does nothing —
 			// otherwise an untouched tab would wipe an itinerary entered in the
 			// other one.
-			window.ItineraryGrid?.mirrorToItinerary?.();
 			const stopsData = collectStops(
 				itinerary,
 				tripData.trip_type === "dropoff_pickup",
@@ -1430,14 +1428,6 @@ import {
 				}
 			}
 
-			// The Grid tab's own record: day offsets, activity, address
-			// confidence, and what the geocoder matched — the four things
-			// trip_stops has nowhere to put. Side effect only, and after the
-			// stops are safely written, for the same reason the harvest below
-			// is: the trip is already saved, and losing this document must not
-			// cost the trip. It is a no-op until supabase/trip_itineraries.sql
-			// has been run.
-			window.ItineraryGrid?.persist?.(savedId);
 
 			// Every verified address on a saved trip becomes a saved location, so
 			// the next trip's autocomplete offers it without anyone bookmarking it
@@ -2269,12 +2259,6 @@ export function loadTrip(root, itinerary, trip) {
 	// updateSummary(), which unconditionally clears confirmed (an edit-tracking
 	// side effect that's correct for real edits but wrong for a load).
 	itinerary.setConfirmed?.(!!trip.itinerary_confirmed);
-	// The Grid tab's stored document, when this trip has one. Cleared first so
-	// a trip WITHOUT one opens empty rather than showing the previous trip's
-	// itinerary — clearForm() only runs between trips in some paths, and a
-	// stale itinerary under a new trip's name is worse than an empty tab.
-	window.ItineraryGrid?.clear?.();
-	if (trip.id) window.ItineraryGrid?.hydrate?.(trip.id);
 	if (normalized.trip_type === "dropoff_pickup" && trip.leg === "return") {
 		itinerary.setActiveLeg("return");
 	}

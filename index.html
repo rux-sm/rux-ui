@@ -848,27 +848,6 @@
 							<button
 								class="rux-side-nav__link"
 								type="button"
-								id="itinerary-inbox-btn"
-								data-view="itineraries"
-								title="Processed Itineraries"
-							>
-								<span class="rux-icon" aria-hidden="true"
-									>route</span
-								>
-								<span class="rux-side-nav__label" data-view-label
-									>Itineraries</span
-								>
-								<span
-									class="rux-side-nav__badge"
-									id="itineraries-badge"
-									hidden
-								></span>
-							</button>
-						</li>
-						<li class="rux-side-nav__item">
-							<button
-								class="rux-side-nav__link"
-								type="button"
 								data-view="documents"
 							>
 								<span class="rux-icon" aria-hidden="true"
@@ -1000,19 +979,6 @@
 									><span class="rux-tab__label"
 										>Itinerary</span
 									>
-								</button>
-								<button
-									class="rux-tab"
-									type="button"
-									role="tab"
-									aria-selected="false"
-									aria-controls="pane-itinerary-grid"
-									aria-label="Itinerary grid"
-									title="Itinerary grid"
-								>
-									<span class="rux-icon" aria-hidden="true"
-										>table_rows</span
-									><span class="rux-tab__label">Grid</span>
 								</button>
 								<button
 									class="rux-tab"
@@ -2149,16 +2115,6 @@
 										id="tp-itin-stops"
 									></div>
 								</div>
-							</div>
-							<!-- Itinerary grid -->
-							<div
-								id="pane-itinerary-grid"
-								class="rux-panel__pane sched-scope-trip__pane"
-								role="tabpanel"
-								aria-label="Itinerary grid"
-								hidden
-							>
-								<div id="tp-grid"></div>
 							</div>
 							<!-- Dispatch -->
 							<div
@@ -5464,154 +5420,6 @@
 				</div>
 				<!-- /module:requests -->
 
-				<!-- ════════════════════════════════════════════════════════════════
-             MODULE: ITINERARIES  — processed itineraries waiting for a trip
-             ════════════════════════════════════════════════════════════════ -->
-				<div
-					class="rux-app-view"
-					data-view="itineraries"
-					data-archetype="records"
-				>
-					<section
-						class="rux-workspace sched-itinerary-inbox"
-						id="itinerary-inbox-view"
-						aria-label="Processed itineraries"
-					>
-						<header
-							class="rux-workspace__header rux-workspace__header--table"
-						>
-							<div class="rux-workspace__heading">
-								<span
-									class="sched-itinerary-inbox__count"
-									id="itinerary-inbox-count"
-									aria-live="polite"
-								></span>
-							</div>
-							<div class="rux-workspace__toolbar">
-								<div
-									class="rux-segmented-track"
-									id="itinerary-inbox-filters"
-									role="group"
-									aria-label="Filter itineraries"
-								>
-									<button
-										type="button"
-										class="rux-button rux-button--segment"
-										data-itin-filter="all"
-										aria-pressed="true"
-									>
-										All
-									</button>
-									<button
-										type="button"
-										class="rux-button rux-button--segment"
-										data-itin-filter="new"
-										aria-pressed="false"
-									>
-										New
-									</button>
-									<button
-										type="button"
-										class="rux-button rux-button--segment"
-										data-itin-filter="reviewed"
-										aria-pressed="false"
-									>
-										Reviewed
-									</button>
-								</div>
-								<button
-									class="rux-button rux-button--default"
-									type="button"
-									id="itinerary-inbox-add"
-								>
-									<span class="rux-icon" aria-hidden="true"
-										>note_add</span
-									>
-									<span class="rux-button__label"
-										>New itinerary</span
-									>
-								</button>
-							</div>
-						</header>
-						<div class="rux-workspace__body rux-table-wrap">
-							<table class="rux-table sched-itinerary-inbox__table">
-								<thead>
-									<tr>
-										<th scope="col">Itinerary</th>
-										<th scope="col">When</th>
-										<th scope="col">Size</th>
-										<th scope="col">Needs a look</th>
-										<th scope="col">Status</th>
-										<th scope="col" aria-label="Actions"></th>
-									</tr>
-								</thead>
-								<tbody id="itinerary-inbox-body"></tbody>
-							</table>
-						</div>
-					</section>
-
-					<!-- The editor of one record, per composition.md §2.3: a
-					     records view opens its row into a floating window
-					     rather than navigating. It hosts a SECOND Grid
-					     instance — same component as the trip editor's tab,
-					     its own state, and deliberately not publishing the
-					     hooks trip-db.js calls. -->
-					<div
-						class="rux-panel rux-panel--floating sched-itinerary-inbox__editor sched-scope-trip"
-						id="itinerary-inbox-editor"
-						role="dialog"
-						aria-labelledby="itinerary-inbox-editor-title"
-						hidden
-					>
-						<header class="rux-panel__header" data-itin-editor-header>
-							<h2
-								class="rux-panel__title"
-								id="itinerary-inbox-editor-title"
-							>
-								Itinerary
-							</h2>
-							<button
-								type="button"
-								class="rux-button rux-button--ghost rux-button--icon"
-								id="itinerary-inbox-editor-close"
-								aria-label="Close itinerary"
-							>
-								<span class="rux-icon" aria-hidden="true"
-									>close</span
-								>
-							</button>
-						</header>
-						<div class="rux-panel__body">
-							<div id="itinerary-inbox-grid"></div>
-						</div>
-						<footer class="rux-panel__footer">
-							<button
-								class="rux-button rux-button--ghost"
-								type="button"
-								id="itinerary-inbox-discard"
-							>
-								<span class="rux-button__label">Close</span>
-							</button>
-							<button
-								class="rux-button rux-button--default"
-								type="button"
-								id="itinerary-inbox-save"
-							>
-								<span class="rux-icon" aria-hidden="true">save</span>
-								<span class="rux-button__label">Save to inbox</span>
-							</button>
-							<button
-								class="rux-button rux-button--accent"
-								type="button"
-								id="itinerary-inbox-to-trip"
-							>
-								<span class="rux-icon" aria-hidden="true">event</span>
-								<span class="rux-button__label">Add as new trip</span>
-							</button>
-						</footer>
-					</div>
-				</div>
-				<!-- /module:itineraries -->
 
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: DOCUMENTS
@@ -6776,9 +6584,7 @@
 		<script src="./rux-ui/js/boot.js?v=1"></script>
 		<script src="./js/panels/trip-panel.js?v=51"></script>
 		<script src="./js/components/itinerary.js?v=66"></script>
-		<script src="./js/components/itinerary-grid.js?v=47"></script>
 		<script src="./js/panels/driver-sheet.js?v=8" defer></script>
-		<script src="./js/panels/itinerary-inbox.js?v=6" defer></script>
 		<script src="./js/panels/driver-panel.js?v=33" defer></script>
 		<script src="./js/panels/driver-roster-panel.js?v=6" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=21" defer></script>
@@ -6909,7 +6715,6 @@
 					if (name === "fleet") window.FleetPanel?.init();
 					if (name === "customers") window.CustomersPanel?.init();
 					if (name === "requests") window.RequestInbox?.init();
-					if (name === "itineraries") window.ItineraryInbox?.init();
 					if (name === "settings") window.SettingsPanel?.init();
 				},
 			});
@@ -7873,7 +7678,6 @@
 
 			TripPanel.init(tripPanel);
 			const itinerary = Itinerary.init(tripPanel);
-			ItineraryGrid.init(tripPanel);
 
 			// ── Right-side resizable drawer ─────────────────────────────────────
 			// Open/close/drag-resize behavior lives in RuxDrawer (rux-ui/js/drawer.js),
