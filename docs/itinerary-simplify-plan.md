@@ -1,6 +1,6 @@
 # Itinerary — simplify to match the scheduler
 
-Status: **not started**, written 2026-09-19. One open question, below, blocks step 1.
+Status: **not started**, written 2026-09-19. One open question blocks the Grid's removal.
 
 Replaces the trip panel's Itinerary tab with the six fields the scheduler's Route tab now
 asks for, and removes the Grid tab. Both apps then describe a trip's route the same way and
@@ -55,22 +55,42 @@ has never had, and the scheduler would see it.
 
 - `js/data/itinerary-grid-db.js`, because `intake.html` saves drafts through it and is a
   page of its own, not a tab.
-- The Itinerary inbox. It is its own view in `index.html`, not a Grid feature.
 - `docs/itinerary-system-audit.md`, as the record of what the old system was.
+
+## The inbox holds a second Grid
+
+The Itinerary inbox is its own view, but it is not independent of the Grid: it mounts a
+**second** `ItineraryGrid` as the editor for one inbox record, and reads that record's
+mileage and drive back through it. Deleting the module takes the inbox's editor with it.
+
+`js/data/trip-db.js` also calls `ItineraryGrid.clear`, `hydrate`, `persist` and
+`mirrorToItinerary` on save and load. They are optional-chained, so they would not throw
+once the module is gone — they would quietly stop writing, which is worse.
+
+**So the order is the reverse of the obvious one:** the new Itinerary tab is built first and
+takes over writing the route rows, and only then does the Grid come out. Removing it first
+would leave saves silently dropping stops.
 
 ## Open question
 
-**A trip whose stops neither app can then edit.** Trips already in the database carry day
-rows and mid-trip stops that only the Grid tab and the old Itinerary tab could edit. Once
-both apps ask for six fields, those stops are kept and shown but no longer editable
-anywhere. Is that accepted, or should the tab offer to clear the extra stops on a trip it
-opens?
+**What replaces the inbox's editor?** The inbox is where documents arrive before they are a
+trip, which is the job the connector now does from the Claude app. Does the inbox go with
+the Grid, or does it keep a record editor built from the six fields?
+
+## Old stops are kept, and not editable
+
+Trips already in the database carry day rows and mid-trip stops that only the Grid tab and
+the old Itinerary tab could edit. Both apps keep every one of them, say how many a leg has,
+and edit none: the driver sheet and the envelope still read them, and nothing anyone typed
+is thrown away. The scheduler's tab already behaves this way, so the two agree.
 
 ## Steps
 
 1. Replace the Itinerary tab's body with the six fields and the worked-out times, writing
-   the same rows the scheduler writes.
-2. Remove the Grid tab, its module, its script tag, its markup and its test.
+   the same rows the scheduler writes, and re-point `trip-db.js`'s four `ItineraryGrid`
+   calls at it.
+2. Settle the inbox, then remove the Grid tab, its module, its script tag, its markup and
+   its test.
 3. Retire the `process-itinerary` skill and the prompt documents, leaving the audit.
 4. Grep `Grid`, `itineraryGrid` and `itinerary-grid` across `index.html`, `js/`, `tests/`,
    `docs/` and the CSS, and report the count before and after, as the rename protocol asks.
