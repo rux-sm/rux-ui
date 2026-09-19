@@ -48,11 +48,15 @@ has never had, and the scheduler would see it.
 - Most of `js/components/itinerary.js`, the per-day stop builder, replaced by the six
   fields. 2,473 lines today.
 - `tests/itinerary-grid.test.mjs`.
-- The `process-itinerary` skill, and `docs/itinerary-prompt.md`,
-  `docs/gem-itinerary-prompt*.md` and `docs/itinerary-workflow.md` with it. That whole
-  path — read a document, extract Trip Draft v3, paste JSON into the Grid tab — is what
-  the scheduler's Claude connector now does without the pasting, and keeping two ways to do
-  one job is how they drift.
+- The `process-itinerary` skill. Its path — read a document, extract Trip Draft v3, paste
+  the JSON into the Grid tab — ends at a tab that no longer exists, and the scheduler's
+  Claude connector does the same job without the pasting.
+
+**Trip Draft v3 stays**, with `docs/itinerary-prompt.md`, `docs/gem-itinerary-prompt*.md`
+and `docs/trip-import-schema-v3.json`. The Grid was one consumer, not the format's owner:
+`worker/index.js`'s extract route still answers in v3, `intake.html` still feeds it, the
+schema is published at a public URL, and `tests/trip-import.test.mjs` reads the prompt's
+worked example. Deleting them would have broken a passing test.
 
 ## What stays, and why
 
@@ -90,7 +94,8 @@ is thrown away. The scheduler's tab already behaves this way, so the two agree.
    markup, their tab and view entries, trip-db's four dead calls, and the Grid's test.
 2. Replace the Itinerary tab's body with the six fields and the worked-out times, writing
    the same rows the scheduler writes.
-3. Retire the `process-itinerary` skill and the prompt documents, leaving the audit.
+3. Retire the `process-itinerary` skill and rewrite `docs/itinerary-workflow.md`, which
+   still describes the Grid path; `README.md` links it.
 4. Grep `Grid`, `itineraryGrid` and `itinerary-grid` across `index.html`, `js/`, `tests/`,
    `docs/` and the CSS, and report the count before and after, as the rename protocol asks.
 5. rux enters a route on a real trip in each app and checks the other shows the same times.
