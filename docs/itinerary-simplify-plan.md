@@ -81,6 +81,22 @@ The inbox mounts a **second** `ItineraryGrid` as its record editor and reads mil
 through it, so the two have to come out together. They are, because rux does not use the
 inbox.
 
+## The tab must hand back every stop
+
+rux-ui does not patch stop rows the way the scheduler does. `trip-db.js` deletes every
+`trip_stops` row for the trip and re-inserts whatever `itinerary.getStops(leg)` returns —
+the comment above it says "Replace stops". So a six-field tab that returned four stops
+would delete a trip's itinerary on the next save.
+
+The tab therefore keeps the full stop list behind the six fields: `setStops` loads them all,
+the six fields read and write the pickup, first, drop-off and return rows, and `getStops`
+returns the whole list with every other row passed through untouched. The scheduler needed
+no such thing because it patches rows by id.
+
+The module's contract does not change: `init`, `getStops`, `setStops`, `clearStops`,
+`getConfirmed`, `setConfirmed`, `setActiveLeg`, `getActiveLeg`, `resetActiveLeg` and
+`setLegToggleVisible` all stay, because `trip-db.js` and `trip-panel.js` call every one.
+
 ## Old stops are kept, and not editable
 
 Trips already in the database carry day rows and mid-trip stops that only the Grid tab and
