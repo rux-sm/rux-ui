@@ -94,8 +94,9 @@ is thrown away. The scheduler's tab already behaves this way, so the two agree.
    markup, their tab and view entries, trip-db's four dead calls, and the Grid's test.
 2. Replace the Itinerary tab's body with the six fields and the worked-out times, writing
    the same rows the scheduler writes.
-3. Retire the `process-itinerary` skill and rewrite `docs/itinerary-workflow.md`, which
-   still describes the Grid path; `README.md` links it.
+3. Settle `intake.html`'s *Send to inbox*, which now files a row nothing can read: either
+   drop the action or let the page list its own drafts. See
+   [`itinerary-workflow.md`](itinerary-workflow.md) § Loose ends.
 4. Grep `Grid`, `itineraryGrid` and `itinerary-grid` across `index.html`, `js/`, `tests/`,
    `docs/` and the CSS, and report the count before and after, as the rename protocol asks.
 5. rux enters a route on a real trip in each app and checks the other shows the same times.

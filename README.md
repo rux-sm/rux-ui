@@ -42,7 +42,7 @@ happened) and before `npm test`.
 │                            (10 of 23 base files so far — tests/gallery-coverage
 │                             records the gaps and stops new ones appearing)
 ├── .claude/skills/        ← Claude Code skills: rux-design, vendor-rux-ui, verify,
-│                            process-itinerary, ponytail-review
+│                            ponytail-review
 ├── CLAUDE.md              ← concise Claude Code repository policy
 ├── docs/itinerary-workflow.md ← how a customer's document becomes a trip,
 │                            and which parts are built

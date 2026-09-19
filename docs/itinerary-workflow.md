@@ -5,254 +5,105 @@ got. Every rule it touches has a home elsewhere and is linked rather than
 restated, per CLAUDE.md's one-home rule. If a value or a MUST appears here, it
 is in the wrong file.
 
-Last updated 2026-08-31.
+Last updated 2026-09-19, when the Grid tab and the Itineraries inbox were
+removed ([`itinerary-simplify-plan.md`](itinerary-simplify-plan.md)).
 
-How well the pieces hold together — and the sequenced work that follows from
-that — is [`itinerary-system-audit.md`](itinerary-system-audit.md) (2026-09-01).
-This file stays the status doc; the audit does not restate it.
+How the old system held together, and the reasoning behind the pieces that are
+gone, is [`itinerary-system-audit.md`](itinerary-system-audit.md).
 
 ---
 
 ## The pipeline
 
-A customer's document becomes a trip in six steps. Each is owned by one file.
+A customer's document becomes a trip two ways, and the first is now the usual one.
+
+**Through the Claude app.** The scheduler's connector, in the `rux-sm.github.io`
+repository, reads the document and returns a link that opens that app's trip
+editor already filled in, marked field by field. Only a person's Save writes the
+trip. Nothing in this repository is involved, and nothing here needs to be.
+
+**Through the workbench.** [`intake.html`](../intake.html) is the operator's own
+paste-and-drop bench, for a document that is not going through Claude.
 
 | Step | Owner | State |
 |---|---|---|
-| Read the document | [`worker/index.js`](../worker/index.js) `/ai/extract`, or [`.claude/skills/process-itinerary`](../.claude/skills/process-itinerary/SKILL.md) | The in-app route is written and **not deployed**; the skill is built and is the working path today. |
+| Read the document | [`worker/index.js`](../worker/index.js) `/ai/extract` | Written, **not deployed**. |
 | Extract to Trip Draft v3 | [`itinerary-prompt.md`](itinerary-prompt.md) + [`trip-import-schema-v3.json`](trip-import-schema-v3.json) | Built. One prompt, model-agnostic. |
-| Load and fill the trip | [`js/components/itinerary-grid.js`](../js/components/itinerary-grid.js) | Built. Fills stops **and** the trip's blank Details. |
-| Resolve and route | same | Built. Saved locations first, then Mapbox; town fallback when there is no street address. |
-| Confirm addresses | same | Built. Confirming writes to the saved-locations directory. |
+| Read v1, v2 or v3 into the editor | [`js/data/trip-import.js`](../js/data/trip-import.js) | Built. `normalizeTripImport` takes all three. |
+| Fill the trip | [`js/pages/trip-intake.js`](../js/pages/trip-intake.js) | Built. *Open in trip editor* hands it across through `sessionStorage`. |
 | Driver sheet | [`js/panels/driver-sheet.js`](../js/panels/driver-sheet.js) | Built. Prints on the `--print-*` palette. |
-| Wait for a decision | [`js/panels/itinerary-inbox.js`](../js/panels/itinerary-inbox.js) | Built and verified live 2026-08-31. Optional — an itinerary that has no trip yet waits here. |
-| Save to the calendar | [`js/data/trip-db.js`](../js/data/trip-db.js) | Built. Mirrors both legs into `trip_stops`; the Grid's own document goes to `trip_itineraries`. |
-
-## Split trips
-
-Built 2026-08-28. The Grid is a per-leg editor: `state.legs` holds `outbound`
-and `return`, `state.activeLeg` says which is on screen, and a leg picker
-appears only when there are two. Each leg carries its own start date, stops,
-routing and driver sheet, because a Drop-off / Pick-up's two legs are days
-apart and separately crewed.
-
-What that means in practice:
-
-- The summary reports the **leg you are editing**, plus a **Both legs** mileage
-  figure, because the quote is both and the screen is one.
-- Resolve & route measures the active leg and says which one it measured.
-- The driver sheet prints the active leg and names it on the page.
-- `rux_route` is keyed by leg. A flat array — the shape saved before there were
-  two legs — still reads as the outbound leg's annex.
-- `mirrorToItinerary` writes both legs, so `collectStops` sees what the Grid
-  actually holds rather than a half-replaced trip.
-
-This replaced the carried-through guard from earlier the same day, which kept
-`legs.return` verbatim and warned that the Grid could not show it. Carrying was
-right while the leg could not be rendered; once it can, couriering would make
-the second leg the only part of a trip nobody could fix.
-
-## The inbox
-
-Built 2026-08-31. The Grid tab can only be reached with a trip already open,
-which is the wrong way round for how the work arrives: a customer's itinerary
-turns up before anyone has decided whether it is a new trip, an update to one
-already booked, or a quote that never becomes either. Making the trip a
-prerequisite forced that decision first. The Itineraries module
-(`data-view="itineraries"`) is where one waits while it is made.
-
-What lands there is **already processed** — stops, per-leg mileage, drive
-times, day offsets, and the questions to put back to the customer. An unrouted
-queue item tells a dispatcher nothing.
-
-- **One way in:** `saveItineraryDraft(document)`. Every feed is a client of it,
-  so a feed can be added or dropped without touching the inbox.
-- **The editor is the Grid**, mounted a second time in the module's floating
-  window with `{ hostId, publishHooks: false, standalone: true }`. Same
-  routing, address checking and driver sheet, with no trip in existence.
-  `standalone` is what stops it reading and writing `#tp-*`, which are the one
-  trip form's global ids; `publishHooks: false` keeps a trip save pointed at
-  the tab's instance.
-- **Out to a new trip:** `TripEditor.openFromDraft`, same bridge the request
-  inbox uses. Nothing is saved — the dispatcher saves.
-- **Out to a trip that exists:** *Load from inbox* in the **Grid tab**, not in
-  the inbox. The target trip is then the one already open on screen, so the
-  only question asked is "which itinerary?". On save the row **moves** —
-  `attachDraftToTrip` sets `trip_id` — so the document never exists twice. A
-  trip already holding an itinerary refuses the move and keeps its own; the
-  inbox copy is closed rather than deleted.
-
-### Three ways out of the workbench
-
-[`intake.html`](../intake.html) is the operator's own paste-and-drop bench, and
-its draft now has somewhere to go in each of the three directions the work
-takes: **Send to inbox** files it with no trip, **Open in trip editor** hands it
-across for review through `sessionStorage`, and **Copy JSON** is the escape
-hatch. Filing goes through `saveItineraryDraft` — the inbox's one way in, the
-same call the module's own New itinerary button makes — so the page is a client
-of the inbox rather than a second writer with its own idea of a row.
-
-Its Supabase email-and-password sign-in is gone with the gate it served. See
-[`worker/README.md`](../worker/README.md) § The gate.
+| Save to the calendar | [`js/data/trip-db.js`](../js/data/trip-db.js) | Built. Writes both legs into `trip_stops`. |
 
 ## Two lanes, and they are not the same
 
-The word "itinerary" covers two different documents, and confusing them is
-what the old three-prompt chain got wrong.
+The word "itinerary" covers two different documents, and confusing them is what
+the old three-prompt chain got wrong.
 
-**Confirmed itinerary** — a booked trip's schedule. Goes to the **Grid tab**,
-through `itinerary-prompt.md` and Trip Draft v3. This is the lane everything
-above describes.
+**Confirmed itinerary** — a booked trip's schedule, through
+`itinerary-prompt.md` and Trip Draft v3. This is the lane everything above
+describes.
 
-**Inbound quote request** — a stranger asking for a price. The Worker's
-`quote` lane and [`gem-itinerary-prompt.md`](gem-itinerary-prompt.md) still
-speak v2 for it. There is no page on that lane: `intake.html` moved to the
-itinerary lane on 2026-08-31, because it is an internal workbench for the
-operator's own documents rather than anything a stranger reaches.
+**Inbound quote request** — a stranger asking for a price. The Worker's `quote`
+lane and [`gem-itinerary-prompt.md`](gem-itinerary-prompt.md) still speak v2 for
+it. There is no page on that lane.
 
-`normalizeTripImport` reads v1, v2 and v3, so both lanes land in the same
-editor.
+`normalizeTripImport` reads v1, v2 and v3, so both lanes land in the same editor.
 
 ## The yard is the app's, not the document's
 
-`docs/itinerary-prompt.md` tells a model to omit `yard_origin` unless the source
-states a depot departure — the app owns the yard, and a draft should only report
-what the customer said. `fromV3` therefore supplies the row on load, ahead of any
-leg that starts with a pickup.
+[`itinerary-prompt.md`](itinerary-prompt.md) tells a model to omit `yard_origin`
+unless the source states a depot departure — the app owns the yard, and a draft
+should only report what the customer said. `fromV3` therefore supplies the row on
+load, ahead of any leg that starts with a pickup.
 
 It has to be a row rather than a calculation. Routing measures leg *n* from stop
 *n−1*, so with nothing before the pickup there is no leg to measure: no mileage,
-no drive time, no duty, and `yardPlan` returns no roll or report time. Until
-2026-08-31 that is exactly what happened, and it was silent — the trip simply
-read as though it began at the pickup.
-
-The insertion runs **after** the `rux_route` annex is applied, because the annex
-is keyed by position in the document's own stops. A missing `return` is *not*
-supplied the same way: the prompt mandates that one, so its absence is a broken
-extraction rather than a designed omission, and filling it in would hide the
-difference.
+no drive time, no duty. A missing `return` is *not* supplied the same way: the
+prompt mandates that one, so its absence is a broken extraction rather than a
+designed omission, and filling it in would hide the difference.
 
 ## Storage
 
-`trip_stops` remains what every other reader uses — print schedules, the trip
-envelope, driver share, trip-bar mileage. The Grid writes it through the
-existing save path rather than a second one.
+`trip_stops` is what every reader uses — print schedules, the trip envelope,
+driver share, trip-bar mileage — and `trip-db.js`'s save path is the one writer.
 
-`trip_itineraries` (one jsonb document per trip,
-[`supabase/trip_itineraries.sql`](../supabase/trip_itineraries.sql), applied
-2026-08-28) holds the four things `trip_stops` has nowhere to put: day offsets,
-activity, address confidence, and what the geocoder matched. Plus a private
-`rux_route` annex carrying measured mileage and its source — v3's
-`distance_miles` means "the source stated it", so measured values cannot travel
-there without becoming un-refreshable.
-
-[`supabase/trip_itineraries_inbox.sql`](../supabase/trip_itineraries_inbox.sql)
-makes that table able to hold a row with no trip: `trip_id` becomes nullable,
-the row gets a `uuid` primary key of its own, and a partial unique index keeps
-"a trip has at most one itinerary". Applied 2026-08-31.
-
-**Storing an itinerary means storing `toV3`, never `toCleanV3`.** The clean
-export is what `trip-import-schema-v3.json` describes and is for handing out —
-Copy as JSON, the importer. It strips the private `rux_route` annex, which is
-the only place measured mileage, drive time, coordinates and geocoder matches
-live. The Grid instance exposes both as `getDocument` (clean) and
-`getStoredDocument` (annex); a save that picks the first loses the entire
-routing pass silently.
+`trip_itineraries` ([`supabase/trip_itineraries.sql`](../supabase/trip_itineraries.sql))
+held the Grid's own record: day offsets, activity, address confidence, what the
+geocoder matched, and a private `rux_route` annex. **Nothing writes it on a trip
+save any more.** Existing rows stand; no new ones arrive that way.
 
 Code must still work when that table is absent. A fresh clone will not have it.
 
 ## Retired
 
-`gem-itinerary-prompt-1/2/3.md` are superseded and marked as such in their own
-headers. Step 2 asked a model for mileage the app measures properly; step 3
-asked it to hand-write HTML that is now the driver sheet. They are kept because
-step 1's day-offset and address-confidence rules were the source for
-`itinerary-prompt.md`, and deleting the reasoning would lose it.
+- **The Grid tab** and **the Itineraries inbox**, removed 2026-09-19. The Grid's
+  paste-a-draft path is what the connector does from a document without the
+  pasting, and the inbox is where those documents waited.
+- **The `process-itinerary` skill**, whose path ended at the Grid tab.
+- `gem-itinerary-prompt-1/2/3.md`, superseded and marked so in their own headers.
+  Kept because step 1's day-offset and address-confidence rules were the source
+  for `itinerary-prompt.md`, and deleting the reasoning would lose it.
 
-## Reading a document in the app
+## Loose ends from the removal
 
-Wired 2026-08-31, **not deployed**. `POST /ai/extract` on the Worker takes the
-pasted email and any attached PDFs or photos, calls Claude server-side with
-`itinerary-prompt.md` and the v3 schema, and returns a draft. The Grid's intake
-box calls it as **Read it for me**, in the trip editor and in the inbox alike.
-
-- The Anthropic key lives on the Worker as a secret. A browser holding it would
-  ship it in page source, which is tolerable for the Supabase anon key only
-  because that key is meant to be public.
-- The gate is a shared passphrase in `X-Rux-Extract-Key`, held in the browser's
-  `localStorage` — deliberately not in the `settings` table, which the anon
-  client reads. See [`worker/README.md`](../worker/README.md) § The gate for
-  what that buys and what it does not.
-- The button hides itself until the passphrase is set, so it is never a control
-  whose only outcome is an instruction.
-- The live Worker still answers that path with the proxy's 404, so the client
-  says "not deployed yet" rather than passing PostgREST's wording along.
-
-Two things stand between this and working: `wrangler deploy` from `worker/`,
-and the two secrets. Set a spend limit in the Anthropic Console at the same
-time — that limit, not any code here, is the ceiling on what a leaked
-passphrase can cost.
+- **`intake.html`'s *Send to inbox* files a row nothing can read.**
+  `saveItineraryDraft` still writes to `trip_itineraries` with no `trip_id`, and
+  the view that listed those rows is gone. The action needs removing, or the page
+  needs to list its own drafts.
+- **`/ai/extract` lost its in-app caller.** The Grid's *Read it for me* button
+  went with the tab; `intake.html` is the only page left that calls the route,
+  and the route has still never been deployed.
 
 ## Not built
 
-- **Routing the return leg from one press.** Resolve & route measures the leg
-  on screen. The other one is one toggle and a second press away, and the
-  status says which leg it just measured, but there is no route-both button.
 - **In-app extraction.** `POST /ai/extract` exists and has never run — no API
-  key, no auth user, no `wrangler.toml`, never deployed (todo T4, T5). The
-  workflow is built to not need it.
+  key, no `wrangler.toml`, never deployed (todo T4, T5).
 - **The quote lane's `data_flags`** (todo T7) and **its lane gate** (todo T8).
 - **A public enquiry form on the `quote` lane.** The Worker lane exists and
   speaks v2; nothing calls it.
-- **Retiring the classic Itinerary tab.** Both tabs edit the same trip. Whether
-  the Grid replaces it is a decision, not a leftover. The 2026-09-01 audit's
-  position is that it is now overdue: the split has started costing correctness
-  rather than duplication, and the two tabs are not interchangeable — see
-  [`itinerary-system-audit.md`](itinerary-system-audit.md) §1.
-- **Hours of service in the Grid.** The classic tab warns at 10h drive and 15h
-  duty and segments sessions around off-duty periods. The Grid does neither: it
-  reports the worst day as a plain figure, and sums duty only from legs that
-  measured, so an unresolvable address makes a trip look *shorter* than it is
-  (todo T13). The classic tab's engine — the app's only one — has no
-  behavioural tests (todo T15), and the Grid's projection erases the flag it
-  runs on (todo T14).
-
-## Verified
-
-Against the live project on 2026-08-28, with a real customer PDF:
-
-- The full round trip through `trip_itineraries` — save, clear, hydrate —
-  keeping measured mileage and leaving it refreshable rather than manual.
-- Routing against the live Mapbox token, including a tight leg the schedule
-  genuinely could not make.
-- The saved-locations directory resolving 3 of 3 stops with no geocoding call,
-  and overruling an extraction that had guessed the wrong town.
-- The driver sheet in both themes, at 480px, 600px and 860px.
-
-Before the inbox patch was applied, on 2026-08-31: the module routes and
-lists, stands itself down to its empty state with one console line when the
-table is missing, mounts its second Grid without touching the trip form's own
-fields (checked with a sentinel in `#tp-customer`), stacks its three footer
-actions one per row at 375px in both themes, and shows *Load from inbox* in the
-Grid tab but not in the standalone instance.
-
-After the patch, against the live table with a real 16-stop three-day quote —
-and with every row deleted afterwards, leaving `trip_itineraries` empty:
-
-- Add, list, open, route, save, reload, status, filters, driver sheet, delete.
-- Routing measured 1,111.2 miles and 18h 18m, resolving one address from the
-  saved directory with no geocoding call.
-- The routed document survived save and reload with its annex intact — 13 drive
-  legs, 15 of 16 coordinates — and the list row reported `≈ 1111 mi · 18h 18m`.
-- `attachDraftToTrip` moved the row onto a trip, which then read back all 16
-  stops; a second draft aimed at the same trip was refused as `occupied`
-  without writing.
-- `TripEditor.openFromDraft` accepts an annex-carrying document unchanged.
-
-**Not** verified: pressing Save in the trip editor after *Load from inbox*.
-That saves a trip, and a trip is only ever saved on a per-trip go-ahead.
-
-Six colour-scale tests failed on `main` when this was written, unrelated to any of
-this. They were fixed on 2026-08-28 by `color.md` steps 47-48 and `trip-bar.md` step
-21; the suite is 544/544. Left here rather than deleted because the original
-sentence was the reason nobody chased them.
+- **The Itinerary tab's rebuild** as the scheduler's six fields, which is step 2
+  of [`itinerary-simplify-plan.md`](itinerary-simplify-plan.md). Until then it is
+  the classic per-day stop editor, and it is now the only one.
+- **Hours-of-service tests.** The classic tab warns at 10h drive and 15h duty and
+  segments sessions around off-duty periods. That engine is the app's only one
+  and has no behavioural tests (todo T15).
