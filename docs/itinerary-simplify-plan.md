@@ -1,6 +1,6 @@
 # Itinerary — simplify to match the scheduler
 
-Status: **not started**, written 2026-09-19. One open question blocks the Grid's removal.
+Status: **in progress**, written 2026-09-19. No questions open.
 
 Replaces the trip panel's Itinerary tab with the six fields the scheduler's Route tab now
 asks for, and removes the Grid tab. Both apps then describe a trip's route the same way and
@@ -42,6 +42,9 @@ has never had, and the scheduler would see it.
 
 - `js/components/itinerary-grid.js`, the Grid tab, and its script tag and tab markup in
   `index.html`. 2,604 lines.
+- `js/panels/itinerary-inbox.js` and the inbox view, 494 lines and its markup. rux does not
+  use it, and its job -- a customer's document before it is a trip -- is what the
+  connector does from the Claude app now.
 - Most of `js/components/itinerary.js`, the per-day stop builder, replaced by the six
   fields. 2,473 lines today.
 - `tests/itinerary-grid.test.mjs`.
@@ -69,13 +72,8 @@ once the module is gone — they would quietly stop writing, which is worse.
 
 **So the order is the reverse of the obvious one:** the new Itinerary tab is built first and
 takes over writing the route rows, and only then does the Grid come out. Removing it first
-would leave saves silently dropping stops.
-
-## Open question
-
-**What replaces the inbox's editor?** The inbox is where documents arrive before they are a
-trip, which is the job the connector now does from the Claude app. Does the inbox go with
-the Grid, or does it keep a record editor built from the six fields?
+would leave saves silently dropping stops. The inbox goes with the Grid, so its second
+editor is no longer something to replace.
 
 ## Old stops are kept, and not editable
 
@@ -89,8 +87,8 @@ is thrown away. The scheduler's tab already behaves this way, so the two agree.
 1. Replace the Itinerary tab's body with the six fields and the worked-out times, writing
    the same rows the scheduler writes, and re-point `trip-db.js`'s four `ItineraryGrid`
    calls at it.
-2. Settle the inbox, then remove the Grid tab, its module, its script tag, its markup and
-   its test.
+2. Remove the Grid tab and the inbox: both modules, their script tags, their markup, their
+   tab and view entries, and the Grid's test.
 3. Retire the `process-itinerary` skill and the prompt documents, leaving the audit.
 4. Grep `Grid`, `itineraryGrid` and `itinerary-grid` across `index.html`, `js/`, `tests/`,
    `docs/` and the CSS, and report the count before and after, as the rename protocol asks.
