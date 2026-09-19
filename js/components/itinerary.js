@@ -92,24 +92,28 @@
 		return `${hour}:${String(mins % 60).padStart(2, "0")} ${mins < 720 ? "AM" : "PM"}`;
 	}
 
-	// "1h 25m" from minutes, which is how `trip_stops.drive` stores it.
+	/* `trip_stops.drive` stores "H:MM" -- "0:35", "3:13". Reading it as
+	   anything else makes every stored drive null, and the yard times with it. */
+	function parseDriveMins(text) {
+		const s = String(text ?? "").trim();
+		if (!s.includes(":")) return null;
+		const [h, m] = s.split(":");
+		const mins = (parseInt(h, 10) || 0) * 60 + (parseInt(m, 10) || 0);
+		return Number.isFinite(mins) ? mins : null;
+	}
+
+	// What goes back into the column, in the format it came out in.
+	function formatDriveValue(mins) {
+		if (mins == null) return "";
+		return `${Math.floor(mins / 60)}:${String(mins % 60).padStart(2, "0")}`;
+	}
+
+	// "3h 13m", for reading in the Times list. Never stored.
 	function formatDriveMins(mins) {
 		if (mins == null) return "";
 		const h = Math.floor(mins / 60);
 		const m = mins % 60;
 		return h ? `${h}h ${String(m).padStart(2, "0")}m` : `${m}m`;
-	}
-
-	function parseDriveMins(text) {
-		const s = String(text || "").trim();
-		if (!s) return null;
-		const h = /(\d+)\s*h/i.exec(s);
-		const m = /(\d+)\s*m/i.exec(s);
-		if (!h && !m) {
-			const plain = Number(s);
-			return Number.isFinite(plain) ? plain : null;
-		}
-		return (h ? Number(h[1]) * 60 : 0) + (m ? Number(m[1]) : 0);
 	}
 
 	function escHtml(value) {
@@ -227,7 +231,7 @@
 				name: leg.pickup.name || "",
 				address: leg.pickup.address || "",
 				miles: leg.milesOut != null ? String(leg.milesOut) : "",
-				drive: formatDriveMins(leg.driveOut),
+				drive: formatDriveValue(leg.driveOut),
 				lat: leg.pickup.lat, lng: leg.pickup.lng, mapboxId: leg.pickup.mapboxId,
 				milesSource: "estimated", driveSource: "estimated", routeStatus: "current",
 				departPrev: times.yardOut, departPrevDate: times.yardOut ? yardOutDate : "",
@@ -254,7 +258,7 @@
 				name: yard.name,
 				address: yard.address,
 				miles: leg.milesBack != null ? String(leg.milesBack) : "",
-				drive: formatDriveMins(leg.driveBack),
+				drive: formatDriveValue(leg.driveBack),
 				lat: yard.lat ?? null, lng: yard.lng ?? null, mapboxId: null,
 				milesSource: "estimated", driveSource: "estimated", routeStatus: "current",
 				departPrev: leg.arrive, departPrevDate: leg.arrive ? to : "",
@@ -283,6 +287,9 @@
 		   Calculate and Confirm, and replacing the card would take both
 		   buttons out of the page while their handlers stayed on the orphans. */
 		const timesEl = summaryEl.querySelector(".rux-card__body") || summaryEl;
+		// Fill-in first, worked-out second. The markup has the summary card
+		// above, from when it was a summary rather than the answer.
+		summaryEl.parentNode?.insertBefore(stopsEl, summaryEl);
 
 		const recalcBtn = root.querySelector("#tp-itin-recalc");
 		const confirmBtn = root.querySelector("#tp-itin-confirm");
