@@ -1428,62 +1428,6 @@ import {
 				}
 			}
 
-
-			// Every verified address on a saved trip becomes a saved location, so
-			// the next trip's autocomplete offers it without anyone bookmarking it
-			// by hand. This replaced a per-suggestion save button, which was never
-			// an independent action -- it selected the address AND remembered it,
-			// so the only thing lost is having to decide while typing.
-			//
-			// Side effect only, and deliberately after the stops are safely
-			// written: a failure here must not turn a successful trip save into a
-			// failed one, the same rule the driver statuses above follow. One
-			// bulk call rather than one per stop, because the saved list is a
-			// single shared row that gets rewritten whole on every write.
-			try {
-				// The auto-generated return-to-yard leg carries the depot's address
-				// on every trip -- 233 of the 485 verified stop rows in the live
-				// project, all of them type "return" -- so without this the
-				// directory's most-repeated entry would be the company's own yard,
-				// which is configured in Settings and never needs autocompleting.
-				// Matched on address rather than on stop type on purpose: a trip
-				// that genuinely returns somewhere else still gets that saved.
-				// Falls open when Settings has not loaded, since an empty yard
-				// address matches no stop.
-				const yardAddress = String(window.RuxSettings?.getYard?.()?.address || "")
-					.trim()
-					.toLowerCase();
-				// A sleeper has no location of its own -- it rests wherever the
-				// previous real stop is, and itinerary.js derives that fresh on
-				// every render rather than reading the row (see
-				// previousStopAddress, and the comment above the zero-distance
-				// leg). Its stored address/lat/lng are a snapshot the codebase
-				// documents as drifting once stops are reordered, and the live
-				// data shows exactly that: of 11 sleepers carrying coordinates,
-				// 9 have the CURRENT previous stop's coordinates while 10 have an
-				// address belonging to some OTHER stop in the same trip. The pair
-				// disagrees about which stop it describes, so saving it would
-				// publish an address bound to the wrong coordinates -- and this
-				// would have been the first consumer in the app to trust it.
-				const stopLocations = savedStopsData
-					.filter((stop) => stop.type !== "sleeper")
-					.filter((stop) => stop.address && stop.lat != null && stop.lng != null)
-					.filter((stop) => stop.address.trim().toLowerCase() !== yardAddress)
-					.map((stop) => ({
-						name: stop.name || stop.address,
-						address: stop.address,
-						lat: stop.lat,
-						lng: stop.lng,
-						mapboxId: stop.mapbox_id || null,
-					}));
-				if (stopLocations.length) {
-					const locationsDb = await import("./locations-db.js?v=3");
-					await locationsDb.saveLocations(stopLocations);
-				}
-			} catch (locationError) {
-				console.warn("Trip stops could not be added to saved locations:", locationError);
-			}
-
 			// Replace payments
 			const { error: deletePaymentsErr } = await supabase
 				.from("trip_payments")

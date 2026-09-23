@@ -57,68 +57,22 @@ test("Configuration owns the directory and itinerary searches it before Mapbox",
 		itinerary.indexOf("await savedLocationSuggestions(q)") <
 			itinerary.indexOf('new URL("https:\/\/api.mapbox.com\/search\/searchbox\/v1\/suggest")'),
 	);
-	/* The directory is still fed from the itinerary flow, but by saving the
-	   trip rather than by a per-suggestion bookmark button: that button was
-	   never an independent action -- it selected the address AND remembered
-	   it -- so the decision moved to the point where the trip is committed.
-	   itinerary.js now only reads the directory. */
-	assert.doesNotMatch(itinerary, /data-save-suggestion-idx/);
+	/* A trip save no longer adds its stops to the directory: a place joins it
+	   from Settings or from the scheduler, where someone says so. */
 	const tripDb = readFileSync(
 		new URL("../js/data/trip-db.js", import.meta.url),
 		"utf8",
 	);
-	assert.match(tripDb, /saveLocations\(stopLocations\)/);
-	/* After the stops are written, never before: it is a side effect and must
-	   not be able to fail a trip save. */
-	assert.ok(
-		tripDb.indexOf('from("trip_stops").insert') <
-			tripDb.indexOf("saveLocations(stopLocations)"),
-	);
+	assert.doesNotMatch(tripDb, /locations-db\.js/);
 });
 
-test("the configured yard is not auto-saved into the directory", () => {
-	/* Every trip ends with an auto-generated return-to-yard leg carrying the
-	   depot's address, so without an exclusion the directory's most-repeated
-	   entry is the company's own yard -- which Settings already owns and which
-	   nobody needs autocompleted. Matched on address, not on stop type, so a
-	   trip that genuinely returns somewhere else still gets that address. */
-	const tripDb = readFileSync(
-		new URL("../js/data/trip-db.js", import.meta.url),
-		"utf8",
-	);
-	assert.match(tripDb, /RuxSettings\?\.getYard\?\.\(\)\?\.address/);
-	assert.match(tripDb, /!==\s*yardAddress/);
-});
-
-test("sleeper stops are not auto-saved — their address and coordinates disagree", () => {
-	/* A sleeper rests wherever the previous real stop is; itinerary.js derives
-	   that fresh on every render and never reads the stored row, which its own
-	   comments describe as drifting once stops are reordered. In the live data
-	   9 of 11 sleepers carry the current previous stop's coordinates while 10
-	   carry an address belonging to a different stop, so the row pairs an
-	   address with coordinates for somewhere else. Auto-save would have been
-	   the first consumer to trust that pair. */
-	const tripDb = readFileSync(
-		new URL("../js/data/trip-db.js", import.meta.url),
-		"utf8",
-	);
-	assert.match(tripDb, /\.filter\(\(stop\) => stop\.type !== "sleeper"\)/);
-});
-
-test("every write to the shared locations blob re-reads the server first", () => {
-	/* The whole directory is one row (settings/locations-v1) upserted whole,
-	   and the client is anon, so it is one list for everybody. A write built
-	   on the in-memory cache silently drops additions made since page load --
-	   which auto-saving on every trip save would hit routinely. */
+test("saved locations are rows of the locations table, not a settings blob", () => {
+	/* Each place is its own row, which the scheduler's Locations page also
+	   writes, so a write changes one row and cannot drop another person's. */
 	const db = readFileSync(
 		new URL("../js/data/locations-db.js", import.meta.url),
 		"utf8",
 	);
-	const writers = db.match(
-		/export async function (?:saveLocation|saveLocations|deleteLocation)\b[\s\S]*?\n\}/g,
-	) || [];
-	assert.equal(writers.length, 3);
-	for (const fn of writers) {
-		assert.match(fn, /loadLocations\(\{ refresh: true \}\)/);
-	}
+	assert.match(db, /from\("locations"\)/);
+	assert.doesNotMatch(db, /settings-db|locations-v1/);
 });
