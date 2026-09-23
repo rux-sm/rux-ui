@@ -46,7 +46,7 @@
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=152" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=406" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=407" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=17"
@@ -3401,20 +3401,6 @@
 														>airport_shuttle</span
 													></span
 												>
-												<span
-													data-type-icon="Car"
-													hidden
-													><span class="rux-icon"
-														>directions_car</span
-													></span
-												>
-												<span
-													data-type-icon="Truck"
-													hidden
-													><span class="rux-icon"
-														>local_shipping</span
-													></span
-												>
 											</span>
 											<select
 												class="rux-input rux-select"
@@ -3425,10 +3411,6 @@
 												</option>
 												<option value="Van">
 													Van
-												</option>
-												<option value="Car">Car</option>
-												<option value="Truck">
-													Truck
 												</option>
 											</select>
 										</div>
@@ -6587,7 +6569,7 @@
 		<script src="./js/panels/driver-sheet.js?v=8" defer></script>
 		<script src="./js/panels/driver-panel.js?v=33" defer></script>
 		<script src="./js/panels/driver-roster-panel.js?v=6" defer></script>
-		<script src="./js/panels/fleet-panel.js?v=21" defer></script>
+		<script src="./js/panels/fleet-panel.js?v=22" defer></script>
 		<script src="./js/panels/customers-panel.js?v=13" defer></script>
 		<script src="./js/panels/settings-panel.js?v=15" defer></script>
 		<script src="./js/panels/trip-finder.js?v=11" defer></script>
@@ -7846,7 +7828,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=58");
+					const db = await import("./js/data/trip-db.js?v=59");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -11035,7 +11017,7 @@
 			// the calendar without a reload. renderBusRows ends in
 			// renderScheduler(), which repaints the bars and the stripes.
 			async function loadFleet() {
-				const db = await import("./js/data/trip-db.js?v=58");
+				const db = await import("./js/data/trip-db.js?v=59");
 				try {
 					schedulerBuses = await db.fetchBuses();
 				} catch (err) {
@@ -11068,7 +11050,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=58");
+					const db = await import("./js/data/trip-db.js?v=59");
 					loadTrip = db.loadTrip;
 					applyItinerary = db.applyItinerary;
 					getCurrentTripId = db.getCurrentTripId;

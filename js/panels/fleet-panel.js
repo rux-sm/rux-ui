@@ -112,8 +112,6 @@
   const TYPE_ICONS = {
     Coach:     { material: "directions_bus" },
     Van:       { material: "airport_shuttle" },
-    Car:       { material: "directions_car" },
-    Truck:     { material: "local_shipping" },
   };
 
   function vehicleIconHtml(type) {
