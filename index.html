@@ -6569,10 +6569,10 @@
 		<script src="./js/panels/driver-sheet.js?v=8" defer></script>
 		<script src="./js/panels/driver-panel.js?v=33" defer></script>
 		<script src="./js/panels/driver-roster-panel.js?v=6" defer></script>
-		<script src="./js/panels/fleet-panel.js?v=22" defer></script>
+		<script src="./js/panels/fleet-panel.js?v=23" defer></script>
 		<script src="./js/panels/customers-panel.js?v=13" defer></script>
 		<script src="./js/panels/settings-panel.js?v=15" defer></script>
-		<script src="./js/panels/trip-finder.js?v=11" defer></script>
+		<script src="./js/panels/trip-finder.js?v=12" defer></script>
 		<script src="./js/panels/request-inbox.js?v=12" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=13" defer></script>
 		<script src="./js/panels/print-schedule.js?v=38" defer></script>
@@ -7828,7 +7828,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=59");
+					const db = await import("./js/data/trip-db.js?v=60");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -11017,7 +11017,7 @@
 			// the calendar without a reload. renderBusRows ends in
 			// renderScheduler(), which repaints the bars and the stripes.
 			async function loadFleet() {
-				const db = await import("./js/data/trip-db.js?v=59");
+				const db = await import("./js/data/trip-db.js?v=60");
 				try {
 					schedulerBuses = await db.fetchBuses();
 				} catch (err) {
@@ -11050,7 +11050,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=59");
+					const db = await import("./js/data/trip-db.js?v=60");
 					loadTrip = db.loadTrip;
 					applyItinerary = db.applyItinerary;
 					getCurrentTripId = db.getCurrentTripId;

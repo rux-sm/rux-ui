@@ -109,22 +109,53 @@
     if (valid) colorPicker.value = hex;
   }
 
-  const TYPE_ICONS = {
-    Coach:     { material: "directions_bus" },
-    Van:       { material: "airport_shuttle" },
+  // The office's vehicle types, the `vehicle-types-v1` settings row the
+  // scheduler's Fleet page edits: a name and one of four drawings each. This
+  // is the list until the row is read.
+  const VEHICLE_TYPES_KEY = "vehicle-types-v1";
+  const ICON_GLYPHS = {
+    bus: "directions_bus",
+    shuttle: "airport_shuttle",
+    car: "directions_car",
+    truck: "local_shipping",
   };
+  let vehicleTypes = [
+    { name: "Coach", icon: "bus" },
+    { name: "Van", icon: "shuttle" },
+  ];
+
+  async function loadVehicleTypes() {
+    if (!settingsDb) {
+      try { settingsDb = await import("../data/settings-db.js"); } catch { return; }
+    }
+    const saved = await settingsDb.getSetting(VEHICLE_TYPES_KEY).catch(() => null);
+    if (Array.isArray(saved) && saved.length) {
+      vehicleTypes = saved.filter(t => t && String(t.name || "").trim());
+    }
+  }
 
   function vehicleIconHtml(type) {
-    const icon = TYPE_ICONS[type] || TYPE_ICONS.Coach;
-    return `<span class="rux-icon">${icon.material}</span>`;
+    const found = vehicleTypes.find(t => t.name === type);
+    const glyph = ICON_GLYPHS[found?.icon] || ICON_GLYPHS.bus;
+    return `<span class="rux-icon">${glyph}</span>`;
+  }
+
+  // The Type select offers the office's types, and the unit's own type too
+  // where the list has lost it, so opening a unit never changes it.
+  function fillTypeSelect(own) {
+    const names = vehicleTypes.map(t => [t.name, t.label || t.name]);
+    if (own && !names.some(([n]) => n === own)) names.push([own, own]);
+    typeSelect.replaceChildren(...names.map(([value, text]) => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = text;
+      return option;
+    }));
   }
 
   function updateTypeIcon() {
     if (!typeIconWrap) return;
-    const type = typeSelect.value;
-    typeIconWrap.querySelectorAll("[data-type-icon]").forEach(el => {
-      el.hidden = el.dataset.typeIcon !== type;
-    });
+    typeIconWrap.innerHTML = vehicleIconHtml(typeSelect.value);
   }
 
   typeSelect?.addEventListener("change", updateTypeIcon);
@@ -547,7 +578,8 @@
     document.getElementById("fp-inspection-exp").value   = b.inspection_exp  || "";
     document.getElementById("fp-notes").value            = b.notes           || "";
 
-    typeSelect.value = b.type || "Coach";
+    fillTypeSelect(b.type);
+    typeSelect.value = b.type || vehicleTypes[0]?.name || "Coach";
     updateTypeIcon();
     // Normalized, so a row still holding the pre-patch 'retired' selects
     // Inactive instead of leaving the control with nothing pressed.
@@ -589,7 +621,7 @@
       vin:              document.getElementById("fp-vin").value.trim()              || null,
       color:            colorHex.value.trim()                                        || null,
       capacity:         parseInt(document.getElementById("fp-capacity").value, 10)  || null,
-      type:             typeSelect.value                                             || "Coach",
+      type:             typeSelect.value || vehicleTypes[0]?.name                     || "Coach",
       ada_lift:         adaBtn?.getAttribute("aria-pressed") === "true",
       sleeper:          document.getElementById("fp-sleeper")?.getAttribute("aria-pressed") === "true",
       status:           statusBtn?.dataset.value                                    || "active",
@@ -676,7 +708,8 @@
       .forEach(f => { f.value = ""; });
     colorSwatch.style.background = "";
 
-    typeSelect.value = "Coach";
+    fillTypeSelect();
+    typeSelect.value = vehicleTypes[0]?.name || "Coach";
     updateTypeIcon();
 
     // Reset status to active
@@ -1065,6 +1098,8 @@
       }
     }
     await loadColConfig();
+    await loadVehicleTypes();
+    fillTypeSelect();
     renderColPicker();
     await loadBuses();
 
