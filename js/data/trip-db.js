@@ -1672,14 +1672,21 @@ export function isSaveInFlight() {
 					<p class="sched-cancel-trip-modal__note">The trip stays on record, marked Cancelled, and comes off the schedule — it isn't deleted.</p>
 					<div class="rux-field">
 						<label class="rux-field__label" for="cancel-trip-reason">Reason</label>
-						<textarea class="rux-textarea" id="cancel-trip-reason" data-cancel-trip-reason rows="3" placeholder="Why is this trip being cancelled?"></textarea>
+						<textarea class="rux-textarea" id="cancel-trip-reason" data-cancel-trip-reason rows="3" placeholder="Why is this trip being cancelled?" required></textarea>
 					</div>
 				</div>
 				<footer class="rux-modal__footer">
 					<button type="button" class="rux-button rux-button--default" data-rux-dismiss>Keep Trip</button>
-					<button type="button" class="rux-button rux-button--danger" data-cancel-trip-confirm>Cancel Trip</button>
+					<button type="button" class="rux-button rux-button--danger" data-cancel-trip-confirm disabled>Cancel Trip</button>
 				</footer>
 			</section>`;
+		// The reason is required: Cancel Trip stays disabled until the box
+		// holds some text.
+		const reasonInput = cancelTripModal.querySelector("[data-cancel-trip-reason]");
+		const confirmButton = cancelTripModal.querySelector("[data-cancel-trip-confirm]");
+		reasonInput.addEventListener("input", () => {
+			confirmButton.disabled = !reasonInput.value.trim();
+		});
 		document.body.appendChild(cancelTripModal);
 		return cancelTripModal;
 	}
@@ -1694,12 +1701,14 @@ export function isSaveInFlight() {
 		const modal = ensureCancelTripModal();
 		const reasonInput = modal.querySelector("[data-cancel-trip-reason]");
 		reasonInput.value = "";
+		modal.querySelector("[data-cancel-trip-confirm]").disabled = true;
 		window.Rux?.openModal?.(modal);
 		reasonInput.focus();
 		return new Promise((resolve) => {
 			let confirmed = null;
 			function onClick(event) {
 				if (!event.target.closest("[data-cancel-trip-confirm]")) return;
+				if (!reasonInput.value.trim()) return;
 				confirmed = reasonInput.value.trim();
 				window.Rux?.closeModal?.(modal);
 			}
@@ -1727,7 +1736,7 @@ export function isSaveInFlight() {
 			|| { id: cancelledId };
 		const { error } = await supabase
 			.from("trips")
-			.update({ cancelled_at: new Date().toISOString(), cancellation_reason: reason || null })
+			.update({ cancelled_at: new Date().toISOString(), cancellation_reason: reason })
 			.eq("id", cancelledId);
 		if (error) throw error;
 		// Counts are fetched fresh rather than taken from the loaded trip — a

@@ -128,8 +128,10 @@
       tr.dataset.billingType  = billingTypeOf(t);
       tr.dataset.search       = searchTextOf(t);
 
+      // A cancelled trip's reason is written under its badge, since a
+      // tooltip never shows on a phone.
       const statusBadge = t.cancelled_at
-        ? `<span class="rux-badge rux-badge--danger"${t.cancellation_reason ? ` title="${escapeAttr(t.cancellation_reason)}"` : ""}>Cancelled</span>`
+        ? `<span class="rux-badge rux-badge--danger">Cancelled</span>${t.cancellation_reason ? `<div class="rux-text-label-12">${escapeAttr(t.cancellation_reason)}</div>` : ""}`
         : confirmed
           ? `<span class="rux-badge rux-badge--success">Confirmed</span>`
           : `<span class="rux-badge rux-badge--danger">Unconfirmed</span>`;
