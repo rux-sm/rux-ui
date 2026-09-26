@@ -607,6 +607,7 @@ import {
 			spot:        s.spot || null,
 			spot_date:   s.spotDate || null,
 			dwell_status: s.dwellStatus || "on",
+			...(s.dwellReset != null ? { dwell_reset: s.dwellReset } : {}),
 		};
 	}
 
@@ -634,6 +635,7 @@ import {
 			arrive_date,
 			spot_date,
 			dwell_status,
+			dwell_reset,
 			leg,
 			...legacy
 		} = stop;
@@ -1069,6 +1071,7 @@ import {
 			spot:       r.spot || "",
 			spotDate:   r.spot_date || "",
 			dwellStatus: ["off", "sleeper", "on"].includes(r.dwell_status) ? r.dwell_status : "on",
+			dwellReset: r.dwell_reset ?? null,
 		};
 	}
 

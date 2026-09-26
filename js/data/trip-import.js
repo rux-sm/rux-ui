@@ -141,17 +141,17 @@ function normalizeV2Stops(values, leg, warnings) {
 			continue;
 		}
 
-		const row = baseStop(stop, type, leg, rows.length);
-		if (type === "day") {
-			row.label = textValue(stop.label) || textValue(stop.date) || "End of day";
-			rows.push(row);
-			continue;
-		}
-
+		/* The trip's rows are the scheduler's: stops only, each carrying its own
+		   date, so a day marker adds no row. A rest is a stop whose wait counts
+		   as sleeper: the bus arrives when the rest starts and leaves when it
+		   ends. */
+		if (type === "day") continue;
+		const row = baseStop(stop, type === "sleeper" ? "stop" : type, leg, rows.length);
 		if (type === "sleeper") {
-			row.depart_prev = textValue(firstValue(stop.rest_start_time, stop.depart_prev));
-			row.arrive = textValue(firstValue(stop.rest_end_time, stop.arrive));
-			if (row.arrive) pendingDeparture = row.arrive;
+			row.dwell_status = "sleeper";
+			row.depart_prev = pendingDeparture;
+			row.arrive = textValue(firstValue(stop.rest_start_time, stop.depart_prev));
+			pendingDeparture = textValue(firstValue(stop.rest_end_time, stop.arrive));
 			rows.push(row);
 			continue;
 		}
@@ -266,25 +266,21 @@ function normalizeV3Stops(values, leg, warnings, startDate) {
 		const departOffset = stop.departure_day_offset === undefined
 			? arriveOffset
 			: offsetValue(stop.departure_day_offset);
-		const row = baseStop(stop, type, leg, rows.length);
-
-		if (type === "day") {
-			row.label = textValue(stop.label)
-				|| textValue(stop.date)
-				|| addDays(startDate, arriveOffset)
-				|| "End of day";
-			rows.push(row);
-			continue;
-		}
+		// No day row: each stop carries its own date. A rest is a stop whose
+		// wait counts as sleeper, from when it starts to when it ends.
+		if (type === "day") continue;
+		const row = baseStop(stop, type === "sleeper" ? "stop" : type, leg, rows.length);
 
 		flagAddressConfidence(stop, leg, warnings);
 
 		if (type === "sleeper") {
-			row.depart_prev = textValue(stop.rest_start_time);
-			row.depart_prev_date = addDays(startDate, arriveOffset);
-			row.arrive = textValue(stop.rest_end_time);
-			row.arrive_date = addDays(startDate, departOffset);
-			if (row.arrive) pending = { time: row.arrive, date: row.arrive_date };
+			row.dwell_status = "sleeper";
+			row.depart_prev = pending?.time ?? null;
+			row.depart_prev_date = pending?.date ?? null;
+			row.arrive = textValue(stop.rest_start_time);
+			row.arrive_date = row.arrive ? addDays(startDate, arriveOffset) : null;
+			const end = textValue(stop.rest_end_time);
+			pending = end ? { time: end, date: addDays(startDate, departOffset) } : null;
 			rows.push(row);
 			continue;
 		}

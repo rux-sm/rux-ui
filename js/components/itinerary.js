@@ -22,19 +22,23 @@
    Data model
    ----------
    Per leg: { pickup, drop, depart, arrive, driveOut, driveBack, milesOut,
-   milesBack }, each place { name, address, lat, lng, mapboxId }.
+   milesBack, middle }, each place { name, address, lat, lng, mapboxId }, and
+   `middle` the stops between as they were saved.
 
    trip-db.js replaces every `trip_stops` row on save with what getStops
-   returns, so these six fields ARE the trip's stops. Three rows go back:
+   returns, which is the scheduler's shape, so neither app has to translate:
 
      pickup  name/address, spot (Bus arrives), departPrev (Yard depart),
              drive and miles from the yard
-     stop    name/address of the drop-off, departPrev (Group departs),
-             arrive (Group arrives)
+     stop    one or more, in order, untouched here except that the first
+             holds departPrev (Group departs) and, on a trip that ends
+             elsewhere, the last is the drop-off and holds arrive (Group
+             arrives); a leg with none gets one
      return  the yard, departPrev (Group arrives), arrive (Yard return),
              drive and miles back
 
-   That is the shape the scheduler writes, so neither app has to translate.
+   There are no day or sleeper rows: a stop carries its own date, and a
+   stop's wait is on duty, off duty or sleeper by its dwell status.
 
    API
    ---
@@ -139,6 +143,8 @@
 		driveBack: null,
 		milesOut: null,
 		milesBack: null,
+		// The stops between the pickup and the return, as the trip was saved.
+		middle: [],
 	});
 
 	const hasPlace = (p) => !!(p && (p.name || p.address));
@@ -171,43 +177,53 @@
 		mapboxId: row?.mapboxId || null,
 	});
 
-	/* Reads a leg out of the rows a trip was saved with. A trip written by the
-	   old per-day editor has stops in between; only the ends are read, and the
-	   rest do not come back, because the six fields are the route now. */
-	function legFromStops(rows) {
+	/* Reads a leg out of the rows a trip was saved with, in the scheduler's
+	   shape: the pickup, the stops between in order, the return. The first
+	   stop holds when the group departs, and the return when it is back; on a
+	   trip that ends elsewhere the last stop is the drop-off and holds its
+	   arrival. A round trip is let off at its pickup. Day and sleeper rows are
+	   an older format and are not read. The stops between are kept as they are,
+	   so a save here writes them back untouched: this tab edits the ends and
+	   the group's two times, and the scheduler's Route tab edits the stops. */
+	function legFromStops(rows, round) {
 		const leg = blankLeg();
-		const list = (rows || []).filter((r) => r && r.type !== "day");
+		const list = (rows || []).filter((r) => r && r.type !== "day" && r.type !== "sleeper");
 		if (!list.length) return leg;
 		const pickup = list.find((r) => r.type === "pickup") || null;
 		const back = [...list].reverse().find((r) => r.type === "return") || null;
 		const middle = list.filter((r) => r.type === "stop");
-		const drop = middle.length ? middle[middle.length - 1] : null;
+		leg.middle = middle.map((r) => ({ ...r }));
 
 		if (pickup) {
 			leg.pickup = stopPlace(pickup);
 			leg.driveOut = parseDriveMins(pickup.drive);
 			leg.milesOut = pickup.miles ? Number(pickup.miles) : null;
 		}
-		if (drop) {
-			leg.drop = stopPlace(drop);
-			leg.depart = String(drop.departPrev || "").slice(0, 5);
-			leg.arrive = String(drop.arrive || "").slice(0, 5);
-		}
-		// A leg the old editor left with several stops keeps the first one's
-		// departure, which is where that editor put the group's leaving time.
-		if (middle.length > 1) leg.depart = String(middle[0].departPrev || leg.depart).slice(0, 5);
+		const drop = round ? pickup : middle[middle.length - 1] || null;
+		if (drop) leg.drop = stopPlace(drop);
+		leg.depart = String(middle[0]?.departPrev || "").slice(0, 5);
+		leg.arrive = String(back?.departPrev || (!round && middle[middle.length - 1]?.arrive) || "").slice(0, 5);
 		if (back) {
 			leg.driveBack = parseDriveMins(back.drive);
 			leg.milesBack = back.miles ? Number(back.miles) : null;
-			if (!leg.arrive) leg.arrive = String(back.departPrev || "").slice(0, 5);
 		}
 		return leg;
 	}
 
-	/* The rows trip-db writes. Three of them, in the order and with the fields
-	   the scheduler uses, so a trip saved here opens there unchanged. */
-	function stopsFromLeg(leg, startDate, endDate) {
-		if (!hasPlace(leg.pickup) && !hasPlace(leg.drop) && !leg.depart && !leg.arrive) return [];
+	const samePlaceAs = (a, b) => !!(a && b && (
+		(a.mapboxId && a.mapboxId === b.mapboxId)
+		|| (a.address && String(a.address).trim().toLowerCase() === String(b.address || "").trim().toLowerCase())));
+
+	/* The rows trip-db writes, in the scheduler's shape so a trip saved here
+	   opens there unchanged: the pickup, the stops between as they were with
+	   the first one holding the departure, and the return. A leg with no stops
+	   gets one, named for the trip's destination on a round trip and for the
+	   drop-off otherwise. On a trip that ends elsewhere the last stop is the
+	   drop-off, whose place and arrival are this tab's; on a round trip the
+	   return holds the arrival, and a last stop back at the pickup holds it
+	   too. */
+	function stopsFromLeg(leg, startDate, endDate, round, destination) {
+		if (!hasPlace(leg.pickup) && !hasPlace(leg.drop) && !leg.depart && !leg.arrive && !leg.middle?.length) return [];
 		const yard = getYard();
 		const times = busTimes(leg);
 		const from = startDate || "";
@@ -224,6 +240,36 @@
 		const yardBackLate = times.yardBack && leg.arrive
 			&& parseClockMins(times.yardBack) < parseClockMins(leg.arrive);
 
+		const between = leg.middle?.length
+			? leg.middle.map((row) => ({ ...row }))
+			: [{
+				type: "stop",
+				label: null,
+				name: round ? (destination || leg.pickup.name || "") : (leg.drop.name || leg.pickup.name || ""),
+				address: round ? "" : (leg.drop.address || leg.pickup.address || ""),
+				miles: "", drive: "",
+				lat: round ? null : leg.drop.lat, lng: round ? null : leg.drop.lng,
+				mapboxId: round ? null : leg.drop.mapboxId,
+				milesSource: "estimated", driveSource: "estimated", routeStatus: "current",
+				arrive: "", arriveDate: "",
+				spot: "", spotDate: "",
+				dwellStatus: "on",
+			}];
+		between[0].departPrev = leg.depart;
+		between[0].departPrevDate = leg.depart ? from : "";
+		const last = between[between.length - 1];
+		if (!round) {
+			Object.assign(last, {
+				name: leg.drop.name || last.name || "",
+				address: leg.drop.address || last.address || "",
+				lat: leg.drop.lat ?? last.lat ?? null, lng: leg.drop.lng ?? last.lng ?? null,
+				mapboxId: leg.drop.mapboxId || last.mapboxId || null,
+				arrive: leg.arrive, arriveDate: leg.arrive ? to : "",
+			});
+		} else if (between.length > 1 && samePlaceAs(last, leg.pickup)) {
+			Object.assign(last, { arrive: leg.arrive, arriveDate: leg.arrive ? to : "" });
+		}
+
 		return [
 			{
 				type: "pickup",
@@ -239,19 +285,7 @@
 				spot: times.spot, spotDate: times.spot ? spotDate : "",
 				dwellStatus: "on",
 			},
-			{
-				type: "stop",
-				label: null,
-				name: leg.drop.name || leg.pickup.name || "",
-				address: leg.drop.address || leg.pickup.address || "",
-				miles: "", drive: "",
-				lat: leg.drop.lat, lng: leg.drop.lng, mapboxId: leg.drop.mapboxId,
-				milesSource: "estimated", driveSource: "estimated", routeStatus: "current",
-				departPrev: leg.depart, departPrevDate: leg.depart ? from : "",
-				arrive: leg.arrive, arriveDate: leg.arrive ? to : "",
-				spot: "", spotDate: "",
-				dwellStatus: "on",
-			},
+			...between,
 			{
 				type: "return",
 				label: null,
@@ -302,6 +336,8 @@
 		let addressSessionToken = uuid();
 
 		const current = () => legs[activeLeg] || legs.outbound;
+		// A round trip is let off at its pickup; a one-way or split leg ends elsewhere.
+		const isRound = () => (window.TripPanel?.getTripType?.(root) || "round_trip") === "round_trip";
 
 		/* The leg's dates, off the trip form. Asked per leg rather than for
 		   whichever is on screen, because trip-db collects both legs' stops in
@@ -605,11 +641,12 @@
 			getStops: (leg = activeLeg) => {
 				const which = leg === "return" ? "return" : "outbound";
 				const dates = legDates(which);
-				return stopsFromLeg(legs[which], dates.from, dates.to);
+				return stopsFromLeg(legs[which], dates.from, dates.to, isRound(),
+					root.querySelector("#tp-destination")?.value.trim() || "");
 			},
 			setStops: (rows, leg = activeLeg) => {
 				const which = leg === "return" ? "return" : "outbound";
-				legs[which] = legFromStops(rows);
+				legs[which] = legFromStops(rows, isRound());
 				if (which === activeLeg) render();
 			},
 			clearStops: () => {

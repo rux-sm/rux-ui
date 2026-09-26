@@ -214,19 +214,33 @@ test("v3 supplies a missing pickup and return, with a warning for each", () => {
 	assert.equal(result.warnings.filter((w) => w.includes("was added")).length, 2);
 });
 
-test("v3 maps a sleeper's rest window onto the editor's two time fields", () => {
+test("v3 makes a sleeper's rest window a stop whose wait counts as sleeper", () => {
 	const result = normalizeTripImport(v3([
 		{ type: "pickup", departure_time: "05:00" },
 		{ type: "sleeper", name: "Marriott", rest_start_time: "22:00", rest_end_time: "07:00", day_offset: 0, departure_day_offset: 1 },
 		{ type: "return", arrival_time: "18:00", day_offset: 1 },
 	]));
 
-	const sleeper = firstOf(result, "sleeper");
-	assert.equal(sleeper.depart_prev, "22:00");
-	assert.equal(sleeper.depart_prev_date, "2026-07-27");
-	assert.equal(sleeper.arrive, "07:00");
-	assert.equal(sleeper.arrive_date, "2026-07-28", "the rest window ends on the next day");
+	assert.equal(firstOf(result, "sleeper"), undefined, "no sleeper row is written");
+	const rest = firstOf(result, "stop");
+	assert.equal(rest.name, "Marriott");
+	assert.equal(rest.dwell_status, "sleeper");
+	assert.equal(rest.depart_prev, "05:00", "the bus leaves the pickup for it");
+	assert.equal(rest.arrive, "22:00", "it arrives when the rest starts");
+	assert.equal(rest.arrive_date, "2026-07-27");
 	assert.equal(firstOf(result, "return").depart_prev, "07:00", "the trip resumes at the rest end");
+	assert.equal(firstOf(result, "return").depart_prev_date, "2026-07-28", "on the next day");
+});
+
+test("v3 writes no row for a day marker", () => {
+	const result = normalizeTripImport(v3([
+		{ type: "pickup", departure_time: "05:00" },
+		{ type: "stop", name: "Field", arrival_time: "10:00", departure_time: "14:30" },
+		{ type: "day", label: "Day 2" },
+		{ type: "return", arrival_time: "18:00", day_offset: 1 },
+	]));
+
+	assert.deepEqual(stopsOf(result).map((row) => row.type), ["pickup", "stop", "return"]);
 });
 
 test("v3 skips an unknown stop type with a warning instead of throwing", () => {
