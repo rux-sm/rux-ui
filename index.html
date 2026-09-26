@@ -85,10 +85,6 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/request-inbox.css?v=12"
-		/>
-		<link
-			rel="stylesheet"
 			href="./scheduler/css/features/bus-picker.css?v=8"
 		/>
 		<link
@@ -817,27 +813,6 @@
 								<span class="rux-side-nav__label" data-view-label
 									>Customers</span
 								>
-							</button>
-						</li>
-						<li class="rux-side-nav__item">
-							<button
-								class="rux-side-nav__link"
-								type="button"
-								id="request-inbox-btn"
-								data-view="requests"
-								title="Customer Trip Requests"
-							>
-								<span class="rux-icon" aria-hidden="true"
-									>inbox</span
-								>
-								<span class="rux-side-nav__label" data-view-label
-									>Requests</span
-								>
-								<span
-									class="rux-side-nav__badge"
-									id="requests-badge"
-									hidden
-								></span>
 							</button>
 						</li>
 						<li class="rux-side-nav__item">
@@ -5224,181 +5199,6 @@
 				</div>
 				<!-- /module:customers -->
 
-				<!-- ═════════════════════════════════════════════════════════════
-             MODULE: REQUESTS
-             ════════════════════════════════════════════════════════════════ -->
-				<!-- The dispatcher-facing inbox for customer trip requests. A
-				     full module rather than a floating window: it is a list
-				     surface, and in this app a floating window hosts the editor
-				     of one record while the module view hosts the list. The
-				     invite dialog stays a sibling of every view, below, so
-				     showModal() is never called on a hidden subtree. See
-				     js/panels/request-inbox.js and
-				     scheduler/css/features/request-inbox.css. -->
-				<div
-					class="rux-app-view"
-					data-view="requests"
-					data-archetype="records"
-					hidden
-				>
-					<section
-						class="rux-workspace sched-scope-request"
-						id="request-inbox-view"
-						aria-label="Requests"
-					>
-						<!-- --table is the modifier Fleet, Drivers, and Customers
-						     use for a list view: it lets the toolbar grow and
-						     shrink with the header instead of sizing to its
-						     content, which is what the status filter needs. -->
-						<header
-							class="rux-workspace__header rux-workspace__header--table"
-						>
-							<div class="rux-workspace__heading">
-								<span
-									class="sched-scope-request__count"
-									id="request-inbox-footer"
-									aria-live="polite"
-								></span>
-							</div>
-							<div class="rux-workspace__toolbar">
-								<div
-									class="rux-segmented-track"
-									id="request-inbox-filters"
-									role="group"
-									aria-label="Filter requests"
-								>
-									<button
-										type="button"
-										class="rux-button rux-button--segment"
-										data-request-filter="all"
-										aria-pressed="true"
-									>
-										All
-									</button>
-									<button
-										type="button"
-										class="rux-button rux-button--segment"
-										data-request-filter="new"
-										aria-pressed="false"
-									>
-										Received
-									</button>
-									<button
-										type="button"
-										class="rux-button rux-button--segment"
-										data-request-filter="invited"
-										aria-pressed="false"
-									>
-										Sent
-									</button>
-									<button
-										type="button"
-										class="rux-button rux-button--segment"
-										data-request-filter="reviewed"
-										aria-pressed="false"
-									>
-										Reviewed
-									</button>
-									<button
-										type="button"
-										class="rux-button rux-button--segment"
-										data-request-filter="linked"
-										aria-pressed="false"
-									>
-										Linked
-									</button>
-									<button
-										type="button"
-										class="rux-button rux-button--segment"
-										data-request-filter="closed"
-										aria-pressed="false"
-									>
-										Closed
-									</button>
-								</div>
-								<button
-									type="button"
-									class="rux-button rux-button--accent"
-									id="request-inbox-new-btn"
-								>
-									<span class="rux-icon" aria-hidden="true">add</span>
-									<span class="rux-button__label">New Request</span>
-								</button>
-							</div>
-						</header>
-						<div class="rux-workspace__body rux-table-wrap">
-							<table class="rux-table sched-scope-request__table">
-								<thead>
-									<tr>
-										<th scope="col">Status</th>
-										<th scope="col">Client</th>
-										<th scope="col">Trip</th>
-										<th scope="col">Pax</th>
-										<th scope="col">Received</th>
-										<th scope="col" aria-label="Actions"></th>
-									</tr>
-								</thead>
-								<tbody id="request-inbox-list"></tbody>
-							</table>
-						</div>
-					</section>
-
-					<!-- One request in full. A floating window because it is the
-					     editor of a single record, which is what this app puts in
-					     floating windows — the list stays in the module behind
-					     it. See js/panels/request-inbox.js. -->
-					<aside
-						class="rux-panel rux-panel--floating sched-scope-request__detail"
-						id="request-detail-window"
-						role="dialog"
-						aria-labelledby="request-detail-title"
-						hidden
-					>
-						<header
-							class="rux-panel__header"
-							id="request-detail-header"
-						>
-							<h2
-								class="rux-panel__title"
-								id="request-detail-title"
-							>
-								Request
-							</h2>
-							<span
-								class="sched-scope-request__count"
-								id="request-detail-status"
-							></span>
-							<button
-								type="button"
-								class="rux-button rux-button--ghost rux-button--icon"
-								id="request-detail-close-btn"
-								aria-label="Close request"
-							>
-								<span class="rux-icon" aria-hidden="true">close</span>
-							</button>
-						</header>
-						<div class="rux-panel__body">
-							<div
-								class="rux-panel__pane sched-scope-request__detail-pane"
-								id="request-detail-body"
-							></div>
-						</div>
-						<footer class="rux-panel__footer">
-							<button
-								type="button"
-								class="rux-button rux-button--accent"
-								id="request-detail-draft-btn"
-								hidden
-							>
-								<span class="rux-icon" aria-hidden="true">note_add</span>
-								<span class="rux-button__label">Create Draft Trip</span>
-							</button>
-						</footer>
-					</aside>
-				</div>
-				<!-- /module:requests -->
-
-
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: DOCUMENTS
              ════════════════════════════════════════════════════════════════ -->
@@ -6291,7 +6091,6 @@
 		<script src="./js/panels/customers-panel.js?v=13" defer></script>
 		<script src="./js/panels/settings-panel.js?v=15" defer></script>
 		<script src="./js/panels/trip-finder.js?v=12" defer></script>
-		<script src="./js/panels/request-inbox.js?v=12" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=13" defer></script>
 		<script src="./js/panels/print-schedule.js?v=38" defer></script>
 		<script src="./js/panels/trip-envelope.js?v=23" defer></script>
@@ -6398,7 +6197,6 @@
 					"drivers",
 					"driver-roster",
 					"customers",
-					"requests",
 					"itineraries",
 					"documents",
 					"settings",
@@ -6412,7 +6210,6 @@
 					if (name === "driver-roster") window.DriverRosterPanel?.init();
 					if (name === "fleet") window.FleetPanel?.init();
 					if (name === "customers") window.CustomersPanel?.init();
-					if (name === "requests") window.RequestInbox?.init();
 					if (name === "settings") window.SettingsPanel?.init();
 				},
 			});
@@ -11942,151 +11739,6 @@
 			</div>
 		</div>
 
-		<dialog
-			class="sched-scope-request__dialog"
-			id="request-inbox-dialog"
-			aria-labelledby="request-inbox-dialog-title"
-		>
-			<form class="sched-scope-request__dialog-form">
-				<header class="sched-scope-request__dialog-header">
-					<h2
-						class="sched-scope-request__dialog-title"
-						id="request-inbox-dialog-title"
-					>
-						New request
-					</h2>
-					<button
-						type="button"
-						class="rux-button rux-button--ghost rux-button--icon"
-						id="request-inbox-cancel-btn"
-						aria-label="Close"
-					>
-						<span class="rux-icon" aria-hidden="true">close</span>
-					</button>
-				</header>
-				<div class="sched-scope-request__dialog-body">
-					<p class="sched-scope-request__dialog-intro">
-						We'll create a request link you can send to the
-						customer. Their submission lands back here.
-					</p>
-					<label class="rux-field">
-						<span class="rux-field__label">Client / group</span>
-						<input
-							class="rux-input"
-							name="client"
-							type="text"
-							placeholder="Raymondville ISD"
-							autocomplete="organization"
-						/>
-					</label>
-					<label class="rux-field">
-						<span class="rux-field__label">Contact name</span>
-						<input
-							class="rux-input"
-							name="name"
-							type="text"
-							autocomplete="name"
-						/>
-						<p
-							class="rux-field__error"
-							data-error-for="name"
-							hidden
-						></p>
-					</label>
-					<label class="rux-field">
-						<span class="rux-field__label">Email</span>
-						<input
-							class="rux-input"
-							name="email"
-							type="email"
-							autocomplete="email"
-						/>
-						<p
-							class="rux-field__error"
-							data-error-for="email"
-							hidden
-						></p>
-					</label>
-					<label class="rux-field">
-						<span class="rux-field__label">Phone</span>
-						<input
-							class="rux-input"
-							name="phone"
-							type="tel"
-							autocomplete="tel"
-							placeholder="Optional"
-						/>
-					</label>
-					<label class="rux-field">
-						<span class="rux-field__label">Passengers</span>
-						<input
-							class="rux-input"
-							name="passengers"
-							type="number"
-							min="1"
-							max="200"
-							placeholder="Optional"
-						/>
-					</label>
-					<label class="rux-field">
-						<span class="rux-field__label">Note</span>
-						<textarea
-							class="rux-textarea"
-							name="note"
-							rows="2"
-							placeholder="Anything to know before they fill the form…"
-						></textarea>
-					</label>
-				</div>
-				<footer class="sched-scope-request__dialog-footer">
-					<div class="sched-scope-request__dialog-actions">
-						<button
-							type="button"
-							class="rux-button rux-button--accent"
-							id="request-inbox-create-btn"
-						>
-							<span class="rux-button__label">Create link</span>
-						</button>
-					</div>
-					<div
-						class="sched-scope-request__invite"
-						id="request-inbox-invite"
-						hidden
-					>
-						<p class="sched-scope-request__invite-label">
-							Request link
-						</p>
-						<input
-							class="rux-input"
-							id="request-inbox-invite-url"
-							type="text"
-							readonly
-							aria-label="Request link"
-						/>
-						<div class="sched-scope-request__invite-actions">
-							<button
-								type="button"
-								class="rux-button rux-button--ghost"
-								id="request-inbox-copy-btn"
-							>
-								<span class="rux-button__label">Copy link</span>
-							</button>
-							<a
-								class="rux-button rux-button--ghost"
-								id="request-inbox-mail-btn"
-								target="_blank"
-								rel="noopener"
-								href="#"
-							>
-								<span class="rux-button__label"
-									>Compose email</span
-								>
-							</a>
-						</div>
-					</div>
-				</footer>
-			</form>
-		</dialog>
 		<!-- Trip finder window — floating/draggable/resizable, same shell as the
 		     document viewer and trip manifest. Combines the old full-page Trips
 		     list with the old ⌘K search modal. See js/panels/trip-finder.js for

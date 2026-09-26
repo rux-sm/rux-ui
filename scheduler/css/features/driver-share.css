@@ -64,8 +64,7 @@ html {
 	color: var(--rux-text-primary);
 }
 
-/* Chrome is the shared .rux-ui-header, composed bare — the request.html
-   precedent (see trip-request.css's header note). The hand-rolled
+/* Chrome is the shared .rux-ui-header, composed bare. The hand-rolled
    .driver-share-header block lived here until 2026-08-24; composition.md D8
    records the re-dress. Its label was the app-layer consumer of label-18 —
    that history stays in typography.md steps 27/38/39 and the role returns

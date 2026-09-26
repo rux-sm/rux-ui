@@ -33,7 +33,6 @@ const VIEWS = [
 	"fleet",
 	"drivers",
 	"customers",
-	"requests",
 	"documents",
 	"settings",
 ];

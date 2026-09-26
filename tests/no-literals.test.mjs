@@ -98,7 +98,6 @@ const ALLOWED = new Map([
  * count cannot grow quietly while it is. */
 const PENDING_ICON_SIZING = new Map([
 	["scheduler/css/features/trip-list.css", new Set(["14px"])],
-	["scheduler/css/features/trip-request.css", new Set(["40px"])],
 ]);
 
 const TYPE_PROPS = /^(font-size|line-height|font-weight|letter-spacing|font)$/;

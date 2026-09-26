@@ -43,12 +43,12 @@ test("the UI header routes product navigation through a side nav", () => {
 	// "Schedule", not "Trips": the destination names the bus-by-day board,
 	// while "Trips" remains the word for the records on it (tasks filter,
 	// editor tabs, customer trip history).
-	for (const label of ["Schedule", "Drivers", "Fleet", "Customers", "Requests", "Samsara", "Options"]) {
+	for (const label of ["Schedule", "Drivers", "Fleet", "Customers", "Samsara", "Options"]) {
 		assert.match(page, new RegExp(`<span class="rux-side-nav__label"[^>]*>\\s*${label}\\s*</span`));
 	}
 	assert.match(
 		page,
-		/<span class="rux-side-nav__label"[^>]*>\s*Requests\s*<\/span[\s\S]*?<span class="rux-side-nav__label"[^>]*>\s*Samsara\s*<\/span[\s\S]*?<span class="rux-side-nav__label"[^>]*>\s*Options\s*<\/span/,
+		/<span class="rux-side-nav__label"[^>]*>\s*Documents\s*<\/span[\s\S]*?<span class="rux-side-nav__label"[^>]*>\s*Samsara\s*<\/span[\s\S]*?<span class="rux-side-nav__label"[^>]*>\s*Options\s*<\/span/,
 	);
 	assert.match(
 		page,

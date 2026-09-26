@@ -82,8 +82,7 @@ handler. Skip it for pure token, color, or static-layout changes.
 
 - Stateful UI worth bookmarking or sharing — an open panel, active tab,
   active filter — should reflect in the URL via `URLSearchParams`, the way
-  the public share-link pages (`js/pages/driver-share.js`,
-  `js/pages/trip-request.js`) already do. The main scheduler app's own
+  the public share-link page `js/pages/driver-share.js` already does. The main scheduler app's own
   panels, tabs, and filters don't do this yet.
 
 ## Large lists (apply to new work; not retrofitted)

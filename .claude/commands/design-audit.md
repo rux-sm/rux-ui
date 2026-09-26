@@ -48,7 +48,7 @@ different and more useful claim.
 4. Sample-read at least 15 files spread across layers — don't audit from filenames alone.
    Include at least: two `rux-ui/css/base/` partials, two `rux-ui/js/` behaviors, two
    `scheduler/css/features/` files, two `js/panels/`, one `js/components/`, one `js/core/`,
-   one `js/data/`, one standalone page (`driver.html`, `request.html`, `maintenance.html`),
+   one `js/data/`, one standalone page (`driver.html`, `maintenance.html`),
    and a substantial slice of `index.html` including its inline `<script>` blocks.
 5. Grep for the tells and count them:
    - inline `style="` in HTML and in JS template strings
@@ -79,7 +79,7 @@ references. No vague criticism.
 - Do imports cross layers they shouldn't — a `rux-ui/js/` behavior reaching into app
   globals, a `js/core/` module importing from a panel, a panel importing another panel's
   internals?
-- Are the standalone pages (`driver.html`, `request.html`, `maintenance.html`, `doc.html`,
+- Are the standalone pages (`driver.html`, `maintenance.html`, `doc.html`,
   `d.html`, `m.html`, `gallery.html`) consistent with each other and with `index.html` in
   stylesheet/script load order? Which are live, which are stubs?
 - How much application logic lives inside `index.html`'s inline `<script>` blocks versus
@@ -213,7 +213,7 @@ implementation is a finding, and say which side is wrong.
 - Color contrast of status colors in both themes; is trip/assignment status conveyed by
   color alone?
 - `prefers-reduced-motion` — respected everywhere motion is defined, or only in some files?
-- Semantic structure of the standalone share pages (`driver.html`, `request.html`,
+- Semantic structure of the standalone share pages (`driver.html`,
   `maintenance.html`), which are the pages most likely to be opened on a phone by someone
   outside the office.
 
