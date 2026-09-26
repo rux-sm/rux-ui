@@ -26,39 +26,32 @@
 <body>
   <div class="msg" id="msg">Opening document…</div>
   <script type="module">
-    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/+esm";
-
-    const SUPABASE_URL = "https://white-boat-9932.rux-smercado.workers.dev";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVkbm1xaGF5emhyYmx0eHp6aGp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1OTU5NzcsImV4cCI6MjA5NjE3MTk3N30.i5q2SdSZLyOVEGZFFDTtVFqIMVEDz6jLO9ejJfy8Y94";
-    const BUCKET = "trip-documents";
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    // The trip-documents bucket is closed, so the trip-document-link Edge
+    // Function hands back a link to the file signed for ten minutes. The
+    // document's id is the link's only secret.
+    const LINK_FUNCTION = "https://udnmqhayzhrbltxzzhjw.supabase.co/functions/v1/trip-document-link";
     const msg = document.getElementById("msg");
-
     const id = new URLSearchParams(window.location.search).get("id");
 
     if (!id) {
       msg.textContent = "No document ID provided.";
     } else {
       try {
-        // A token-free lookup by document id, through a function rather than
-        // the table, so the link keeps working once the database admits only
-        // staff.
-        const { data, error } = await supabase.rpc("get_trip_document", { p_id: id });
-
-        if (error || !data) {
+        const response = await fetch(LINK_FUNCTION, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id }),
+        });
+        const data = await response.json().catch(() => ({}));
+        if (response.ok && data.url) {
+          window.location.replace(data.url);
+        } else if (response.status === 404 || response.status === 400) {
           msg.textContent = "Document not found.";
         } else {
-          const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(data.file_path);
-          const url = urlData?.publicUrl;
-          if (url) {
-            window.location.replace(url);
-          } else {
-            msg.textContent = "Could not load document.";
-          }
+          msg.textContent = "Could not load document.";
         }
       } catch (err) {
-        msg.innerHTML = "Something went wrong. Please try again.";
+        msg.textContent = "Something went wrong. Please try again.";
       }
     }
   </script>

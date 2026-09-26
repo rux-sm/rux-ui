@@ -132,9 +132,11 @@ function alertsFor(trip) {
 	});
 }
 
+// A file opens through doc.html, which asks for a link signed for ten minutes
+// each time it is opened, since the trip-documents bucket is closed.
 function documentUrl(document) {
-	if (!document?.file_path) return "";
-	return supabase.storage.from("trip-documents").getPublicUrl(document.file_path).data?.publicUrl || "";
+	if (!document?.id || !document?.file_path) return "";
+	return new URL(`doc.html?id=${encodeURIComponent(document.id)}`, window.location.href).href;
 }
 
 function documentType(label) {
