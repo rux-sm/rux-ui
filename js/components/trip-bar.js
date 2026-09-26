@@ -169,8 +169,8 @@ function isPdfFile(file) {
 // — same floating panel the Files list's View button opens (js/panels/trip-panel.js),
 // so a document looks the same regardless of where you opened it from. Falls
 // back to a new tab if the viewer script hasn't loaded for some reason.
-function openDocInViewer(doc, options = {}) {
-  const url = window.RuxDocs?.url?.(doc?.file_path);
+async function openDocInViewer(doc, options = {}) {
+  const url = await window.RuxDocs?.url?.(doc?.file_path);
   if (!url) return;
   if (!window.RuxDocViewer) {
     window.open(url, "_blank");

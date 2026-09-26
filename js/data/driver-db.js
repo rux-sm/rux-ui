@@ -2,13 +2,15 @@ import { supabase } from "./supabase.js";
 import { isAssignmentRoleActive } from "../core/trip-assignment-roles.js";
 
 export async function fetchDrivers() {
-  const { data, error } = await supabase
+  const { data: drivers, error } = await supabase
     .from("drivers")
     .select("id, driver_ref, name, short_name, email, phone, texting_url, address, city, address_state, zip, date_of_birth, hire_date, cdl_class, license_number, license_state, license_exp, med_card_expiry, endorsements, status, employment_type, priority, emergency_contact_name, emergency_contact_phone, notes, sort_order, photo_path")
     .order("sort_order", { ascending: true, nullsFirst: false })
     .order("name");
   if (error) throw error;
-  return data ?? [];
+  // Signed before the list is handed back, so the first render has its photos.
+  await signDriverPhotos((drivers ?? []).map((d) => d.photo_path), { fresh: true });
+  return drivers ?? [];
 }
 
 export async function reorderDrivers(updates) {
@@ -95,10 +97,52 @@ export async function replaceTimeOff(driverId, entries) {
 
 const PHOTO_BUCKET = "driver-photos";
 
+/* The bucket is closed to everyone but staff, so a photo is shown through a
+   link signed for ten minutes. The links are signed in one request when the
+   drivers are fetched, so getDriverPhotoUrl stays synchronous for the views
+   that build their markup as strings. Once the links near their end, or a path
+   has none yet, they are signed again in the background and
+   "rux:driver-photos-signed" tells the views to draw their avatars again. */
+const PHOTO_LINK_SECONDS = 600;
+const photoLinks = new Map();
+// Paths asked for since the last full signing, so a path that cannot be
+// signed is not asked for on every render.
+const photoAsked = new Set();
+let photoLinksAt = 0;
+let photoSigning = null;
+
+async function signDriverPhotos(paths, { fresh = false } = {}) {
+  const wanted = [...new Set(paths.filter(Boolean))];
+  if (fresh) {
+    photoAsked.clear();
+    photoLinksAt = Date.now();
+  }
+  wanted.forEach((path) => photoAsked.add(path));
+  if (!wanted.length) return;
+  try {
+    const { data, error } = await supabase.storage
+      .from(PHOTO_BUCKET)
+      .createSignedUrls(wanted, PHOTO_LINK_SECONDS);
+    if (error) return;
+    for (const row of data ?? []) {
+      if (row.path && row.signedUrl) photoLinks.set(row.path, row.signedUrl);
+    }
+  } catch {
+    // Unsigned photos show their initials.
+  }
+}
+
 export function getDriverPhotoUrl(photoPath) {
   if (!photoPath) return null;
-  const { data } = supabase.storage.from(PHOTO_BUCKET).getPublicUrl(photoPath);
-  return data?.publicUrl || null;
+  const stale = Date.now() - photoLinksAt > (PHOTO_LINK_SECONDS - 60) * 1000;
+  if (!photoSigning && (stale || !photoAsked.has(photoPath))) {
+    const paths = stale ? [...photoLinks.keys(), photoPath] : [photoPath];
+    photoSigning = signDriverPhotos(paths, { fresh: stale }).finally(() => {
+      photoSigning = null;
+      document.dispatchEvent(new CustomEvent("rux:driver-photos-signed"));
+    });
+  }
+  return photoLinks.get(photoPath) || null;
 }
 
 export async function uploadDriverPhoto(driverId, file) {
@@ -125,6 +169,7 @@ export async function uploadDriverPhoto(driverId, file) {
     .eq("id", driverId);
   if (updateErr) throw updateErr;
 
+  await signDriverPhotos([photoPath]);
   return photoPath;
 }
 

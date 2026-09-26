@@ -251,13 +251,16 @@ function openTripItineraryDoc(trip) {
 		window.Rux?.toast?.("No itinerary uploaded yet");
 		return false;
 	}
-	const url = window.RuxDocs?.url?.(doc.file_path);
-	if (!url) return false;
-	if (!window.RuxDocViewer) {
-		window.open(url, "_blank");
-		return true;
-	}
-	window.RuxDocViewer.open({ url, fileName: doc.file_name, icon: "route" });
+	if (!doc.file_path || !window.RuxDocs?.url) return false;
+	// The link is signed on the way, so the viewer opens a moment later.
+	void window.RuxDocs.url(doc.file_path).then((url) => {
+		if (!url) {
+			window.Rux?.toast?.("The itinerary can't be opened right now");
+			return;
+		}
+		if (!window.RuxDocViewer) window.open(url, "_blank");
+		else window.RuxDocViewer.open({ url, fileName: doc.file_name, icon: "route" });
+	});
 	return true;
 }
 

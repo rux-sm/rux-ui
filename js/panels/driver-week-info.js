@@ -135,12 +135,11 @@ import {
 
 	function itineraryDocument(trip) {
 		const doc = latestDocument(trip.trip_documents, "Itinerary");
-		if (!doc) return { publicUrl: "", shortUrl: "" };
+		if (!doc?.id) return { shortUrl: "" };
+		// doc.html signs a fresh link each time it is opened, so this address
+		// outlives the ten minutes a signed file link lasts.
 		return {
-			publicUrl: doc.file_path ? window.RuxDocs?.url?.(doc.file_path) || "" : "",
-			shortUrl: doc.id
-				? `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, "")}doc.html?id=${encodeURIComponent(doc.id)}`
-				: "",
+			shortUrl: `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, "")}doc.html?id=${encodeURIComponent(doc.id)}`,
 		};
 	}
 
@@ -237,8 +236,8 @@ import {
 						: trip.destination || "",
 					requirements: activeRequirements(trip),
 					contact: operationalTripContact(trip),
-					itineraryUrl: itinerary.publicUrl,
-					itineraryShareUrl: itinerary.shortUrl || itinerary.publicUrl,
+					itineraryUrl: itinerary.shortUrl,
+					itineraryShareUrl: itinerary.shortUrl,
 				});
 			}
 		}

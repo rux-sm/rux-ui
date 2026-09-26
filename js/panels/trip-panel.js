@@ -1303,8 +1303,8 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 			}
 		};
 
-		const openDocRow = (row) => {
-			const url = window.RuxDocs?.url?.(row.dataset.docPath);
+		const openDocRow = async (row) => {
+			const url = await window.RuxDocs?.url?.(row.dataset.docPath);
 			if (!url) return;
 			if (!window.RuxDocViewer) {
 				window.open(url, "_blank");

@@ -1747,6 +1747,14 @@
 		}
 	}
 
+	// Fresh photo links arrived; draw the roster and the open driver's avatar
+	// again so neither keeps an expired one.
+	document.addEventListener("rux:driver-photos-signed", () => {
+		if (!allDrivers.length) return;
+		if (activeDriverView !== "workload") renderRoster();
+		if (selectedId) renderAvatar(allDrivers.find((x) => x.id === selectedId));
+	});
+
 	async function loadDrivers() {
 		try {
 			allDrivers = await db.fetchDrivers();
@@ -1766,7 +1774,7 @@
 	async function init() {
 		if (!db) {
 			try {
-				db = await import("../data/driver-db.js?v=4");
+				db = await import("../data/driver-db.js?v=9");
 			} catch (err) {
 				console.warn("Could not load driver-db:", err);
 				return;

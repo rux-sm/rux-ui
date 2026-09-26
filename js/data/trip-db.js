@@ -2476,9 +2476,17 @@ function renamedDocumentFile(file, fileName) {
 	});
 }
 
-export function getDocumentUrl(filePath) {
-	const { data } = supabase.storage.from(BUCKET).getPublicUrl(filePath);
-	return data?.publicUrl || null;
+// A stored file's link, signed for ten minutes: the trip-documents bucket is
+// closed to everyone but staff, so its public address does not open. Resolves
+// to null when the file cannot be signed.
+export async function getDocumentUrl(filePath) {
+	if (!filePath) return null;
+	try {
+		const { data, error } = await supabase.storage.from(BUCKET).createSignedUrl(filePath, 600);
+		return error ? null : data?.signedUrl || null;
+	} catch {
+		return null;
+	}
 }
 
 export function getDocumentShortUrl(docId) {

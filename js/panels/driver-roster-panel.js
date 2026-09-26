@@ -445,6 +445,12 @@
 		render();
 	});
 
+	// Fresh photo links arrived; draw the rows again so no avatar keeps an
+	// expired one.
+	document.addEventListener("rux:driver-photos-signed", () => {
+		if (allDrivers.length) render();
+	});
+
 	/* ── Boot ────────────────────────────────────────────────────────────── */
 
 	async function load() {
@@ -467,7 +473,7 @@
 	async function init() {
 		if (!db) {
 			try {
-				db = await import("../data/driver-db.js?v=4");
+				db = await import("../data/driver-db.js?v=9");
 			} catch (err) {
 				console.warn("driver-roster: could not load driver-db:", err);
 				return;
