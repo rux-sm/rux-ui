@@ -89,10 +89,6 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/flip-seven.css?v=29"
-		/>
-		<link
-			rel="stylesheet"
 			href="./scheduler/css/features/bus-picker.css?v=8"
 		/>
 		<link
@@ -5470,284 +5466,6 @@
 
 
 				<!-- ════════════════════════════════════════════════════════════════
-             MODULE: FLIP 7
-             ════════════════════════════════════════════════════════════════ -->
-				<div class="rux-app-view" data-view="game" data-view-title="Flip 7" data-archetype="document-column" hidden>
-					<section
-						class="rux-workspace flip-seven"
-						aria-label="Flip 7"
-					>
-						<div class="rux-workspace__body flip-seven__shell">
-							<section
-								class="rux-card flip-seven__panel"
-								aria-label="Flip 7 game"
-							>
-								<header class="rux-card__header">
-									<h2 class="rux-card__title">Flip 7</h2>
-									<div class="rux-u-row">
-										<p
-											class="flip-seven__status"
-											id="game-status"
-										>
-											Join the table to play
-										</p>
-										<button
-											class="rux-button rux-button--ghost rux-button--danger rux-button--icon"
-											id="game-reset"
-											type="button"
-											hidden
-											aria-label="Reset game"
-											title="Reset game"
-										>
-											<span
-												class="rux-icon"
-												aria-hidden="true"
-												>restart_alt</span
-											>
-										</button>
-										<button
-											class="rux-button rux-button--default rux-button--icon flip-seven__quit"
-											id="game-leave"
-											type="button"
-											aria-label="Quit game"
-											title="Quit game"
-										>
-											<span
-												class="rux-icon"
-												aria-hidden="true"
-												>close</span
-											>
-										</button>
-									</div>
-								</header>
-								<div class="rux-card__body flip-seven__body">
-									<section
-										class="flip-seven__lobby"
-										id="game-lobby"
-										aria-labelledby="game-lobby-title"
-									>
-										<div
-											class="rux-card flip-seven__lobby-card"
-										>
-											<div>
-												<p class="flip-seven__eyebrow">
-													New match
-												</p>
-												<h3 id="game-lobby-title">
-													Take a seat
-												</h3>
-												<p class="flip-seven__copy">
-													Draw unique cards, bank your
-													points, and reach 200. Flip
-													seven to end the round with
-													a 15-point bonus.
-												</p>
-											</div>
-											<form
-												class="flip-seven__join"
-												id="game-join-form"
-											>
-												<div class="rux-field">
-													<label
-														class="rux-field__label"
-														for="game-player-name"
-														>Player name</label
-													>
-													<input
-														class="rux-input"
-														id="game-player-name"
-														maxlength="32"
-														autocomplete="nickname"
-														placeholder="Enter name"
-														required
-													/>
-													<span
-														class="rux-field__error"
-														id="game-join-error"
-														role="alert"
-														hidden
-													></span>
-												</div>
-												<button
-													class="rux-button rux-button--accent"
-													id="game-join-button"
-													type="submit"
-												>
-													Join game
-												</button>
-											</form>
-											<div class="flip-seven__players">
-												<div
-													class="flip-seven__section-heading"
-												>
-													<h3>Players</h3>
-													<span
-														class="rux-badge"
-														id="game-player-count"
-														>0</span
-													>
-												</div>
-												<ul
-													class="flip-seven__roster"
-													id="game-lobby-players"
-												></ul>
-											</div>
-											<button
-												class="rux-button rux-button--accent"
-												id="game-start"
-												type="button"
-												disabled
-											>
-												Start match
-											</button>
-											<button
-												class="rux-button rux-button--ghost rux-button--danger"
-												id="game-lobby-reset"
-												type="button"
-												hidden
-											>
-												<span
-													class="rux-icon"
-													aria-hidden="true"
-													>restart_alt</span
-												>Reset lobby
-											</button>
-										</div>
-									</section>
-
-									<div
-										class="flip-seven__table"
-										id="game-table"
-										hidden
-									>
-										<div
-											class="rux-card rux-card--stack flip-seven__mat"
-										>
-											<div class="flip-seven__board">
-												<div class="flip-seven__turn">
-													<div
-														class="flip-seven__turn-status"
-													>
-														<span
-															class="flip-seven__eyebrow"
-															>Current turn</span
-														>
-														<strong
-															id="game-active-player"
-															>Waiting for
-															player</strong
-														>
-														<span
-															id="game-turn-note"
-															>Controls unlock on
-															your turn.</span
-														>
-													</div>
-													<div
-														class="flip-seven__messages"
-														id="game-messages"
-														role="log"
-														aria-live="polite"
-														aria-label="Game messages"
-													></div>
-													<form
-														class="flip-seven__message-form"
-														id="game-message-form"
-													>
-														<input
-															class="rux-input"
-															id="game-message-input"
-															maxlength="160"
-															autocomplete="off"
-															placeholder="Message the table"
-															aria-label="Message"
-														/>
-														<button
-															class="rux-button rux-button--accent rux-button--icon"
-															id="game-message-send"
-															type="submit"
-															aria-label="Send message"
-														>
-															<span
-																class="rux-icon"
-																aria-hidden="true"
-																>send</span
-															>
-														</button>
-													</form>
-												</div>
-												<div
-													class="flip-seven__hand"
-													id="game-hand"
-													aria-label="Player hands"
-												></div>
-											</div>
-											<div
-												class="flip-seven__round-total"
-											>
-												Round
-												<strong id="game-round-score"
-													>0</strong
-												>
-											</div>
-										</div>
-										<aside
-											class="rux-card rux-card--stack flip-seven__scoreboard"
-											aria-labelledby="game-scoreboard-title"
-										>
-											<div
-												class="flip-seven__section-heading"
-											>
-												<h3 id="game-scoreboard-title">
-													Scoreboard
-												</h3>
-												<span
-													class="rux-badge rux-badge--info"
-													id="game-deck-count"
-													>0 cards</span
-												>
-											</div>
-											<ol
-												class="flip-seven__scores"
-												id="game-scores"
-											></ol>
-										</aside>
-									</div>
-								</div>
-								<footer
-									class="rux-card__footer flip-seven__actions"
-								>
-									<button
-										class="rux-button rux-button--accent"
-										id="game-hit"
-										type="button"
-										disabled
-									>
-										<span
-											class="rux-icon"
-											aria-hidden="true"
-											>add_card</span
-										>Hit
-									</button>
-									<button
-										class="rux-button rux-button--default"
-										id="game-bank"
-										type="button"
-										disabled
-									>
-										<span
-											class="rux-icon"
-											aria-hidden="true"
-											>savings</span
-										>Bank
-									</button>
-								</footer>
-							</section>
-						</div>
-					</section>
-				</div>
-
-				<!-- ════════════════════════════════════════════════════════════════
              MODULE: SETTINGS
              ════════════════════════════════════════════════════════════════ -->
 				<div
@@ -6602,7 +6320,6 @@
 		></script>
 		<script type="module" src="./js/panels/trip-history.js?v=6"></script>
 		<script type="module" src="./js/panels/tasks-panel.js?v=74"></script>
-		<script type="module" src="./js/panels/flip-seven.js?v=24"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
 
 		<script type="module">
@@ -6684,7 +6401,6 @@
 					"requests",
 					"itineraries",
 					"documents",
-					"game",
 					"settings",
 				],
 				aliases: { schedule: "calendar", trips: "calendar" },
@@ -11192,12 +10908,12 @@
 
 			// Multiple dispatchers can have the same week open at once — Realtime
 			// is the primary path so an edit from one person shows up for everyone
-			// without a manual refresh (same recipe as flip-seven.js's channel).
+			// without a manual refresh.
 			// loadTripsFromDB() already coalesces overlapping calls (_loadInProgress/
 			// _loadQueued above), so firing it straight from every change event is
 			// safe even if several rows change at once. Polling stays as a fallback
 			// for networks that block or drop the Realtime WebSocket — much slower
-			// than flip-seven's since this is a safety net, not the primary path.
+			// than Realtime, since this is a safety net, not the primary path.
 			// Saving a single trip touches several tables in sequence (trips,
 			// then a delete+insert per bus in trip_assignments, then
 			// trip_stops/trip_payments/trip_ticket_options) — each write fires

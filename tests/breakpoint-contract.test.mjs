@@ -33,11 +33,11 @@ const LAYERS = [
 ];
 
 const ALLOWED = new Map([
-	[420, "the narrow-phone tier below the mobile breakpoint — compact page gutters and logo, and grids that drop to one column (driver-share.css, flip-seven.css, tasks-panel.css)"],
+	[420, "the narrow-phone tier below the mobile breakpoint — compact page gutters and logo, and grids that drop to one column (driver-share.css, tasks-panel.css)"],
 	[500, "the shared mobile breakpoint — touch-target minimums (tokens.css) and the drawer's mobile mode"],
 	[580, "phones get one floating-window frame contract regardless of contents (panel.css)"],
 	[620, "the header brand sheds its dividers and caps the logo (ui-header.css)"],
-	[720, "the workspace stops fitting two columns — side-by-side bodies stack and wide tables shed their money columns (driver-week-info.css, flip-seven.css, comp-*.css)"],
+	[720, "the workspace stops fitting two columns — side-by-side bodies stack and wide tables shed their money columns (driver-week-info.css, comp-*.css)"],
 	[760, "the header drops nav, responsive utilities, and active profiles (ui-header.css)"],
 ]);
 

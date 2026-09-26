@@ -57,7 +57,7 @@ if (btn && badge) {
 		return !!panelEl && !panelEl.hidden;
 	}
 
-	// Same recipe as flip-seven.js's own chat — textContent round-trip is the
+	// A textContent round-trip is the
 	// simplest reliable HTML-escape for free-text user input rendered via
 	// innerHTML.
 	function escapeHtml(value) {

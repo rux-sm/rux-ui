@@ -75,11 +75,11 @@ The portable layer publishes **four** widths. This is a closed set.
 
 | Width | What changes there | Where |
 |---|---|---|
-| **420px** | The narrow-phone tier below the mobile breakpoint: compact page gutter and logo, grids drop to one column | `driver-share.css`, `flip-seven.css`, `tasks-panel.css` |
+| **420px** | The narrow-phone tier below the mobile breakpoint: compact page gutter and logo, grids drop to one column | `driver-share.css`, `tasks-panel.css` |
 | **500px** | The shared mobile breakpoint — touch-target minimums, and the drawer's mobile mode | `tokens.css`, `drawer.css` |
 | **580px** | Phones get one floating-window frame contract regardless of contents | `panel.css` |
 | **620px** | The header brand sheds its dividers and caps the logo | `ui-header.css` |
-| **720px** | The workspace stops fitting two columns: side-by-side bodies stack, wide tables shed their money columns | `driver-week-info.css`, `flip-seven.css`, `comp-*.css`, `maintenance-share.css` |
+| **720px** | The workspace stops fitting two columns: side-by-side bodies stack, wide tables shed their money columns | `driver-week-info.css`, `comp-*.css`, `maintenance-share.css` |
 | **760px** | The header drops nav, responsive utilities, and active profiles | `ui-header.css` |
 
 **500px is the general-purpose one.** The other three are specific to a component's own
