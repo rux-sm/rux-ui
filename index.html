@@ -7341,7 +7341,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=61");
+					const db = await import("./js/data/trip-db.js?v=62");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -10530,7 +10530,7 @@
 			// the calendar without a reload. renderBusRows ends in
 			// renderScheduler(), which repaints the bars and the stripes.
 			async function loadFleet() {
-				const db = await import("./js/data/trip-db.js?v=61");
+				const db = await import("./js/data/trip-db.js?v=62");
 				try {
 					schedulerBuses = await db.fetchBuses();
 				} catch (err) {
@@ -10563,7 +10563,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=61");
+					const db = await import("./js/data/trip-db.js?v=62");
 					loadTrip = db.loadTrip;
 					applyItinerary = db.applyItinerary;
 					getCurrentTripId = db.getCurrentTripId;

@@ -32,7 +32,6 @@ import {
 } from "./trip-driver-status-db.js";
 
 	let currentTripId  = null;
-	let currentTripRef = null;
 	let currentTripSnapshot = null;
 	let currentAssignments = [];
 	let currentLoadedTrip = null;
@@ -63,51 +62,6 @@ import {
 	let contactLegMenu = null;
 	let currentStopsHydrated = true;
 	let driverShareFieldsAvailable = null;
-
-	/* ── Trip ref ────────────────────────────────────────────────────────── */
-
-	function tripRefStem(startDate) {
-		const d  = new Date(startDate + "T00:00:00");
-		const yy = String(d.getFullYear()).slice(2);
-		const mm = String(d.getMonth() + 1).padStart(2, "0");
-		const dd = String(d.getDate()).padStart(2, "0");
-		return `TRP${yy}${mm}${dd}`;
-	}
-
-	// Continues the highest number this stem has already issued, rather than
-	// counting the trips currently sitting on the date. A count can go back
-	// down, and a ref never does: rescheduling a trip off its date frees the
-	// slot it was counted in while the trip keeps the ref it was stamped with,
-	// so the next trip booked on that date gets handed a ref already in use.
-	// Hard-deleting a row outside the app does the same. That is how the live
-	// table came to hold 15 refs shared by two distinct trips, with 15 further
-	// dates primed to repeat it (audited 2026-08-24). Issued numbers only ever
-	// go up, so reading them is immune to both. Cancelled trips keep their ref
-	// and are therefore counted here on purpose.
-	function nextTripRef(stem, existingRefs) {
-		const prefix = `${stem}-`;
-		const highest = (existingRefs ?? []).reduce((max, ref) => {
-			const text = String(ref ?? "").trim();
-			if (!text.startsWith(prefix)) return max;
-			// Only a plain numeric tail continues the sequence. A suffix an
-			// import or a person extended ("-001-B") is not a number this
-			// generator issued, so it must not cap what it issues next.
-			const suffix = text.slice(prefix.length);
-			if (!/^\d+$/.test(suffix)) return max;
-			return Math.max(max, Number(suffix));
-		}, 0);
-		return `${prefix}${String(highest + 1).padStart(3, "0")}`;
-	}
-
-	async function generateTripRef(startDate) {
-		const stem = tripRefStem(startDate);
-		const { data, error } = await supabase
-			.from("trips")
-			.select("trip_ref")
-			.like("trip_ref", `${stem}-%`);
-		if (error) throw error;
-		return nextTripRef(stem, (data ?? []).map((row) => row.trip_ref));
-	}
 
 	/* ── Helpers ─────────────────────────────────────────────────────────── */
 
@@ -1202,7 +1156,6 @@ import {
 		// selector above would only desynchronise them from its model — the
 		// next render writes the old values straight back. It clears itself.
 		currentTripId  = null;
-		currentTripRef = null;
 		currentTripSnapshot = null;
 		currentAssignments = [];
 		currentLoadedTrip = null;
@@ -1255,7 +1208,6 @@ import {
 	async function save(root, itinerary, saveBtn) {
 		// Freeze identity at call time so a mid-save loadTrip can't corrupt state.
 		const savingTripId       = currentTripId;
-		const savingTripRef      = currentTripRef;
 		const savingSnapshot     = cloneHistoryValue(currentTripSnapshot);
 		const savingAssignments  = cloneHistoryValue(currentAssignments) || [];
 		const savingLoadedTrip   = cloneHistoryValue(currentLoadedTrip);
@@ -1336,13 +1288,7 @@ import {
 				);
 			}
 
-			// Generate human-readable ref for new trips only
-			if (!savingTripId && tripData.start_date && !savingTripRef) {
-				currentTripRef = await generateTripRef(tripData.start_date);
-			}
-			const resolvedRef = currentTripRef;
-			if (resolvedRef) tripData.trip_ref = resolvedRef;
-
+			// The database gives a new trip its number; nothing here sends one.
 			// Upsert trip record
 			const { data: trip, error: tripErr } = await supabase
 				.from("trips")
@@ -2167,7 +2113,6 @@ export function loadTrip(root, itinerary, trip) {
 	normalized.return_bus_count = returnBusCount;
 
 	currentTripId  = UUID_RE.test(String(trip.id ?? "")) ? trip.id : null;
-	currentTripRef = trip.trip_ref ?? null;
 	currentLoadedTrip = trip;
 	syncContactInfoBtn();
 	syncCancelledState(root);

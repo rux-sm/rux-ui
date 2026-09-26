@@ -2,7 +2,7 @@ import {
 	openTripContactInfo,
 	updateTripDriverTaskFlag,
 	updateTripTaskFlags,
-} from "../data/trip-db.js?v=24";
+} from "../data/trip-db.js?v=25";
 import { latestDocument } from "../core/trip-documents.js";
 import { supabase } from "../data/supabase.js";
 import { getSetting, setSetting } from "../data/settings-db.js";
