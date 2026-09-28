@@ -19,6 +19,7 @@ import { normalizeTripColor } from "../core/trip-colors.js";
 import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
 import { assignmentsOnLeg, busSlotCount } from "../core/bus-slots.js";
 import { applyVehicleNeedChanges, writeTripAssignments } from "../core/trip-assignment-write.js";
+import { mergedNeeds, tripPatch } from "../core/trip-patch.js";
 import { contactsShareIdentity } from "../core/contact-identity.js?v=2";
 import {
 	buildTripHistoryChanges,
@@ -421,20 +422,25 @@ import {
 			po_received:  poReceived,
 			invoiced:     invoiced,
 			balance_paid: balancePaid,
-			// Dispatch requirements — JSONB map + legacy boolean columns
+			// Dispatch requirements — JSONB map + legacy boolean columns. The map is
+			// merged over what the trip held, as the scheduler merges it, so a
+			// false answer or a need the office switched off is not dropped.
 			trip_reqs: (() => {
-				const map = {};
+				const drawn = {};
 				root.querySelectorAll("[data-req]").forEach(btn => {
-					if (btn.getAttribute("aria-pressed") === "true") map[btn.dataset.req] = true;
+					drawn[btn.dataset.req] = btn.getAttribute("aria-pressed") === "true";
 				});
-				return map;
+				return mergedNeeds(currentLoadedTrip?.trip_reqs, drawn);
 			})(),
 			req_sleeper:    reqVal(root, "sleeper"),
 			req_56pax:      reqVal(root, "pax56"),
 			req_ada:        reqVal(root, "adaLift"),
 			need_hotel:     reqVal(root, "hotel"),
 			need_fuel_card: reqVal(root, "fuelCard"),
-			contact_not_needed:   window.TripPanel?.getContactNotNeeded(root) ?? false,
+			// Only while the page draws its switch; otherwise the trip keeps its answer.
+			contact_not_needed:   root.querySelector("#tp-contact-toggle-btn")
+				? (window.TripPanel?.getContactNotNeeded(root) ?? false)
+				: undefined,
 			itinerary_not_needed: window.TripPanel?.getItineraryNotNeeded(root) ?? false,
 		};
 	}
@@ -1312,13 +1318,31 @@ import {
 				);
 			}
 
-			// The database gives a new trip its number; nothing here sends one.
-			// Upsert trip record
-			const { data: trip, error: tripErr } = await supabase
-				.from("trips")
-				.upsert(savingTripId ? { id: savingTripId, ...tripData } : tripData)
-				.select("id")
-				.single();
+			/* An open trip changed elsewhere since this form loaded it -- in the
+			   scheduler, or in another window -- asks first, as the scheduler's
+			   editor does. Saving anyway writes only what this form changed. */
+			if (savingTripId && savingLoadedTrip?.updated_at) {
+				const { data: now, error: nowErr } = await supabase
+					.from("trips").select("updated_at").eq("id", savingTripId).single();
+				if (nowErr) throw nowErr;
+				const moved = now?.updated_at && Date.parse(now.updated_at) !== Date.parse(savingLoadedTrip.updated_at);
+				if (moved && !confirm("This trip was changed somewhere else since you opened it. "
+					+ "Save anyway? Only what you changed here is written. Cancel, then reopen the trip, to see the other changes first.")) {
+					setSaveButtonState(saveBtn, { label: defaultSaveLabel(), icon: "save", disabled: false });
+					return false;
+				}
+			}
+
+			/* The database gives a new trip its number; nothing here sends one. A
+			   new trip is written whole; an open one only in the columns this form
+			   changed, and at least its `updated_at`, so the scheduler's editor
+			   sees that the trip or its rows moved. */
+			const tripWrite = savingTripId
+				? supabase.from("trips")
+					.update({ ...tripPatch(tripData, savingSnapshot || {}), updated_at: new Date().toISOString() })
+					.eq("id", savingTripId)
+				: supabase.from("trips").insert(tripData);
+			const { data: trip, error: tripErr } = await tripWrite.select("id, updated_at").single();
 
 			if (tripErr) {
 				const detail = [tripErr.message, tripErr.details, tripErr.hint]
@@ -1524,7 +1548,7 @@ import {
 				currentTripId       = savedId;
 				currentTripSnapshot = { ...tripData };
 				currentAssignments  = snapshotAssignments(assignments);
-				currentLoadedTrip   = { ...tripData, id: savedId };
+				currentLoadedTrip   = { ...tripData, id: savedId, updated_at: trip.updated_at };
 				loadedVehicleReqs   = vehicleReqsNow;
 				// A bus inserted by this save is updated by the next one.
 				for (const assignment of assignments) {
