@@ -5,15 +5,16 @@
    `assignments` is the editor's list, one entry per bus group that has a bus
    or a row: `id` is the trip_assignments row it was loaded from or saved as,
    or null for a new one. A row still in the list is updated, a new one
-   inserted, and a row the list no longer holds deleted, which takes its
-   trip_drivers with it. A driver's seat is its role: the role's row is
+   inserted, and a row the form loaded and the list no longer holds deleted,
+   which takes its trip_drivers with it. `loadedIds` names the rows the form
+   loaded; a row added since, by the scheduler, is left alone. A driver's seat is its role: the role's row is
    updated, a new role inserted, and a role no longer held, or a second row for
    one role, deleted.
 
    Each inserted entry gets `savedId`, so the caller can hand the new id back to
    its bus group and the next save updates the row instead of adding another. */
 
-export async function writeTripAssignments(client, tripId, assignments, { shareFields = true } = {}) {
+export async function writeTripAssignments(client, tripId, assignments, { shareFields = true, loadedIds = null } = {}) {
 	const { data: heldRows, error: heldErr } = await client
 		.from("trip_assignments")
 		.select("id, trip_drivers(id, role)")
@@ -23,7 +24,7 @@ export async function writeTripAssignments(client, tripId, assignments, { shareF
 	const kept = new Set(
 		assignments.filter((a) => a.id && held.has(String(a.id))).map((a) => String(a.id)),
 	);
-	const gone = [...held.keys()].filter((id) => !kept.has(id));
+	const gone = [...held.keys()].filter((id) => !kept.has(id) && (!loadedIds || loadedIds.has(id)));
 	if (gone.length) {
 		const { error } = await client
 			.from("trip_assignments")

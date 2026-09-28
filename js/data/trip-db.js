@@ -20,6 +20,7 @@ import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
 import { assignmentsOnLeg, busSlotCount } from "../core/bus-slots.js";
 import { applyVehicleNeedChanges, writeTripAssignments } from "../core/trip-assignment-write.js";
 import { mergedNeeds, tripPatch } from "../core/trip-patch.js";
+import { writeRows } from "../core/trip-rows-write.js";
 import { contactsShareIdentity } from "../core/contact-identity.js?v=2";
 import {
 	buildTripHistoryChanges,
@@ -39,6 +40,9 @@ import {
 	// The vehicle needs the trip opened with, so a save can tell which were
 	// turned on or off here and hand just those to its vehicles.
 	let loadedVehicleReqs = new Set();
+	// The bus rows the form opened with, so a save deletes only the ones it
+	// removed, never one the scheduler added since.
+	let loadedAssignmentIds = new Set();
 	const vehicleReqsPressed = (root) => new Set(
 		[...root.querySelectorAll('#tp-vehicle-reqs [data-req][aria-pressed="true"]')].map((btn) => btn.dataset.req),
 	);
@@ -560,15 +564,21 @@ import {
 		return outbound.concat(returnLeg);
 	}
 
+	// Each row carries its database id, and its form row out of sight of the
+	// history, which is handed a new row's id once it is saved.
+	const withRow = (values, row) => Object.defineProperty(values, "row", { value: row, enumerable: false });
+
 	function collectPayments(root) {
 		const rows = root.querySelectorAll("#tp-payment-rows [data-payment-row]");
-		return Array.from(rows).map((row, i) => ({
+		return Array.from(rows).map((row, i) => withRow({
+			id: row.dataset.rowId || null,
 			position: i,
 			amount: parseFloat(row.querySelector("[data-payment-amount]")?.value) || null,
 			method: row.querySelector("[data-payment-method]")?.value || null,
 			date: row.querySelector("[data-payment-date]")?.value || null,
 			ref: row.querySelector("[data-payment-ref]")?.value?.trim() || null,
-		})).filter(p => p.amount || p.method || p.date || p.ref);
+		}, row)).filter(p => p.amount || p.method || p.date || p.ref)
+			.map((p, position) => Object.assign(p, { position }));
 	}
 
 	// The PO and invoice rows on the Billing tab. A switch that is off saves no
@@ -595,11 +605,13 @@ import {
 
 	function collectTicketOptions(root) {
 		const rows = root.querySelectorAll("#tp-ticket-options-list [data-ticket-option-row]");
-		return Array.from(rows).map((row, i) => ({
+		return Array.from(rows).map((row, i) => withRow({
+			id: row.dataset.rowId || null,
 			position: i,
 			label: row.querySelector("[data-ticket-label]")?.value?.trim() || null,
 			price: parseFloat(row.querySelector("[data-ticket-price]")?.value) || null,
-		})).filter(o => o.label || o.price);
+		}, row)).filter(o => o.label || o.price)
+			.map((o, position) => Object.assign(o, { position }));
 	}
 
 	function stopRow(s, position, leg) {
@@ -898,6 +910,7 @@ import {
 					: "Date";
 			}
 			if (payment.ref) row.querySelector("[data-payment-ref]").value = payment.ref;
+			row.dataset.rowId = payment.id ?? "";
 		}
 		paymentRows.style.display = "flex";
 	}
@@ -927,6 +940,7 @@ import {
 			list.appendChild(row);
 			if (option.label) row.querySelector("[data-ticket-label]").value = option.label;
 			if (option.price != null) row.querySelector("[data-ticket-price]").value = option.price;
+			row.dataset.rowId = option.id ?? "";
 		});
 	}
 
@@ -1218,6 +1232,17 @@ import {
 
 	// Writes one PO or invoice list by id: removed rows are deleted, changed rows
 	// updated, new rows inserted. billing-config.js diffListRows says which.
+	/* The rows a list opened with, for a save to tell which it removed: the
+	   loaded trip's, or, for a trip opened without them, the table's rows now.
+	   A new trip has none. */
+	async function loadedRows(table, tripId, loadedTrip, columns) {
+		if (!tripId) return [];
+		if (Array.isArray(loadedTrip?.[table])) return loadedTrip[table];
+		const { data, error } = await supabase.from(table).select(columns).eq("trip_id", tripId);
+		if (error) throw error;
+		return data ?? [];
+	}
+
 	async function writeBillingList(table, tripId, before, after, fields) {
 		const { inserts, updates, deletes } = window.RuxBilling.diffListRows(before, after, fields);
 		if (deletes.length) {
@@ -1239,6 +1264,7 @@ import {
 		const savingTripId       = currentTripId;
 		const savingSnapshot     = cloneHistoryValue(currentTripSnapshot);
 		const savingVehicleReqs  = new Set(loadedVehicleReqs);
+		const savingAssignmentIds = new Set(loadedAssignmentIds);
 		const savingAssignments  = cloneHistoryValue(currentAssignments) || [];
 		const savingLoadedTrip   = cloneHistoryValue(currentLoadedTrip);
 		const saveAttempt = String(Number(saveBtn.dataset.saveAttempt || 0) + 1);
@@ -1358,7 +1384,8 @@ import {
 			const savedId = trip.id;
 
 			// The buses and their drivers, by row id; see core/trip-assignment-write.js.
-			await writeTripAssignments(supabase, savedId, assignments, { shareFields: driverShareFieldsAvailable });
+			await writeTripAssignments(supabase, savedId, assignments,
+				{ shareFields: driverShareFieldsAvailable, loadedIds: savingTripId ? savingAssignmentIds : new Set() });
 			const vehicleReqsNow = vehicleReqsPressed(root);
 			await applyVehicleNeedChanges(supabase, savedId,
 				[...vehicleReqsNow].filter((id) => !savingVehicleReqs.has(id)),
@@ -1367,7 +1394,14 @@ import {
 			// Role statuses live in their own table, keyed by driver and role. Non-dirty entries preserve a newer
 			// driver acceptance that may have arrived while this form was open;
 			// only an icon the dispatcher explicitly clicked may override it.
-			try {
+			/* Sent only when a seat or a status changed here, as the scheduler
+			   sends them, so a save for another reason leaves them be. */
+			const seatsOf = (list) => JSON.stringify((list || []).flatMap((a) => (a.drivers || [])
+				.map((d) => `${a.leg ?? "outbound"}:${a.bus_id}:${d.role}:${d.driver_id}`)).sort());
+			const statusesChanged = !savingTripId
+				|| seatsOf(assignments) !== seatsOf(savingAssignments)
+				|| assignments.some((a) => (a.driver_statuses || []).some((st) => st.dirty));
+			if (statusesChanged) try {
 				const syncedDriverStatuses = await syncTripDriverStatuses(
 					savedId,
 					assignments.flatMap((assignment) => assignment.driver_statuses || []),
@@ -1398,18 +1432,11 @@ import {
 				}
 			}
 
-			// Replace payments
-			const { error: deletePaymentsErr } = await supabase
-				.from("trip_payments")
-				.delete()
-				.eq("trip_id", savedId);
-			if (deletePaymentsErr) throw deletePaymentsErr;
-			if (payments.length) {
-				const { error: paymentsErr } = await supabase
-					.from("trip_payments")
-					.insert(payments.map(p => ({ trip_id: savedId, ...p })));
-				if (paymentsErr) throw paymentsErr;
-			}
+			// Payments, by id, so a payment the scheduler saved after this trip
+			// loaded survives; see core/trip-rows-write.js.
+			const savedPayments = await writeRows(supabase, "trip_payments", savedId,
+				await loadedRows("trip_payments", savingTripId, savingLoadedTrip, "id, position, amount, method, date, ref"),
+				payments, ["amount", "method", "date", "ref"]);
 
 			// POs and invoices, by id, so a row the scheduler saved after this trip
 			// loaded survives. A new trip's rows are all inserts.
@@ -1421,18 +1448,10 @@ import {
 				console.warn("This trip was opened without its PO and invoice rows; they were left unchanged.");
 			}
 
-			// Replace ticket pricing options
-			const { error: deleteTicketOptionsErr } = await supabase
-				.from("trip_ticket_options")
-				.delete()
-				.eq("trip_id", savedId);
-			if (deleteTicketOptionsErr) throw deleteTicketOptionsErr;
-			if (ticketOptions.length) {
-				const { error: ticketOptionsErr } = await supabase
-					.from("trip_ticket_options")
-					.insert(ticketOptions.map(o => ({ trip_id: savedId, ...o })));
-				if (ticketOptionsErr) throw ticketOptionsErr;
-			}
+			// Ticket pricing options, by id, so a passenger's option keeps its id.
+			const savedTicketOptions = await writeRows(supabase, "trip_ticket_options", savedId,
+				await loadedRows("trip_ticket_options", savingTripId, savingLoadedTrip, "id, position, label, price"),
+				ticketOptions, ["label", "price"]);
 
 			// Resolve booking/trip contacts against the saved roster. A name typed
 			// fresh (no id yet — the autofill dropdown wasn't used, or was picked
@@ -1548,7 +1567,13 @@ import {
 				currentTripId       = savedId;
 				currentTripSnapshot = { ...tripData };
 				currentAssignments  = snapshotAssignments(assignments);
-				currentLoadedTrip   = { ...tripData, id: savedId, updated_at: trip.updated_at };
+				currentLoadedTrip   = { ...tripData, id: savedId, updated_at: trip.updated_at,
+					trip_payments: savedPayments, trip_ticket_options: savedTicketOptions };
+				// A row this save inserted is updated by the next one.
+				for (const row of [...payments, ...ticketOptions]) {
+					if (row.savedId && row.row) row.row.dataset.rowId = row.savedId;
+				}
+				loadedAssignmentIds = new Set(assignments.map((a) => String(a.savedId ?? a.id)).filter((id) => id && id !== "null"));
 				loadedVehicleReqs   = vehicleReqsNow;
 				// A bus inserted by this save is updated by the next one.
 				for (const assignment of assignments) {
@@ -2147,6 +2172,7 @@ export function loadTrip(root, itinerary, trip) {
 	syncCancelledState(root);
 	currentTripSnapshot = { ...normalized };
 	currentAssignments = snapshotAssignments(loadedAssignments);
+	loadedAssignmentIds = new Set(loadedAssignments.map((a) => String(a.id ?? "")).filter((id) => UUID_RE.test(id)));
 
 	root.classList.add("sched-scope-trip--loading");
 

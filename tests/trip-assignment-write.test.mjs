@@ -198,3 +198,11 @@ test("no change writes nothing", async () => {
 	await applyVehicleNeedChanges(client, "t1", [], []);
 	assert.equal(JSON.stringify(client.tables), before);
 });
+
+test("a bus row added elsewhere after the form loaded is left alone", async () => {
+	const client = tripWithTwoBuses();
+	await writeTripAssignments(client, "t1", [
+		{ id: "a1", bus_id: "bus-218", position: 0, leg: "outbound", active_roles: ["driver"], drivers: [seat("driver", "george")] },
+	], { loadedIds: new Set(["a1"]) });
+	assert.ok(client.tables.trip_assignments.find((r) => r.id === "a2"), "a2 was not loaded, so it stays");
+});
