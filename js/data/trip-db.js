@@ -18,7 +18,7 @@ import { supabase } from "./supabase.js";
 import { normalizeTripColor } from "../core/trip-colors.js";
 import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
 import { assignmentsOnLeg, busSlotCount } from "../core/bus-slots.js";
-import { writeTripAssignments } from "../core/trip-assignment-write.js";
+import { applyVehicleNeedChanges, writeTripAssignments } from "../core/trip-assignment-write.js";
 import { contactsShareIdentity } from "../core/contact-identity.js?v=2";
 import {
 	buildTripHistoryChanges,
@@ -35,6 +35,12 @@ import {
 	let currentTripId  = null;
 	let currentTripSnapshot = null;
 	let currentAssignments = [];
+	// The vehicle needs the trip opened with, so a save can tell which were
+	// turned on or off here and hand just those to its vehicles.
+	let loadedVehicleReqs = new Set();
+	const vehicleReqsPressed = (root) => new Set(
+		[...root.querySelectorAll('#tp-vehicle-reqs [data-req][aria-pressed="true"]')].map((btn) => btn.dataset.req),
+	);
 	let currentLoadedTrip = null;
 	// A save writes trip_assignments and trip_drivers one row at a time, so for
 	// the length of that sequence the database holds a mix of the old buses and
@@ -1161,6 +1167,7 @@ import {
 		});
 		syncBusCount(root, 1);
 		syncReturnBusCount(root, 1);
+		loadedVehicleReqs = new Set();
 		root.querySelectorAll(".sched-scope-trip__bus-group").forEach((group) => {
 			delete group.dataset.assignmentId;
 		});
@@ -1225,6 +1232,7 @@ import {
 		// Freeze identity at call time so a mid-save loadTrip can't corrupt state.
 		const savingTripId       = currentTripId;
 		const savingSnapshot     = cloneHistoryValue(currentTripSnapshot);
+		const savingVehicleReqs  = new Set(loadedVehicleReqs);
 		const savingAssignments  = cloneHistoryValue(currentAssignments) || [];
 		const savingLoadedTrip   = cloneHistoryValue(currentLoadedTrip);
 		const saveAttempt = String(Number(saveBtn.dataset.saveAttempt || 0) + 1);
@@ -1327,6 +1335,10 @@ import {
 
 			// The buses and their drivers, by row id; see core/trip-assignment-write.js.
 			await writeTripAssignments(supabase, savedId, assignments, { shareFields: driverShareFieldsAvailable });
+			const vehicleReqsNow = vehicleReqsPressed(root);
+			await applyVehicleNeedChanges(supabase, savedId,
+				[...vehicleReqsNow].filter((id) => !savingVehicleReqs.has(id)),
+				[...savingVehicleReqs].filter((id) => !vehicleReqsNow.has(id)));
 
 			// Role statuses live in their own table, keyed by driver and role. Non-dirty entries preserve a newer
 			// driver acceptance that may have arrived while this form was open;
@@ -1513,6 +1525,7 @@ import {
 				currentTripSnapshot = { ...tripData };
 				currentAssignments  = snapshotAssignments(assignments);
 				currentLoadedTrip   = { ...tripData, id: savedId };
+				loadedVehicleReqs   = vehicleReqsNow;
 				// A bus inserted by this save is updated by the next one.
 				for (const assignment of assignments) {
 					if (assignment.savedId && assignment.group) assignment.group.dataset.assignmentId = assignment.savedId;
@@ -2114,6 +2127,7 @@ export function loadTrip(root, itinerary, trip) {
 	root.classList.add("sched-scope-trip--loading");
 
 	populateTrip(root, normalized);
+	loadedVehicleReqs = vehicleReqsPressed(root);
 	window.Rux?.syncDateInputs(root);
 	syncBusCount(root, busCount);
 	syncReturnBusCount(root, returnBusCount);

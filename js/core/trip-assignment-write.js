@@ -84,3 +84,24 @@ export async function writeTripAssignments(client, tripId, assignments, { shareF
 		}
 	}
 }
+
+/* A vehicle need turned on or off in this editor, which keeps one set of needs
+   for the whole trip, is given to or taken from every vehicle on it; each
+   vehicle's other needs, set in the scheduler, stay as they are. */
+export async function applyVehicleNeedChanges(client, tripId, added = [], removed = []) {
+	if (!added.length && !removed.length) return;
+	const { data, error } = await client
+		.from("trip_assignments")
+		.select("id, needs")
+		.eq("trip_id", tripId);
+	if (error) throw error;
+	const held = (needs) => Object.keys(needs ?? {}).filter((id) => needs[id] === true).sort().join();
+	for (const row of data ?? []) {
+		const needs = Object.fromEntries(Object.keys(row.needs ?? {}).filter((id) => row.needs[id] === true).map((id) => [id, true]));
+		for (const id of added) needs[id] = true;
+		for (const id of removed) delete needs[id];
+		if (held(needs) === held(row.needs)) continue;
+		const { error: updateErr } = await client.from("trip_assignments").update({ needs }).eq("id", row.id);
+		if (updateErr) throw updateErr;
+	}
+}

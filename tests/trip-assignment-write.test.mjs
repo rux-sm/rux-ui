@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { writeTripAssignments } from "../js/core/trip-assignment-write.js";
+import { applyVehicleNeedChanges, writeTripAssignments } from "../js/core/trip-assignment-write.js";
 
 /* A stand-in for the Supabase client over two in-memory tables, enough of the
    query builder for the writes under test: select with trip_drivers nested,
@@ -31,7 +31,7 @@ function fakeClient(tables) {
 				const rows = tables[name];
 				if (action === "select") {
 					const data = rows.filter((r) => matches(r, filters)).map((r) => ({
-						id: r.id,
+						...r,
 						trip_drivers: tables.trip_drivers
 							.filter((d) => d.assignment_id === r.id)
 							.map((d) => ({ id: d.id, role: d.role })),
@@ -174,4 +174,27 @@ test("without the relief columns a driver is written without them", async () => 
 	const d1 = client.tables.trip_drivers.find((d) => d.id === "d1");
 	assert.equal("report_time" in d1, false);
 	assert.equal("instructions" in d1, false);
+});
+
+test("a vehicle need turned on here goes to every vehicle, keeping their own", async () => {
+	const client = tripWithTwoBuses();
+	await applyVehicleNeedChanges(client, "t1", ["sleeper"], []);
+	const needs = (id) => client.tables.trip_assignments.find((r) => r.id === id).needs;
+	assert.deepEqual(needs("a1"), { adaLift: true, sleeper: true });
+	assert.deepEqual(needs("a2"), { pax56: true, sleeper: true });
+	assert.deepEqual(needs("other"), {}, "another trip is untouched");
+});
+
+test("a vehicle need turned off here comes off every vehicle", async () => {
+	const client = tripWithTwoBuses();
+	await applyVehicleNeedChanges(client, "t1", [], ["adaLift"]);
+	assert.deepEqual(client.tables.trip_assignments.find((r) => r.id === "a1").needs, {});
+	assert.deepEqual(client.tables.trip_assignments.find((r) => r.id === "a2").needs, { pax56: true });
+});
+
+test("no change writes nothing", async () => {
+	const client = tripWithTwoBuses();
+	const before = JSON.stringify(client.tables);
+	await applyVehicleNeedChanges(client, "t1", [], []);
+	assert.equal(JSON.stringify(client.tables), before);
 });
