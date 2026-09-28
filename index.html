@@ -8762,6 +8762,7 @@
 								sameLegCount > 1 ? `${t.id}:${leg}` : null,
 							assignments: (t.trip_assignments ?? []).map(
 								(a) => ({
+									id: a.id,
 									bus_id: a.bus_id,
 									position: a.position,
 									drivers: a.drivers ?? [],

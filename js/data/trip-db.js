@@ -18,6 +18,7 @@ import { supabase } from "./supabase.js";
 import { normalizeTripColor } from "../core/trip-colors.js";
 import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
 import { assignmentsOnLeg, busSlotCount } from "../core/bus-slots.js";
+import { writeTripAssignments } from "../core/trip-assignment-write.js";
 import { contactsShareIdentity } from "../core/contact-identity.js?v=2";
 import {
 	buildTripHistoryChanges,
@@ -35,13 +36,12 @@ import {
 	let currentTripSnapshot = null;
 	let currentAssignments = [];
 	let currentLoadedTrip = null;
-	// A save replaces trip_assignments by deleting every row and re-inserting
-	// them one at a time, so for the length of that sequence the database says
-	// the trip has fewer buses than it does — or none. Each of those writes is
-	// a Realtime event the scheduler reloads on, and a reload landing inside
-	// the window renders the trip's buses as empty slots on the Unassigned row,
-	// then jumps them back. Counted rather than a boolean so overlapping saves
-	// can't have the first one to finish clear the flag for the others.
+	// A save writes trip_assignments and trip_drivers one row at a time, so for
+	// the length of that sequence the database holds a mix of the old buses and
+	// the new. Each of those writes is a Realtime event the scheduler reloads
+	// on, and a reload landing inside the window can draw a bus half-changed.
+	// Counted rather than a boolean so overlapping saves can't have the first
+	// one to finish clear the flag for the others.
 	let savesInFlight = 0;
 	// A calendar trip bar going active (single click, no editor involved) also
 	// counts as "there's a trip in play" for Contact Info — set via
@@ -445,9 +445,13 @@ import {
 
 		for (let i = 0; i < busCount; i++) {
 			const busId = root.querySelector(`[name="${fieldPrefix}[${i}].busId"]`)?.value || null;
-			if (!busId) continue;
-
 			const busGroup = container?.querySelectorAll(".sched-scope-trip__bus-group")[i];
+			// The trip_assignments row this group was loaded from, or saved as.
+			// A group with no bus keeps its row, since the scheduler stores what a
+			// vehicle needs on that row before a bus is picked; a group with no
+			// bus and no row writes nothing, as an empty slot never has.
+			const assignmentId = busGroup?.dataset.assignmentId || null;
+			if (!busId && !assignmentId) continue;
 			const driverRoles = [
 				{ role: "driver",       roleKey: "driver",   nameField: `${fieldPrefix}[${i}].driver.name`,  payField: `${fieldPrefix}[${i}].driver.pay`  },
 				{ role: "co-driver",    roleKey: "coDriver", nameField: `${fieldPrefix}[${i}].coDriver.name`, payField: `${fieldPrefix}[${i}].coDriver.pay` },
@@ -523,6 +527,8 @@ import {
 				activeRoles.push("driver");
 			}
 			assignments.push({
+				id: assignmentId,
+				group: busGroup ?? null,
 				bus_id: busId,
 				position: positionOffset + i,
 				drivers,
@@ -923,6 +929,9 @@ import {
 
 		sorted.forEach((assignment, slot) => {
 			const busGroup = container?.querySelectorAll(".sched-scope-trip__bus-group")[slot];
+			// The row this group saves back to, by id. A bar's projection can
+			// carry a synthetic id for an empty slot, which is no row.
+			if (busGroup && UUID_RE.test(String(assignment.id ?? ""))) busGroup.dataset.assignmentId = assignment.id;
 			const busSelect = root.querySelector(`[name="${fieldPrefix}[${slot}].busId"]`);
 			if (busSelect && assignment.bus_id) busSelect.value = assignment.bus_id;
 
@@ -1027,6 +1036,7 @@ import {
 	function resetAssignmentGroups(root) {
 		root.querySelectorAll("#tp-bus-groups .sched-scope-trip__bus-group, #tp-return-bus-groups .sched-scope-trip__bus-group")
 			.forEach((group) => {
+				delete group.dataset.assignmentId;
 				group.querySelectorAll("select[name], input[name]").forEach((control) => {
 					control.value = "";
 				});
@@ -1151,6 +1161,9 @@ import {
 		});
 		syncBusCount(root, 1);
 		syncReturnBusCount(root, 1);
+		root.querySelectorAll(".sched-scope-trip__bus-group").forEach((group) => {
+			delete group.dataset.assignmentId;
+		});
 		root.querySelectorAll(".sched-scope-trip__role-label").forEach((button) => {
 			restoreDriverStatus(button, "off");
 		});
@@ -1312,38 +1325,10 @@ import {
 			}
 			const savedId = trip.id;
 
-			// Replace bus assignments (cascade deletes trip_drivers)
-			const { error: deleteAssignmentsErr } = await supabase
-				.from("trip_assignments")
-				.delete()
-				.eq("trip_id", savedId);
-			if (deleteAssignmentsErr) throw deleteAssignmentsErr;
+			// The buses and their drivers, by row id; see core/trip-assignment-write.js.
+			await writeTripAssignments(supabase, savedId, assignments, { shareFields: driverShareFieldsAvailable });
 
-			for (const { bus_id, position, drivers, active_roles, leg } of assignments) {
-				const { data: assignment, error: assignErr } = await supabase
-					.from("trip_assignments")
-					.insert({ trip_id: savedId, bus_id, position, active_roles, leg: leg ?? "outbound" })
-					.select("id")
-					.single();
-				if (assignErr) throw assignErr;
-
-				if (drivers.length) {
-					const driverRows = drivers.map((driver) => {
-						if (driverShareFieldsAvailable) {
-							return { ...driver, assignment_id: assignment.id };
-						}
-						const { report_time, instructions, ...legacyDriver } = driver;
-						return { ...legacyDriver, assignment_id: assignment.id };
-					});
-					const { error: driversErr } = await supabase
-						.from("trip_drivers")
-						.insert(driverRows);
-					if (driversErr) throw driversErr;
-				}
-			}
-
-			// Assignment rows are intentionally replaced on every save, but role
-			// statuses live in a stable table. Non-dirty entries preserve a newer
+			// Role statuses live in their own table, keyed by driver and role. Non-dirty entries preserve a newer
 			// driver acceptance that may have arrived while this form was open;
 			// only an icon the dispatcher explicitly clicked may override it.
 			try {
@@ -1528,6 +1513,10 @@ import {
 				currentTripSnapshot = { ...tripData };
 				currentAssignments  = snapshotAssignments(assignments);
 				currentLoadedTrip   = { ...tripData, id: savedId };
+				// A bus inserted by this save is updated by the next one.
+				for (const assignment of assignments) {
+					if (assignment.savedId && assignment.group) assignment.group.dataset.assignmentId = assignment.savedId;
+				}
 				syncManifestBtn(root);
 			}
 
@@ -1688,9 +1677,9 @@ export function isSaveInFlight() {
 			.update({ cancelled_at: new Date().toISOString(), cancellation_reason: reason })
 			.eq("id", cancelledId);
 		if (error) throw error;
-		// Counts are fetched fresh rather than taken from the loaded trip — a
-		// save replaces trip_assignments wholesale, so rows this panel loaded
-		// may already have been replaced by another dispatcher. A bus-less
+		// Counts are fetched fresh rather than taken from the loaded trip —
+		// another dispatcher may have changed the trip's buses since this panel
+		// loaded them. A bus-less
 		// slot row is not a bus, so buses count only rows carrying a bus_id.
 		let unassignedBuses = 0;
 		let unassignedDrivers = 0;
