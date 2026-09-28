@@ -6083,7 +6083,7 @@
 		     the page itself; each module still does that for itself. -->
 		<script src="./rux-ui/js/boot.js?v=1"></script>
 		<script src="./js/panels/trip-panel.js?v=52"></script>
-		<script src="./js/components/itinerary.js?v=68"></script>
+		<script src="./js/components/itinerary.js?v=69"></script>
 		<script src="./js/panels/driver-sheet.js?v=8" defer></script>
 		<script src="./js/panels/driver-panel.js?v=34" defer></script>
 		<script src="./js/panels/driver-roster-panel.js?v=7" defer></script>
@@ -6118,7 +6118,7 @@
 			src="./js/panels/documents-panel.js?v=6"
 		></script>
 		<script type="module" src="./js/panels/trip-history.js?v=6"></script>
-		<script type="module" src="./js/panels/tasks-panel.js?v=75"></script>
+		<script type="module" src="./js/panels/tasks-panel.js?v=76"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
 
 		<script type="module">
@@ -6143,7 +6143,7 @@
 				outOfServiceOverlap,
 			} from "./js/core/bus-status.js";
 			import { loadRequirements } from "./js/data/requirements-db.js";
-			import { normalizeTripImport } from "./js/data/trip-import.js?v=11";
+			import { normalizeTripImport } from "./js/data/trip-import.js?v=12";
 			import { supabase } from "./js/data/supabase.js";
 			import {
 				requireStaffSignIn,
@@ -7341,7 +7341,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=62");
+					const db = await import("./js/data/trip-db.js?v=63");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -10531,7 +10531,7 @@
 			// the calendar without a reload. renderBusRows ends in
 			// renderScheduler(), which repaints the bars and the stripes.
 			async function loadFleet() {
-				const db = await import("./js/data/trip-db.js?v=62");
+				const db = await import("./js/data/trip-db.js?v=63");
 				try {
 					schedulerBuses = await db.fetchBuses();
 				} catch (err) {
@@ -10564,7 +10564,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=62");
+					const db = await import("./js/data/trip-db.js?v=63");
 					loadTrip = db.loadTrip;
 					applyItinerary = db.applyItinerary;
 					getCurrentTripId = db.getCurrentTripId;
