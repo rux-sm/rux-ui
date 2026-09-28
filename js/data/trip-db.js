@@ -21,6 +21,7 @@ import { assignmentsOnLeg, busSlotCount } from "../core/bus-slots.js";
 import { applyVehicleNeedChanges, writeTripAssignments } from "../core/trip-assignment-write.js";
 import { mergedNeeds, tripPatch } from "../core/trip-patch.js";
 import { writeRows } from "../core/trip-rows-write.js";
+import { applyStopPlan, planStops } from "../core/trip-stops-write.js";
 import { contactsShareIdentity } from "../core/contact-identity.js?v=2";
 import {
 	buildTripHistoryChanges,
@@ -43,6 +44,13 @@ import {
 	// The bus rows the form opened with, so a save deletes only the ones it
 	// removed, never one the scheduler added since.
 	let loadedAssignmentIds = new Set();
+	/* The trip's stops as stored when the form opened, and the form's own rows
+	   then, so a save writes only what the itinerary changed; see
+	   core/trip-stops-write.js. An older split trip repaired on load has rows
+	   filed under the wrong leg, so it is written whole, as before. */
+	let loadedStopRows = [];
+	let baselineStops = [];
+	let stopsRepaired = false;
 	const vehicleReqsPressed = (root) => new Set(
 		[...root.querySelectorAll('#tp-vehicle-reqs [data-req][aria-pressed="true"]')].map((btn) => btn.dataset.req),
 	);
@@ -1140,6 +1148,7 @@ import {
 			if (firstReturnIndex >= 0 && secondPickupIndex > firstReturnIndex) {
 				returnRows = outboundRows.slice(secondPickupIndex);
 				outboundRows = outboundRows.slice(0, secondPickupIndex);
+				stopsRepaired = true;
 			}
 		}
 		itinerary.setStops(outboundRows.map(stopFromRow), "outbound");
@@ -1188,6 +1197,9 @@ import {
 		syncBusCount(root, 1);
 		syncReturnBusCount(root, 1);
 		loadedVehicleReqs = new Set();
+		loadedStopRows = [];
+		baselineStops = [];
+		stopsRepaired = false;
 		root.querySelectorAll(".sched-scope-trip__bus-group").forEach((group) => {
 			delete group.dataset.assignmentId;
 		});
@@ -1265,6 +1277,9 @@ import {
 		const savingSnapshot     = cloneHistoryValue(currentTripSnapshot);
 		const savingVehicleReqs  = new Set(loadedVehicleReqs);
 		const savingAssignmentIds = new Set(loadedAssignmentIds);
+		const savingStopRows     = cloneHistoryValue(loadedStopRows) || [];
+		const savingBaselineStops = cloneHistoryValue(baselineStops) || [];
+		const savingStopsRepaired = stopsRepaired;
 		const savingAssignments  = cloneHistoryValue(currentAssignments) || [];
 		const savingLoadedTrip   = cloneHistoryValue(currentLoadedTrip);
 		const saveAttempt = String(Number(saveBtn.dataset.saveAttempt || 0) + 1);
@@ -1413,23 +1428,46 @@ import {
 				console.warn("Driver statuses could not be synchronized:", statusError);
 			}
 
-			// Replace stops
-			const { error: deleteStopsErr } = await supabase
-				.from("trip_stops")
-				.delete()
-				.eq("trip_id", savedId);
-			if (deleteStopsErr) throw deleteStopsErr;
-			const savedStopsData = stopsData.map((stop) => ({ trip_id: savedId, ...stop }));
-			if (savedStopsData.length) {
-				const { error: stopsErr } = await supabase.from("trip_stops").insert(savedStopsData);
-				if (stopsErr) {
-					const missingOptionalStopColumns = /lat|lng|mapbox_id|miles_source|drive_source|route_status|depart_prev_date|arrive_date|spot_date|schema cache|column/i.test(stopsErr.message || "");
-					if (!missingOptionalStopColumns) throw stopsErr;
-					console.warn("trip_stops optional route columns are missing; saving legacy stop fields only.", stopsErr);
-					const legacyStopsData = savedStopsData.map(legacyStopPayload);
-					const { error: legacyStopsErr } = await supabase.from("trip_stops").insert(legacyStopsData);
-					if (legacyStopsErr) throw legacyStopsErr;
+			/* The stops. An open trip writes, by id, only what the itinerary
+			   changed, keeping rows it does not read, such as day and sleeper
+			   rows; a new trip, or an older split repaired on load, is written
+			   whole. A trip that stopped being a split loses its return leg. */
+			let savedStopRows = stopsData.map((stop) => ({ trip_id: savedId, ...stop }));
+			const insertStops = async (rows) => {
+				const ids = [];
+				for (const row of rows) {
+					let { data, error } = await supabase.from("trip_stops").insert({ trip_id: savedId, ...row }).select("id").single();
+					if (error && /lat|lng|mapbox_id|miles_source|drive_source|route_status|depart_prev_date|arrive_date|spot_date|schema cache|column/i.test(error.message || "")) {
+						console.warn("trip_stops optional route columns are missing; saving legacy stop fields only.", error);
+						({ data, error } = await supabase.from("trip_stops").insert({ trip_id: savedId, ...legacyStopPayload(row) }).select("id").single());
+					}
+					if (error) throw error;
+					ids.push(data.id);
 				}
+				return ids;
+			};
+			if (!savingTripId || savingStopsRepaired) {
+				const { error: deleteStopsErr } = await supabase.from("trip_stops").delete().eq("trip_id", savedId);
+				if (deleteStopsErr) throw deleteStopsErr;
+				const ids = await insertStops(stopsData);
+				savedStopRows = stopsData.map((row, i) => ({ ...row, id: ids[i] }));
+			} else {
+				const stoppedSplit = savingSnapshot?.trip_type === "dropoff_pickup" && tripData.trip_type !== "dropoff_pickup";
+				const plan = planStops({ loaded: savingStopRows, baseline: savingBaselineStops, current: stopsData,
+					dropLegs: stoppedSplit ? ["return"] : [] });
+				if (plan.deletes.length) {
+					const { error } = await supabase.from("trip_stops").delete().eq("trip_id", savedId).in("id", plan.deletes);
+					if (error) throw error;
+				}
+				for (const { id, position } of plan.positions) {
+					const { error } = await supabase.from("trip_stops").update({ position }).eq("trip_id", savedId).eq("id", id);
+					if (error) throw error;
+				}
+				for (const { id, values } of plan.updates) {
+					const { error } = await supabase.from("trip_stops").update(values).eq("trip_id", savedId).eq("id", id);
+					if (error) throw error;
+				}
+				savedStopRows = applyStopPlan(savingStopRows, plan, await insertStops(plan.inserts));
 			}
 
 			// Payments, by id, so a payment the scheduler saved after this trip
@@ -1544,7 +1582,7 @@ import {
 				beforeStops: savingLoadedTrip?.allTripStops
 					?? savingLoadedTrip?.trip_stops
 					?? [],
-				afterStops: stopsData,
+				afterStops: savedStopRows,
 				beforePayments: savingLoadedTrip?.trip_payments ?? [],
 				afterPayments: payments,
 				beforePurchaseOrders: savingLoadedTrip?.trip_pos ?? [],
@@ -1568,7 +1606,10 @@ import {
 				currentTripSnapshot = { ...tripData };
 				currentAssignments  = snapshotAssignments(assignments);
 				currentLoadedTrip   = { ...tripData, id: savedId, updated_at: trip.updated_at,
-					trip_payments: savedPayments, trip_ticket_options: savedTicketOptions };
+					trip_payments: savedPayments, trip_ticket_options: savedTicketOptions, allTripStops: savedStopRows };
+				loadedStopRows = cloneHistoryValue(savedStopRows) || [];
+				baselineStops = cloneHistoryValue(stopsData) || [];
+				stopsRepaired = false;
 				// A row this save inserted is updated by the next one.
 				for (const row of [...payments, ...ticketOptions]) {
 					if (row.savedId && row.row) row.row.dataset.rowId = row.savedId;
@@ -2204,11 +2245,14 @@ export function loadTrip(root, itinerary, trip) {
 	// Scheduler bars carry leg-filtered trip_stops for their own summary, plus
 	// allTripStops for the editor. Prefer the complete array so opening either
 	// the outbound or return placement hydrates both itinerary buffers.
+	stopsRepaired = false;
 	populateStops(
 		itinerary,
 		trip.allTripStops ?? trip.trip_stops ?? trip.stops ?? [],
 		{ splitTrip: normalized.trip_type === "dropoff_pickup" },
 	);
+	loadedStopRows = cloneHistoryValue(trip.allTripStops ?? trip.trip_stops ?? trip.stops ?? []) || [];
+	baselineStops = collectStops(itinerary, normalized.trip_type === "dropoff_pickup");
 	// After populateStops, not before — its own setStops() calls run through
 	// updateSummary(), which unconditionally clears confirmed (an edit-tracking
 	// side effect that's correct for real edits but wrong for a load).

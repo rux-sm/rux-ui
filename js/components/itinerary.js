@@ -25,8 +25,9 @@
    milesBack, middle }, each place { name, address, lat, lng, mapboxId }, and
    `middle` the stops between as they were saved.
 
-   trip-db.js replaces every `trip_stops` row on save with what getStops
-   returns, which is the scheduler's shape, so neither app has to translate:
+   trip-db.js writes what getStops returns, the scheduler's shape, to the
+   `trip_stops` rows by id, only where this tab changed it (see
+   core/trip-stops-write.js), so neither app has to translate:
 
      pickup  name/address, spot (Bus arrives), departPrev (Yard depart),
              drive and miles from the yard
