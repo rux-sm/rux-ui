@@ -939,6 +939,48 @@ import {
 		return row;
 	}
 
+	/* The trip's quote lines, as the scheduler's Billing tab keeps them, listed
+	   under the price. While there are any, the price is theirs: its field is
+	   read-only here, as on the scheduler's tab, so the two cannot disagree.
+	   A Hotel line is the trip's hotel reminder, so its tag is left to it. */
+	const LINE_KIND_NAMES = { rental: "Bus rental", second_driver: "Second driver", discount: "Discount", hotel: "Hotel", other: "Other" };
+	const usd = (n) => `${n < 0 ? "−" : ""}$${Math.abs(Number(n) || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+	function showQuoteLines(root, lines) {
+		const box = root.querySelector("#tp-quote-lines");
+		const list = root.querySelector("#tp-quote-list");
+		const price = root.querySelector("#tp-price");
+		const hotel = root.querySelector('[data-req="hotel"]');
+		const sorted = [...(lines || [])].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+		if (list) {
+			const row = (words, sum, total) => {
+				const li = document.createElement("li");
+				li.className = total ? "sched-scope-trip__quote-line sched-scope-trip__quote-line--total" : "sched-scope-trip__quote-line";
+				const a = document.createElement("span");
+				a.textContent = words;
+				const b = document.createElement("span");
+				b.textContent = sum;
+				li.append(a, b);
+				return li;
+			};
+			list.replaceChildren(...sorted.map((l) => {
+				const name = l.item || LINE_KIND_NAMES[l.kind] || "Line";
+				const leg = l.leg === "return" ? " · Pickup" : l.leg === "outbound" ? " · Drop-off" : "";
+				const qty = Number(l.quantity) > 1 ? ` · ${Number(l.quantity)} × ${usd(l.cost)}` : "";
+				return row(`${name}${leg}${qty}`, usd(l.amount));
+			}), ...(sorted.length ? [row("Total", usd(sorted.reduce((t, l) => t + (Number(l.amount) || 0), 0)), true)] : []));
+		}
+		if (box) box.hidden = !sorted.length;
+		if (price) {
+			price.readOnly = sorted.length > 0;
+			price.title = sorted.length ? "The quote lines set this price. Edit them on the scheduler's Billing tab." : "";
+		}
+		if (hotel) {
+			const held = sorted.some((l) => l.kind === "hotel");
+			hotel.disabled = held;
+			hotel.title = held ? "The trip's Hotel quote line sets this. Edit it on the scheduler's Billing tab." : "";
+		}
+	}
+
 	function populateTicketOptions(root, options) {
 		const list = root.querySelector("#tp-ticket-options-list");
 		if (!list) return;
@@ -1200,6 +1242,7 @@ import {
 		loadedStopRows = [];
 		baselineStops = [];
 		stopsRepaired = false;
+		showQuoteLines(root, []);
 		root.querySelectorAll(".sched-scope-trip__bus-group").forEach((group) => {
 			delete group.dataset.assignmentId;
 		});
@@ -1983,7 +2026,7 @@ export function isSaveInFlight() {
 	}
 
 export async function fetchTrips() {
-	let [tripsResult, paymentsResult, docsResult, passengersResult, ticketOptionsResult, posResult, invoicesResult] = await Promise.all([
+	let [tripsResult, paymentsResult, docsResult, passengersResult, ticketOptionsResult, posResult, invoicesResult, quoteLinesResult] = await Promise.all([
 		fetchTripRows(true),
 		supabase
 			.from("trip_payments")
@@ -2009,6 +2052,10 @@ export async function fetchTrips() {
 			.from("trip_invoices")
 			.select("id, trip_id, position, number, amount, date")
 			.order("position", { ascending: true }),
+		supabase
+			.from("trip_quote_lines")
+			.select("id, trip_id, position, kind, leg, item, quantity, cost, amount")
+			.order("position", { ascending: true }),
 	]);
 	if (tripsResult.error && isMissingDriverShareField(tripsResult.error)) {
 		driverShareFieldsAvailable = false;
@@ -2025,6 +2072,9 @@ export async function fetchTrips() {
 	// insert its PO or invoice again on the next save.
 	if (posResult.error) throw posResult.error;
 	if (invoicesResult.error) throw invoicesResult.error;
+	// Thrown too: a trip read without its lines would let its price be typed
+	// over theirs.
+	if (quoteLinesResult.error) throw quoteLinesResult.error;
 
 	let canonicalDriverStatuses = [];
 	try {
@@ -2066,6 +2116,7 @@ export async function fetchTrips() {
 	};
 	const posByTrip = groupByTrip(posResult.data);
 	const invoicesByTrip = groupByTrip(invoicesResult.data);
+	const quoteLinesByTrip = groupByTrip(quoteLinesResult.data);
 
 	const ticketOptionsByTrip = new Map();
 	for (const o of ticketOptionsResult?.data ?? []) {
@@ -2088,6 +2139,7 @@ export async function fetchTrips() {
 		trip_ticket_options: ticketOptionsByTrip.get(trip.id) ?? [],
 		trip_pos: posByTrip.get(trip.id) ?? [],
 		trip_invoices: invoicesByTrip.get(trip.id) ?? [],
+		trip_quote_lines: quoteLinesByTrip.get(trip.id) ?? [],
 	}));
 }
 
@@ -2241,6 +2293,7 @@ export function loadTrip(root, itinerary, trip) {
 		? trip.trip_invoices
 		: (normalized.invoice_number ? [{ position: 0, number: normalized.invoice_number }] : []));
 	populateTicketOptions(root, trip.trip_ticket_options ?? []);
+	showQuoteLines(root, trip.trip_quote_lines ?? []);
 	root.querySelector("#tp-price")?.dispatchEvent(new Event("input"));
 	// Scheduler bars carry leg-filtered trip_stops for their own summary, plus
 	// allTripStops for the editor. Prefer the complete array so opening either

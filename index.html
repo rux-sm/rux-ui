@@ -46,7 +46,7 @@
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=152" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=407" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=408" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=17"
@@ -1713,6 +1713,13 @@
 													>$0.00</output
 												>
 											</div>
+										</div>
+										<!-- The quote's lines, from the scheduler's Billing tab, where they are
+											 edited. While a trip has any, its price is theirs and is not typed here. -->
+										<div class="sched-scope-trip__quote" id="tp-quote-lines" hidden>
+											<p class="rux-field__label">Quote lines</p>
+											<ul class="sched-scope-trip__quote-list" id="tp-quote-list"></ul>
+											<p class="sched-scope-trip__quote-note">Edit the lines on the scheduler's Billing tab.</p>
 										</div>
 										<div class="sched-scope-trip__cols-2">
 											<div class="rux-field">
@@ -7341,7 +7348,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=65");
+					const db = await import("./js/data/trip-db.js?v=66");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -10531,7 +10538,7 @@
 			// the calendar without a reload. renderBusRows ends in
 			// renderScheduler(), which repaints the bars and the stripes.
 			async function loadFleet() {
-				const db = await import("./js/data/trip-db.js?v=65");
+				const db = await import("./js/data/trip-db.js?v=66");
 				try {
 					schedulerBuses = await db.fetchBuses();
 				} catch (err) {
@@ -10564,7 +10571,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=65");
+					const db = await import("./js/data/trip-db.js?v=66");
 					loadTrip = db.loadTrip;
 					applyItinerary = db.applyItinerary;
 					getCurrentTripId = db.getCurrentTripId;

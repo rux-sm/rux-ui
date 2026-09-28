@@ -449,6 +449,45 @@
 .sched-scope-trip__po-coverage.is-complete {
 	color: var(--rux-success);
 }
+/* The quote's lines, read here and edited in the scheduler: each line's
+   words, then its sum, and the total under them. */
+.sched-scope-trip__quote {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-control-content-gap);
+}
+.sched-scope-trip__quote[hidden] {
+	display: none;
+}
+.sched-scope-trip__quote-list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-control-content-gap);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.sched-scope-trip__quote-line {
+	display: flex;
+	justify-content: space-between;
+	gap: var(--rux-control-content-gap);
+	font-variant-numeric: tabular-nums;
+}
+.sched-scope-trip__quote-line--total {
+	font-weight: var(--rux-text-label-14-weight);
+}
+.sched-scope-trip__quote-line > span:first-child {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.sched-scope-trip__quote-note {
+	margin: 0;
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-text-label-14-size);
+	line-height: var(--rux-text-label-14-line-height);
+}
 .sched-scope-trip__billing-step--payments {
 	grid-template-columns: minmax(0, 1fr);
 }
