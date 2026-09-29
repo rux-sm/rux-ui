@@ -2345,7 +2345,7 @@ export function newTrip(root, itinerary) {
 
 // Direct field update, no full-trip save-flow needed — used by the Tasks
 // tab's prep checklist (js/panels/tasks-panel.js) to flip one flag at a
-// time (driver_contact_sent, itinerary_printed, and conditional requirement
+// time (itinerary_printed, and conditional requirement
 // fields; envelope_printed moved to trip_drivers, see updateTripDriverTaskFlag).
 export async function updateTripTaskFlags(tripId, fields) {
 	const { error } = await supabase.from("trips").update(fields).eq("id", tripId);

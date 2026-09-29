@@ -1,5 +1,4 @@
 import {
-	openTripContactInfo,
 	updateTripDriverTaskFlag,
 	updateTripTaskFlags,
 } from "../data/trip-db.js?v=25";
@@ -174,7 +173,6 @@ const COMPUTED_ITEMS = [
 // item entirely rather than just leaving it unchecked — hos_form_printed
 // only means anything once a part-time driver is actually assigned.
 const MANUAL_ITEMS = [
-	{ suffix: "driver_contact_sent", label: "Driver Contact Info Sent" },
 	{ suffix: "itinerary_printed", label: "Print Itinerary" },
 	{ suffix: "hos_form_printed", label: "HOS Form", visible: hasPartTimeDriver },
 ];
@@ -529,7 +527,6 @@ function renderTrip(trip, leg) {
 					<input type="checkbox" data-task-trip="${trip.id}" data-task-field="${manualFields[i]}" ${trip[manualFields[i]] ? "checked" : ""} />
 					${item.label}
 				</label>
-				${item.suffix === "driver_contact_sent" ? taskActionButton("contact-info", "Open contact info", `data-task-trip="${trip.id}" data-task-leg="${leg}"`) : ""}
 				${item.suffix === "itinerary_printed" ? taskActionButton("itinerary", "Open itinerary", `data-task-trip="${trip.id}" data-task-leg="${leg}"`) : ""}
 			</div>
 		`)
@@ -1030,10 +1027,7 @@ body?.addEventListener("click", (event) => {
 	let open = null;
 	let markDone = null;
 
-	if (action.dataset.taskAction === "contact-info") {
-		open = () => openTripContactInfo(trip, leg);
-		markDone = () => markTripFieldDone(trip, `driver_contact_sent_${leg}`);
-	} else if (action.dataset.taskAction === "driver-reminder") {
+	if (action.dataset.taskAction === "driver-reminder") {
 		const driver = reminderDrivers(trip, leg).find(
 			(item) => String(item.id) === String(action.dataset.tripDriverId),
 		);

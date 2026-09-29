@@ -6125,7 +6125,7 @@
 			src="./js/panels/documents-panel.js?v=6"
 		></script>
 		<script type="module" src="./js/panels/trip-history.js?v=6"></script>
-		<script type="module" src="./js/panels/tasks-panel.js?v=76"></script>
+		<script type="module" src="./js/panels/tasks-panel.js?v=77"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
 
 		<script type="module">
@@ -7348,7 +7348,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=67");
+					const db = await import("./js/data/trip-db.js?v=68");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -10538,7 +10538,7 @@
 			// the calendar without a reload. renderBusRows ends in
 			// renderScheduler(), which repaints the bars and the stripes.
 			async function loadFleet() {
-				const db = await import("./js/data/trip-db.js?v=67");
+				const db = await import("./js/data/trip-db.js?v=68");
 				try {
 					schedulerBuses = await db.fetchBuses();
 				} catch (err) {
@@ -10571,7 +10571,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=67");
+					const db = await import("./js/data/trip-db.js?v=68");
 					loadTrip = db.loadTrip;
 					applyItinerary = db.applyItinerary;
 					getCurrentTripId = db.getCurrentTripId;
