@@ -25,7 +25,7 @@ also the rule for what is typed: the group's two times are typed, the bus's thre
 | | |
 | :--- | :--- |
 | Yard depart | worked out |
-| Bus arrives | worked out — Group departs less 15 minutes |
+| Bus arrives | worked out — Group departs less the office's spot minutes, `route-times-v1` |
 | Group departs | typed |
 | Group arrives | typed |
 | Yard return | worked out |

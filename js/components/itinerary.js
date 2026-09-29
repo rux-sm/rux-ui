@@ -11,7 +11,7 @@
    the group's two times are typed, the bus's three are worked out.
 
      Yard depart    worked out   Bus arrives less the drive from the yard
-     Bus arrives    worked out   Group departs less 15 minutes
+     Bus arrives    worked out   Group departs less the office's spot minutes
      Group departs  typed
      Group arrives  typed
      Yard return    worked out   Group arrives plus the drive back
@@ -56,9 +56,14 @@
 		address: "2801 Zinnia Ave, McAllen, TX 78504",
 	};
 
-	// The bus is spotted this long before the group leaves. Fixed: the field
-	// that changed it went with the per-day editor, and the Times list says so.
-	const PADDING_MINS = 15;
+	/* The bus is spotted this long before the group leaves: the office's
+	   `route-times-v1` spot minutes, the scheduler's Route tab's figure, which
+	   Settings publishes; 15 until it has. */
+	const DEFAULT_PADDING_MINS = 15;
+	function paddingMins() {
+		const mins = Number(window.RuxSettings?.getSpotPadding?.());
+		return Number.isFinite(mins) && mins >= 0 ? mins : DEFAULT_PADDING_MINS;
+	}
 
 	function getYard() {
 		const yard = window.RuxSettings?.getYard?.();
@@ -155,7 +160,7 @@
 	function busTimes(leg) {
 		const departMins = parseClockMins(leg.depart);
 		const arriveMins = parseClockMins(leg.arrive);
-		const spotMins = departMins == null ? null : departMins - PADDING_MINS;
+		const spotMins = departMins == null ? null : departMins - paddingMins();
 		const yardOutMins = spotMins == null || leg.driveOut == null ? null : spotMins - leg.driveOut;
 		const yardBackMins = arriveMins == null || leg.driveBack == null ? null : arriveMins + leg.driveBack;
 		return {
@@ -537,7 +542,7 @@
 				: `${formatDriveMins(leg.driveBack)} back to the yard`;
 			const rows = [
 				["Yard depart", t.yardOut, driveOut],
-				["Bus arrives", t.spot, `${PADDING_MINS} min before the group leaves`],
+				["Bus arrives", t.spot, `${paddingMins()} min before the group leaves`],
 				["Group departs", leg.depart, leg.pickup.name || ""],
 				["Group arrives", leg.arrive, leg.drop.name || leg.pickup.name || ""],
 				["Yard return", t.yardBack, driveBack],
@@ -611,6 +616,8 @@
 		});
 
 		recalcBtn?.addEventListener("click", () => measure());
+		// The spot minutes arriving, or changed in Settings, move Bus arrives.
+		document.addEventListener("settings:spot-padding", () => renderTimes());
 
 		function syncConfirmBtn() {
 			if (!confirmBtn) return;
@@ -643,6 +650,15 @@
 				const which = leg === "return" ? "return" : "outbound";
 				const dates = legDates(which);
 				return stopsFromLeg(legs[which], dates.from, dates.to, isRound(),
+					root.querySelector("#tp-destination")?.value.trim() || "");
+			},
+			/* The rows `getStops` would give for these stored rows, without
+			   touching the form: what the trip opened as, for trip-db to take
+			   its opening copy again when the spot minutes arrive late. */
+			stopsFor: (rows, leg) => {
+				const which = leg === "return" ? "return" : "outbound";
+				const dates = legDates(which);
+				return stopsFromLeg(legFromStops(rows, isRound()), dates.from, dates.to, isRound(),
 					root.querySelector("#tp-destination")?.value.trim() || "");
 			},
 			setStops: (rows, leg = activeLeg) => {

@@ -654,10 +654,13 @@ import {
 	// globally continuous across both legs rather than restarting at 0 per
 	// leg, mirroring collectAssignmentsForLeg's positionOffset below (both
 	// tables share one trip_id with two legs' rows in it).
-	function collectStops(itinerary, includeReturn) {
-		const outbound = itinerary.getStops("outbound").map((s, i) => stopRow(s, i, "outbound"));
+	// With `opened`, each leg's stored rows, it is the form as those rows open
+	// rather than as it stands.
+	function collectStops(itinerary, includeReturn, opened = null) {
+		const legStops = (leg) => (opened ? itinerary.stopsFor(opened[leg], leg) : itinerary.getStops(leg));
+		const outbound = legStops("outbound").map((s, i) => stopRow(s, i, "outbound"));
 		if (!includeReturn) return outbound;
-		const returnLeg = itinerary.getStops("return").map((s, i) => stopRow(s, outbound.length + i, "return"));
+		const returnLeg = legStops("return").map((s, i) => stopRow(s, outbound.length + i, "return"));
 		return outbound.concat(returnLeg);
 	}
 
@@ -1164,13 +1167,8 @@ import {
 	// Rows missing `leg` (pre-migration data, or the legacy-schema save
 	// fallback) default to outbound; split-trip legacy sequences are repaired
 	// below when their old concatenated shape can be identified safely.
-	function populateStops(itinerary, rows, { splitTrip = false } = {}) {
-		// itinerary.js is a singleton reused across every trip opened —
-		// force the view back to Outbound before loading this trip's stops,
-		// otherwise a Split trip loaded right after another Split trip that
-		// was left on "Inbound" would populate outbound data into a buffer
-		// instead of the visible array, opening on the wrong leg.
-		itinerary.setActiveLeg("outbound");
+	// A trip's stored stops as each leg's rows in order, in the itinerary's shape.
+	function stopsByLeg(rows, splitTrip) {
 		let outboundRows = rows
 			.filter((r) => (r.leg ?? "outbound") !== "return")
 			.sort((a, b) => a.position - b.position);
@@ -1190,11 +1188,23 @@ import {
 			if (firstReturnIndex >= 0 && secondPickupIndex > firstReturnIndex) {
 				returnRows = outboundRows.slice(secondPickupIndex);
 				outboundRows = outboundRows.slice(0, secondPickupIndex);
-				stopsRepaired = true;
+				return { outbound: outboundRows.map(stopFromRow), return: returnRows.map(stopFromRow), repaired: true };
 			}
 		}
-		itinerary.setStops(outboundRows.map(stopFromRow), "outbound");
-		itinerary.setStops(returnRows.map(stopFromRow), "return");
+		return { outbound: outboundRows.map(stopFromRow), return: returnRows.map(stopFromRow), repaired: false };
+	}
+
+	function populateStops(itinerary, rows, { splitTrip = false } = {}) {
+		// itinerary.js is a singleton reused across every trip opened —
+		// force the view back to Outbound before loading this trip's stops,
+		// otherwise a Split trip loaded right after another Split trip that
+		// was left on "Inbound" would populate outbound data into a buffer
+		// instead of the visible array, opening on the wrong leg.
+		itinerary.setActiveLeg("outbound");
+		const legs = stopsByLeg(rows, splitTrip);
+		if (legs.repaired) stopsRepaired = true;
+		itinerary.setStops(legs.outbound, "outbound");
+		itinerary.setStops(legs.return, "return");
 	}
 
 	/* ── Clear form ──────────────────────────────────────────────────────── */
@@ -3133,6 +3143,15 @@ export function initTripDB(root, itinerary) {
 			return;
 		}
 		estimatedMilesInput.dataset.milesMode = "manual";
+	});
+
+	/* The office's spot minutes arriving after a trip opened move the spot the
+	   form works out. The opening copy is taken again from the stored rows with
+	   them, so the move is never read as an edit and written. */
+	document.addEventListener("settings:spot-padding", () => {
+		if (!loadedStopRows.length || !itinerary.stopsFor) return;
+		const splitTrip = (window.TripPanel?.getTripType?.(root) || "round_trip") === "dropoff_pickup";
+		baselineStops = collectStops(itinerary, splitTrip, stopsByLeg(loadedStopRows, splitTrip));
 	});
 
 	root.addEventListener("rux:itinerary-miles-changed", (event) => {

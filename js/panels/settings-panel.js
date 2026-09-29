@@ -3,7 +3,9 @@
 
   const YARD_KEY = "yard-location-v1";
   const MAPBOX_TOKEN_KEY = "mapbox-token-v1";
-  const SPOT_PADDING_KEY = "spot-padding-v1";
+  // The office's route times, which the scheduler's Settings also edits; this
+  // page reads and writes only their `spot_minutes`.
+  const ROUTE_TIMES_KEY = "route-times-v1";
   const MISSIVE_URL_KEY = "missive-search-url-v1";
   const DEFAULT_MISSIVE_URL = "https://mail.missiveapp.com/#search/";
   const DEFAULT_SPOT_PADDING = 15;
@@ -524,26 +526,37 @@
     setIntegrationsMessage("Saved.", "success");
   }
 
+  // Published with an event, because a trip may already be open when the
+  // setting arrives and its itinerary has to redraw with the new minutes.
   function publishSpotPadding(mins) {
     spotPaddingMins = Number.isFinite(mins) && mins >= 0 ? mins : DEFAULT_SPOT_PADDING;
     window.RuxSettings = {
       ...(window.RuxSettings || {}),
       getSpotPadding: () => spotPaddingMins,
     };
+    document.dispatchEvent(new CustomEvent("settings:spot-padding", { detail: { mins: spotPaddingMins } }));
   }
+
+  const spotMinutesOf = (value) => {
+    const mins = value?.spot_minutes;
+    return mins !== null && mins !== "" && Number.isFinite(Number(mins)) && Number(mins) >= 0
+      ? Math.round(Number(mins)) : DEFAULT_SPOT_PADDING;
+  };
 
   async function loadSpotPadding() {
     if (!db) db = await import("../data/settings-db.js");
-    const saved = await db.getSetting(SPOT_PADDING_KEY);
-    const mins = saved != null ? Number(saved) : DEFAULT_SPOT_PADDING;
-    publishSpotPadding(Number.isFinite(mins) ? mins : DEFAULT_SPOT_PADDING);
+    publishSpotPadding(spotMinutesOf(await db.getSetting(ROUTE_TIMES_KEY)));
     if (spotPaddingInput) spotPaddingInput.value = spotPaddingMins;
   }
 
+  // Written over the setting as it stands, so the scheduler's pre-trip,
+  // post-trip and slowdown minutes are kept.
   async function saveSpotPadding(mins) {
     if (!db) db = await import("../data/settings-db.js");
     const normalized = Number.isFinite(mins) && mins >= 0 ? mins : DEFAULT_SPOT_PADDING;
-    await db.setSetting(SPOT_PADDING_KEY, normalized);
+    const stored = await db.getSetting(ROUTE_TIMES_KEY, { strict: true });
+    const value = stored && typeof stored === "object" ? stored : {};
+    await db.setSetting(ROUTE_TIMES_KEY, { ...value, spot_minutes: normalized });
     publishSpotPadding(normalized);
     if (spotPaddingInput) spotPaddingInput.value = normalized;
   }

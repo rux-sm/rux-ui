@@ -5459,9 +5459,10 @@
 											>
 										</div>
 										<span class="rux-field__help"
-											>When DEP is set on a pickup card,
-											SPT is auto-filled as DEP minus this
-											value.</span
+											>The bus arrives at the pickup this
+											long before the group departs. The
+											scheduler's Settings changes the
+											same minutes.</span
 										>
 									</div>
 								</div>
@@ -6090,13 +6091,13 @@
 		     the page itself; each module still does that for itself. -->
 		<script src="./rux-ui/js/boot.js?v=1"></script>
 		<script src="./js/panels/trip-panel.js?v=52"></script>
-		<script src="./js/components/itinerary.js?v=70"></script>
+		<script src="./js/components/itinerary.js?v=71"></script>
 		<script src="./js/panels/driver-sheet.js?v=8" defer></script>
 		<script src="./js/panels/driver-panel.js?v=34" defer></script>
 		<script src="./js/panels/driver-roster-panel.js?v=7" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=23" defer></script>
 		<script src="./js/panels/customers-panel.js?v=13" defer></script>
-		<script src="./js/panels/settings-panel.js?v=15" defer></script>
+		<script src="./js/panels/settings-panel.js?v=16" defer></script>
 		<script src="./js/panels/trip-finder.js?v=12" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=13" defer></script>
 		<script src="./js/panels/print-schedule.js?v=38" defer></script>
@@ -7348,7 +7349,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=68");
+					const db = await import("./js/data/trip-db.js?v=69");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -10538,7 +10539,7 @@
 			// the calendar without a reload. renderBusRows ends in
 			// renderScheduler(), which repaints the bars and the stripes.
 			async function loadFleet() {
-				const db = await import("./js/data/trip-db.js?v=68");
+				const db = await import("./js/data/trip-db.js?v=69");
 				try {
 					schedulerBuses = await db.fetchBuses();
 				} catch (err) {
@@ -10571,7 +10572,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=68");
+					const db = await import("./js/data/trip-db.js?v=69");
 					loadTrip = db.loadTrip;
 					applyItinerary = db.applyItinerary;
 					getCurrentTripId = db.getCurrentTripId;
