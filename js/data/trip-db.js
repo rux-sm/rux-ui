@@ -2541,6 +2541,25 @@ function documentFileExtension(file) {
 	return documentFileSlug(match?.[1], "bin");
 }
 
+/* A document's three-letter type code, shared with the scheduler's
+   `scheduler/file-names.js` in rux-sm.github.io, which names every file a trip
+   has, uploaded or printed, the same way. A label not listed is `doc` with the
+   label after it. */
+const DOCUMENT_CODES = {
+	itinerary: "itn",
+	contract: "ctr",
+	po: "pur",
+	"purchase order": "pur",
+	invoice: "inv",
+	"hotel confirmation": "htl",
+};
+
+function documentCode(label) {
+	const typed = String(label ?? "").trim().replace(/\s+/g, " ").toLowerCase();
+	return DOCUMENT_CODES[typed] ?? `doc-${documentFileSlug(label, "file")}`;
+}
+
+// `<start date>_<code>_<client>_<trip ref>.<extension>`, as the scheduler names it.
 async function buildDocumentFileName(tripId, label, file) {
 	const { data: trip, error } = await supabase
 		.from("trips")
@@ -2561,8 +2580,8 @@ async function buildDocumentFileName(tripId, label, file) {
 
 	return [
 		date,
+		documentCode(label),
 		documentFileSlug(clientOrName, "unnamed"),
-		documentFileSlug(label, "document"),
 		documentFileSlug(tripRef, "trip"),
 	].join("_") + `.${extension}`;
 }
