@@ -983,3 +983,62 @@
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
+
+/* — Updates — the trip's updates, newest first, each over its stamp; the
+   same list sits under the update window's box. */
+
+.sched-scope-trip__update-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-3);
+}
+.sched-scope-trip__update-list:empty {
+	display: none;
+}
+.sched-scope-trip__update {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-1);
+}
+.sched-scope-trip__update-body,
+.sched-update-modal__what {
+	margin: 0;
+	color: var(--rux-text-primary);
+	font-size: var(--rux-text-copy-14-size);
+	font-weight: var(--rux-text-copy-14-weight);
+	line-height: var(--rux-text-copy-14-line-height);
+	overflow-wrap: anywhere;
+}
+.sched-scope-trip__update-meta,
+.sched-scope-trip__update-status,
+.sched-update-modal__trip {
+	margin: 0;
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-text-label-12-size);
+	font-weight: var(--rux-text-label-12-weight);
+	line-height: var(--rux-text-label-12-line-height);
+}
+.sched-update-modal__error {
+	margin: 0;
+	color: var(--rux-danger);
+	font-size: var(--rux-text-copy-14-size);
+	line-height: var(--rux-text-copy-14-line-height);
+}
+.sched-update-modal__earlier {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+	padding-top: var(--rux-space-4);
+	border-top: var(--rux-border-width) solid var(--rux-card-border);
+}
+.sched-update-modal__earlier[hidden] {
+	display: none;
+}
+.sched-update-modal .rux-modal__body {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-4);
+}

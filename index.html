@@ -46,7 +46,7 @@
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=152" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=408" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=410" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=17"
@@ -1169,6 +1169,44 @@
 												type="text"
 											/>
 										</div>
+									</div>
+								</div>
+								<!-- What was said to or heard from the customer, the
+								     scheduler's trip_updates; js/panels/trip-updates.js. -->
+								<div class="rux-card">
+									<div class="rux-card__header">
+										<p class="rux-card__title">Updates</p>
+										<div class="rux-u-cluster">
+											<button
+												class="rux-button rux-button--ghost rux-button--icon"
+												type="button"
+												id="tp-updates-add-btn"
+												aria-label="Add update"
+												title="Add update"
+												disabled
+											>
+												<span
+													class="rux-icon"
+													aria-hidden="true"
+													>add</span
+												>
+											</button>
+										</div>
+									</div>
+									<div
+										class="rux-card__body rux-card__body--stack"
+									>
+										<ul
+											class="sched-scope-trip__update-list"
+											id="tp-update-list"
+										></ul>
+										<p
+											class="sched-scope-trip__update-status"
+											id="tp-update-status"
+											role="status"
+										>
+											Save the trip to add updates.
+										</p>
 									</div>
 								</div>
 								<div class="rux-card">
@@ -7349,7 +7387,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=69");
+					const db = await import("./js/data/trip-db.js?v=71");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -10539,7 +10577,7 @@
 			// the calendar without a reload. renderBusRows ends in
 			// renderScheduler(), which repaints the bars and the stripes.
 			async function loadFleet() {
-				const db = await import("./js/data/trip-db.js?v=69");
+				const db = await import("./js/data/trip-db.js?v=71");
 				try {
 					schedulerBuses = await db.fetchBuses();
 				} catch (err) {
@@ -10572,7 +10610,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=69");
+					const db = await import("./js/data/trip-db.js?v=71");
 					loadTrip = db.loadTrip;
 					applyItinerary = db.applyItinerary;
 					getCurrentTripId = db.getCurrentTripId;

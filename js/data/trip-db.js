@@ -20,7 +20,10 @@ import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
 import { assignmentsOnLeg, busSlotCount } from "../core/bus-slots.js";
 import { applyVehicleNeedChanges, writeTripAssignments } from "../core/trip-assignment-write.js";
 import { mergedNeeds, tripPatch } from "../core/trip-patch.js";
-import { writeRows } from "../core/trip-rows-write.js";
+import { planRows, writeRows } from "../core/trip-rows-write.js";
+import { customerChange } from "../core/trip-update-change.js";
+import { customerLink, fillContactCustomer } from "../core/customer-link.js";
+import { askForUpdate, initTripUpdates, showTripUpdates, writeUpdate } from "../panels/trip-updates.js";
 import { applyStopPlan, planStops } from "../core/trip-stops-write.js";
 import { contactsShareIdentity } from "../core/contact-identity.js?v=2";
 import {
@@ -1274,6 +1277,7 @@ import {
 		root.querySelector("#tp-price")?.dispatchEvent(new Event("input"));
 		window.Rux?.syncDateInputs(root);
 		window.Rux?.syncSelectPlaceholders?.(root);
+		showTripUpdates(root, null);
 		root.dispatchEvent(new CustomEvent("rux:trip-cleared", { bubbles: true }));
 	}
 
@@ -1427,6 +1431,35 @@ import {
 				}
 			}
 
+			/* Every save asks for its update first, as the scheduler's does;
+			   closing the window keeps editing. What the save changed that the
+			   customer would ask about names itself in the window. */
+			const loadedPayments = await loadedRows("trip_payments", savingTripId, savingLoadedTrip, "id, position, amount, method, date, ref");
+			const change = savingTripId ? customerChange({
+				patch: tripPatch(tripData, savingSnapshot || {}),
+				before: savingSnapshot || {},
+				route: JSON.stringify(stopsData) !== JSON.stringify(savingBaselineStops),
+				payments: planRows(loadedPayments, payments, ["amount", "method", "date", "ref"]),
+				pos: billingListsLoaded ? window.RuxBilling.diffListRows(savingLoadedTrip.trip_pos, billingLists.pos, ["ref", "amount", "date"]) : null,
+				invoices: billingListsLoaded ? window.RuxBilling.diffListRows(savingLoadedTrip.trip_invoices, billingLists.invoices, ["number", "amount", "date"]) : null,
+			}) : null;
+			const answer = await askForUpdate({ change, creating: !savingTripId,
+				trip: { id: savingTripId, destination: tripData.destination, customer: tripData.customer } });
+			if (!answer) {
+				setSaveButtonState(saveBtn, { label: defaultSaveLabel(), icon: "save", disabled: false });
+				return false;
+			}
+
+			/* The customer is linked before the trip is written, as the scheduler
+			   links it; see core/customer-link.js. A customer that cannot be added
+			   stops the save before anything is written, and the form keeps every edit. */
+			try {
+				const linked = await customerLink(supabase, tripData.customer, savingTripId ? (savingSnapshot || {}) : null);
+				tripData.customer_id = linked !== undefined ? linked : (savingSnapshot?.customer_id ?? null);
+			} catch (linkErr) {
+				throw new Error(`The customer could not be added to the list, so nothing was saved. ${linkErr?.message ?? linkErr}`);
+			}
+
 			/* The database gives a new trip its number; nothing here sends one. A
 			   new trip is written whole; an open one only in the columns this form
 			   changed, and at least its `updated_at`, so the scheduler's editor
@@ -1526,8 +1559,7 @@ import {
 			// Payments, by id, so a payment the scheduler saved after this trip
 			// loaded survives; see core/trip-rows-write.js.
 			const savedPayments = await writeRows(supabase, "trip_payments", savedId,
-				await loadedRows("trip_payments", savingTripId, savingLoadedTrip, "id, position, amount, method, date, ref"),
-				payments, ["amount", "method", "date", "ref"]);
+				loadedPayments, payments, ["amount", "method", "date", "ref"]);
 
 			// POs and invoices, by id, so a row the scheduler saved after this trip
 			// loaded survives. A new trip's rows are all inserts.
@@ -1623,6 +1655,12 @@ import {
 			} else {
 				Object.assign(tripData, contactUpdates);
 			}
+			// Only once the trip stands does its booking contact take its customer.
+			try {
+				if (await fillContactCustomer(supabase, tripData.booking_contact_id, tripData.customer_id)) contactRosterChanged = true;
+			} catch (fillErr) {
+				console.warn("The booking contact did not take the trip's customer (non-fatal):", fillErr);
+			}
 			if (contactRosterChanged) {
 				window.dispatchEvent(new CustomEvent("rux:contacts-changed"));
 			}
@@ -1652,6 +1690,8 @@ import {
 				snapshot: tripData,
 				changes: historyChanges,
 			});
+			// The update is written once the save has landed, and a failure never undoes it.
+			const updateLost = !(await writeUpdate(savedId, answer));
 
 			// Only update module state if the user hasn't navigated to a different trip mid-save.
 			if (currentTripId === savingTripId) {
@@ -1690,7 +1730,9 @@ import {
 				Rux.toast(
 					contactSyncWarning
 						? "Trip saved, but one or more contacts could not be added."
-						: "Trip saved",
+						: updateLost
+							? "Trip saved, but the update was not added. Add it from the trip's Updates."
+							: "Trip saved",
 				);
 			}
 			clearForm(root, itinerary);
@@ -1888,6 +1930,8 @@ export function isSaveInFlight() {
 				after: "Unassigned",
 			}] : [])],
 		});
+		// The reason goes to the trip's updates, as the scheduler's cancel writes it.
+		await writeUpdate(cancelledId, { kind: "update", body: `Cancelled: ${reason}`, keys: ["cancellation"] });
 		clearForm(root, itinerary);
 		root.dispatchEvent(new CustomEvent("rux:trip-cancelled", { bubbles: true, detail: { id: cancelledId } }));
 		if (window.Rux) {
@@ -2205,6 +2249,7 @@ export function loadTrip(root, itinerary, trip) {
 		booking_contact_email:        trip.booking_contact_email ?? trip.bookingContact?.email ?? null,
 		booking_contact_missive_url:  trip.booking_contact_missive_url ?? null,
 		booking_contact_id:           trip.booking_contact_id ?? null,
+		customer_id:                  trip.customer_id ?? null,
 		trip_contact_1_name:   trip.trip_contact_1_name   ?? trip.tripContact?.name    ?? null,
 		trip_contact_1_phone:  trip.trip_contact_1_phone  ?? trip.tripContact?.phone   ?? null,
 		trip_contact_1_id:     trip.trip_contact_1_id ?? null,
@@ -2273,6 +2318,8 @@ export function loadTrip(root, itinerary, trip) {
 	currentLoadedTrip = trip;
 	syncContactInfoBtn();
 	syncCancelledState(root);
+	showTripUpdates(root, currentTripId
+		? { id: currentTripId, destination: normalized.destination, customer: normalized.customer } : null);
 	currentTripSnapshot = { ...normalized };
 	currentAssignments = snapshotAssignments(loadedAssignments);
 	loadedAssignmentIds = new Set(loadedAssignments.map((a) => String(a.id ?? "")).filter((id) => UUID_RE.test(id)));
@@ -3117,6 +3164,7 @@ function buildTripReminderMessage(trip) {
 }
 
 export function initTripDB(root, itinerary) {
+	initTripUpdates(root);
 	const saveBtn   = root.querySelector("#tp-btn-save");
 	const clearBtn  = root.querySelector("#tp-btn-clear");
 	const deleteBtn = root.querySelector("#tp-btn-delete");
