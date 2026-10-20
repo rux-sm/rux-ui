@@ -4,15 +4,15 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Redirecting…</title>
-		<!-- Redirect stub: this page was renamed driver.html. Kept so share links
-		     sent before the rename keep resolving. Safe to delete once no old
-		     links remain in circulation. -->
+		<!-- A driver's schedule link from before driver.html had its name, kept so links already sent still open. The page is the
+		     scheduler's now, at /scheduler/share/driver.html, which reads the same
+		     address; the link's search and hash go with it. -->
 		<script>
-			location.replace("driver.html" + location.search + location.hash);
+			location.replace("/scheduler/share/driver.html" + location.search + location.hash);
 		</script>
-		<meta http-equiv="refresh" content="0; url=driver.html" />
+		<noscript><meta http-equiv="refresh" content="0; url=/scheduler/share/driver.html" /></noscript>
 	</head>
 	<body>
-		<p>This page moved to <a href="driver.html">driver.html</a>.</p>
+		<p>This page moved to <a href="/scheduler/share/driver.html">/scheduler/share/driver.html</a>.</p>
 	</body>
 </html>

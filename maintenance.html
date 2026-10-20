@@ -1,35 +1,18 @@
 <!doctype html>
 <html lang="en">
-<head>
-	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-	<!-- This page never sets data-theme, so it renders dark; chrome matches
-	     dark --rux-surface-0 (tests/theme-color-meta.test.mjs). -->
-	<meta name="theme-color" content="#000000" />
-	<title>Maintenance Schedule · Escamilla Tour Buses</title>
-	<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-	<link rel="stylesheet" href="./rux-ui/css/rux.css?v=135" />
-	<link rel="stylesheet" href="./scheduler/css/components.css?v=292" />
-	<link rel="stylesheet" href="./scheduler/css/features/maintenance-share.css?v=43" />
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap" />
-</head>
-<body class="maintenance-share-page">
-	<header class="rux-ui-header maintenance-share-header" aria-label="Application Header">
-		<div class="rux-ui-header__brand">
-			<img
-				class="rux-ui-header__logo"
-				src="./assets/logo.png"
-				alt="Escamilla Tour Buses"
-			/>
-		</div>
-		<h1 class="rux-ui-header__title">Maintenance Schedule</h1>
-	</header>
-	<main class="maintenance-share" id="maintenance-share-root">
-		<section class="maintenance-share__status" aria-busy="true">
-			<span class="rux-icon">progress_activity</span><p>Loading vehicle schedule…</p>
-		</section>
-	</main>
-	<script type="module" src="./js/core/app-reload.js?v=2"></script>
-	<script type="module" src="./js/pages/maintenance-share.js?v=24"></script>
-</body>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Redirecting…</title>
+		<!-- The maintenance schedule link, kept so links already sent still open. The page is the
+		     scheduler's now, at /scheduler/share/maintenance.html, which reads the same
+		     address; the link's search and hash go with it. -->
+		<script>
+			location.replace("/scheduler/share/maintenance.html" + location.search + location.hash);
+		</script>
+		<noscript><meta http-equiv="refresh" content="0; url=/scheduler/share/maintenance.html" /></noscript>
+	</head>
+	<body>
+		<p>This page moved to <a href="/scheduler/share/maintenance.html">/scheduler/share/maintenance.html</a>.</p>
+	</body>
 </html>
